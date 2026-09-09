@@ -1,56 +1,56 @@
 {
   "caseLabel": "KANIT-04",
-  "title": "Örnek Dosya — kendi hikayenle değiştir",
-  "startRoom": "sorgu",
+  "title": "Anne Mührü",
+  "startRoom": "buro",
+  "startDay": 1,
+
+  "sleepEvents": {
+    "2": "İkinci gün başlıyor. Köyü daha yakından tanıma vakti.",
+    "3": "Üçüncü gün. Duyuru panosunda yeni bir şey olabilir.",
+    "4": "Sabah bir haber geldi: Nadire ölü bulunmuş...",
+    "5": "Beşinci gün. Yan ipuçlarını toplama vakti.",
+    "6": "Sabah bir haber daha geldi: Muhtar Halit ölü bulunmuş...",
+    "7": "Son gün. Artık bir karar vermen gerekiyor."
+  },
 
   "rooms": {
-    "sorgu": {
-      "label": "Sorgu Odası",
+    "buro": {
+      "label": "Geçici Büro",
       "background": "assets/oda1.png",
       "hotspots": [
-        { "x": "8%", "y": "55%", "w": "16%", "h": "22%", "type": "examine", "target": "cekmece", "hint": "Çekmeceyi incele" },
-        { "x": "62%", "y": "18%", "w": "26%", "h": "34%", "type": "tv", "target": "kamera1", "hint": "Televizyonu aç" },
-        { "x": "86%", "y": "30%", "w": "10%", "h": "55%", "type": "navigate", "target": "arsiv", "hint": "Arşiv Odasına geç" }
+        { "x": "8%", "y": "55%", "w": "16%", "h": "22%", "type": "dosya", "hint": "İfade zaptlarını incele" },
+        { "x": "40%", "y": "60%", "w": "14%", "h": "20%", "type": "sleep", "hint": "Uyu (bir sonraki güne geç)" },
+        { "x": "86%", "y": "30%", "w": "10%", "h": "55%", "type": "navigate", "target": "meydan", "hint": "Köy Meydanına çık" }
       ]
     },
-    "arsiv": {
-      "label": "Arşiv Odası",
+    "meydan": {
+      "label": "Köy Meydanı",
       "background": "assets/oda2.png",
       "hotspots": [
-        { "x": "4%", "y": "30%", "w": "10%", "h": "55%", "type": "navigate", "target": "sorgu", "hint": "Sorgu Odasına dön" },
-        { "x": "40%", "y": "45%", "w": "20%", "h": "30%", "type": "recorder", "target": "teyp1", "hint": "Kayıt cihazını incele" },
-        { "x": "75%", "y": "20%", "w": "18%", "h": "40%", "type": "examine", "target": "kilitli_dosya", "hint": "Dosya dolabını incele" }
+        { "x": "4%", "y": "30%", "w": "10%", "h": "55%", "type": "navigate", "target": "buro", "hint": "Büroya dön" },
+        { "x": "40%", "y": "45%", "w": "20%", "h": "30%", "type": "examine", "target": "pano_ilan", "hint": "Duyuru panosuna bak", "activeDays": [3,4,5,6,7] }
       ]
     }
   },
 
   "items": {
-    "cekmece": {
-      "title": "Çekmece",
+    "pano_ilan": {
+      "title": "Duyuru Panosu",
       "image": "assets/evrak_not.jpg",
-      "desc": "İçinde katlanmış bir not var: \"saat 23:50, istasyon.\"",
-      "collectId": "not1"
-    },
-    "kilitli_dosya": {
-      "title": "Dosya Dolabı",
-      "image": "assets/dosya_kapali.jpg",
-      "desc": "Dolap kilitli. Üstünde 4 haneli bir şifre paneli var.",
-      "lockedCode": "1974",
-      "unlockedText": "E.'nin işten çıkarılma tutanağı — tarih üç ay önce."
+      "desc": "Eski bir gazete kupürü — 20 yıl önceki bir suçlamadan bahsediyor, isim yok."
     }
   },
 
-  "devices": {
-    "kamera1": {
-      "title": "Güvenlik Kamerası — CAM 03",
-      "video": "assets/kamera03.mp4",
-      "desc": "23:47:12 tarihli kayıt.",
-      "autoplay": false
-    },
-    "teyp1": {
-      "title": "Ses Kayıt Cihazı",
-      "audio": "assets/kayit_014.mp3",
-      "desc": "Kayıt_014 — 0:47"
-    }
-  }
+  "devices": {},
+
+  "statements": [
+    { "id": "anselm", "name": "Peder Anselm",         "cardImage": "assets/ifadeler/anselm.jpg", "audio": "assets/ifadeler/anselm.mp3" },
+    { "id": "kerem",  "name": "Değirmenci Kerem",      "cardImage": "assets/ifadeler/kerem.jpg",  "audio": "assets/ifadeler/kerem.mp3" },
+    { "id": "halit",  "name": "Muhtar Halit",          "cardImage": "assets/ifadeler/halit.jpg",  "audio": "assets/ifadeler/halit.mp3" },
+    { "id": "nadire", "name": "Nadire",                "cardImage": "assets/ifadeler/nadire.jpg", "audio": "assets/ifadeler/nadire.mp3" },
+    { "id": "zehra",  "name": "Ebe Zehra",             "cardImage": "assets/ifadeler/zehra.jpg",  "audio": "assets/ifadeler/zehra.mp3" },
+    { "id": "riza",   "name": "Hancı Rıza",            "cardImage": "assets/ifadeler/riza.jpg",   "audio": "assets/ifadeler/riza.mp3" },
+    { "id": "yusuf",  "name": "Köyün Delisi Yusuf",    "cardImage": "assets/ifadeler/yusuf.jpg",  "audio": "assets/ifadeler/yusuf.mp3" },
+    { "id": "cabbar", "name": "Demirci Cabbar",        "cardImage": "assets/ifadeler/cabbar.jpg", "audio": "assets/ifadeler/cabbar.mp3" }
+  ]
 }

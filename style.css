@@ -4,19 +4,36 @@
   --mono:'Courier New',Courier,monospace; --sans:-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 *{box-sizing:border-box;}
+html,body{height:100%;}
 body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 14px 50px;}
-.case-tag{display:flex;align-items:center;gap:10px;border:1px solid var(--paper-dim);padding:7px 14px;
-  margin-bottom:16px;font-size:11px;color:var(--paper-dim);letter-spacing:.1em;text-transform:uppercase;}
-.case-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--evid-red);box-shadow:0 0 6px var(--evid-red);}
-h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spacing:.04em;margin:0 0 20px;text-align:center;}
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  padding:16px 12px 30px;overflow-x:hidden;}
 
-.stage-wrap{width:100%;max-width:820px;}
+.top-bar{width:100%;max-width:1000px;display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
+.case-tag{display:flex;align-items:center;gap:10px;border:1px solid var(--paper-dim);padding:7px 14px;
+  font-size:11px;color:var(--paper-dim);letter-spacing:.1em;text-transform:uppercase;}
+.case-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--evid-red);box-shadow:0 0 6px var(--evid-red);}
+.day-badge{border:1px solid var(--amber);color:var(--amber-bright);padding:7px 14px;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;border-radius:4px;}
+h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spacing:.04em;margin:6px 0 14px;text-align:center;}
+
+/* Sahne: her zaman 16:9, hem yatay hem dikey ekranda ortalanır ve sığdırılır.
+   max-width YATAY sınırlar, max-height ise dikey (dar/uzun) ekranlarda taşmayı önler. */
+.stage-wrap{width:100%;max-width:1000px;}
 .stage{
-  position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
+  max-height:62dvh; /* dikey telefon ekranında sahnenin boy taşırmasını engeller */
+  margin:0 auto;
   box-shadow:0 0 0 1px rgba(233,226,207,.08), 0 30px 60px -25px rgba(0,0,0,.85);
   background-size:cover;background-position:center;background-color:#1a1b16;
   transition:opacity .25s ease;cursor:default;
+}
+@media (max-width: 480px){
+  .stage{ max-height:42dvh; } /* dikey telefonda sahne daha da kısalır, altta UI'a yer kalır */
+}
+@media (orientation: landscape) and (max-height: 500px){
+  .stage{ max-height:78dvh; } /* telefon yan çevrilince sahne genişçe büyür */
 }
 .stage.fading{opacity:0;}
 .stage.calib-active{cursor:crosshair;}
@@ -75,3 +92,37 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .rec-controls button.active{background:var(--amber);color:#171712;border-color:var(--amber);}
 
 .tv-screen video, .tv-screen{width:100%;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:#000;margin-bottom:10px;display:block;}
+
+/* ---- İFADE ZAPTI: liste + okuyucu ---- */
+.modal.wide{max-width:640px;}
+.statement-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px;}
+.statement-grid button{background:#1c1d18;border:1px solid #35362c;color:var(--paper);
+  padding:12px 10px;border-radius:8px;font-family:var(--sans);font-size:12.5px;cursor:pointer;text-align:left;}
+.statement-grid button:hover{border-color:var(--amber);color:var(--amber-bright);}
+
+.reader-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.reader-nav button{background:none;border:1px solid #3a3b30;color:var(--paper-dim);
+  padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;}
+.reader-nav button:hover{color:var(--amber-bright);border-color:var(--amber);}
+.reader-card-img{width:100%;border-radius:6px;display:block;margin-bottom:12px;background:#1a1b15;}
+.reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
+  border-radius:8px;padding:10px 14px;margin-bottom:12px;}
+.reader-audio .ring{width:34px;height:34px;border-radius:50%;border:2px solid var(--amber);
+  display:flex;align-items:center;justify-content:center;color:var(--amber-bright);font-size:13px;
+  cursor:pointer;flex-shrink:0;}
+.reader-audio.playing .ring{background:var(--amber);color:#171712;}
+.reader-audio .meta{font-size:11px;color:var(--paper-dim);}
+.reader-audio .time{font-size:11px;color:var(--amber-bright);font-variant-numeric:tabular-nums;}
+
+/* ---- GÜN GEÇİŞİ EKRANI ---- */
+.sleep-overlay{
+  position:fixed;inset:0;background:#0a0b08;display:none;align-items:center;justify-content:center;
+  z-index:60;text-align:center;padding:30px;
+}
+.sleep-overlay.active{display:flex;}
+.sleep-overlay .content{max-width:420px;}
+.sleep-overlay .day-num{font-size:13px;color:var(--amber-bright);letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:14px;}
+.sleep-overlay p{font-size:14px;line-height:1.7;color:#c9cabd;margin-bottom:24px;}
+.sleep-overlay button{background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
+  color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}

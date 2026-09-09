@@ -6,6 +6,7 @@
 let CASE = null;
 let currentRoom = null;
 let inventory = [];
+let currentDay = 1;
 let calibMode = false;
 let calibClicks = [];
 
@@ -16,6 +17,15 @@ fetch('case.json')
     document.getElementById('caseLabel').textContent = CASE.caseLabel || 'DOSYA';
     document.getElementById('caseTitle').textContent = CASE.title || '';
     currentRoom = CASE.startRoom;
+
+    // localStorage'dan kaldığı yerden devam et
+    const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
+    const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
+    currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
+    inventory = savedInv ? JSON.parse(savedInv) : [];
+
+    updateDayBadge();
+    renderInventory();
     renderRoom();
   })
   .catch(err => {
@@ -35,6 +45,7 @@ function renderRoom() {
 
     room.hotspots.forEach(h => {
       if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
+      if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
       const el = document.createElement('div');
       el.className = 'hotspot';
       el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
@@ -52,6 +63,101 @@ function handleHotspot(h) {
   if (h.type === 'examine')  { openExamine(h.target); return; }
   if (h.type === 'recorder') { openRecorder(h.target); return; }
   if (h.type === 'tv')       { openTV(h.target); return; }
+  if (h.type === 'dosya')    { openDosyaList(); return; }
+  if (h.type === 'sleep')    { sleep(); return; }
+}
+
+/* ---------- gün döngüsü ---------- */
+function updateDayBadge() {
+  document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
+}
+
+function sleep() {
+  currentDay++;
+  localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
+  updateDayBadge();
+
+  const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
+  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
+  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
+  document.getElementById('sleepOverlay').classList.add('active');
+}
+
+function wakeUp() {
+  document.getElementById('sleepOverlay').classList.remove('active');
+  renderRoom(); // gün değiştiği için bazı hotspot'lar görünür/gizli olabilir
+}
+
+/* ---------- ifade zaptı okuyucu ---------- */
+let currentStatementIndex = 0;
+
+function openDosyaList() {
+  stopStatementAudio();
+  const buttons = CASE.statements.map((s, i) =>
+    `<button onclick="openStatement(${i})">${s.name}</button>`
+  ).join('');
+  showModal(`
+    <h3>İfade Zaptları</h3>
+    <div class="statement-grid">${buttons}</div>
+    <button class="ghost" onclick="closeModal()">Kapat</button>
+  `, true);
+}
+
+function openStatement(index) {
+  stopStatementAudio();
+  currentStatementIndex = index;
+  const s = CASE.statements[index];
+  const total = CASE.statements.length;
+
+  const audioHtml = s.audio ? `
+    <div class="reader-audio" id="readerAudio">
+      <div class="ring" id="readerRing" onclick="toggleStatementAudio('${s.audio}')">▶</div>
+      <div>
+        <div class="meta">Fonografta Dinle</div>
+        <div class="time" id="readerTime">00:00</div>
+      </div>
+    </div>` : '';
+
+  showModal(`
+    <div class="reader-nav">
+      <button onclick="openDosyaList()">‹ Listeye Dön</button>
+      <span style="font-size:11px;color:var(--paper-dim);">${index + 1} / ${total}</span>
+    </div>
+    <img class="reader-card-img" src="${s.cardImage}"
+         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+    ${audioHtml}
+    <div class="reader-nav">
+      <button onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled style="opacity:.3"' : ''}>‹ Önceki</button>
+      <button onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled style="opacity:.3"' : ''}>Sonraki ›</button>
+    </div>
+  `, true);
+}
+
+let statementAudio = null, statementPlaying = false, statementSeconds = 0, statementInterval = null;
+function toggleStatementAudio(src) {
+  if (!statementAudio) statementAudio = new Audio(src);
+  statementPlaying = !statementPlaying;
+  const ring = document.getElementById('readerRing');
+  if (statementPlaying) {
+    statementAudio.play().catch(() => {});
+    ring.textContent = '⏸';
+    statementInterval = setInterval(() => {
+      statementSeconds++;
+      const m = String(Math.floor(statementSeconds / 60)).padStart(2, '0');
+      const s2 = String(statementSeconds % 60).padStart(2, '0');
+      const timeEl = document.getElementById('readerTime');
+      if (timeEl) timeEl.textContent = `${m}:${s2}`;
+    }, 1000);
+  } else {
+    statementAudio.pause();
+    ring.textContent = '▶';
+    clearInterval(statementInterval);
+  }
+}
+function stopStatementAudio() {
+  clearInterval(statementInterval);
+  statementPlaying = false; statementSeconds = 0;
+  if (statementAudio) { statementAudio.pause(); statementAudio = null; }
 }
 
 /* ---------- inceleme (belge/fotoğraf) ---------- */
@@ -92,6 +198,7 @@ function tryUnlock(itemId) {
 function collect(collectId, image) {
   if (!inventory.includes(collectId)) {
     inventory.push(collectId);
+    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
     renderInventory(image);
   }
   closeModal();
@@ -163,13 +270,16 @@ function toggleTape() {
 }
 
 /* ---------- modal yardımcıları ---------- */
-function showModal(html) {
-  document.getElementById('modalBody').innerHTML = html;
+function showModal(html, wide) {
+  const body = document.getElementById('modalBody');
+  body.innerHTML = html;
+  body.classList.toggle('wide', !!wide);
   document.getElementById('modalBg').classList.add('active');
 }
 function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
+  stopStatementAudio();
   document.getElementById('modalBg').classList.remove('active');
 }
 document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
