@@ -1,0 +1,11 @@
+Bu klasöre kendi ürettiğin dosyaları case.json'daki isimlerle aynı isimde koy:
+
+oda1.png, oda2.png          -> oda arka planları (Procreate/Photoshop'tan export)
+evrak_not.jpg                -> incelenen evrak görseli
+dosya_kapali.jpg              -> kilitli dosya görseli
+kamera03.mp4                 -> TV'de oynayacak video
+kayit_014.mp3                 -> teyp cihazında çalacak ses
+
+ÖNEMLİ: Tüm oda arka planlarını AYNI en-boy oranında (örn. 1600x1000px, yani 16:10)
+üret. Farklı oranlarda üretirsen hotspot koordinatları oda değiştikçe kayar,
+çünkü koordinatlar yüzde (%) cinsinden ve görselin gerçek boyutuna göre hesaplanıyor.

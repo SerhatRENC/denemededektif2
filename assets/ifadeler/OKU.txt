@@ -1,0 +1,10 @@
+Bu klasöre her şüphelinin bitmiş ifade zaptı görselini (fotoğraf+yazı+mühür
+hepsi tek karede) case.json'daki isimlerle koy:
+anselm.jpg, kerem.jpg, halit.jpg, nadire.jpg, zehra.jpg, riza.jpg,
+yusuf.jpg, cabbar.jpg
+
+Ayrıca istersen her biri için bir ses dosyası (fonograf kaydı):
+anselm.mp3, kerem.mp3, ... (opsiyonel - yoksa sadece metni okursun)
+
+Şu an anselm.jpg yerine geçici olarak ham portre fotoğrafı konuldu, test
+amaçlı - kendi bitmiş kağıdınla değiştir.
