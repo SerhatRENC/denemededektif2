@@ -34,6 +34,51 @@
     </div>
   </div>
 
+  <!-- ============ SAĞ ALT KÖŞE İKONLARI: HARİTA + NOT DEFTERİ ============ -->
+  <div class="corner-icons">
+    <button class="corner-icon-btn" onclick="openMap()" title="Harita">
+      <img src="assets/harita.png" alt="Harita">
+    </button>
+    <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
+      <img src="assets/not-defteri-kapali.png" alt="Not Defteri">
+    </button>
+  </div>
+
+  <!-- ============ HARİTA OVERLAY ============ -->
+  <div class="map-overlay" id="mapOverlay">
+    <button class="map-overlay-close" onclick="closeMap()">✕</button>
+    <div class="map-box">
+      <img id="mapImage" src="" alt="Harita">
+      <div id="mapHotspots"></div>
+    </div>
+  </div>
+
+  <!-- ============ NOT DEFTERİ OVERLAY ============ -->
+  <div class="notebook-overlay" id="notebookOverlay">
+    <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
+    <div class="notebook-box">
+      <div class="notebook-img-wrap">
+        <img id="notebookImage" src="" alt="Not Defteri">
+        <div class="nb-page sol">
+          <textarea class="nb-yazi" id="nbYaziSol" oninput="notebookYaziKaydet('sol', this.value)"></textarea>
+          <canvas class="nb-canvas pasif" id="nbCanvasSol"></canvas>
+        </div>
+        <div class="nb-page sag">
+          <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this.value)" placeholder="buraya not al..."></textarea>
+          <canvas class="nb-canvas pasif" id="nbCanvasSag"></canvas>
+        </div>
+      </div>
+      <div class="notebook-toolbar">
+        <button class="nb-page-btn" id="nbGeri" onclick="notebookSayfaGeri()">‹</button>
+        <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
+        <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
+        <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
+        <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
+        <button class="nb-page-btn" id="nbIleri" onclick="notebookSayfaIleri()">›</button>
+      </div>
+    </div>
+  </div>
+
   <script src="engine.js"></script>
 </body>
 </html>

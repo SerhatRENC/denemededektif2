@@ -39,7 +39,6 @@
       "hotspots": [
         { "x": "2%",  "y": "25%", "w": "10%", "h": "55%", "type": "navigate", "target": "ofis",         "hint": "← Dedektif Ofisine dön" },
         { "x": "15%", "y": "60%", "w": "12%", "h": "30%", "type": "navigate", "target": "han",          "hint": "Hana git" },
-        { "x": "30%", "y": "55%", "w": "12%", "h": "30%", "type": "navigate", "target": "gazeteci_oda", "hint": "Gazetecinin Odasına git" },
         { "x": "45%", "y": "50%", "w": "12%", "h": "35%", "type": "navigate", "target": "kilise",       "hint": "Kiliseye git" },
         { "x": "60%", "y": "55%", "w": "12%", "h": "30%", "type": "navigate", "target": "mezarlik",     "hint": "Mezarlığa git" },
         { "x": "75%", "y": "60%", "w": "10%", "h": "30%", "type": "navigate", "target": "cadi",         "hint": "Cadının Evine git" },
@@ -49,13 +48,39 @@
       ]
     },
 
-    "han":          { "label": "Han",               "background": "assets/han.jpg",          "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
-    "gazeteci_oda": { "label": "Gazetecinin Odası",  "background": "assets/gazeteci_oda.jpg", "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
+    "han":          { "label": "Han",               "background": "assets/han.jpg",          "hotspots": [
+      { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" },
+      { "x":"70%","y":"25%","w":"14%","h":"50%","type":"navigate","target":"gazeteci_oda","hint":"Gazetecinin kaldığı odaya çık" }
+    ] },
+    "gazeteci_oda": { "label": "Gazetecinin Odası",  "background": "assets/gazeteci_oda.jpg", "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"han","hint":"← Hana dön" } ] },
     "kilise":       { "label": "Kilise",             "background": "assets/kilise.jpg",       "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "mezarlik":     { "label": "Mezarlık",           "background": "assets/mezarlik.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "cadi":         { "label": "Cadının Evi",        "background": "assets/cadi.jpg",         "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "muhtar":       { "label": "Muhtarın Evi",       "background": "assets/muhtar.jpg",       "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "yikik":        { "label": "Yıkık Şapel",        "background": "assets/yikik.jpg",        "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] }
+  },
+
+  "map": {
+    "image": "assets/harita.png",
+    "hotspots": [
+      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": null },
+      { "x": "17%", "y": "51%", "label": "Ofis",       "target": "ofis" },
+      { "x": "35%", "y": "32%", "label": "Cevdet Ev",  "target": "cadi" },
+      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": null },
+      { "x": "48%", "y": "38%", "label": "Muhtarlık",  "target": "muhtar" },
+      { "x": "58%", "y": "36%", "label": "Kilise",     "target": "kilise" },
+      { "x": "72%", "y": "42%", "label": "Mezarlık",   "target": "mezarlik" },
+      { "x": "47%", "y": "51%", "label": "Merkez",     "target": "merkez" },
+      { "x": "52%", "y": "64%", "label": "Şifahane",   "target": null },
+      { "x": "70%", "y": "61%", "label": "Değirmenci", "target": null },
+      { "x": "40%", "y": "78%", "label": "Han",        "target": "han" },
+      { "x": "83%", "y": "81%", "label": "Demirci",    "target": null }
+    ]
+  },
+
+  "notebook": {
+    "image": "assets/not-defteri-ekran.png",
+    "totalPages": 5
   },
 
   "items": {
@@ -69,13 +94,13 @@
   "devices": {},
 
   "statements": [
-    { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/ifadeler/anselm.jpg", "audio": "assets/ifadeler/anselm.mp3" },
-    { "id": "kerem",  "name": "Değirmenci Kerem",   "cardImage": "assets/ifadeler/kerem.jpg",  "audio": "assets/ifadeler/kerem.mp3" },
-    { "id": "halit",  "name": "Muhtar Halit",       "cardImage": "assets/ifadeler/halit.jpg",  "audio": "assets/ifadeler/halit.mp3" },
-    { "id": "nadire", "name": "Nadire",             "cardImage": "assets/ifadeler/nadire.jpg", "audio": "assets/ifadeler/nadire.mp3" },
-    { "id": "zehra",  "name": "Ebe Zehra",          "cardImage": "assets/ifadeler/zehra.jpg",  "audio": "assets/ifadeler/zehra.mp3" },
-    { "id": "riza",   "name": "Hancı Rıza",         "cardImage": "assets/ifadeler/riza.jpg",   "audio": "assets/ifadeler/riza.mp3" },
-    { "id": "yusuf",  "name": "Köyün Delisi Yusuf", "cardImage": "assets/ifadeler/yusuf.jpg",  "audio": "assets/ifadeler/yusuf.mp3" },
-    { "id": "cabbar", "name": "Demirci Cabbar",     "cardImage": "assets/ifadeler/cabbar.jpg", "audio": "assets/ifadeler/cabbar.mp3" }
+    { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/ifadeler/anselm.png", "audio": "assets/ifadeler/anselm.mp3" },
+    { "id": "kerem",  "name": "Değirmenci Kerem",   "cardImage": "assets/ifadeler/kerem.png",  "audio": "assets/ifadeler/kerem.mp3" },
+    { "id": "halit",  "name": "Muhtar Halit",       "cardImage": "assets/ifadeler/halit.png",  "audio": "assets/ifadeler/halit.mp3" },
+    { "id": "nadire", "name": "Nadire",             "cardImage": "assets/ifadeler/nadire.png", "audio": "assets/ifadeler/nadire.mp3" },
+    { "id": "zehra",  "name": "Ebe Zehra",          "cardImage": "assets/ifadeler/zehra.png",  "audio": "assets/ifadeler/zehra.mp3" },
+    { "id": "riza",   "name": "Hancı Rıza",         "cardImage": "assets/ifadeler/riza.png",   "audio": "assets/ifadeler/riza.mp3" },
+    { "id": "yusuf",  "name": "Köyün Delisi Yusuf", "cardImage": "assets/ifadeler/yusuf.png",  "audio": "assets/ifadeler/yusuf.mp3" },
+    { "id": "cabbar", "name": "Demirci Cabbar",     "cardImage": "assets/ifadeler/cabbar.png", "audio": "assets/ifadeler/cabbar.mp3" }
   ]
 }

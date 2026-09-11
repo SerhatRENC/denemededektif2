@@ -331,3 +331,183 @@ stageEl.addEventListener('click', (e) => {
     readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
   }
 });
+
+/* ============================================================
+   HARİTA MEKANİĞİ
+   Konum verisi CASE.map içinden okunur (engine'e hardcode edilmedi),
+   yani başka bir vaka dosyası kendi haritasını tanımlayabilir.
+   ============================================================ */
+function openMap() {
+  if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
+  document.getElementById('mapImage').src = CASE.map.image;
+
+  const wrap = document.getElementById('mapHotspots');
+  wrap.innerHTML = '';
+  CASE.map.hotspots.forEach(h => {
+    const dot = document.createElement('div');
+    dot.className = 'map-hotspot';
+    dot.style.left = h.x;
+    dot.style.top = h.y;
+    dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
+    dot.onclick = () => {
+      if (h.target && CASE.rooms[h.target]) {
+        currentRoom = h.target;
+        closeMap();
+        renderRoom();
+      } else {
+        // hedef oda case.json'a henüz eklenmemiş — sessizce yok saymak yerine haber ver
+        alert(`"${h.label}" henüz case.json'a eklenmedi.`);
+      }
+    };
+    wrap.appendChild(dot);
+  });
+
+  document.getElementById('mapOverlay').classList.add('active');
+}
+function closeMap() {
+  document.getElementById('mapOverlay').classList.remove('active');
+}
+
+/* ============================================================
+   NOT DEFTERİ MEKANİĞİ
+   Her sayfa: { sol, sag: metin | solÇizim, sagÇizim: canvas dataURL }
+   localStorage'da mevcut gün/envanter kaydıyla aynı isimlendirme
+   deseniyle saklanır: sd_notebook_<caseLabel>
+   ============================================================ */
+let notebookState = null;
+let notebookDrawMode = false;
+
+function notebookKey() {
+  return 'sd_notebook_' + CASE.caseLabel;
+}
+
+function loadNotebook() {
+  const saved = localStorage.getItem(notebookKey());
+  const total = (CASE.notebook && CASE.notebook.totalPages) || 5;
+  notebookState = saved ? JSON.parse(saved) : {
+    page: 0,
+    pages: Array.from({ length: total }, () => ({ sol: '', sag: '', solÇizim: null, sagÇizim: null }))
+  };
+}
+function saveNotebook() {
+  localStorage.setItem(notebookKey(), JSON.stringify(notebookState));
+}
+
+function openNotebook() {
+  if (!notebookState) loadNotebook();
+  document.getElementById('notebookImage').src =
+    (CASE.notebook && CASE.notebook.image) || 'assets/not-defteri-ekran.png';
+  document.getElementById('notebookOverlay').classList.add('active');
+  // overlay display:none iken canvas boyutu 0 ölçülür — açıldıktan sonra tekrar çiz
+  requestAnimationFrame(renderNotebookPage);
+}
+function closeNotebook() {
+  document.getElementById('notebookOverlay').classList.remove('active');
+}
+
+function renderNotebookPage() {
+  const total = notebookState.pages.length;
+  const p = notebookState.pages[notebookState.page];
+
+  const yaziSol = document.getElementById('nbYaziSol');
+  const yaziSag = document.getElementById('nbYaziSag');
+  const canvasSol = document.getElementById('nbCanvasSol');
+  const canvasSag = document.getElementById('nbCanvasSag');
+  const ctxSol = canvasSol.getContext('2d');
+  const ctxSag = canvasSag.getContext('2d');
+
+  yaziSol.value = p.sol;
+  yaziSag.value = p.sag;
+
+  [canvasSol, canvasSag].forEach(c => {
+    const rect = c.getBoundingClientRect();
+    c.width = rect.width;
+    c.height = rect.height;
+  });
+  ctxSol.clearRect(0, 0, canvasSol.width, canvasSol.height);
+  ctxSag.clearRect(0, 0, canvasSag.width, canvasSag.height);
+
+  if (p.solÇizim) {
+    const img = new Image();
+    img.onload = () => ctxSol.drawImage(img, 0, 0, canvasSol.width, canvasSol.height);
+    img.src = p.solÇizim;
+  }
+  if (p.sagÇizim) {
+    const img = new Image();
+    img.onload = () => ctxSag.drawImage(img, 0, 0, canvasSag.width, canvasSag.height);
+    img.src = p.sagÇizim;
+  }
+
+  document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
+  document.getElementById('nbGeri').disabled = notebookState.page === 0;
+  document.getElementById('nbIleri').disabled = notebookState.page === total - 1;
+}
+
+function notebookYaziKaydet(taraf, val) {
+  notebookState.pages[notebookState.page][taraf] = val;
+  saveNotebook();
+}
+
+function notebookSayfaGeri() {
+  if (notebookState.page > 0) { notebookState.page--; saveNotebook(); renderNotebookPage(); }
+}
+function notebookSayfaIleri() {
+  if (notebookState.page < notebookState.pages.length - 1) { notebookState.page++; saveNotebook(); renderNotebookPage(); }
+}
+
+function notebookTemizle() {
+  if (!confirm('Bu sayfadaki yazı ve çizimler silinsin mi?')) return;
+  const p = notebookState.pages[notebookState.page];
+  p.sol = ''; p.sag = ''; p.solÇizim = null; p.sagÇizim = null;
+  saveNotebook();
+  renderNotebookPage();
+}
+
+function notebookModAyarla(çizim) {
+  notebookDrawMode = çizim;
+  document.getElementById('nbModYaz').classList.toggle('active', !çizim);
+  document.getElementById('nbModCiz').classList.toggle('active', çizim);
+  document.querySelectorAll('.nb-canvas').forEach(c => c.classList.toggle('pasif', !çizim));
+  document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = çizim ? 'none' : 'auto');
+}
+
+function nbKalemKur(canvas, taraf) {
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#c98a2c'; // --amber ile aynı ton, kalem izi
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  let çiziyor = false;
+
+  function konum(e) {
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  }
+  function başla(e) {
+    if (!notebookDrawMode) return;
+    çiziyor = true;
+    const { x, y } = konum(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+  function çiz(e) {
+    if (!notebookDrawMode || !çiziyor) return;
+    const { x, y } = konum(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+  function bitir() {
+    if (!çiziyor) return;
+    çiziyor = false;
+    notebookState.pages[notebookState.page][taraf] = canvas.toDataURL();
+    saveNotebook();
+  }
+  canvas.addEventListener('mousedown', başla);
+  canvas.addEventListener('mousemove', çiz);
+  window.addEventListener('mouseup', bitir);
+  canvas.addEventListener('touchstart', başla);
+  canvas.addEventListener('touchmove', çiz);
+  canvas.addEventListener('touchend', bitir);
+}
+nbKalemKur(document.getElementById('nbCanvasSol'), 'solÇizim');
+nbKalemKur(document.getElementById('nbCanvasSag'), 'sagÇizim');

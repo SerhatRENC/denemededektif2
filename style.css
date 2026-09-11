@@ -126,3 +126,85 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .sleep-overlay p{font-size:14px;line-height:1.7;color:#c9cabd;margin-bottom:24px;}
 .sleep-overlay button{background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
   color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
+
+/* ============================================================
+   SAĞ ALT KÖŞE İKONLARI (Harita + Not Defteri)
+   ============================================================ */
+.corner-icons{position:fixed;bottom:18px;right:18px;display:flex;gap:10px;z-index:55;}
+.corner-icon-btn{
+  width:52px;height:52px;border-radius:8px;background:#1c1d18;border:1px solid #3a3b30;
+  cursor:pointer;overflow:hidden;padding:0;transition:.15s;
+}
+.corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
+.corner-icon-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* ============================================================
+   HARİTA MEKANİĞİ
+   ============================================================ */
+.map-overlay{
+  position:fixed;inset:0;background:rgba(6,6,5,.86);display:none;
+  align-items:center;justify-content:center;z-index:70;padding:20px;
+}
+.map-overlay.active{display:flex;}
+.map-overlay-close{
+  position:absolute;top:18px;right:20px;width:36px;height:36px;border-radius:50%;
+  background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
+  font-size:16px;cursor:pointer;z-index:2;
+}
+.map-box{position:relative;width:min(1000px,92vw);}
+.map-box img{width:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+#mapHotspots{position:absolute;inset:0;}
+.map-hotspot{
+  position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:radial-gradient(circle, rgba(227,169,74,.85), rgba(227,169,74,.1));
+  border:2px solid var(--amber-bright);cursor:pointer;
+}
+.map-hotspot:hover{background:radial-gradient(circle, rgba(227,169,74,1), rgba(227,169,74,.25));}
+.map-hotspot-label{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(10,10,8,.92);color:var(--amber-bright);font-size:11px;padding:4px 9px;
+  border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;
+  font-family:var(--mono);letter-spacing:.03em;
+}
+.map-hotspot:hover .map-hotspot-label{opacity:1;}
+
+/* ============================================================
+   NOT DEFTERİ MEKANİĞİ
+   ============================================================ */
+.notebook-overlay{
+  position:fixed;inset:0;background:rgba(6,6,5,.86);display:none;
+  align-items:center;justify-content:center;z-index:70;padding:20px;
+}
+.notebook-overlay.active{display:flex;}
+.notebook-overlay-close{
+  position:absolute;top:18px;right:20px;width:36px;height:36px;border-radius:50%;
+  background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
+  font-size:16px;cursor:pointer;z-index:2;
+}
+.notebook-box{width:min(920px,94vw);}
+.notebook-img-wrap{position:relative;width:100%;}
+.notebook-img-wrap img{width:100%;display:block;pointer-events:none;user-select:none;}
+.nb-page{position:absolute;top:6%;bottom:8%;width:38%;}
+.nb-page.sol{left:9%;}
+.nb-page.sag{left:53%;}
+.nb-yazi{
+  position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;
+  resize:none;outline:none;font-family:var(--mono);font-size:15px;line-height:1.5;
+  color:#2b2018;padding:4px 8px;
+}
+.nb-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
+.nb-canvas.pasif{pointer-events:none;}
+.notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.nb-btn{
+  background:#1c1d18;color:var(--paper);border:1px solid #3a3b30;padding:7px 14px;
+  border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.03em;
+}
+.nb-btn:hover{border-color:var(--amber);}
+.nb-btn.active{border-color:var(--amber);color:var(--amber-bright);}
+.nb-page-btn{
+  width:36px;height:36px;border-radius:50%;background:#1c1d18;border:1px solid #3a3b30;
+  color:var(--paper);font-size:16px;cursor:pointer;
+}
+.nb-page-btn:hover{border-color:var(--amber);}
+.nb-page-btn:disabled{opacity:.3;cursor:default;}
+.nb-sayfa-gösterge{color:var(--paper-dim);font-size:11px;min-width:90px;text-align:center;font-family:var(--mono);}
