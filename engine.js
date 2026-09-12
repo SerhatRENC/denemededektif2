@@ -47,9 +47,10 @@ function renderRoom() {
       if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
       if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
       const el = document.createElement('div');
-      el.className = 'hotspot';
+      el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
       el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
-      el.innerHTML = `<div class="hint">${h.hint || ''}</div>`;
+      const iconHtml = h.icon ? `<img src="${h.icon}" class="hotspot-icon-img" alt="">` : '';
+      el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
       el.onclick = (e) => { if (!calibMode) handleHotspot(h); };
       stage.appendChild(el);
     });
@@ -63,7 +64,8 @@ function handleHotspot(h) {
   if (h.type === 'examine')  { openExamine(h.target); return; }
   if (h.type === 'recorder') { openRecorder(h.target); return; }
   if (h.type === 'tv')       { openTV(h.target); return; }
-  if (h.type === 'dosya')    { openDosyaList(); return; }
+  if (h.type === 'dosya')    { openStatement(0); return; }
+  if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep')    { sleep(); return; }
 }
 
@@ -91,18 +93,6 @@ function wakeUp() {
 /* ---------- ifade zaptı okuyucu ---------- */
 let currentStatementIndex = 0;
 
-function openDosyaList() {
-  stopStatementAudio();
-  const buttons = CASE.statements.map((s, i) =>
-    `<button onclick="openStatement(${i})">${s.name}</button>`
-  ).join('');
-  showModal(`
-    <h3>İfade Zaptları</h3>
-    <div class="statement-grid">${buttons}</div>
-    <button class="ghost" onclick="closeModal()">Kapat</button>
-  `, true);
-}
-
 function openStatement(index) {
   stopStatementAudio();
   currentStatementIndex = index;
@@ -120,18 +110,26 @@ function openStatement(index) {
 
   showModal(`
     <div class="reader-nav">
-      <button onclick="openDosyaList()">‹ Listeye Dön</button>
+      <span class="reader-name">${s.name}</span>
       <span style="font-size:11px;color:var(--paper-dim);">${index + 1} / ${total}</span>
     </div>
     <img class="reader-card-img" src="${s.cardImage}"
          onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
     ${audioHtml}
     <div class="reader-nav">
-      <button onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled style="opacity:.3"' : ''}>‹ Önceki</button>
-      <button onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled style="opacity:.3"' : ''}>Sonraki ›</button>
+      <button class="reader-arrow" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled style="opacity:.3"' : ''}>‹</button>
+      <button class="ghost" onclick="closeModal()">Kapat</button>
+      <button class="reader-arrow" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled style="opacity:.3"' : ''}>›</button>
     </div>
   `, true);
 }
+
+// Modal açıkken ve bir ifade kartı gösterilirken klavye ok tuşlarıyla da gezinilebilir
+document.addEventListener('keydown', (e) => {
+  if (!document.querySelector('.reader-card-img')) return;
+  if (e.key === 'ArrowRight' && currentStatementIndex < CASE.statements.length - 1) openStatement(currentStatementIndex + 1);
+  if (e.key === 'ArrowLeft' && currentStatementIndex > 0) openStatement(currentStatementIndex - 1);
+});
 
 let statementAudio = null, statementPlaying = false, statementSeconds = 0, statementInterval = null;
 function toggleStatementAudio(src) {

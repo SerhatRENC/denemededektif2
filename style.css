@@ -21,19 +21,22 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 /* Sahne: her zaman 16:9, hem yatay hem dikey ekranda ortalanır ve sığdırılır.
    max-width YATAY sınırlar, max-height ise dikey (dar/uzun) ekranlarda taşmayı önler. */
 .stage-wrap{width:100%;max-width:1000px;}
-.stage{
+.stage-frame{
   position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
   max-height:62dvh; /* dikey telefon ekranında sahnenin boy taşırmasını engeller */
   margin:0 auto;
   box-shadow:0 0 0 1px rgba(233,226,207,.08), 0 30px 60px -25px rgba(0,0,0,.85);
-  background-size:cover;background-position:center;background-color:#1a1b16;
-  transition:opacity .25s ease;cursor:default;
 }
 @media (max-width: 480px){
-  .stage{ max-height:42dvh; } /* dikey telefonda sahne daha da kısalır, altta UI'a yer kalır */
+  .stage-frame{ max-height:42dvh; } /* dikey telefonda sahne daha da kısalır, altta UI'a yer kalır */
 }
 @media (orientation: landscape) and (max-height: 500px){
-  .stage{ max-height:78dvh; } /* telefon yan çevrilince sahne genişçe büyür */
+  .stage-frame{ max-height:78dvh; } /* telefon yan çevrilince sahne genişçe büyür */
+}
+.stage{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;background-color:#1a1b16;
+  transition:opacity .25s ease;cursor:default;
 }
 .stage.fading{opacity:0;}
 .stage.calib-active{cursor:crosshair;}
@@ -50,6 +53,26 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 }
 .hotspot:hover .hint{opacity:1;}
 .hotspot.locked-hint .hint{color:var(--evid-red);}
+
+/* İkonlu hotspot: masa üstünde duran sorgu kağıdı / not defteri gibi görünür nesneler */
+.hotspot.hotspot-icon{transition:transform .15s;}
+.hotspot.hotspot-icon:hover{background:none;outline:none;transform:scale(1.06);}
+.hotspot-icon-img{width:100%;height:100%;object-fit:contain;pointer-events:none;
+  filter:drop-shadow(0 3px 10px rgba(0,0,0,.65));}
+
+/* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri butonları —
+   sahne (stage) her oda değişiminde innerHTML ile yenilendiği için bu butonlar
+   bilerek stage-frame'in İÇİNE ama #stage'in DIŞINA konuldu, böylece oda geçişlerinde silinmezler. */
+.corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
+.corner-icon-btn{
+  width:44px;height:44px;border-radius:7px;background:#1c1d18;border:1px solid #3a3b30;
+  cursor:pointer;overflow:hidden;padding:0;transition:.15s;
+}
+.corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
+.corner-icon-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+@media (max-width: 480px){
+  .corner-icon-btn{width:36px;height:36px;}
+}
 
 .calib-marker{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber-bright);
   transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 6px var(--amber-bright);}
@@ -95,15 +118,18 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 
 /* ---- İFADE ZAPTI: liste + okuyucu ---- */
 .modal.wide{max-width:640px;}
-.statement-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px;}
-.statement-grid button{background:#1c1d18;border:1px solid #35362c;color:var(--paper);
-  padding:12px 10px;border-radius:8px;font-family:var(--sans);font-size:12.5px;cursor:pointer;text-align:left;}
-.statement-grid button:hover{border-color:var(--amber);color:var(--amber-bright);}
 
 .reader-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .reader-nav button{background:none;border:1px solid #3a3b30;color:var(--paper-dim);
   padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;}
 .reader-nav button:hover{color:var(--amber-bright);border-color:var(--amber);}
+.reader-name{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber-bright);}
+.reader-arrow{
+  width:34px;height:34px;border-radius:50%;background:#1c1d18;border:1px solid #3a3b30;
+  color:var(--paper);font-size:16px;cursor:pointer;flex-shrink:0;
+}
+.reader-arrow:hover{border-color:var(--amber);color:var(--amber-bright);}
+.reader-arrow:disabled{opacity:.3;cursor:default;}
 .reader-card-img{width:100%;border-radius:6px;display:block;margin-bottom:12px;background:#1a1b15;}
 .reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
   border-radius:8px;padding:10px 14px;margin-bottom:12px;}
@@ -126,17 +152,6 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .sleep-overlay p{font-size:14px;line-height:1.7;color:#c9cabd;margin-bottom:24px;}
 .sleep-overlay button{background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
   color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
-
-/* ============================================================
-   SAĞ ALT KÖŞE İKONLARI (Harita + Not Defteri)
-   ============================================================ */
-.corner-icons{position:fixed;bottom:18px;right:18px;display:flex;gap:10px;z-index:55;}
-.corner-icon-btn{
-  width:52px;height:52px;border-radius:8px;background:#1c1d18;border:1px solid #3a3b30;
-  cursor:pointer;overflow:hidden;padding:0;transition:.15s;
-}
-.corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
-.corner-icon-btn img{width:100%;height:100%;object-fit:cover;display:block;}
 
 /* ============================================================
    HARİTA MEKANİĞİ

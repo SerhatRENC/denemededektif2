@@ -15,7 +15,17 @@
   <h1 id="caseTitle">Yükleniyor...</h1>
 
   <div class="stage-wrap">
-    <div class="stage" id="stage"></div>
+    <div class="stage-frame" id="stageFrame">
+      <div class="stage" id="stage"></div>
+      <div class="corner-icons">
+        <button class="corner-icon-btn" onclick="openMap()" title="Harita">
+          <img src="assets/harita.png" alt="Harita">
+        </button>
+        <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
+          <img src="assets/defter.png" alt="Not Defteri">
+        </button>
+      </div>
+    </div>
     <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
   </div>
 
@@ -32,16 +42,6 @@
       <p id="sleepText">Yeni bir gün başlıyor.</p>
       <button onclick="wakeUp()">Uyan</button>
     </div>
-  </div>
-
-  <!-- ============ SAĞ ALT KÖŞE İKONLARI: HARİTA + NOT DEFTERİ ============ -->
-  <div class="corner-icons">
-    <button class="corner-icon-btn" onclick="openMap()" title="Harita">
-      <img src="assets/harita.png" alt="Harita">
-    </button>
-    <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
-      <img src="assets/not-defteri-kapali.png" alt="Not Defteri">
-    </button>
   </div>
 
   <!-- ============ HARİTA OVERLAY ============ -->
