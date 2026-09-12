@@ -242,14 +242,39 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
   color:#c98a2c;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
 }
-.nb-page{position:absolute;top:6%;bottom:8%;width:34%;}
-.nb-page.sol{left:8%;}
-.nb-page.sag{left:58%;}
+
+/* Not defterine yazılan HER ŞEY el yazısı fontuyla — okunaklı ama samimi */
 .nb-yazi{
   position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;
-  resize:none;outline:none;font-family:var(--mono);font-size:15px;line-height:1.5;
-  color:#2b2018;padding:4px 8px 4px 14px;
+  resize:none;outline:none;font-family:'Caveat',cursive;font-weight:600;
+  color:#2b2018;padding:2px 6px;
 }
+
+/* SAĞ SAYFA — tamamen serbest not alanı (değişmedi) */
+.nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
+.nb-page.sag .nb-yazi{font-size:19px;line-height:1.5;padding:4px 8px 4px 14px;}
+
+/* SOL SAYFA — 2 sabit şüpheli satırı, her birinin yanında serbest not alanı */
+.nb-page.sol{position:absolute;top:6%;bottom:8%;left:8%;width:34%;
+  display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
+.nb-suspect-row{position:relative;height:48%;display:flex;gap:4%;}
+.nb-suspect-photo-wrap{width:32%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:2%;}
+.nb-suspect-photo{
+  width:100%;aspect-ratio:3/4;object-fit:cover;border:2px solid #6b4a30;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);background:#d8c9a3;
+}
+.nb-suspect-name{
+  font-family:var(--mono);font-size:9.5px;color:#2b2018;margin-top:4px;
+  text-align:center;line-height:1.25;letter-spacing:.02em;
+}
+.nb-suspect-photo-missing{
+  width:100%;aspect-ratio:3/4;border:1px dashed #6b4a30;background:#d8c9a3;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;
+}
+.nb-suspect-notes{position:relative;flex:1;height:100%;}
+.nb-suspect-notes .nb-yazi{font-size:15px;line-height:1.3;padding:2px 4px;}
+
 .nb-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
 .nb-canvas.pasif{pointer-events:none;}
 .notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}

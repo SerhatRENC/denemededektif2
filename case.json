@@ -91,7 +91,18 @@
 
   "notebook": {
     "image": "assets/yazi.png",
-    "totalPages": 5
+    "totalPages": 5,
+    "suspects": [
+      { "name": "Nadire",             "image": "assets/supheliler/nadire.jpg" },
+      { "name": "Muhtar Halit",       "image": "assets/supheliler/halit.jpg" },
+      { "name": "Cevdet",             "image": "assets/supheliler/cevdet.jpg" },
+      { "name": "Değirmenci Mustafa", "image": "assets/supheliler/mustafa.jpg" },
+      { "name": "Demirci Cabbar",     "image": "assets/supheliler/cabbar.jpg" },
+      { "name": "Aylin",              "image": "assets/supheliler/aylin.jpg" },
+      { "name": "Hancı Rıza",         "image": "assets/supheliler/riza.jpg" },
+      { "name": "Doktor Kamuran",     "image": "assets/supheliler/kamuran.jpg" },
+      { "name": "Peder Ansel",        "image": "assets/supheliler/ansel.jpg" }
+    ]
   },
 
   "characters": {

@@ -382,15 +382,18 @@ function closeMap() {
 
 /* ============================================================
    NOT DEFTERİ MEKANİĞİ
-   Her sayfa: { sol, sag: metin | solÇizim, sagÇizim: canvas dataURL }
-   localStorage'da mevcut gün/envanter kaydıyla aynı isimlendirme
-   deseniyle saklanır: sd_notebook_<caseLabel>
+   Sol sayfa artık 2 sabit şüpheli satırı (fotoğraf+isim CASE.notebook.suspects'tan,
+   sayfa değişse de değişmez) + her satırın yanında serbest yazı/çizim alanı.
+   Sağ sayfa tamamen serbest not alanı.
+   Her sayfa: { solUst, solAlt, sag: metin | solUstÇizim, solAltÇizim, sagÇizim: canvas dataURL }
+   localStorage: sd_notebook_v2_<caseLabel>  (v2: sol sayfa yapısı değiştiği için
+   eski v1 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
    ============================================================ */
 let notebookState = null;
 let notebookDrawMode = false;
 
 function notebookKey() {
-  return 'sd_notebook_' + CASE.caseLabel;
+  return 'sd_notebook_v2_' + CASE.caseLabel;
 }
 
 function loadNotebook() {
@@ -398,7 +401,10 @@ function loadNotebook() {
   const total = (CASE.notebook && CASE.notebook.totalPages) || 5;
   notebookState = saved ? JSON.parse(saved) : {
     page: 0,
-    pages: Array.from({ length: total }, () => ({ sol: '', sag: '', solÇizim: null, sagÇizim: null }))
+    pages: Array.from({ length: total }, () => ({
+      solUst: '', solAlt: '', sag: '',
+      solUstÇizim: null, solAltÇizim: null, sagÇizim: null
+    }))
   };
 }
 function saveNotebook() {
@@ -430,42 +436,67 @@ function closeNotebook() {
   document.getElementById('notebookOverlay').classList.remove('active');
 }
 
+// Sol sayfadaki 2 satırın hangi metin/çizim anahtarını ve DOM id'lerini kullandığı
+const NB_SOL_SATIRLAR = [
+  { taraf: 'solUst', yaziId: 'nbYaziSolUst', canvasId: 'nbCanvasSolUst', photoId: 'nbPhoto0', nameId: 'nbName0' },
+  { taraf: 'solAlt', yaziId: 'nbYaziSolAlt', canvasId: 'nbCanvasSolAlt', photoId: 'nbPhoto1', nameId: 'nbName1' }
+];
+
 function renderNotebookPage() {
   const total = notebookState.pages.length;
   const p = notebookState.pages[notebookState.page];
+  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
 
-  const yaziSol = document.getElementById('nbYaziSol');
-  const yaziSag = document.getElementById('nbYaziSag');
-  const canvasSol = document.getElementById('nbCanvasSol');
-  const canvasSag = document.getElementById('nbCanvasSag');
-  const ctxSol = canvasSol.getContext('2d');
-  const ctxSag = canvasSag.getContext('2d');
+  // --- SOL SAYFA: sabit fotoğraf+isim (case.json'dan) + serbest yazı/çizim (kayıtlı state'ten) ---
+  NB_SOL_SATIRLAR.forEach((satir, i) => {
+    const suspect = suspects[notebookState.page * 2 + i]; // her sayfada 2 kişi
+    const photoEl = document.getElementById(satir.photoId);
+    const nameEl = document.getElementById(satir.nameId);
 
-  yaziSol.value = p.sol;
-  yaziSag.value = p.sag;
+    if (suspect) {
+      nameEl.textContent = suspect.name;
+      photoEl.style.display = '';
+      photoEl.onerror = () => {
+        const fallback = document.createElement('div');
+        fallback.className = 'nb-suspect-photo-missing';
+        fallback.id = photoEl.id;
+        fallback.textContent = `görsel yok:\n${suspect.image}`;
+        photoEl.replaceWith(fallback);
+      };
+      photoEl.src = suspect.image;
+    } else {
+      // bu sayfada 2. kişi yoksa (9 şüpheli tek sayı, son sayfa yarım kalıyor)
+      nameEl.textContent = '';
+      photoEl.style.display = 'none';
+    }
 
-  [canvasSol, canvasSag].forEach(c => {
-    const rect = c.getBoundingClientRect();
-    c.width = rect.width;
-    c.height = rect.height;
+    const yaziEl = document.getElementById(satir.yaziId);
+    const canvasEl = document.getElementById(satir.canvasId);
+    yaziEl.value = p[satir.taraf] || '';
+    canvasResizeVeCiz(canvasEl, p[satir.taraf + 'Çizim']);
   });
-  ctxSol.clearRect(0, 0, canvasSol.width, canvasSol.height);
-  ctxSag.clearRect(0, 0, canvasSag.width, canvasSag.height);
 
-  if (p.solÇizim) {
-    const img = new Image();
-    img.onload = () => ctxSol.drawImage(img, 0, 0, canvasSol.width, canvasSol.height);
-    img.src = p.solÇizim;
-  }
-  if (p.sagÇizim) {
-    const img = new Image();
-    img.onload = () => ctxSag.drawImage(img, 0, 0, canvasSag.width, canvasSag.height);
-    img.src = p.sagÇizim;
-  }
+  // --- SAĞ SAYFA: değişmedi, tamamen serbest ---
+  document.getElementById('nbYaziSag').value = p.sag || '';
+  canvasResizeVeCiz(document.getElementById('nbCanvasSag'), p.sagÇizim);
 
   document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
   document.getElementById('nbGeri').disabled = notebookState.page === 0;
   document.getElementById('nbIleri').disabled = notebookState.page === total - 1;
+}
+
+// Bir canvas'ı konteynerine göre yeniden ölçekleyip, varsa kayıtlı çizimi geri yükler
+function canvasResizeVeCiz(canvas, dataURL) {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (dataURL) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    img.src = dataURL;
+  }
 }
 
 function notebookYaziKaydet(taraf, val) {
@@ -481,9 +512,10 @@ function notebookSayfaIleri() {
 }
 
 function notebookTemizle() {
-  if (!confirm('Bu sayfadaki yazı ve çizimler silinsin mi?')) return;
+  if (!confirm('Bu sayfadaki yazı ve çizimler silinsin mi? (Fotoğraf ve isimler etkilenmez)')) return;
   const p = notebookState.pages[notebookState.page];
-  p.sol = ''; p.sag = ''; p.solÇizim = null; p.sagÇizim = null;
+  p.solUst = ''; p.solAlt = ''; p.sag = '';
+  p.solUstÇizim = null; p.solAltÇizim = null; p.sagÇizim = null;
   saveNotebook();
   renderNotebookPage();
 }
@@ -534,7 +566,8 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchmove', çiz);
   canvas.addEventListener('touchend', bitir);
 }
-nbKalemKur(document.getElementById('nbCanvasSol'), 'solÇizim');
+nbKalemKur(document.getElementById('nbCanvasSolUst'), 'solUstÇizim');
+nbKalemKur(document.getElementById('nbCanvasSolAlt'), 'solAltÇizim');
 nbKalemKur(document.getElementById('nbCanvasSag'), 'sagÇizim');
 
 /* ============================================================

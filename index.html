@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sorgu Dosyası</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -60,10 +61,32 @@
       <div class="notebook-img-wrap">
         <img id="notebookImage" src="" alt="Not Defteri">
         <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
+
+        <!-- SOL SAYFA: 2 şüpheli satırı, fotoğraf+isim sabit, yanları serbest -->
         <div class="nb-page sol">
-          <textarea class="nb-yazi" id="nbYaziSol" oninput="notebookYaziKaydet('sol', this.value)"></textarea>
-          <canvas class="nb-canvas pasif" id="nbCanvasSol"></canvas>
+          <div class="nb-suspect-row" id="nbRow0">
+            <div class="nb-suspect-photo-wrap">
+              <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
+              <div class="nb-suspect-name" id="nbName0"></div>
+            </div>
+            <div class="nb-suspect-notes">
+              <textarea class="nb-yazi" id="nbYaziSolUst" oninput="notebookYaziKaydet('solUst', this.value)"></textarea>
+              <canvas class="nb-canvas pasif" id="nbCanvasSolUst"></canvas>
+            </div>
+          </div>
+          <div class="nb-suspect-row" id="nbRow1">
+            <div class="nb-suspect-photo-wrap">
+              <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
+              <div class="nb-suspect-name" id="nbName1"></div>
+            </div>
+            <div class="nb-suspect-notes">
+              <textarea class="nb-yazi" id="nbYaziSolAlt" oninput="notebookYaziKaydet('solAlt', this.value)"></textarea>
+              <canvas class="nb-canvas pasif" id="nbCanvasSolAlt"></canvas>
+            </div>
+          </div>
         </div>
+
+        <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
         <div class="nb-page sag">
           <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this.value)" placeholder="buraya not al..."></textarea>
           <canvas class="nb-canvas pasif" id="nbCanvasSag"></canvas>
