@@ -1,0 +1,340 @@
+:root{
+  --ink:#0e0f0c; --paper:#e9e2cf; --paper-dim:#9a9a8c;
+  --amber:#c98a2c; --amber-bright:#e3a94a; --evid-red:#8f3a2e;
+  --mono:'Courier New',Courier,monospace; --sans:-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  padding:16px 12px 30px;overflow-x:hidden;}
+
+h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spacing:.04em;margin:6px 0 14px;text-align:center;}
+
+/* Sahne: her zaman 16:9, hem yatay hem dikey ekranda ortalanır ve sığdırılır.
+   max-width YATAY sınırlar, max-height ise dikey (dar/uzun) ekranlarda taşmayı önler. */
+/* ============================================================
+   OYUN EKRANI BOYUTLANDIRMASI — TEK FORMÜL, TÜM CİHAZLAR
+   Eskiden sabit "max-width:1000px" + "max-height:62dvh" gibi ayrı ayrı
+   sınırlar vardı; büyük monitörde oyun küçük kalıyor, kullanıcı zoom
+   atmak zorunda kalıyordu. Artık TEK bir formül var: ekranın hem
+   genişliğine (96vw) hem yüksekliğine (100dvh - üstteki/alttaki diğer
+   arayüz elemanlarının kapladığı ~220px) göre sığabilecek EN BÜYÜK 16:9
+   kutuyu otomatik seçiyor. Telefon dikey/yatay, tablet, küçük/büyük
+   monitör — hepsi aynı formülle otomatik doğru orana oturuyor, ayrı
+   media query'lere gerek kalmadı. Kullanıcı browser zoom'u ile
+   oynadığında da dvh/vw yeniden hesaplandığı için oran korunuyor.
+   Üst sınır 1600px — çok geniş monitörlerde oyunun aşırı iri
+   görünmesini engelliyor. */
+.stage-wrap{width:100%;max-width:1600px;}
+.stage-frame{
+  position:relative;
+  width:min(96vw, 1600px, calc((100dvh - 220px) * 16 / 9));
+  aspect-ratio:16/9;border-radius:10px;overflow:hidden;
+  margin:0 auto;
+  box-shadow:0 0 0 1px rgba(233,226,207,.08), 0 30px 60px -25px rgba(0,0,0,.85);
+}
+.stage{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;background-color:#1a1b16;
+  transition:opacity .25s ease;cursor:default;
+}
+.stage.fading{opacity:0;}
+.stage.calib-active{cursor:crosshair;}
+.room-label{position:absolute;top:14px;left:16px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:#cfcfc0;background:rgba(10,10,8,.55);padding:5px 10px;border-radius:4px;z-index:3;}
+
+.hotspot{position:absolute;border-radius:6px;cursor:pointer;transition:.15s;}
+.hotspot:hover{background:rgba(227,169,74,.1);outline:1px dashed rgba(227,169,74,.6);}
+.calib-active .hotspot{outline:1px dashed rgba(233,226,207,.25);}
+.hotspot .hint{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(10,10,8,.85);color:var(--amber-bright);font-size:10px;padding:4px 8px;border-radius:4px;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;letter-spacing:.03em;
+}
+.hotspot:hover .hint{opacity:1;}
+.hotspot.locked-hint .hint{color:var(--evid-red);}
+
+/* İkonlu hotspot: masa üstünde duran sorgu kağıdı / not defteri gibi görünür nesneler */
+.hotspot.hotspot-icon{transition:transform .15s;}
+.hotspot.hotspot-icon:hover{background:none;outline:none;transform:scale(1.06);}
+.hotspot-icon-img{width:100%;height:100%;object-fit:contain;pointer-events:none;
+  filter:drop-shadow(0 3px 10px rgba(0,0,0,.65));}
+.hotspot-icon-missing{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  border:1px dashed var(--amber);border-radius:6px;color:var(--amber-bright);
+  font-size:9px;font-family:var(--mono);padding:4px;pointer-events:none;
+}
+
+/* ============================================================
+   ORTAMDAKİ KARAKTER MEKANİĞİ
+   ============================================================ */
+.scene-character{
+  position:absolute;right:2%;bottom:0;height:90%;width:auto;max-width:38%;
+  object-fit:contain;cursor:pointer;z-index:8;
+  transition:transform .2s ease,filter .2s ease;
+  filter:drop-shadow(0 10px 25px rgba(0,0,0,.6));
+}
+.scene-character:hover{transform:translateY(-4px) scale(1.02);}
+.scene-character.talking{filter:drop-shadow(0 10px 25px rgba(227,169,74,.55));}
+.scene-character-missing{
+  position:absolute;right:2%;bottom:6%;width:26%;aspect-ratio:3/4;
+  border:1px dashed var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;
+  color:var(--amber-bright);font-size:10px;font-family:var(--mono);text-align:center;
+  padding:8px;white-space:pre-line;z-index:8;
+}
+.scene-subtitle{
+  position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
+  background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
+  padding:10px 16px;animation:subtitleGir .2s ease;
+}
+.scene-subtitle-name{
+  font-size:11px;color:var(--amber-bright);letter-spacing:.05em;text-transform:uppercase;
+  margin-bottom:4px;font-family:var(--mono);
+}
+.scene-subtitle-text{font-size:13.5px;color:var(--paper);font-family:var(--sans);line-height:1.5;}
+@keyframes subtitleGir{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@media (max-width:480px){
+  .scene-character{max-width:44%;}
+  .scene-subtitle-text{font-size:12px;}
+}
+
+/* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri butonları —
+   sahne (stage) her oda değişiminde innerHTML ile yenilendiği için bu butonlar
+   bilerek stage-frame'in İÇİNE ama #stage'in DIŞINA konuldu, böylece oda geçişlerinde silinmezler. */
+/* Gün sayacı — oyun ekranının sağ üst köşesinde, "KANIT-04" gibi anlamsız
+   bir dosya etiketi yerine doğrudan hangi günde olduğunu gösterir */
+.stage-day-tag{
+  position:absolute;top:8px;right:8px;z-index:15;
+  background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
+  padding:4px 12px;border-radius:4px;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
+}
+
+.corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
+.corner-icon-btn{
+  width:44px;height:44px;border-radius:7px;background:#1c1d18;border:1px solid #3a3b30;
+  cursor:pointer;overflow:hidden;padding:4px;transition:.15s;
+}
+.corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
+.corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
+@media (max-width: 480px){
+  .corner-icon-btn{width:36px;height:36px;}
+}
+
+.calib-marker{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber-bright);
+  transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 6px var(--amber-bright);}
+
+.calib-toggle{margin-top:14px;background:#1c1d18;border:1px solid #3a3b30;color:var(--paper-dim);
+  padding:8px 14px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:.03em;}
+.calib-toggle.on{color:var(--amber-bright);border-color:var(--amber);}
+.calib-readout{margin-top:8px;font-size:11px;color:var(--paper-dim);text-align:center;white-space:pre;min-height:16px;}
+
+.inventory{display:flex;gap:8px;margin-top:14px;min-height:44px;flex-wrap:wrap;}
+.inv-item{width:44px;height:44px;border-radius:6px;background:#1c1d18;border:1px solid #35362c;
+  display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--amber-bright);
+  background-size:cover;background-position:center;}
+.inv-empty{font-size:10.5px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;}
+
+.modal-bg{position:absolute;inset:0;background:rgba(6,6,5,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:5%;border-radius:10px;}
+.modal-bg.active{display:flex;}
+.modal{background:#17170f;border:1px solid #3a3b30;border-radius:10px;max-width:440px;width:100%;padding:16px;font-family:var(--sans);max-height:92%;overflow-y:auto;}
+.modal h3{margin:0 0 10px;font-size:13px;color:var(--amber-bright);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;}
+.modal .doc-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;border-radius:6px;margin:0 auto 10px;display:block;background:#1a1b15;}
+.modal .doc-fallback{width:100%;aspect-ratio:4/3;border-radius:6px;margin-bottom:10px;
+  background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
+  display:flex;align-items:center;justify-content:center;color:#6c6d5f;font-size:11px;font-family:var(--mono);text-align:center;padding:10px;}
+.modal p{font-size:12.5px;line-height:1.6;color:#c9cabd;margin:0 0 14px;}
+.modal button{background:var(--amber);border:none;padding:8px 16px;border-radius:6px;color:#171712;
+  font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;margin-right:8px;}
+.modal button.ghost{background:none;border:1px solid #3a3b30;color:var(--paper-dim);}
+.modal .locked-box input{width:100%;margin-top:8px;padding:8px;background:#0d0f0c;border:1px solid #3a3b30;
+  color:#e9e2cf;font-family:var(--mono);border-radius:6px;font-size:12px;}
+
+.recorder{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.tape{width:120px;height:80px;border-radius:8px;background:#2a2b22;border:1px solid #45463a;
+  display:flex;align-items:center;justify-content:space-around;padding:0 12px;}
+.reel{width:34px;height:34px;border-radius:50%;border:4px solid #55564a;position:relative;}
+.reel::after{content:'';position:absolute;inset:10px;border-radius:50%;background:#111;}
+.reel.spin{animation:spin 1.4s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.counter{font-family:var(--mono);font-size:13px;color:var(--amber-bright);letter-spacing:.1em;}
+.rec-controls button{width:38px;height:38px;border-radius:50%;border:1px solid #45463a;background:#1c1d18;color:#c9cabd;cursor:pointer;font-size:13px;}
+.rec-controls button.active{background:var(--amber);color:#171712;border-color:var(--amber);}
+
+.tv-screen video, .tv-screen{width:100%;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:#000;margin-bottom:10px;display:block;}
+
+/* ---- İFADE ZAPTI: liste + okuyucu ---- */
+.modal.wide{max-width:640px;}
+
+.reader-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.reader-nav button{background:none;border:1px solid #3a3b30;color:var(--paper-dim);
+  padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;}
+.reader-nav button:hover{color:var(--amber-bright);border-color:var(--amber);}
+.reader-name{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber-bright);}
+.reader-arrow{
+  width:34px;height:34px;border-radius:50%;background:#1c1d18;border:1px solid #3a3b30;
+  color:var(--paper);font-size:16px;cursor:pointer;flex-shrink:0;
+}
+.reader-arrow:hover{border-color:var(--amber);color:var(--amber-bright);}
+.reader-arrow:disabled{opacity:.3;cursor:default;}
+.reader-card-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;
+  border-radius:6px;display:block;margin:0 auto 12px;background:#1a1b15;}
+.reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
+  border-radius:8px;padding:10px 14px;margin-bottom:12px;}
+.reader-audio .ring{width:34px;height:34px;border-radius:50%;border:2px solid var(--amber);
+  display:flex;align-items:center;justify-content:center;color:var(--amber-bright);font-size:13px;
+  cursor:pointer;flex-shrink:0;}
+.reader-audio.playing .ring{background:var(--amber);color:#171712;}
+.reader-audio .meta{font-size:11px;color:var(--paper-dim);}
+.reader-audio .time{font-size:11px;color:var(--amber-bright);font-variant-numeric:tabular-nums;}
+
+/* ---- GÜN GEÇİŞİ EKRANI ---- */
+.sleep-overlay{
+  position:fixed;inset:0;background:#0a0b08;display:none;align-items:center;justify-content:center;
+  z-index:60;text-align:center;padding:30px;
+}
+.sleep-overlay.active{display:flex;}
+.sleep-overlay .content{max-width:420px;}
+.sleep-overlay .day-num{font-size:13px;color:var(--amber-bright);letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:14px;}
+.sleep-overlay p{font-size:14px;line-height:1.7;color:#c9cabd;margin-bottom:24px;}
+.sleep-overlay button{background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
+  color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
+
+/* ============================================================
+   HARİTA MEKANİĞİ
+   ============================================================ */
+.map-overlay{
+  position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
+  align-items:stretch;justify-content:center;z-index:70;
+  border-radius:10px; /* stage-frame'in köşe yuvarlaklığıyla eşleşsin */
+  overflow:hidden; /* dış katman kaymaz, sadece içindeki .map-scroll kayar */
+}
+.map-overlay.active{display:flex;}
+.map-scroll{
+  width:100%;height:100%;overflow-y:auto;padding:4%;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.map-overlay-close{
+  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
+  font-size:14px;cursor:pointer;z-index:22;
+}
+.map-box{position:relative;width:100%;max-width:100%;margin-top:6px;aspect-ratio:1376/768;}
+.map-box img{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);object-fit:cover;}
+#mapHotspots{position:absolute;inset:0;}
+.map-hotspot{
+  position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:radial-gradient(circle, rgba(227,169,74,.85), rgba(227,169,74,.1));
+  border:2px solid var(--amber-bright);cursor:pointer;
+}
+.map-hotspot:hover{background:radial-gradient(circle, rgba(227,169,74,1), rgba(227,169,74,.25));}
+.map-hotspot-label{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(10,10,8,.92);color:var(--amber-bright);font-size:11px;padding:4px 9px;
+  border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;
+  font-family:var(--mono);letter-spacing:.03em;
+}
+.map-hotspot:hover .map-hotspot-label{opacity:1;}
+
+/* ============================================================
+   NOT DEFTERİ MEKANİĞİ
+   ============================================================ */
+.notebook-overlay{
+  position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
+  align-items:stretch;justify-content:center;z-index:70;
+  border-radius:10px;overflow:hidden; /* dış katman kaymaz, sadece .notebook-scroll kayar */
+}
+.notebook-overlay.active{display:flex;}
+.notebook-scroll{
+  width:100%;height:100%;overflow-y:auto;padding:3%;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.notebook-overlay-close{
+  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
+  font-size:14px;cursor:pointer;z-index:22;
+}
+.notebook-box{width:100%;max-width:100%;}
+/* ÖNEMLİ KÖK ÇÖZÜM: sarmalayıcının yüksekliği artık görselin yüklenip
+   yüklenmediğine bağlı değil — sabit en-boy oranı (yazi.png'nin gerçek oranı,
+   813x454) CSS'e doğrudan yazıldı. Böylece içindeki TÜM yüzdelik konumlandırmalar
+   (sayfa, satır, fotoğraf) her zaman kesin bir yüksekliğe göre hesaplanıyor,
+   görsel geç yüklenirse ya da hiç yüklenmezse bile boyutlar bozulmuyor. */
+.notebook-img-wrap{position:relative;width:100%;aspect-ratio:813/454;}
+.notebook-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;}
+.notebook-img-fallback{
+  width:100%;aspect-ratio:16/9;border-radius:6px;align-items:center;justify-content:center;
+  background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
+  color:#c98a2c;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
+}
+
+/* Not defterine yazılan HER ŞEY el yazısı fontuyla — okunaklı ama samimi */
+.nb-yazi{
+  position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;
+  resize:none;outline:none;font-family:'Caveat',cursive;font-weight:600;
+  color:#2b2018;padding:2px 6px;
+}
+
+/* SAĞ SAYFA — tamamen serbest not alanı (değişmedi) */
+.nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
+.nb-page.sag .nb-yazi{font-size:19px;line-height:1.5;padding:4px 8px 4px 14px;}
+
+/* SOL SAYFA — 2 sabit şüpheli satırı. Fotoğraf+isim CASE.notebook.suspects'tan
+   gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı/çizim alanıdır
+   (nb-suspect-notes tüm satırı kaplar, fotoğraf+isim onun ÜSTÜNE bindirilir). */
+.nb-page.sol{position:absolute;top:6%;bottom:8%;left:8%;width:34%;
+  display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
+.nb-suspect-row{position:relative;height:48%;}
+.nb-suspect-notes{position:absolute;inset:0;}
+.nb-suspect-notes .nb-yazi{font-size:14px;line-height:1.3;padding:2px 4px;}
+
+/* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur,
+   fotoğrafın kendi genişliğinin 1.5 katı kadar sağa ötelendi ki sayfanın
+   gerçek kağıt alanına otursun. */
+.nb-suspect-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;}
+.nb-suspect-photo{
+  position:absolute;top:8%;left:34%;height:70%;width:auto;aspect-ratio:3/4;
+  object-fit:cover;border:2px solid #6b4a30;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);background:#d8c9a3;
+}
+.nb-suspect-name{
+  position:absolute;top:12%;left:58%;right:2%;
+  font-family:'Caveat',cursive;font-weight:600;font-size:17px;color:#2b2018;
+  line-height:1.15;
+}
+.nb-suspect-photo-missing{
+  position:absolute;top:8%;left:34%;height:70%;width:auto;aspect-ratio:3/4;
+  border:1px dashed #6b4a30;background:#d8c9a3;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;white-space:pre-line;
+}
+
+.nb-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
+.nb-canvas.pasif{pointer-events:none;}
+
+/* Defterin kenarlarından sayfa çevirme okları */
+.nb-edge-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(28,29,24,.8);border:1px solid var(--amber);
+  color:var(--amber-bright);font-size:19px;cursor:pointer;z-index:16;
+  display:flex;align-items:center;justify-content:center;
+}
+.nb-edge-arrow:hover{background:rgba(28,29,24,1);}
+.nb-edge-arrow:disabled{opacity:.25;cursor:default;}
+.nb-edge-left{left:1%;}
+.nb-edge-right{right:1%;}
+@media (max-width:480px){
+  .nb-edge-arrow{width:30px;height:30px;font-size:15px;}
+}
+
+.notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.nb-btn{
+  background:#1c1d18;color:var(--paper);border:1px solid #3a3b30;padding:7px 14px;
+  border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.03em;
+}
+.nb-btn:hover{border-color:var(--amber);}
+.nb-btn.active{border-color:var(--amber);color:var(--amber-bright);}
+.nb-sayfa-gösterge{color:var(--paper-dim);font-size:11px;min-width:90px;text-align:center;font-family:var(--mono);}
