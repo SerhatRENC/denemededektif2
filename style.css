@@ -13,18 +13,26 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 
 /* Sahne: her zaman 16:9, hem yatay hem dikey ekranda ortalanır ve sığdırılır.
    max-width YATAY sınırlar, max-height ise dikey (dar/uzun) ekranlarda taşmayı önler. */
-.stage-wrap{width:100%;max-width:1000px;}
+/* ============================================================
+   OYUN EKRANI BOYUTLANDIRMASI — TEK FORMÜL, TÜM CİHAZLAR
+   Eskiden sabit "max-width:1000px" + "max-height:62dvh" gibi ayrı ayrı
+   sınırlar vardı; büyük monitörde oyun küçük kalıyor, kullanıcı zoom
+   atmak zorunda kalıyordu. Artık TEK bir formül var: ekranın hem
+   genişliğine (96vw) hem yüksekliğine (100dvh - üstteki/alttaki diğer
+   arayüz elemanlarının kapladığı ~220px) göre sığabilecek EN BÜYÜK 16:9
+   kutuyu otomatik seçiyor. Telefon dikey/yatay, tablet, küçük/büyük
+   monitör — hepsi aynı formülle otomatik doğru orana oturuyor, ayrı
+   media query'lere gerek kalmadı. Kullanıcı browser zoom'u ile
+   oynadığında da dvh/vw yeniden hesaplandığı için oran korunuyor.
+   Üst sınır 1600px — çok geniş monitörlerde oyunun aşırı iri
+   görünmesini engelliyor. */
+.stage-wrap{width:100%;max-width:1600px;}
 .stage-frame{
-  position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
-  max-height:62dvh; /* dikey telefon ekranında sahnenin boy taşırmasını engeller */
+  position:relative;
+  width:min(96vw, 1600px, calc((100dvh - 220px) * 16 / 9));
+  aspect-ratio:16/9;border-radius:10px;overflow:hidden;
   margin:0 auto;
   box-shadow:0 0 0 1px rgba(233,226,207,.08), 0 30px 60px -25px rgba(0,0,0,.85);
-}
-@media (max-width: 480px){
-  .stage-frame{ max-height:42dvh; } /* dikey telefonda sahne daha da kısalır, altta UI'a yer kalır */
-}
-@media (orientation: landscape) and (max-height: 500px){
-  .stage-frame{ max-height:78dvh; } /* telefon yan çevrilince sahne genişçe büyür */
 }
 .stage{
   position:absolute;inset:0;
