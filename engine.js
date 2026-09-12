@@ -49,7 +49,9 @@ function renderRoom() {
       const el = document.createElement('div');
       el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
       el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
-      const iconHtml = h.icon ? `<img src="${h.icon}" class="hotspot-icon-img" alt="">` : '';
+      const iconHtml = h.icon
+        ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
+        : '';
       el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
       el.onclick = (e) => { if (!calibMode) handleHotspot(h); };
       stage.appendChild(el);
@@ -393,8 +395,19 @@ function saveNotebook() {
 
 function openNotebook() {
   if (!notebookState) loadNotebook();
-  document.getElementById('notebookImage').src =
-    (CASE.notebook && CASE.notebook.image) || 'assets/not-defteri-ekran.png';
+  const nbImg = document.getElementById('notebookImage');
+  const nbFallback = document.getElementById('notebookImgFallback');
+  const src = (CASE.notebook && CASE.notebook.image) || 'assets/yazi.png';
+
+  nbImg.style.display = '';
+  nbFallback.style.display = 'none';
+  nbImg.onerror = () => {
+    nbImg.style.display = 'none';
+    nbFallback.style.display = 'flex';
+    nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
+  };
+  nbImg.src = src;
+
   document.getElementById('notebookOverlay').classList.add('active');
   // overlay display:none iken canvas boyutu 0 ölçülür — açıldıktan sonra tekrar çiz
   requestAnimationFrame(renderNotebookPage);

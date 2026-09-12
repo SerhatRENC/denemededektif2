@@ -49,6 +49,8 @@
         { "x": "8%",  "y": "80%", "w": "10%", "h": "18%", "type": "navigate", "target": "demirci",     "hint": "Demirciye git" },
         { "x": "85%", "y": "70%", "w": "10%", "h": "22%", "type": "navigate", "target": "degirmenci",  "hint": "Değirmenciye git" },
         { "x": "65%", "y": "78%", "w": "10%", "h": "20%", "type": "navigate", "target": "sifahane",    "hint": "Şifahaneye git" },
+        { "x": "12%", "y": "35%", "w": "10%", "h": "22%", "type": "navigate", "target": "nadire_ev",   "hint": "Nadire'nin Evine git" },
+        { "x": "5%",  "y": "5%",  "w": "10%", "h": "18%", "type": "navigate", "target": "halit_ev",    "hint": "Halit'in Evine git" },
         { "x": "30%", "y": "8%",  "w": "10%", "h": "10%", "type": "examine",  "target": "tablo",       "hint": "Tabloya bak" }
       ]
     },
@@ -65,16 +67,18 @@
     "yikik":        { "label": "Yıkık Şapel",        "background": "assets/yikik.jpg",        "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "demirci":      { "label": "Demirci",            "background": "assets/demirci.jpg",      "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "degirmenci":   { "label": "Değirmenci",         "background": "assets/degirmenci.jpg",   "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
-    "sifahane":     { "label": "Şifahane",           "background": "assets/sifahane.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] }
+    "sifahane":     { "label": "Şifahane",           "background": "assets/sifahane.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
+    "nadire_ev":    { "label": "Nadire Ev",          "background": "assets/nadire_ev.jpg",    "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
+    "halit_ev":     { "label": "Halit Ev",           "background": "assets/halit_ev.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] }
   },
 
   "map": {
     "image": "assets/harita.png",
     "hotspots": [
-      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": null },
+      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": "halit_ev" },
       { "x": "17%", "y": "51%", "label": "Ofis",       "target": "ofis" },
       { "x": "35%", "y": "32%", "label": "Cevdet Ev",  "target": "cadi" },
-      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": null },
+      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": "nadire_ev" },
       { "x": "48%", "y": "38%", "label": "Muhtarlık",  "target": "muhtar" },
       { "x": "58%", "y": "36%", "label": "Kilise",     "target": "kilise" },
       { "x": "72%", "y": "42%", "label": "Mezarlık",   "target": "mezarlik" },

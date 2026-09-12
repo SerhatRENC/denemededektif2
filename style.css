@@ -59,6 +59,11 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .hotspot.hotspot-icon:hover{background:none;outline:none;transform:scale(1.06);}
 .hotspot-icon-img{width:100%;height:100%;object-fit:contain;pointer-events:none;
   filter:drop-shadow(0 3px 10px rgba(0,0,0,.65));}
+.hotspot-icon-missing{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  border:1px dashed var(--amber);border-radius:6px;color:var(--amber-bright);
+  font-size:9px;font-family:var(--mono);padding:4px;pointer-events:none;
+}
 
 /* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri butonları —
    sahne (stage) her oda değişiminde innerHTML ile yenilendiği için bu butonlar
@@ -66,10 +71,10 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
 .corner-icon-btn{
   width:44px;height:44px;border-radius:7px;background:#1c1d18;border:1px solid #3a3b30;
-  cursor:pointer;overflow:hidden;padding:0;transition:.15s;
+  cursor:pointer;overflow:hidden;padding:4px;transition:.15s;
 }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
-.corner-icon-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+.corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
 @media (max-width: 480px){
   .corner-icon-btn{width:36px;height:36px;}
 }
@@ -199,6 +204,11 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .notebook-box{width:min(920px,94vw);}
 .notebook-img-wrap{position:relative;width:100%;}
 .notebook-img-wrap img{width:100%;display:block;pointer-events:none;user-select:none;}
+.notebook-img-fallback{
+  width:100%;aspect-ratio:16/9;border-radius:6px;align-items:center;justify-content:center;
+  background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
+  color:#c98a2c;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
+}
 .nb-page{position:absolute;top:6%;bottom:8%;width:38%;}
 .nb-page.sol{left:9%;}
 .nb-page.sag{left:53%;}
