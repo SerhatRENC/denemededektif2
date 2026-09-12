@@ -14,7 +14,6 @@ fetch('case.json')
   .then(r => r.json())
   .then(data => {
     CASE = data;
-    document.getElementById('caseLabel').textContent = CASE.caseLabel || 'DOSYA';
     document.getElementById('caseTitle').textContent = CASE.title || '';
     currentRoom = CASE.startRoom;
 

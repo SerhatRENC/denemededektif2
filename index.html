@@ -9,19 +9,14 @@
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="day-badge" id="dayBadge">GÜN 1</div>
-  </div>
   <h1 id="caseTitle">Yükleniyor...</h1>
 
   <div class="stage-wrap">
     <div class="stage-frame" id="stageFrame">
       <div class="stage" id="stage"></div>
 
-      <!-- Dosya rozeti artık dış sayfada değil, doğrudan oyun ekranının içinde -->
-      <div class="stage-case-tag">
-        <span class="dot"></span> <span id="caseLabel">DOSYA</span>
-      </div>
+      <!-- Gün sayacı — oyun ekranının sağ üst köşesinde -->
+      <div class="stage-day-tag" id="dayBadge">GÜN 1</div>
 
       <div class="corner-icons">
         <button class="corner-icon-btn" onclick="openMap()" title="Harita">
@@ -35,15 +30,18 @@
       <!-- ============ HARİTA OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
       <div class="map-overlay" id="mapOverlay">
         <button class="map-overlay-close" onclick="closeMap()">✕</button>
-        <div class="map-box">
-          <img id="mapImage" src="" alt="Harita">
-          <div id="mapHotspots"></div>
+        <div class="map-scroll">
+          <div class="map-box">
+            <img id="mapImage" src="" alt="Harita">
+            <div id="mapHotspots"></div>
+          </div>
         </div>
       </div>
 
       <!-- ============ NOT DEFTERİ OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
       <div class="notebook-overlay" id="notebookOverlay">
         <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
+        <div class="notebook-scroll">
         <div class="notebook-box">
           <div class="notebook-img-wrap">
             <img id="notebookImage" src="" alt="Not Defteri">
@@ -89,6 +87,7 @@
             <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
             <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
           </div>
+        </div>
         </div>
       </div>
     </div>
