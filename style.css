@@ -128,11 +128,11 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   background-size:cover;background-position:center;}
 .inv-empty{font-size:10.5px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;}
 
-.modal-bg{position:fixed;inset:0;background:rgba(6,6,5,.82);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal-bg{position:absolute;inset:0;background:rgba(6,6,5,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:5%;border-radius:10px;}
 .modal-bg.active{display:flex;}
-.modal{background:#17170f;border:1px solid #3a3b30;border-radius:10px;max-width:440px;width:100%;padding:20px;font-family:var(--sans);max-height:85vh;overflow-y:auto;}
+.modal{background:#17170f;border:1px solid #3a3b30;border-radius:10px;max-width:440px;width:100%;padding:16px;font-family:var(--sans);max-height:92%;overflow-y:auto;}
 .modal h3{margin:0 0 10px;font-size:13px;color:var(--amber-bright);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;}
-.modal .doc-img{width:100%;border-radius:6px;margin-bottom:10px;display:block;background:#1a1b15;}
+.modal .doc-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;border-radius:6px;margin:0 auto 10px;display:block;background:#1a1b15;}
 .modal .doc-fallback{width:100%;aspect-ratio:4/3;border-radius:6px;margin-bottom:10px;
   background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
   display:flex;align-items:center;justify-content:center;color:#6c6d5f;font-size:11px;font-family:var(--mono);text-align:center;padding:10px;}
@@ -170,7 +170,8 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 }
 .reader-arrow:hover{border-color:var(--amber);color:var(--amber-bright);}
 .reader-arrow:disabled{opacity:.3;cursor:default;}
-.reader-card-img{width:100%;border-radius:6px;display:block;margin-bottom:12px;background:#1a1b15;}
+.reader-card-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;
+  border-radius:6px;display:block;margin:0 auto 12px;background:#1a1b15;}
 .reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
   border-radius:8px;padding:10px 14px;margin-bottom:12px;}
 .reader-audio .ring{width:34px;height:34px;border-radius:50%;border:2px solid var(--amber);
@@ -212,8 +213,8 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-.map-box{position:relative;width:100%;max-width:100%;margin-top:6px;}
-.map-box img{width:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+.map-box{position:relative;width:100%;max-width:100%;margin-top:6px;aspect-ratio:1376/768;}
+.map-box img{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);object-fit:cover;}
 #mapHotspots{position:absolute;inset:0;}
 .map-hotspot{
   position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
@@ -248,8 +249,13 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   font-size:14px;cursor:pointer;z-index:22;
 }
 .notebook-box{width:100%;max-width:100%;}
-.notebook-img-wrap{position:relative;width:100%;}
-.notebook-img-wrap img{width:100%;display:block;pointer-events:none;user-select:none;}
+/* ÖNEMLİ KÖK ÇÖZÜM: sarmalayıcının yüksekliği artık görselin yüklenip
+   yüklenmediğine bağlı değil — sabit en-boy oranı (yazi.png'nin gerçek oranı,
+   813x454) CSS'e doğrudan yazıldı. Böylece içindeki TÜM yüzdelik konumlandırmalar
+   (sayfa, satır, fotoğraf) her zaman kesin bir yüksekliğe göre hesaplanıyor,
+   görsel geç yüklenirse ya da hiç yüklenmezse bile boyutlar bozulmuyor. */
+.notebook-img-wrap{position:relative;width:100%;aspect-ratio:813/454;}
+.notebook-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;}
 .notebook-img-fallback{
   width:100%;aspect-ratio:16/9;border-radius:6px;align-items:center;justify-content:center;
   background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
