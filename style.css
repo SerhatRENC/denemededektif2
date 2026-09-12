@@ -9,11 +9,8 @@ body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);
   min-height:100dvh;display:flex;flex-direction:column;align-items:center;
   padding:16px 12px 30px;overflow-x:hidden;}
 
-.top-bar{width:100%;max-width:1000px;display:flex;justify-content:space-between;
+.top-bar{width:100%;max-width:1000px;display:flex;justify-content:flex-end;
   align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
-.case-tag{display:flex;align-items:center;gap:10px;border:1px solid var(--paper-dim);padding:7px 14px;
-  font-size:11px;color:var(--paper-dim);letter-spacing:.1em;text-transform:uppercase;}
-.case-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--evid-red);box-shadow:0 0 6px var(--evid-red);}
 .day-badge{border:1px solid var(--amber);color:var(--amber-bright);padding:7px 14px;font-size:11px;
   letter-spacing:.1em;text-transform:uppercase;border-radius:4px;}
 h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spacing:.04em;margin:6px 0 14px;text-align:center;}
@@ -101,6 +98,16 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 /* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri butonları —
    sahne (stage) her oda değişiminde innerHTML ile yenilendiği için bu butonlar
    bilerek stage-frame'in İÇİNE ama #stage'in DIŞINA konuldu, böylece oda geçişlerinde silinmezler. */
+/* Dosya rozeti — artık dış sayfada değil, oyun ekranının sağ üst köşesinde */
+.stage-case-tag{
+  position:absolute;top:8px;right:8px;z-index:15;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(10,10,8,.65);border:1px solid var(--paper-dim);
+  padding:4px 10px;border-radius:4px;
+  font-size:9px;color:var(--paper-dim);letter-spacing:.08em;text-transform:uppercase;
+}
+.stage-case-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--evid-red);box-shadow:0 0 6px var(--evid-red);}
+
 .corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
 .corner-icon-btn{
   width:44px;height:44px;border-radius:7px;background:#1c1d18;border:1px solid #3a3b30;
@@ -195,16 +202,17 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
    HARİTA MEKANİĞİ
    ============================================================ */
 .map-overlay{
-  position:fixed;inset:0;background:rgba(6,6,5,.86);display:none;
-  align-items:center;justify-content:center;z-index:70;padding:20px;
+  position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
+  align-items:center;justify-content:center;z-index:70;padding:4%;
+  border-radius:10px; /* stage-frame'in köşe yuvarlaklığıyla eşleşsin */
 }
 .map-overlay.active{display:flex;}
 .map-overlay-close{
-  position:absolute;top:18px;right:20px;width:36px;height:36px;border-radius:50%;
+  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
-  font-size:16px;cursor:pointer;z-index:2;
+  font-size:14px;cursor:pointer;z-index:22;
 }
-.map-box{position:relative;width:min(1000px,92vw);}
+.map-box{position:relative;width:100%;max-width:100%;}
 .map-box img{width:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 #mapHotspots{position:absolute;inset:0;}
 .map-hotspot{
@@ -225,16 +233,17 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
    NOT DEFTERİ MEKANİĞİ
    ============================================================ */
 .notebook-overlay{
-  position:fixed;inset:0;background:rgba(6,6,5,.86);display:none;
-  align-items:center;justify-content:center;z-index:70;padding:20px;
+  position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
+  align-items:center;justify-content:center;z-index:70;padding:3%;
+  border-radius:10px;
 }
 .notebook-overlay.active{display:flex;}
 .notebook-overlay-close{
-  position:absolute;top:18px;right:20px;width:36px;height:36px;border-radius:50%;
+  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
-  font-size:16px;cursor:pointer;z-index:2;
+  font-size:14px;cursor:pointer;z-index:22;
 }
-.notebook-box{width:min(920px,94vw);}
+.notebook-box{width:100%;max-width:100%;}
 .notebook-img-wrap{position:relative;width:100%;}
 .notebook-img-wrap img{width:100%;display:block;pointer-events:none;user-select:none;}
 .notebook-img-fallback{
@@ -254,29 +263,55 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
 .nb-page.sag .nb-yazi{font-size:19px;line-height:1.5;padding:4px 8px 4px 14px;}
 
-/* SOL SAYFA — 2 sabit şüpheli satırı, her birinin yanında serbest not alanı */
+/* SOL SAYFA — 2 sabit şüpheli satırı. Fotoğraf+isim CASE.notebook.suspects'tan
+   gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı/çizim alanıdır
+   (nb-suspect-notes tüm satırı kaplar, fotoğraf+isim onun ÜSTÜNE bindirilir). */
 .nb-page.sol{position:absolute;top:6%;bottom:8%;left:8%;width:34%;
   display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
-.nb-suspect-row{position:relative;height:48%;display:flex;gap:4%;}
-.nb-suspect-photo-wrap{width:32%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:2%;}
+.nb-suspect-row{position:relative;height:48%;}
+.nb-suspect-notes{position:absolute;inset:0;}
+.nb-suspect-notes .nb-yazi{font-size:14px;line-height:1.3;padding:2px 4px;}
+
+/* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur,
+   fotoğrafın kendi genişliğinin 1.5 katı kadar sağa ötelendi ki sayfanın
+   gerçek kağıt alanına otursun. */
+.nb-suspect-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;}
 .nb-suspect-photo{
-  width:100%;aspect-ratio:3/4;object-fit:cover;border:2px solid #6b4a30;
+  position:absolute;top:4%;left:36%;width:24%;aspect-ratio:3/4;
+  object-fit:cover;border:2px solid #6b4a30;
   box-shadow:0 3px 8px rgba(0,0,0,.4);background:#d8c9a3;
 }
 .nb-suspect-name{
-  font-family:var(--mono);font-size:9.5px;color:#2b2018;margin-top:4px;
-  text-align:center;line-height:1.25;letter-spacing:.02em;
+  position:absolute;top:8%;left:64%;right:2%;
+  font-family:'Caveat',cursive;font-weight:600;font-size:18px;color:#2b2018;
+  line-height:1.15;
 }
 .nb-suspect-photo-missing{
-  width:100%;aspect-ratio:3/4;border:1px dashed #6b4a30;background:#d8c9a3;
+  position:absolute;top:4%;left:36%;width:24%;aspect-ratio:3/4;
+  border:1px dashed #6b4a30;background:#d8c9a3;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;
+  color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;white-space:pre-line;
 }
-.nb-suspect-notes{position:relative;flex:1;height:100%;}
-.nb-suspect-notes .nb-yazi{font-size:15px;line-height:1.3;padding:2px 4px;}
 
 .nb-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
 .nb-canvas.pasif{pointer-events:none;}
+
+/* Defterin kenarlarından sayfa çevirme okları */
+.nb-edge-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(28,29,24,.8);border:1px solid var(--amber);
+  color:var(--amber-bright);font-size:19px;cursor:pointer;z-index:16;
+  display:flex;align-items:center;justify-content:center;
+}
+.nb-edge-arrow:hover{background:rgba(28,29,24,1);}
+.nb-edge-arrow:disabled{opacity:.25;cursor:default;}
+.nb-edge-left{left:1%;}
+.nb-edge-right{right:1%;}
+@media (max-width:480px){
+  .nb-edge-arrow{width:30px;height:30px;font-size:15px;}
+}
+
 .notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
 .nb-btn{
   background:#1c1d18;color:var(--paper);border:1px solid #3a3b30;padding:7px 14px;
@@ -284,10 +319,4 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 }
 .nb-btn:hover{border-color:var(--amber);}
 .nb-btn.active{border-color:var(--amber);color:var(--amber-bright);}
-.nb-page-btn{
-  width:36px;height:36px;border-radius:50%;background:#1c1d18;border:1px solid #3a3b30;
-  color:var(--paper);font-size:16px;cursor:pointer;
-}
-.nb-page-btn:hover{border-color:var(--amber);}
-.nb-page-btn:disabled{opacity:.3;cursor:default;}
 .nb-sayfa-gösterge{color:var(--paper-dim);font-size:11px;min-width:90px;text-align:center;font-family:var(--mono);}

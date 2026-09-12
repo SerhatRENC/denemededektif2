@@ -71,7 +71,7 @@ function handleHotspot(h) {
   if (h.type === 'tv')       { openTV(h.target); return; }
   if (h.type === 'dosya')    { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
-  if (h.type === 'sleep')    { sleep(); return; }
+  if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
 /* ---------- salt fotoğraf gösterici (başlık/açıklama YOK, sadece görsel) ---------- */
@@ -86,6 +86,15 @@ function openPhoto(src) {
 /* ---------- gün döngüsü ---------- */
 function updateDayBadge() {
   document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
+}
+
+function confirmSleep() {
+  showModal(`
+    <h3>Uyumadan Önce</h3>
+    <p>Uyumak istediğine emin misin? Köyde henüz bulmadığın kanıtlar olabilir — şimdi uyursan onları kaçırmış olarak bir sonraki güne geçeceksin.</p>
+    <button onclick="closeModal(); sleep();">Evet, Uyu</button>
+    <button class="ghost" onclick="closeModal()">Vazgeç</button>
+  `);
 }
 
 function sleep() {
@@ -481,8 +490,8 @@ function renderNotebookPage() {
   canvasResizeVeCiz(document.getElementById('nbCanvasSag'), p.sagÇizim);
 
   document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
-  document.getElementById('nbGeri').disabled = notebookState.page === 0;
-  document.getElementById('nbIleri').disabled = notebookState.page === total - 1;
+  document.getElementById('nbEdgeGeri').disabled = notebookState.page === 0;
+  document.getElementById('nbEdgeIleri').disabled = notebookState.page === total - 1;
 }
 
 // Bir canvas'ı konteynerine göre yeniden ölçekleyip, varsa kayıtlı çizimi geri yükler

@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorgu Dosyası</title>
+<title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="top-bar">
-    <div class="case-tag"><span class="dot"></span> <span id="caseLabel">DOSYA</span></div>
     <div class="day-badge" id="dayBadge">GÜN 1</div>
   </div>
   <h1 id="caseTitle">Yükleniyor...</h1>
@@ -18,6 +17,12 @@
   <div class="stage-wrap">
     <div class="stage-frame" id="stageFrame">
       <div class="stage" id="stage"></div>
+
+      <!-- Dosya rozeti artık dış sayfada değil, doğrudan oyun ekranının içinde -->
+      <div class="stage-case-tag">
+        <span class="dot"></span> <span id="caseLabel">DOSYA</span>
+      </div>
+
       <div class="corner-icons">
         <button class="corner-icon-btn" onclick="openMap()" title="Harita">
           <img src="assets/harita.png" alt="Harita">
@@ -25,6 +30,66 @@
         <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
           <img src="assets/defter.png" alt="Not Defteri">
         </button>
+      </div>
+
+      <!-- ============ HARİTA OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <div class="map-overlay" id="mapOverlay">
+        <button class="map-overlay-close" onclick="closeMap()">✕</button>
+        <div class="map-box">
+          <img id="mapImage" src="" alt="Harita">
+          <div id="mapHotspots"></div>
+        </div>
+      </div>
+
+      <!-- ============ NOT DEFTERİ OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <div class="notebook-overlay" id="notebookOverlay">
+        <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
+        <div class="notebook-box">
+          <div class="notebook-img-wrap">
+            <img id="notebookImage" src="" alt="Not Defteri">
+            <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
+
+            <!-- SOL SAYFA: 2 şüpheli satırı — fotoğraf+isim sabit, altları/yanları serbest -->
+            <div class="nb-page sol">
+              <div class="nb-suspect-row" id="nbRow0">
+                <div class="nb-suspect-notes">
+                  <textarea class="nb-yazi" id="nbYaziSolUst" oninput="notebookYaziKaydet('solUst', this.value)"></textarea>
+                  <canvas class="nb-canvas pasif" id="nbCanvasSolUst"></canvas>
+                </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName0"></div>
+                </div>
+              </div>
+              <div class="nb-suspect-row" id="nbRow1">
+                <div class="nb-suspect-notes">
+                  <textarea class="nb-yazi" id="nbYaziSolAlt" oninput="notebookYaziKaydet('solAlt', this.value)"></textarea>
+                  <canvas class="nb-canvas pasif" id="nbCanvasSolAlt"></canvas>
+                </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName1"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
+            <div class="nb-page sag">
+              <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this.value)" placeholder="buraya not al..."></textarea>
+              <canvas class="nb-canvas pasif" id="nbCanvasSag"></canvas>
+            </div>
+
+            <!-- Defterin kenarlarından sayfa çevirme -->
+            <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
+            <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
+          </div>
+          <div class="notebook-toolbar">
+            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
+            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
+            <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
+            <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
@@ -42,64 +107,6 @@
       <div class="day-num" id="sleepDayNum">GÜN 2</div>
       <p id="sleepText">Yeni bir gün başlıyor.</p>
       <button onclick="wakeUp()">Uyan</button>
-    </div>
-  </div>
-
-  <!-- ============ HARİTA OVERLAY ============ -->
-  <div class="map-overlay" id="mapOverlay">
-    <button class="map-overlay-close" onclick="closeMap()">✕</button>
-    <div class="map-box">
-      <img id="mapImage" src="" alt="Harita">
-      <div id="mapHotspots"></div>
-    </div>
-  </div>
-
-  <!-- ============ NOT DEFTERİ OVERLAY ============ -->
-  <div class="notebook-overlay" id="notebookOverlay">
-    <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
-    <div class="notebook-box">
-      <div class="notebook-img-wrap">
-        <img id="notebookImage" src="" alt="Not Defteri">
-        <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
-
-        <!-- SOL SAYFA: 2 şüpheli satırı, fotoğraf+isim sabit, yanları serbest -->
-        <div class="nb-page sol">
-          <div class="nb-suspect-row" id="nbRow0">
-            <div class="nb-suspect-photo-wrap">
-              <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
-              <div class="nb-suspect-name" id="nbName0"></div>
-            </div>
-            <div class="nb-suspect-notes">
-              <textarea class="nb-yazi" id="nbYaziSolUst" oninput="notebookYaziKaydet('solUst', this.value)"></textarea>
-              <canvas class="nb-canvas pasif" id="nbCanvasSolUst"></canvas>
-            </div>
-          </div>
-          <div class="nb-suspect-row" id="nbRow1">
-            <div class="nb-suspect-photo-wrap">
-              <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
-              <div class="nb-suspect-name" id="nbName1"></div>
-            </div>
-            <div class="nb-suspect-notes">
-              <textarea class="nb-yazi" id="nbYaziSolAlt" oninput="notebookYaziKaydet('solAlt', this.value)"></textarea>
-              <canvas class="nb-canvas pasif" id="nbCanvasSolAlt"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
-        <div class="nb-page sag">
-          <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this.value)" placeholder="buraya not al..."></textarea>
-          <canvas class="nb-canvas pasif" id="nbCanvasSag"></canvas>
-        </div>
-      </div>
-      <div class="notebook-toolbar">
-        <button class="nb-page-btn" id="nbGeri" onclick="notebookSayfaGeri()">‹</button>
-        <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
-        <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
-        <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
-        <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
-        <button class="nb-page-btn" id="nbIleri" onclick="notebookSayfaIleri()">›</button>
-      </div>
     </div>
   </div>
 
