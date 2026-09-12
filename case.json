@@ -6,7 +6,7 @@
 
   "sleepEvents": {
     "2": "İkinci gün başlıyor. Köyü daha yakından tanıma vakti.",
-    "3": "Üçüncü gün. Duyuru panosunda yeni bir şey olabilir.",
+    "3": "Üçüncü gün. Köyü daha yakından tanıma vakti.",
     "4": "Sabah bir haber geldi: Nadire ölü bulunmuş...",
     "5": "Beşinci gün. Yan ipuçlarını toplama vakti.",
     "6": "Sabah bir haber daha geldi: Muhtar Halit ölü bulunmuş...",
@@ -45,7 +45,6 @@
         { "x": "75%", "y": "60%", "w": "10%", "h": "30%", "type": "navigate", "target": "cadi",         "hint": "Cadının Evine git" },
         { "x": "20%", "y": "20%", "w": "12%", "h": "25%", "type": "navigate", "target": "muhtar",       "hint": "Muhtarın Evine git" },
         { "x": "55%", "y": "18%", "w": "12%", "h": "25%", "type": "navigate", "target": "yikik",        "hint": "Yıkık Şapele git" },
-        { "x": "38%", "y": "10%", "w": "16%", "h": "12%", "type": "examine", "target": "pano_ilan", "hint": "Duyuru panosuna bak", "activeDays": [3,4,5,6,7] },
         { "x": "8%",  "y": "80%", "w": "10%", "h": "18%", "type": "navigate", "target": "demirci",     "hint": "Demirciye git" },
         { "x": "85%", "y": "70%", "w": "10%", "h": "22%", "type": "navigate", "target": "degirmenci",  "hint": "Değirmenciye git" },
         { "x": "65%", "y": "78%", "w": "10%", "h": "20%", "type": "navigate", "target": "sifahane",    "hint": "Şifahaneye git" },
@@ -107,13 +106,7 @@
     "han":        { "name": "Hancı Rıza",          "image": "assets/karakterler/riza.png",    "audio": "assets/karakterler/riza.mp3",    "text": "(BURAYA DİYALOG METNİ GELECEK)" }
   },
 
-  "items": {
-    "pano_ilan": {
-      "title": "Duyuru Panosu",
-      "image": "assets/evrak_not.jpg",
-      "desc": "Eski bir gazete kupürü — 20 yıl önceki bir suçlamadan bahsediyor, isim yok."
-    }
-  },
+  "items": {},
 
   "devices": {},
 

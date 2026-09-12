@@ -541,12 +541,18 @@ nbKalemKur(document.getElementById('nbCanvasSag'), 'sagÇizim');
    ORTAMDAKİ KARAKTER MEKANİĞİ
    Oda id'sine göre CASE.characters içinden okunur — hangi odada
    hangi karakterin durduğu tamamen case.json'da tanımlı.
-   Karaktere tıklayınca altyazı + ses ile konuşma başlar,
-   konuşma bitince (ses biterse ya da ses yoksa süre dolunca) kaybolur.
+   İlk tık: altyazı açılır, ses çalmaya başlar, KENDİLİĞİNDEN kapanmaz.
+   İkinci tık (karaktere tekrar tıklamak): konuşma biter, hem altyazı
+   hem karakter ekrandan kaybolur (ör. Rıza'yla konuşup bitirince
+   handa onun arkasındaki gazeteci odası kapısı ortaya çıkar).
    ============================================================ */
 let characterAudio = null;
+let dialogueActive = false;
 
 function renderCharacter() {
+  dialogueActive = false;
+  characterAudio = null;
+
   const ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return; // bu odaya atanmış karakter yok
 
@@ -557,46 +563,47 @@ function renderCharacter() {
   el.src = ch.image;
   el.alt = ch.name;
   el.title = ch.name;
-  el.onclick = () => { if (!calibMode) playCharacterLine(ch); };
+  el.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
   el.onerror = () => {
     const fallback = document.createElement('div');
     fallback.id = 'sceneCharacter';
     fallback.className = 'scene-character-missing';
     fallback.textContent = `${ch.name}\ngörsel yok:\n${ch.image}`;
+    fallback.onclick = el.onclick;
     el.replaceWith(fallback);
   };
   stage.appendChild(el);
 }
 
-function playCharacterLine(ch) {
+function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage');
   const charEl = document.getElementById('sceneCharacter');
-  if (charEl) charEl.classList.add('talking');
 
-  let sub = document.getElementById('sceneSubtitle');
-  if (!sub) {
-    sub = document.createElement('div');
-    sub.id = 'sceneSubtitle';
-    sub.className = 'scene-subtitle';
-    stage.appendChild(sub);
-  }
-  sub.innerHTML = `<div class="scene-subtitle-name">${ch.name}</div><div class="scene-subtitle-text">${ch.text || ''}</div>`;
+  if (!dialogueActive) {
+    // İLK TIK — konuşmayı başlat, altyazı kalıcı kalsın
+    dialogueActive = true;
+    if (charEl) charEl.classList.add('talking');
 
-  const konusmaBitince = () => {
-    const c = document.getElementById('sceneCharacter');
-    const s = document.getElementById('sceneSubtitle');
-    if (c) c.remove();
-    if (s) s.remove();
-    characterAudio = null;
-  };
+    let sub = document.getElementById('sceneSubtitle');
+    if (!sub) {
+      sub = document.createElement('div');
+      sub.id = 'sceneSubtitle';
+      sub.className = 'scene-subtitle';
+      stage.appendChild(sub);
+    }
+    sub.innerHTML = `<div class="scene-subtitle-name">${ch.name}</div><div class="scene-subtitle-text">${ch.text || ''}</div>`;
 
-  if (ch.audio) {
-    characterAudio = new Audio(ch.audio);
-    characterAudio.onended = konusmaBitince;
-    characterAudio.onerror = konusmaBitince; // ses dosyası bulunamazsa da sahnede takılı kalmasın
-    characterAudio.play().catch(() => {});
+    if (ch.audio) {
+      characterAudio = new Audio(ch.audio);
+      characterAudio.play().catch(() => {});
+    }
   } else {
-    // ses dosyası yoksa metin uzunluğuna göre kabaca bir süre sonra kaybol
-    setTimeout(konusmaBitince, Math.max(2500, (ch.text || '').length * 60));
+    // İKİNCİ TIK — konuşmayı bitir, karakter ve altyazı kaybolsun
+    if (characterAudio) { characterAudio.pause(); characterAudio = null; }
+    const sub = document.getElementById('sceneSubtitle');
+    if (sub) sub.remove();
+    const c = document.getElementById('sceneCharacter');
+    if (c) c.remove();
+    dialogueActive = false;
   }
 }
