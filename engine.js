@@ -57,6 +57,8 @@ function renderRoom() {
       stage.appendChild(el);
     });
 
+    renderCharacter(); // oda değiştikçe, o odaya atanmış karakter varsa sağ tarafta belirir
+
     stage.classList.remove('fading');
   }, 180);
 }
@@ -64,11 +66,21 @@ function renderRoom() {
 function handleHotspot(h) {
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
   if (h.type === 'examine')  { openExamine(h.target); return; }
+  if (h.type === 'photo')    { openPhoto(h.image); return; }
   if (h.type === 'recorder') { openRecorder(h.target); return; }
   if (h.type === 'tv')       { openTV(h.target); return; }
   if (h.type === 'dosya')    { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep')    { sleep(); return; }
+}
+
+/* ---------- salt fotoğraf gösterici (başlık/açıklama YOK, sadece görsel) ---------- */
+function openPhoto(src) {
+  showModal(`
+    <img class="reader-card-img" src="${src}" style="margin-bottom:14px;"
+         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
+    <button class="ghost" onclick="closeModal()">Kapat</button>
+  `);
 }
 
 /* ---------- gün döngüsü ---------- */
@@ -406,11 +418,13 @@ function openNotebook() {
     nbFallback.style.display = 'flex';
     nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
   };
+  // ÖNEMLİ: canvas boyutu, görsel gerçekten yüklenip sayfa yüksekliği oturduktan
+  // SONRA ölçülmeli — yoksa çizim yüzeyi 0 piksel kalır ve kalem görünmez çalışır.
+  nbImg.onload = () => renderNotebookPage();
   nbImg.src = src;
 
   document.getElementById('notebookOverlay').classList.add('active');
-  // overlay display:none iken canvas boyutu 0 ölçülür — açıldıktan sonra tekrar çiz
-  requestAnimationFrame(renderNotebookPage);
+  requestAnimationFrame(renderNotebookPage); // görsel önbellekten geliyorsa onload hiç tetiklenmeyebilir
 }
 function closeNotebook() {
   document.getElementById('notebookOverlay').classList.remove('active');
@@ -522,3 +536,67 @@ function nbKalemKur(canvas, taraf) {
 }
 nbKalemKur(document.getElementById('nbCanvasSol'), 'solÇizim');
 nbKalemKur(document.getElementById('nbCanvasSag'), 'sagÇizim');
+
+/* ============================================================
+   ORTAMDAKİ KARAKTER MEKANİĞİ
+   Oda id'sine göre CASE.characters içinden okunur — hangi odada
+   hangi karakterin durduğu tamamen case.json'da tanımlı.
+   Karaktere tıklayınca altyazı + ses ile konuşma başlar,
+   konuşma bitince (ses biterse ya da ses yoksa süre dolunca) kaybolur.
+   ============================================================ */
+let characterAudio = null;
+
+function renderCharacter() {
+  const ch = CASE.characters && CASE.characters[currentRoom];
+  if (!ch) return; // bu odaya atanmış karakter yok
+
+  const stage = document.getElementById('stage');
+  const el = document.createElement('img');
+  el.id = 'sceneCharacter';
+  el.className = 'scene-character';
+  el.src = ch.image;
+  el.alt = ch.name;
+  el.title = ch.name;
+  el.onclick = () => { if (!calibMode) playCharacterLine(ch); };
+  el.onerror = () => {
+    const fallback = document.createElement('div');
+    fallback.id = 'sceneCharacter';
+    fallback.className = 'scene-character-missing';
+    fallback.textContent = `${ch.name}\ngörsel yok:\n${ch.image}`;
+    el.replaceWith(fallback);
+  };
+  stage.appendChild(el);
+}
+
+function playCharacterLine(ch) {
+  const stage = document.getElementById('stage');
+  const charEl = document.getElementById('sceneCharacter');
+  if (charEl) charEl.classList.add('talking');
+
+  let sub = document.getElementById('sceneSubtitle');
+  if (!sub) {
+    sub = document.createElement('div');
+    sub.id = 'sceneSubtitle';
+    sub.className = 'scene-subtitle';
+    stage.appendChild(sub);
+  }
+  sub.innerHTML = `<div class="scene-subtitle-name">${ch.name}</div><div class="scene-subtitle-text">${ch.text || ''}</div>`;
+
+  const konusmaBitince = () => {
+    const c = document.getElementById('sceneCharacter');
+    const s = document.getElementById('sceneSubtitle');
+    if (c) c.remove();
+    if (s) s.remove();
+    characterAudio = null;
+  };
+
+  if (ch.audio) {
+    characterAudio = new Audio(ch.audio);
+    characterAudio.onended = konusmaBitince;
+    characterAudio.onerror = konusmaBitince; // ses dosyası bulunamazsa da sahnede takılı kalmasın
+    characterAudio.play().catch(() => {});
+  } else {
+    // ses dosyası yoksa metin uzunluğuna göre kabaca bir süre sonra kaybol
+    setTimeout(konusmaBitince, Math.max(2500, (ch.text || '').length * 60));
+  }
+}
