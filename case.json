@@ -92,6 +92,8 @@
   "notebook": {
     "image": "assets/yazi.png",
     "totalPages": 5,
+    "pageSol": { "top": "6%", "bottom": "8%", "left": "14%", "width": "30%" },
+    "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
     "suspectLayout": {
       "photoTop": "8%",
       "photoLeft": "8%",

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -43,16 +43,15 @@
         <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
         <div class="notebook-scroll">
         <div class="notebook-box">
-          <div class="notebook-img-wrap">
+          <div class="notebook-img-wrap" id="notebookImgWrap">
             <img id="notebookImage" src="" alt="Not Defteri">
             <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
 
             <!-- SOL SAYFA: 2 şüpheli satırı — fotoğraf+isim sabit, altları/yanları serbest -->
-            <div class="nb-page sol">
+            <div class="nb-page sol" id="nbPageSol">
               <div class="nb-suspect-row" id="nbRow0">
                 <div class="nb-suspect-notes" id="nbNotesSolUst">
                   <textarea class="nb-yazi" id="nbYaziSolUst" oninput="notebookYaziKaydet('solUst', this.value)"></textarea>
-                  <canvas class="nb-canvas pasif" id="nbCanvasSolUst"></canvas>
                 </div>
                 <div class="nb-suspect-overlay">
                   <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
@@ -62,7 +61,6 @@
               <div class="nb-suspect-row" id="nbRow1">
                 <div class="nb-suspect-notes" id="nbNotesSolAlt">
                   <textarea class="nb-yazi" id="nbYaziSolAlt" oninput="notebookYaziKaydet('solAlt', this.value)"></textarea>
-                  <canvas class="nb-canvas pasif" id="nbCanvasSolAlt"></canvas>
                 </div>
                 <div class="nb-suspect-overlay">
                   <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
@@ -72,10 +70,14 @@
             </div>
 
             <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
-            <div class="nb-page sag">
+            <div class="nb-page sag" id="nbPageSag">
               <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this.value)" placeholder="buraya not al..."></textarea>
-              <canvas class="nb-canvas pasif" id="nbCanvasSag"></canvas>
             </div>
+
+            <!-- TEK BÜYÜK ÇİZİM KATMANI: tüm çift sayfanın üstünü kaplar,
+                 "Çiz" moduna geçince artık defterin HER noktasına (fotoğrafların
+                 üstüne bile) serbestçe çizilebilir — ayrı ayrı kutulara hapsolmuyor. -->
+            <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
 
             <!-- Defterin kenarlarından sayfa çevirme -->
             <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
@@ -110,6 +112,6 @@
     </div>
   </div>
 
-  <script src="engine.js?v=7"></script>
+  <script src="engine.js?v=8"></script>
 </body>
 </html>

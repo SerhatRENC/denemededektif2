@@ -390,18 +390,20 @@ function closeMap() {
 
 /* ============================================================
    NOT DEFTERİ MEKANİĞİ
-   Sol sayfa artık 2 sabit şüpheli satırı (fotoğraf+isim CASE.notebook.suspects'tan,
-   sayfa değişse de değişmez) + her satırın yanında serbest yazı/çizim alanı.
+   Sol sayfa 2 sabit şüpheli satırı (fotoğraf+isim CASE.notebook.suspects'tan,
+   sayfa değişse de değişmez) + her satırın yanında serbest metin alanı.
    Sağ sayfa tamamen serbest not alanı.
-   Her sayfa: { solUst, solAlt, sag: metin | solUstÇizim, solAltÇizim, sagÇizim: canvas dataURL }
-   localStorage: sd_notebook_v2_<caseLabel>  (v2: sol sayfa yapısı değiştiği için
-   eski v1 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
+   ÇİZİM tek bir katman (nbCanvasFull) — tüm çift sayfayı kaplar, "Çiz"
+   modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir.
+   Her sayfa: { solUst, solAlt, sag: metin | pageDrawing: tek canvas dataURL }
+   localStorage: sd_notebook_v3_<caseLabel>  (v3: çizim tek katmana indirgendi
+   için eski v2 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
    ============================================================ */
 let notebookState = null;
 let notebookDrawMode = false;
 
 function notebookKey() {
-  return 'sd_notebook_v2_' + CASE.caseLabel;
+  return 'sd_notebook_v3_' + CASE.caseLabel;
 }
 
 function loadNotebook() {
@@ -410,8 +412,7 @@ function loadNotebook() {
   notebookState = saved ? JSON.parse(saved) : {
     page: 0,
     pages: Array.from({ length: total }, () => ({
-      solUst: '', solAlt: '', sag: '',
-      solUstÇizim: null, solAltÇizim: null, sagÇizim: null
+      solUst: '', solAlt: '', sag: '', pageDrawing: null
     }))
   };
 }
@@ -423,7 +424,19 @@ function openNotebook() {
   if (!notebookState) loadNotebook();
   const nbImg = document.getElementById('notebookImage');
   const nbFallback = document.getElementById('notebookImgFallback');
+  const nbWrap = document.getElementById('notebookImgWrap');
   const src = (CASE.notebook && CASE.notebook.image) || 'assets/yazi.png';
+
+  // Sayfa (sol/sağ) konumları case.json'dan — CSS'teki değerler sadece
+  // case.json okunamazsa devreye giren varsayılan.
+  const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
+  const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
+  const solEl = document.getElementById('nbPageSol');
+  const sagEl = document.getElementById('nbPageSag');
+  ['top', 'bottom', 'left', 'width'].forEach(k => {
+    if (pageSol[k]) solEl.style[k] = pageSol[k];
+    if (pageSag[k]) sagEl.style[k] = pageSag[k];
+  });
 
   nbImg.style.display = '';
   nbFallback.style.display = 'none';
@@ -432,9 +445,16 @@ function openNotebook() {
     nbFallback.style.display = 'flex';
     nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
   };
-  // ÖNEMLİ: canvas boyutu, görsel gerçekten yüklenip sayfa yüksekliği oturduktan
-  // SONRA ölçülmeli — yoksa çizim yüzeyi 0 piksel kalır ve kalem görünmez çalışır.
-  nbImg.onload = () => renderNotebookPage();
+  nbImg.onload = () => {
+    // ÖNEMLİ KÖK ÇÖZÜM: en-boy oranı artık case.json/CSS'e gömülü bir tahmin
+    // DEĞİL — dosyanın gerçek piksel boyutundan (naturalWidth/naturalHeight)
+    // otomatik okunuyor. Görseli ileride değiştirsen (farklı boyutta bir
+    // yazi.png koysan) bile hiçbir kod/CSS değişikliği gerekmez, otomatik uyar.
+    if (nbImg.naturalWidth && nbImg.naturalHeight) {
+      nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
+    }
+    renderNotebookPage();
+  };
   nbImg.src = src;
 
   document.getElementById('notebookOverlay').classList.add('active');
@@ -512,14 +532,14 @@ function renderNotebookPage() {
     }
 
     const yaziEl = document.getElementById(satir.yaziId);
-    const canvasEl = document.getElementById(satir.canvasId);
     yaziEl.value = p[satir.taraf] || '';
-    canvasResizeVeCiz(canvasEl, p[satir.taraf + 'Çizim']);
   });
 
   // --- SAĞ SAYFA: değişmedi, tamamen serbest ---
   document.getElementById('nbYaziSag').value = p.sag || '';
-  canvasResizeVeCiz(document.getElementById('nbCanvasSag'), p.sagÇizim);
+
+  // --- TEK BÜYÜK ÇİZİM KATMANI: tüm çift sayfayı kaplar ---
+  canvasResizeVeCiz(document.getElementById('nbCanvasFull'), p.pageDrawing);
 
   document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
   document.getElementById('nbEdgeGeri').disabled = notebookState.page === 0;
@@ -555,8 +575,7 @@ function notebookSayfaIleri() {
 function notebookTemizle() {
   if (!confirm('Bu sayfadaki yazı ve çizimler silinsin mi? (Fotoğraf ve isimler etkilenmez)')) return;
   const p = notebookState.pages[notebookState.page];
-  p.solUst = ''; p.solAlt = ''; p.sag = '';
-  p.solUstÇizim = null; p.solAltÇizim = null; p.sagÇizim = null;
+  p.solUst = ''; p.solAlt = ''; p.sag = ''; p.pageDrawing = null;
   saveNotebook();
   renderNotebookPage();
 }
@@ -565,7 +584,7 @@ function notebookModAyarla(çizim) {
   notebookDrawMode = çizim;
   document.getElementById('nbModYaz').classList.toggle('active', !çizim);
   document.getElementById('nbModCiz').classList.toggle('active', çizim);
-  document.querySelectorAll('.nb-canvas').forEach(c => c.classList.toggle('pasif', !çizim));
+  document.getElementById('nbCanvasFull').classList.toggle('pasif', !çizim);
   document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = çizim ? 'none' : 'auto');
 }
 
@@ -607,9 +626,7 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchmove', çiz);
   canvas.addEventListener('touchend', bitir);
 }
-nbKalemKur(document.getElementById('nbCanvasSolUst'), 'solUstÇizim');
-nbKalemKur(document.getElementById('nbCanvasSolAlt'), 'solAltÇizim');
-nbKalemKur(document.getElementById('nbCanvasSag'), 'sagÇizim');
+nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
 /* ============================================================
    ORTAMDAKİ KARAKTER MEKANİĞİ

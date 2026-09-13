@@ -295,14 +295,15 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   color:#2b2018;padding:2px 6px;
 }
 
-/* SAĞ SAYFA — tamamen serbest not alanı (değişmedi) */
+/* SAĞ SAYFA — tamamen serbest not alanı (değişmedi). Varsayılan değerler
+   case.json → notebook → pageSag'dan JS ile üzerine yazılır. */
 .nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
 .nb-page.sag .nb-yazi{font-size:19px;line-height:1.5;padding:4px 8px 4px 14px;}
 
 /* SOL SAYFA — 2 sabit şüpheli satırı. Fotoğraf+isim CASE.notebook.suspects'tan
-   gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı/çizim alanıdır
-   (nb-suspect-notes tüm satırı kaplar, fotoğraf+isim onun ÜSTÜNE bindirilir). */
-.nb-page.sol{position:absolute;top:6%;bottom:8%;left:8%;width:34%;
+   gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı alanıdır.
+   Varsayılan değerler case.json → notebook → pageSol'dan JS ile üzerine yazılır. */
+.nb-page.sol{position:absolute;top:6%;bottom:8%;left:14%;width:30%;
   display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
 .nb-suspect-row{position:relative;height:48%;}
 /* Varsayılan değerler — case.json → notebook → suspectLayout içinden
@@ -312,15 +313,14 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .nb-suspect-notes .nb-yazi{font-size:14px;line-height:1.3;padding:2px 4px;}
 
 /* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur.
-   MATEMATİK: defterin en-boy oranı artık sabit (813:454) olduğu için
-   satırın genişlik/yükseklik oranı da kesin biliniyor. Fotoğraf genişliği
-   satırın %30'u olacak şekilde ayarlandığında, 3:4 en-boy oranıyla
-   yüksekliği satır yüksekliğinin ~%60'ını geçmiyor — yani isimle
-   çakışması ya da satırdan taşması matematiksel olarak mümkün değil. */
+   object-fit:contain — KIRPMAZ, orijinal fotoğrafın tamamını korur,
+   sadece kutuya sığacak şekilde ölçeğini küçültür. Fotoğraf kendi
+   orijinal en-boy oranını korur (aspect-ratio JS tarafından fotoğrafın
+   gerçek boyutuna göre otomatik ayarlanır, 3/4 sadece varsayılan). */
 .nb-suspect-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;}
 .nb-suspect-photo{
   position:absolute;top:8%;left:8%;width:24%;height:auto;aspect-ratio:3/4;
-  object-fit:cover;border:2px solid #6b4a30;
+  object-fit:contain;border:2px solid #6b4a30;
   box-shadow:0 3px 8px rgba(0,0,0,.4);background:#d8c9a3;
 }
 .nb-suspect-name{
@@ -335,8 +335,10 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;white-space:pre-line;
 }
 
-.nb-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
-.nb-canvas.pasif{pointer-events:none;}
+/* TEK BÜYÜK ÇİZİM KATMANI — tüm çift sayfayı (notebook-img-wrap'ın tamamını)
+   kaplar, "Çiz" modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir. */
+.nb-canvas-full{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;z-index:10;}
+.nb-canvas-full.pasif{pointer-events:none;}
 
 /* Defterin kenarlarından sayfa çevirme okları */
 .nb-edge-arrow{
