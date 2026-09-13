@@ -94,8 +94,8 @@
     "totalPages": 5,
     "suspectLayout": {
       "photoTop": "10%",
-      "photoLeft": "4%",
-      "photoWidth": "30%",
+      "photoLeft": "24%",
+      "photoWidth": "60%",
       "nameTop": "14%",
       "nameLeft": "38%"
     },
