@@ -93,13 +93,16 @@
     "image": "assets/yazi.png",
     "totalPages": 5,
     "suspectLayout": {
-      "photoTop": "0%",
-      "photoLeft": "0%",
-      "photoWidth": "35%",
-      "nameTop": "5%",
-      "nameLeft": "40%"
-    }
-  },
+      "photoTop": "8%",
+      "photoLeft": "8%",
+      "photoWidth": "24%",
+      "nameTop": "6%",
+      "nameLeft": "36%",
+      "noteTop": "26%",
+      "noteLeft": "36%",
+      "noteWidth": "60%",
+      "noteHeight": "70%"
+    },
     "suspects": [
       { "name": "Nadire",             "image": "assets/supheliler/nadire.jpg" },
       { "name": "Muhtar Halit",       "image": "assets/supheliler/halit.jpg" },

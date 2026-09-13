@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -50,7 +50,7 @@
             <!-- SOL SAYFA: 2 şüpheli satırı — fotoğraf+isim sabit, altları/yanları serbest -->
             <div class="nb-page sol">
               <div class="nb-suspect-row" id="nbRow0">
-                <div class="nb-suspect-notes">
+                <div class="nb-suspect-notes" id="nbNotesSolUst">
                   <textarea class="nb-yazi" id="nbYaziSolUst" oninput="notebookYaziKaydet('solUst', this.value)"></textarea>
                   <canvas class="nb-canvas pasif" id="nbCanvasSolUst"></canvas>
                 </div>
@@ -60,7 +60,7 @@
                 </div>
               </div>
               <div class="nb-suspect-row" id="nbRow1">
-                <div class="nb-suspect-notes">
+                <div class="nb-suspect-notes" id="nbNotesSolAlt">
                   <textarea class="nb-yazi" id="nbYaziSolAlt" oninput="notebookYaziKaydet('solAlt', this.value)"></textarea>
                   <canvas class="nb-canvas pasif" id="nbCanvasSolAlt"></canvas>
                 </div>
@@ -110,6 +110,6 @@
     </div>
   </div>
 
-  <script src="engine.js?v=6"></script>
+  <script src="engine.js?v=7"></script>
 </body>
 </html>
