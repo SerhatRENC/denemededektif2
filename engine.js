@@ -455,11 +455,30 @@ function renderNotebookPage() {
   const p = notebookState.pages[notebookState.page];
   const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
 
+  // Yerleşim yüzdeleri case.json'dan geliyor — CSS'i değiştirmeden,
+  // doğrudan case.json → notebook → suspectLayout içinden ince ayar yapılabilir.
+  const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
+  const photoTop   = yerlesim.photoTop   || '10%';
+  const photoLeft  = yerlesim.photoLeft  || '4%';
+  const photoWidth = yerlesim.photoWidth || '30%';
+  const nameTop    = yerlesim.nameTop    || '14%';
+  const nameLeft   = yerlesim.nameLeft   || '38%';
+
   // --- SOL SAYFA: sabit fotoğraf+isim (case.json'dan) + serbest yazı/çizim (kayıtlı state'ten) ---
   NB_SOL_SATIRLAR.forEach((satir, i) => {
     const suspect = suspects[notebookState.page * 2 + i]; // her sayfada 2 kişi
     const photoEl = document.getElementById(satir.photoId);
     const nameEl = document.getElementById(satir.nameId);
+
+    // Konum/boyut her render'da case.json'dan yeniden uygulanıyor —
+    // fallback (görsel yok) kutusuna dönüşse bile aynı yerleşimi korur.
+    nameEl.style.top = nameTop;
+    nameEl.style.left = nameLeft;
+    if (photoEl.tagName === 'IMG') {
+      photoEl.style.top = photoTop;
+      photoEl.style.left = photoLeft;
+      photoEl.style.width = photoWidth;
+    }
 
     if (suspect) {
       nameEl.textContent = suspect.name;
@@ -468,6 +487,9 @@ function renderNotebookPage() {
         const fallback = document.createElement('div');
         fallback.className = 'nb-suspect-photo-missing';
         fallback.id = photoEl.id;
+        fallback.style.top = photoTop;
+        fallback.style.left = photoLeft;
+        fallback.style.width = photoWidth;
         fallback.textContent = `görsel yok:\n${suspect.image}`;
         photoEl.replaceWith(fallback);
       };

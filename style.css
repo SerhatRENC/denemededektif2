@@ -221,13 +221,18 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-/* Tek elemanlı kutularda (haritada araç çubuğu gibi rakip bir kardeş
-   yok) en sağlam teknik bu: max-width VE max-height'ı aynı anda %100
-   verip width/height'ı auto bırakmak — tarayıcı, aspect-ratio'yu bozmadan
-   ikisine BİRDEN sığan en büyük boyutu kendisi hesaplıyor, ekstra flex
-   hesaplamasına gerek kalmıyor. */
-.map-box{position:relative;max-width:100%;max-height:100%;width:auto;height:auto;aspect-ratio:1376/768;}
-.map-box img{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);object-fit:cover;}
+/* KÖK ÇÖZÜM: bir önceki deneme (.map-box'a aspect-ratio verip içine
+   mutlak-konumlu bir <img> koymak) tarayıcıda kutunun "içeriği yok"
+   sanılıp 0x0'a çökmesine yol açtı — çünkü mutlak konumlu elemanlar
+   kutunun doğal boyut hesabına dahil edilmez. Çözüm: artık GÖRSELİN
+   KENDİSİ (img, mutlak değil normal akışta) boyutu belirliyor —
+   <img> etiketleri kendi gerçek en-boy oranını bilir, max-width/
+   max-height + width/height:auto ile her zaman güvenilir çalışır.
+   .map-box ise sadece görselin etrafını saran, display:inline-block
+   sayesinde görselin gerçek boyutuna küçülen bir çerçeve. */
+.map-box{position:relative;display:inline-block;max-width:100%;max-height:100%;}
+.map-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;
+  border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 #mapHotspots{position:absolute;inset:0;}
 .map-hotspot{
   position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
