@@ -109,7 +109,7 @@
     "degirmenci": { "name": "Değirmenci Mustafa", "image": "assets/karakterler/mustafa.png", "audio": "assets/karakterler/mustafa.mp3", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
     "kilise":     { "name": "Peder Anselm",        "image": "assets/karakterler/anselm.png",  "audio": "assets/karakterler/anselm.mp3",  "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
     "sifahane":   { "name": "Doktor Kamuran",      "image": "assets/karakterler/kamuran.png", "audio": "assets/karakterler/kamuran.mp3", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
-    "demirci":    { "name": "Demirci Cabbar",      "image": "assets/karakterler/cabbar.png",  "audio": "assets/karakterler/cabbar.mp3",  "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "5%" },
+    "demirci":    { "name": "Demirci Cabbar",      "image": "assets/karakterler/cabbar.png",  "audio": "assets/karakterler/cabbar.mp3",  "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
     "muhtar":     { "name": "Muhtar Halit",        "image": "assets/karakterler/halit.png",   "audio": "assets/karakterler/halit.mp3",   "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
     "halit_ev":   { "name": "Aylin",               "image": "assets/karakterler/aylin.png",   "audio": "assets/karakterler/aylin.mp3",   "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
     "nadire_ev":  { "name": "Nadire",              "image": "assets/karakterler/nadire.png",  "audio": "assets/karakterler/nadire.mp3",  "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "0%" },
