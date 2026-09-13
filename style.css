@@ -214,14 +214,14 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .map-overlay.active{display:flex;}
 .map-scroll{
   width:100%;height:100%;overflow-y:auto;padding:4%;
-  display:flex;align-items:flex-start;justify-content:center;
+  display:flex;align-items:stretch;justify-content:center;
 }
 .map-overlay-close{
   position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-.map-box{position:relative;width:100%;max-width:100%;margin-top:6px;aspect-ratio:1376/768;}
+.map-box{position:relative;flex:1 1 auto;min-height:0;width:auto;max-width:100%;aspect-ratio:1376/768;align-self:center;}
 .map-box img{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);object-fit:cover;}
 #mapHotspots{position:absolute;inset:0;}
 .map-hotspot{
@@ -249,21 +249,29 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
 .notebook-overlay.active{display:flex;}
 .notebook-scroll{
   width:100%;height:100%;overflow-y:auto;padding:3%;
-  display:flex;align-items:flex-start;justify-content:center;
+  display:flex;align-items:stretch;justify-content:center;
 }
 .notebook-overlay-close{
   position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-.notebook-box{width:100%;max-width:100%;}
-/* ÖNEMLİ KÖK ÇÖZÜM: sarmalayıcının yüksekliği artık görselin yüklenip
-   yüklenmediğine bağlı değil — sabit en-boy oranı (yazi.png'nin gerçek oranı,
-   813x454) CSS'e doğrudan yazıldı. Böylece içindeki TÜM yüzdelik konumlandırmalar
-   (sayfa, satır, fotoğraf) her zaman kesin bir yüksekliğe göre hesaplanıyor,
-   görsel geç yüklenirse ya da hiç yüklenmezse bile boyutlar bozulmuyor. */
-.notebook-img-wrap{position:relative;width:100%;aspect-ratio:813/454;}
+/* ÖNEMLİ KÖK ÇÖZÜM: notebook-box artık dikey bir flex kutusu. Görsel
+   (.notebook-img-wrap) "flex:1" ile önce ARAÇ ÇUBUĞUNUN ihtiyaç duyduğu
+   yer çıkarılıp KALAN yüksekliği alıyor, sonra aspect-ratio ile o
+   yükseklikten genişliğini hesaplıyor (ya da tam tersi, hangisi dar
+   geliyorsa ona göre küçülüyor). Böylece görsel+araç çubuğu toplamı
+   HER ZAMAN mevcut alana sığıyor, kaydırmaya gerek kalmıyor.*/
+.notebook-box{
+  width:100%;max-width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.notebook-img-wrap{
+  position:relative;flex:1 1 auto;min-height:0;width:auto;max-width:100%;
+  aspect-ratio:813/454;
+}
 .notebook-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;}
+.notebook-toolbar{flex:0 0 auto;}
 .notebook-img-fallback{
   width:100%;aspect-ratio:16/9;border-radius:6px;align-items:center;justify-content:center;
   background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
