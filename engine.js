@@ -604,6 +604,11 @@ function renderCharacter() {
   el.src = ch.image;
   el.alt = ch.name;
   el.title = ch.name;
+  // Farklı PNG'lerde şeffaf kenar boşluğu farklı olabildiği için ("ayaklar
+  // havada duruyormuş" hissi), her karakter case.json'dan bağımsız bir
+  // dikey ince ayar (yOffset) alabilir. Pozitif değer karakteri yukarı,
+  // negatif değer aşağı kaydırır (örn. "-3%" karakteri hafif indirir).
+  el.style.bottom = ch.yOffset || '0%';
   el.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
   el.onerror = () => {
     const fallback = document.createElement('div');
