@@ -18,14 +18,14 @@
       "name": "Muhtar Halim",
       "portrait": "assets/images/characters/muhtar.png",
       "dialogues": {
-        "greeting": "(BURAYA DİYALOG METNİ GELECEK)"
+        "greeting": "Hoş geldin komiserim. Köyde işler bildiğin gibi değil..."
       }
     },
     "char_bekci": {
       "name": "Bekçi Hasan",
       "portrait": "assets/images/characters/bekci.png",
       "dialogues": {
-        "greeting": "(BURAYA DİYALOG METNİ GELECEK)"
+        "greeting": "O gece fırtına vardı komiserim, göz gözü görmüyordu."
       }
     }
   },
@@ -41,6 +41,14 @@
           "width": 15,
           "height": 15,
           "action": "open_map"
+        },
+        {
+          "id": "hs_notebook",
+          "x": 30,
+          "y": 60,
+          "width": 12,
+          "height": 10,
+          "action": "open_notebook"
         }
       ]
     }

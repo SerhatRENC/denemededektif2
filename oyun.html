@@ -3,91 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sisledere Köyü - Giriş</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #000;
-      color: #fff;
-      font-family: 'Georgia', serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .intro-container {
-      position: relative;
-      width: 100vw;
-      height: 56.25vw;
-      max-height: 100vh;
-      max-width: 177.78vh;
-      background: #050505;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .char-img {
-      max-height: 60%;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .char-img.show { opacity: 1; }
-    .subtitle {
-      position: absolute;
-      bottom: 10%;
-      width: 80%;
-      text-align: center;
-      font-size: clamp(14px, 1.5vw, 22px);
-      color: #dcd0b9;
-      background: rgba(0,0,0,0.7);
-      padding: 12px 20px;
-      border-radius: 6px;
-      border: 1px solid #443;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .subtitle.show { opacity: 1; }
-  </style>
+  <title>Sisledere Köyü - Oyun</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <div class="intro-container" id="intro-box">
-    <img id="char-polis" class="char-img" src="assets/images/characters/polis.png" alt="Polis">
-    <div id="subtitles" class="subtitle"></div>
+  <div class="stage-frame">
+    <!-- Üst Bilgi Başlıkları -->
+    <div class="stage-title" id="stage-title">Yükleniyor...</div>
+    <div class="stage-day-tag" id="stage-day">Gün 1</div>
+
+    <!-- Oyun Sahnesi -->
+    <div class="stage" id="stage-main">
+      <!-- Hotspot'lar JS ile buraya yüklenecek -->
+    </div>
+
+    <!-- Sol Alt: Envanter -->
+    <div class="inventory" id="inventory-bar">
+      <div class="inv-slot" id="slot-0"></div>
+      <div class="inv-slot" id="slot-1"></div>
+      <div class="inv-slot" id="slot-2"></div>
+      <div class="inv-slot" id="slot-3"></div>
+    </div>
+
+    <!-- Sağ Alt: Harita ve Not Defteri Butonları -->
+    <div class="corner-icons">
+      <button class="corner-icon-btn" id="btn-open-map" title="Harita">
+        <img src="assets/images/ui/icon_map.png" alt="Harita" onerror="this.style.display='none'; this.parentNode.innerText='🗺️'">
+      </button>
+      <button class="corner-icon-btn" id="btn-open-notebook" title="Not Defteri">
+        <img src="assets/images/ui/icon_notebook.png" alt="Defter" onerror="this.style.display='none'; this.parentNode.innerText='📓'">
+      </button>
+    </div>
+
+    <!-- MODAL 1: Harita Overlay -->
+    <div class="map-overlay" id="map-modal">
+      <div class="map-card">
+        <button class="map-overlay-close" id="btn-close-map">X</button>
+        <h3 style="color: #e3a94a; margin-bottom: 10px;">Sisledere Haritası</h3>
+        <div style="flex:1; background: #2a241e; border: 1px solid #443; display:flex; align-items:center; justify-content:center; color:#888;">
+          [ HARİTA GÖRSELİ / LOKASYONLAR ]
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Not Defteri Overlay -->
+    <div class="notebook-overlay" id="notebook-modal">
+      <div class="notebook-card">
+        <button class="notebook-overlay-close" id="btn-close-notebook">X</button>
+        <h3 style="color: #e3a94a; margin-bottom: 10px;">Dedektif Defteri</h3>
+        <div style="position:relative; flex:1;">
+          <textarea class="nb-yazi" placeholder="Notlarınızı buraya yazabilirsiniz..."></textarea>
+          <canvas class="nb-canvas-full pasif" id="nb-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script>
-    const introData = [
-      { char: 'polis', text: "Sisledere Köyü... Uzun zamandır bu kadar sessiz bir yer görmemiştim." },
-      { char: 'polis', text: "Ancak bu sessizliğin altında saklanan bir şeyler var." },
-      { char: 'polis', text: "Davanın detaylarını incelemek için karakola geçmeliyim." }
-    ];
-
-    let step = 0;
-    const sub = document.getElementById('subtitles');
-    const charPolis = document.getElementById('char-polis');
-
-    function nextStep() {
-      if (step < introData.length) {
-        const item = introData[step];
-        sub.innerText = item.text;
-        sub.classList.add('show');
-        if (item.char === 'polis') charPolis.classList.add('show');
-        step++;
-      } else {
-        sub.classList.remove('show');
-        charPolis.classList.remove('show');
-        setTimeout(() => { 
-          window.location.href = "oyun_2.html"; 
-        }, 500);
-      }
-    }
-
-    document.getElementById('intro-box').addEventListener('click', nextStep);
-    // İlk adımı başlat
-    nextStep();
-  </script>
+  <script src="engine.js"></script>
 </body>
 </html>
