@@ -1,117 +1,93 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<!-- Mobil kaymaları ve yanlış zoom'ları önleyen viewport ayarı -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Sisledere Davası</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisledere Köyü - Giriş</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Georgia', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .intro-container {
+      position: relative;
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      background: #050505;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .char-img {
+      max-height: 60%;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .char-img.show { opacity: 1; }
+    .subtitle {
+      position: absolute;
+      bottom: 10%;
+      width: 80%;
+      text-align: center;
+      font-size: clamp(14px, 1.5vw, 22px);
+      color: #dcd0b9;
+      background: rgba(0,0,0,0.7);
+      padding: 12px 20px;
+      border-radius: 6px;
+      border: 1px solid #443;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .subtitle.show { opacity: 1; }
+  </style>
 </head>
 <body>
 
-  <!-- Ekranın tam ortasında 16:9 oranını koruyan ana sahne -->
-  <div class="stage-frame" id="stageFrame">
-    <div class="stage" id="stage"></div>
-
-    <!-- Başlık ve Gün Sayacı -->
-    <h1 id="caseTitle" class="stage-title">Yükleniyor...</h1>
-    <div class="stage-day-tag" id="dayBadge">GÜN 1</div>
-
-    <!-- Sağ Alt Butonlar -->
-    <div class="corner-icons">
-      <button class="corner-icon-btn" onclick="openMap()" title="Harita">
-        <img src="assets/harita.png" alt="Harita">
-      </button>
-      <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
-        <img src="assets/defter.png" alt="Not Defteri">
-      </button>
-    </div>
-
-    <!-- Envanter (Kutu içine alındı, dışarı taşmaz) -->
-    <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
-
-    <!-- HARİTA OVERLAY -->
-    <div class="map-overlay" id="mapOverlay">
-      <button class="map-overlay-close" onclick="closeMap()">✕</button>
-      <div class="map-scroll">
-        <div class="map-box">
-          <img id="mapImage" src="" alt="Harita">
-          <div id="mapHotspots"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOT DEFTERİ OVERLAY -->
-    <div class="notebook-overlay" id="notebookOverlay">
-      <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
-      <div class="notebook-scroll">
-        <div class="notebook-box">
-          <div class="notebook-img-wrap" id="notebookImgWrap">
-            <img id="notebookImage" src="" alt="Not Defteri">
-            <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
-
-            <!-- SOL SAYFA -->
-            <div class="nb-page sol" id="nbPageSol">
-              <div class="nb-suspect-row" id="nbRow0">
-                <div class="nb-suspect-notes" id="nbNotesSolUst">
-                  <textarea class="nb-yazi" id="nbYaziSolUst" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solUst', this)"></textarea>
-                </div>
-                <div class="nb-suspect-overlay">
-                  <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
-                  <div class="nb-suspect-name" id="nbName0"></div>
-                </div>
-              </div>
-              <div class="nb-suspect-row" id="nbRow1">
-                <div class="nb-suspect-notes" id="nbNotesSolAlt">
-                  <textarea class="nb-yazi" id="nbYaziSolAlt" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solAlt', this)"></textarea>
-                </div>
-                <div class="nb-suspect-overlay">
-                  <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
-                  <div class="nb-suspect-name" id="nbName1"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- SAĞ SAYFA -->
-            <div class="nb-page sag" id="nbPageSag">
-              <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this)" placeholder="buraya not al..."></textarea>
-            </div>
-
-            <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
-
-            <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
-            <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
-          </div>
-          <div class="notebook-toolbar">
-            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
-            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
-            <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
-            <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal-bg" id="modalBg">
-      <div class="modal" id="modalBody"></div>
-    </div>
-
-    <!-- GÜN GEÇİŞİ -->
-    <div class="sleep-overlay" id="sleepOverlay">
-      <div class="content">
-        <div class="day-num" id="sleepDayNum">GÜN 2</div>
-        <p id="sleepText">Yeni bir gün başlıyor.</p>
-        <button onclick="wakeUp()">Uyan</button>
-      </div>
-    </div>
+  <div class="intro-container" id="intro-box">
+    <img id="char-polis" class="char-img" src="assets/images/characters/polis.png" alt="Polis">
+    <div id="subtitles" class="subtitle"></div>
   </div>
 
-  <!-- Kalibrasyon aracı (Geliştirme aşamasında sahne dışı kalabilir) -->
-  <button class="calib-toggle" id="calibToggle" style="display:none;">🎯 Kalibrasyon Modu</button>
-  <div class="calib-readout" id="calibReadout" style="display:none;"></div>
+  <script>
+    const introData = [
+      { char: 'polis', text: "Sisledere Köyü... Uzun zamandır bu kadar sessiz bir yer görmemiştim." },
+      { char: 'polis', text: "Ancak bu sessizliğin altında saklanan bir şeyler var." },
+      { char: 'polis', text: "Davanın detaylarını incelemek için karakola geçmeliyim." }
+    ];
 
-  <script src="engine.js?v=12"></script>
+    let step = 0;
+    const sub = document.getElementById('subtitles');
+    const charPolis = document.getElementById('char-polis');
+
+    function nextStep() {
+      if (step < introData.length) {
+        const item = introData[step];
+        sub.innerText = item.text;
+        sub.classList.add('show');
+        if (item.char === 'polis') charPolis.classList.add('show');
+        step++;
+      } else {
+        sub.classList.remove('show');
+        charPolis.classList.remove('show');
+        setTimeout(() => { 
+          window.location.href = "oyun_2.html"; 
+        }, 500);
+      }
+    }
+
+    document.getElementById('intro-box').addEventListener('click', nextStep);
+    // İlk adımı başlat
+    nextStep();
+  </script>
 </body>
 </html>
