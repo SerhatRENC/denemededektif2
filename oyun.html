@@ -1,67 +1,117 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sisledere Köyü - Oyun</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sislidere Davası</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
-  <div class="stage-frame">
-    <!-- Üst Bilgi Başlıkları -->
-    <div class="stage-title" id="stage-title">Yükleniyor...</div>
-    <div class="stage-day-tag" id="stage-day">Gün 1</div>
+  <h1 id="caseTitle">Yükleniyor...</h1>
 
-    <!-- Oyun Sahnesi -->
-    <div class="stage" id="stage-main">
-      <!-- Hotspot'lar JS ile buraya yüklenecek -->
-    </div>
+  <div class="stage-wrap">
+    <div class="stage-frame" id="stageFrame">
+      <div class="stage" id="stage"></div>
 
-    <!-- Sol Alt: Envanter -->
-    <div class="inventory" id="inventory-bar">
-      <div class="inv-slot" id="slot-0"></div>
-      <div class="inv-slot" id="slot-1"></div>
-      <div class="inv-slot" id="slot-2"></div>
-      <div class="inv-slot" id="slot-3"></div>
-    </div>
+      <!-- Gün sayacı — oyun ekranının sağ üst köşesinde -->
+      <div class="stage-day-tag" id="dayBadge">GÜN 1</div>
 
-    <!-- Sağ Alt: Harita ve Not Defteri Butonları -->
-    <div class="corner-icons">
-      <button class="corner-icon-btn" id="btn-open-map" title="Harita">
-        <img src="assets/images/ui/icon_map.png" alt="Harita" onerror="this.style.display='none'; this.parentNode.innerText='🗺️'">
-      </button>
-      <button class="corner-icon-btn" id="btn-open-notebook" title="Not Defteri">
-        <img src="assets/images/ui/icon_notebook.png" alt="Defter" onerror="this.style.display='none'; this.parentNode.innerText='📓'">
-      </button>
-    </div>
+      <div class="corner-icons">
+        <button class="corner-icon-btn" onclick="openMap()" title="Harita">
+          <img src="assets/harita.png" alt="Harita">
+        </button>
+        <button class="corner-icon-btn" onclick="openNotebook()" title="Not Defteri">
+          <img src="assets/defter.png" alt="Not Defteri">
+        </button>
+      </div>
 
-    <!-- MODAL 1: Harita Overlay -->
-    <div class="map-overlay" id="map-modal">
-      <div class="map-card">
-        <button class="map-overlay-close" id="btn-close-map">X</button>
-        <h3 style="color: #e3a94a; margin-bottom: 10px;">Sisledere Haritası</h3>
-        <div style="flex:1; background: #2a241e; border: 1px solid #443; display:flex; align-items:center; justify-content:center; color:#888;">
-          [ HARİTA GÖRSELİ / LOKASYONLAR ]
+      <!-- ============ HARİTA OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <div class="map-overlay" id="mapOverlay">
+        <button class="map-overlay-close" onclick="closeMap()">✕</button>
+        <div class="map-scroll">
+          <div class="map-box">
+            <img id="mapImage" src="" alt="Harita">
+            <div id="mapHotspots"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- MODAL 2: Not Defteri Overlay -->
-    <div class="notebook-overlay" id="notebook-modal">
-      <div class="notebook-card">
-        <button class="notebook-overlay-close" id="btn-close-notebook">X</button>
-        <h3 style="color: #e3a94a; margin-bottom: 10px;">Dedektif Defteri</h3>
-        <div style="position:relative; flex:1;">
-          <textarea class="nb-yazi" placeholder="Notlarınızı buraya yazabilirsiniz..."></textarea>
-          <canvas class="nb-canvas-full pasif" id="nb-canvas"></canvas>
+      <!-- ============ NOT DEFTERİ OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <div class="notebook-overlay" id="notebookOverlay">
+        <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
+        <div class="notebook-scroll">
+        <div class="notebook-box">
+          <div class="notebook-img-wrap" id="notebookImgWrap">
+            <img id="notebookImage" src="" alt="Not Defteri">
+            <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
+
+            <!-- SOL SAYFA: 2 şüpheli satırı — fotoğraf+isim sabit, altları/yanları serbest -->
+            <div class="nb-page sol" id="nbPageSol">
+              <div class="nb-suspect-row" id="nbRow0">
+                <div class="nb-suspect-notes" id="nbNotesSolUst">
+                  <textarea class="nb-yazi" id="nbYaziSolUst" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solUst', this)"></textarea>
+                </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName0"></div>
+                </div>
+              </div>
+              <div class="nb-suspect-row" id="nbRow1">
+                <div class="nb-suspect-notes" id="nbNotesSolAlt">
+                  <textarea class="nb-yazi" id="nbYaziSolAlt" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solAlt', this)"></textarea>
+                </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName1"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
+            <div class="nb-page sag" id="nbPageSag">
+              <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this)" placeholder="buraya not al..."></textarea>
+            </div>
+
+            <!-- TEK BÜYÜK ÇİZİM KATMANI: tüm çift sayfanın üstünü kaplar,
+                 "Çiz" moduna geçince artık defterin HER noktasına (fotoğrafların
+                 üstüne bile) serbestçe çizilebilir — ayrı ayrı kutulara hapsolmuyor. -->
+            <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
+
+            <!-- Defterin kenarlarından sayfa çevirme -->
+            <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
+            <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
+          </div>
+          <div class="notebook-toolbar">
+            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
+            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
+            <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
+            <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
+          </div>
+        </div>
         </div>
       </div>
-    </div>
 
+      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI (artık oyun ekranının İÇİNDE) ============ -->
+      <div class="modal-bg" id="modalBg">
+        <div class="modal" id="modalBody"></div>
+      </div>
+    </div>
+    <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
   </div>
 
-  <script src="engine.js"></script>
+  <button class="calib-toggle" id="calibToggle">🎯 Kalibrasyon Modu: Kapalı</button>
+  <div class="calib-readout" id="calibReadout"></div>
+
+  <div class="sleep-overlay" id="sleepOverlay">
+    <div class="content">
+      <div class="day-num" id="sleepDayNum">GÜN 2</div>
+      <p id="sleepText">Yeni bir gün başlıyor.</p>
+      <button onclick="wakeUp()">Uyan</button>
+    </div>
+  </div>
+
+  <script src="engine.js?v=11"></script>
 </body>
 </html>
