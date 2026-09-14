@@ -479,14 +479,14 @@ function renderNotebookPage() {
   // doğrudan case.json → notebook → suspectLayout içinden ince ayar yapılabilir.
   const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
   const photoTop    = yerlesim.photoTop    || '8%';
-  const photoLeft   = yerlesim.photoLeft   || '6%';
+  const photoLeft   = yerlesim.photoLeft   || '14%';
   const photoHeight = yerlesim.photoHeight || '55%';
-  const nameTop     = yerlesim.nameTop     || '6%';
-  const nameLeft    = yerlesim.nameLeft    || '44%';
-  const noteTop     = yerlesim.noteTop     || '24%';
-  const noteLeft    = yerlesim.noteLeft    || '44%';
-  const noteWidth   = yerlesim.noteWidth   || '52%';
-  const noteHeight  = yerlesim.noteHeight  || '72%';
+  const nameTop     = yerlesim.nameTop     || '16%';
+  const nameLeft    = yerlesim.nameLeft    || '52%';
+  const noteTop     = yerlesim.noteTop     || '32%';
+  const noteLeft    = yerlesim.noteLeft    || '52%';
+  const noteWidth   = yerlesim.noteWidth   || '46%';
+  const noteHeight  = yerlesim.noteHeight  || '60%';
 
   // --- SOL SAYFA: sabit fotoğraf+isim (case.json'dan) + serbest yazı/çizim (kayıtlı state'ten) ---
   NB_SOL_SATIRLAR.forEach((satir, i) => {
@@ -565,8 +565,14 @@ function canvasResizeVeCiz(canvas, dataURL) {
   }
 }
 
-function notebookYaziKaydet(taraf, val) {
-  notebookState.pages[notebookState.page][taraf] = val;
+function notebookYaziKaydet(taraf, el) {
+  // İSTENEN DAVRANIŞ: alan dolunca içerik kaydırılıp devam ETMESİN —
+  // görünür alana sığmayan her yeni karakter geri alınır, kullanıcı
+  // görsel olarak "alan doldu, daha fazla yazamıyorum" hissini yaşar.
+  while (el.scrollHeight > el.clientHeight + 1 && el.value.length > 0) {
+    el.value = el.value.slice(0, -1);
+  }
+  notebookState.pages[notebookState.page][taraf] = el.value;
   saveNotebook();
 }
 

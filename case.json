@@ -92,18 +92,18 @@
   "notebook": {
     "image": "assets/yazi.png",
     "totalPages": 5,
-    "pageSol": { "top": "6%", "bottom": "8%", "left": "20%", "width": "28%" },
+    "pageSol": { "top": "6%", "bottom": "8%", "left": "22%", "width": "30%" },
     "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
     "suspectLayout": {
       "photoTop": "8%",
-      "photoLeft": "6%",
+      "photoLeft": "14%",
       "photoHeight": "55%",
-      "nameTop": "6%",
-      "nameLeft": "44%",
-      "noteTop": "24%",
-      "noteLeft": "44%",
-      "noteWidth": "52%",
-      "noteHeight": "72%"
+      "nameTop": "16%",
+      "nameLeft": "52%",
+      "noteTop": "32%",
+      "noteLeft": "52%",
+      "noteWidth": "46%",
+      "noteHeight": "60%"
     },
     "suspects": [
       { "name": "Nadire",             "image": "assets/supheliler/nadire.jpg" },
