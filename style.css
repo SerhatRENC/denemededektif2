@@ -23,18 +23,7 @@ h1{display:none;}
   box-shadow:0 0 50px rgba(0,0,0,0.9);
 }
 
-.inventory{
-  position:absolute;bottom:10px;left:10px;z-index:15;
-  display:flex;gap:6px;margin:0;min-height:36px;
-}
-.inv-item{
-  width:36px;height:36px;border-radius:6px;background:rgba(28,29,24,0.85);
-  border:1px solid #35362c;display:flex;align-items:center;justify-content:center;
-  font-size:16px;cursor:pointer;color:var(--amber-bright);
-}
-.calib-toggle{position:absolute;top:10px;left:10px;z-index:30;opacity:0.3;}
-.calib-toggle:hover{opacity:1;}
-.calib-readout{position:absolute;top:40px;left:10px;z-index:30;}.stage{
+.stage{
   position:absolute;inset:0;
   background-size:cover;background-position:center;background-color:#1a1b16;
   transition:opacity .25s ease;cursor:default;
@@ -99,11 +88,7 @@ h1{display:none;}
   .scene-subtitle-text{font-size:12px;}
 }
 
-/* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri butonları —
-   sahne (stage) her oda değişiminde innerHTML ile yenilendiği için bu butonlar
-   bilerek stage-frame'in İÇİNE ama #stage'in DIŞINA konuldu, böylece oda geçişlerinde silinmezler. */
-/* Gün sayacı — oyun ekranının sağ üst köşesinde, "KANIT-04" gibi anlamsız
-   bir dosya etiketi yerine doğrudan hangi günde olduğunu gösterir */
+/* Gün sayacı — oyun ekranının sağ üst köşesinde */
 .stage-day-tag{
   position:absolute;top:8px;right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
@@ -111,15 +96,17 @@ h1{display:none;}
   font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
 }
 
+/* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri
+   butonları — büyütüldü, artık daha rahat tıklanıyor */
 .corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
 .corner-icon-btn{
-  width:44px;height:44px;border-radius:7px;background:#1c1d18;border:1px solid #3a3b30;
-  cursor:pointer;overflow:hidden;padding:4px;transition:.15s;
+  width:64px;height:64px;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
+  cursor:pointer;overflow:hidden;padding:6px;transition:.15s;
 }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
 .corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
 @media (max-width: 480px){
-  .corner-icon-btn{width:36px;height:36px;}
+  .corner-icon-btn{width:52px;height:52px;}
 }
 
 .calib-marker{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber-bright);
@@ -167,17 +154,47 @@ h1{display:none;}
 /* ---- İFADE ZAPTI: liste + okuyucu ---- */
 .modal.wide{max-width:640px;}
 
-.reader-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.reader-nav button{background:none;border:1px solid #3a3b30;color:var(--paper-dim);
-  padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;}
-.reader-nav button:hover{color:var(--amber-bright);border-color:var(--amber);}
-.reader-name{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber-bright);}
-.reader-arrow{
-  width:34px;height:34px;border-radius:50%;background:#1c1d18;border:1px solid #3a3b30;
-  color:var(--paper);font-size:16px;cursor:pointer;flex-shrink:0;
+/* ---- İFADE ZAPTI: BÜYÜK, ÇERÇEVESİZ GÖRÜNÜM ----
+   .modal.reader eklendiğinde standart koyu kutu/çerçeve devre dışı kalır,
+   kağıt ekranın büyük kısmını kaplar, oklar resmin sol/sağ kenarında durur. */
+.modal.reader{
+  background:none;border:none;box-shadow:none;max-width:96%;width:auto;padding:0;max-height:96%;
 }
-.reader-arrow:hover{border-color:var(--amber);color:var(--amber-bright);}
-.reader-arrow:disabled{opacity:.3;cursor:default;}
+.reader-topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;padding:0 4px;
+}
+.reader-name{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--amber-bright);}
+.reader-count{font-size:11px;color:var(--paper-dim);font-family:var(--mono);}
+.reader-close{
+  background:#1c1d18;border:1px solid #3a3b30;color:var(--paper-dim);
+  width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;
+}
+.reader-close:hover{border-color:var(--amber);color:var(--amber-bright);}
+
+.reader-stage{position:relative;display:flex;align-items:center;justify-content:center;}
+.reader-card-img-wide{
+  max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;
+  border-radius:6px;background:transparent;display:block;
+}
+.reader-side-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;background:rgba(28,29,24,.85);
+  border:1px solid var(--amber);color:var(--amber-bright);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:5;
+}
+.reader-side-arrow:hover{background:rgba(28,29,24,1);}
+.reader-side-arrow:disabled{opacity:.25;cursor:default;}
+.reader-side-arrow.left{left:-4px;}
+.reader-side-arrow.right{right:-4px;}
+@media (max-width:480px){
+  .reader-side-arrow{width:34px;height:34px;font-size:16px;}
+  .reader-side-arrow.left{left:-2px;}
+  .reader-side-arrow.right{right:-2px;}
+}
+.reader-audio-wide{display:flex;align-items:center;gap:10px;margin-top:10px;justify-content:center;}
+
+/* Eski (küçük) ifade kartı görseli — openPhoto() gibi başka yerlerde hâlâ kullanılıyor */
 .reader-card-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;
   border-radius:6px;display:block;margin:0 auto 12px;background:#1a1b15;}
 .reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
@@ -208,8 +225,8 @@ h1{display:none;}
 .map-overlay{
   position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
   align-items:stretch;justify-content:center;z-index:70;
-  border-radius:10px; /* stage-frame'in köşe yuvarlaklığıyla eşleşsin */
-  overflow:hidden; /* dış katman kaymaz, sadece içindeki .map-scroll kayar */
+  border-radius:10px;
+  overflow:hidden;
 }
 .map-overlay.active{display:flex;}
 .map-scroll{
@@ -221,15 +238,6 @@ h1{display:none;}
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-/* KÖK ÇÖZÜM: bir önceki deneme (.map-box'a aspect-ratio verip içine
-   mutlak-konumlu bir <img> koymak) tarayıcıda kutunun "içeriği yok"
-   sanılıp 0x0'a çökmesine yol açtı — çünkü mutlak konumlu elemanlar
-   kutunun doğal boyut hesabına dahil edilmez. Çözüm: artık GÖRSELİN
-   KENDİSİ (img, mutlak değil normal akışta) boyutu belirliyor —
-   <img> etiketleri kendi gerçek en-boy oranını bilir, max-width/
-   max-height + width/height:auto ile her zaman güvenilir çalışır.
-   .map-box ise sadece görselin etrafını saran, display:inline-block
-   sayesinde görselin gerçek boyutuna küçülen bir çerçeve. */
 .map-box{position:relative;display:inline-block;max-width:100%;max-height:100%;}
 .map-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;
   border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
@@ -254,7 +262,7 @@ h1{display:none;}
 .notebook-overlay{
   position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
   align-items:stretch;justify-content:center;z-index:70;
-  border-radius:10px;overflow:hidden; /* dış katman kaymaz, sadece .notebook-scroll kayar */
+  border-radius:10px;overflow:hidden;
 }
 .notebook-overlay.active{display:flex;}
 .notebook-scroll{
@@ -266,12 +274,6 @@ h1{display:none;}
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
   font-size:14px;cursor:pointer;z-index:22;
 }
-/* ÖNEMLİ KÖK ÇÖZÜM: notebook-box artık dikey bir flex kutusu. Görsel
-   (.notebook-img-wrap) "flex:1" ile önce ARAÇ ÇUBUĞUNUN ihtiyaç duyduğu
-   yer çıkarılıp KALAN yüksekliği alıyor, sonra aspect-ratio ile o
-   yükseklikten genişliğini hesaplıyor (ya da tam tersi, hangisi dar
-   geliyorsa ona göre küçülüyor). Böylece görsel+araç çubuğu toplamı
-   HER ZAMAN mevcut alana sığıyor, kaydırmaya gerek kalmıyor.*/
 .notebook-box{
   width:100%;max-width:100%;height:100%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -297,36 +299,35 @@ h1{display:none;}
   color:#2b2018;padding:2px 6px;
 }
 
-/* SAĞ SAYFA — tamamen serbest not alanı (değişmedi). Varsayılan değerler
-   case.json → notebook → pageSag'dan JS ile üzerine yazılır. */
+/* SAĞ SAYFA — tamamen serbest not alanı. Font büyütüldü: 19px → 23px.
+   Varsayılan konum değerleri case.json → notebook → pageSag'dan JS ile
+   üzerine yazılır (konum: index.html'deki #nbPageSag elementine JS tarafından
+   inline style olarak uygulanır — bu CSS sadece case.json okunamazsa devreye
+   giren güvenlik ağı). */
 .nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
-.nb-page.sag .nb-yazi{font-size:19px;line-height:1.5;padding:4px 8px 4px 14px;}
+.nb-page.sag .nb-yazi{font-size:23px;line-height:1.45;padding:4px 8px 4px 14px;}
 
 /* SOL SAYFA — 2 sabit şüpheli satırı. Fotoğraf+isim CASE.notebook.suspects'tan
    gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı alanıdır.
-   Varsayılan değerler case.json → notebook → pageSol'dan JS ile üzerine yazılır. */
+   Not fontu büyütüldü: 14px → 17px. İsim etiketi büyütüldü: 16px → 19px.
+   Konum değerleri case.json → notebook → suspectLayout içinden JS tarafından
+   her render'da inline style ile üzerine yazılır (bkz. engine.js
+   renderNotebookPage()) — buradaki değerler sadece güvenlik ağı. */
 .nb-page.sol{position:absolute;top:6%;bottom:8%;left:14%;width:30%;
   display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
 .nb-suspect-row{position:relative;height:48%;}
-/* Varsayılan değerler — case.json → notebook → suspectLayout içinden
-   JS tarafından her render'da inline style ile üzerine yazılır. Buradaki
-   değerler sadece case.json okunamazsa devreye giren güvenlik ağı. */
 .nb-suspect-notes{position:absolute;top:32%;left:52%;width:46%;height:60%;}
-.nb-suspect-notes .nb-yazi{font-size:14px;line-height:1.3;padding:2px 4px;}
+.nb-suspect-notes .nb-yazi{font-size:17px;line-height:1.25;padding:2px 4px;}
 
-/* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur.
-   object-fit:contain — KIRPMAZ, orijinal fotoğrafın tamamını korur,
-   sadece kutuya sığacak şekilde ölçeğini küçültür. Fotoğraf kendi
-   orijinal en-boy oranını korur (aspect-ratio JS tarafından fotoğrafın
-   gerçek boyutuna göre otomatik ayarlanır, 3/4 sadece varsayılan). */
+/* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur. */
 .nb-suspect-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;}
 .nb-suspect-photo {
   position: absolute;
-  top: 2% !important;                 /* Yukarıya iyice yaklaştırıyoruz */
-  left: 8% !important;                /* Sola biraz yanaştırıyoruz */
-  height: 75% !important;             /* JS'ten gelen yüksekliği '!important' ile eziyoruz */
+  top: 2% !important;
+  left: 8% !important;
+  height: 75% !important;
   width: auto !important;
-  max-height: none !important;        /* Olası bir max-height engelini kaldırıyoruz */
+  max-height: none !important;
   aspect-ratio: 4/5;
   object-fit: contain;
   border: none !important;
@@ -334,9 +335,10 @@ h1{display:none;}
   background: transparent !important;
   mix-blend-mode: multiply;
   filter: contrast(1.1);
-}.nb-suspect-name{
+}
+.nb-suspect-name{
   position:absolute;top:16%;left:52%;right:2%;
-  font-family:'Caveat',cursive;font-weight:600;font-size:16px;color:#2b2018;
+  font-family:'Caveat',cursive;font-weight:600;font-size:19px;color:#2b2018;
   line-height:1.15;
 }
 .nb-suspect-photo-missing{

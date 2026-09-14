@@ -78,49 +78,43 @@
     box-shadow: 0 6px 0 #1c110a, 0 10px 16px rgba(0,0,0,0.7);
   }
 
-  .mors-container {
+  /* Mors mesajı yazı alanı — kağıdın üstüne oturan, çizgili tek satır input */
+  .mors-yazi-alani {
     position: absolute;
-    left: 50%;
-    bottom: 8%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    background: rgba(20, 14, 8, 0.85);
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: 2px solid var(--accent);
+    left: 38%; top: 62%; width: 34%;
     z-index: 15;
   }
-  .mors-container input {
+  .mors-yazi-alani input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ink);
     font-family: inherit;
-    font-size: clamp(14px, 1.6vw, 18px);
-    padding: 0.6em 1em;
-    border-radius: 4px;
-    border: 2px solid #2c1c0e;
-    background: var(--parchment);
+    font-size: clamp(14px, 1.8vw, 20px);
     color: var(--ink);
-    width: clamp(160px, 24vw, 300px);
+    padding: 0.3em 0.2em;
     text-transform: uppercase;
     outline: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
   }
-  .mors-error {
+  .mors-yazi-alani input.hata {
+    border-bottom-color: #c0392b;
+    color: #c0392b;
+  }
+
+  /* Büyüteç ikonu — dosya üstünde nabız gibi hafif büyüyüp küçülür */
+  .buyutec {
     position: absolute;
-    left: 50%;
-    bottom: 18%;
-    transform: translateX(-50%);
-    background: rgba(122, 31, 31, 0.95);
-    color: #fff;
-    padding: 0.6em 1.2em;
-    border-radius: 6px;
-    font-size: clamp(12px, 1.4vw, 16px);
-    border: 1px solid #ff4d4d;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 20;
+    cursor: pointer;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
+    animation: buyutecNabiz 1.6s ease-in-out infinite;
+    z-index: 6;
   }
-  .mors-error.show { opacity: 1; }
+  .gizli { opacity: 0; pointer-events: none; }
+  @keyframes buyutecNabiz {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
 
   .character {
     position: absolute;
@@ -200,36 +194,36 @@
     <div class="hotspot" id="btn-cikis" style="left:4%;top:53%;width:19%;height:9%;"></div>
   </div>
 
-  <!-- 2. OFİS / ŞEHİR -->
+  <!-- 2. OFİS / ŞEHİR — artık "Mesajı Dinle" butonu yok, telgrafa tıklanınca mors ekranına geçilir -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
-    <button class="btn" id="btn-mesaj-dinle" style="left:40%;top:80%;">Mesajı Dinle</button>
+    <div class="hotspot" id="btn-telgraf" style="left:8%;top:35%;width:16%;height:30%;"></div>
   </div>
 
-  <!-- 3. MORS KAĞIDI -->
+  <!-- 3. MORS KAĞIDI — "Mesajı Dinle" butonu hep görünür, ses bu ekrana gelince otomatik BAŞLAMAZ -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
-    <button class="btn show" id="btn-mors-tekrar" style="left:6%;top:75%;">Mesajı Tekrar Dinle</button>
+    <button class="btn show" id="btn-mors-tekrar" style="left:6%;top:75%;">Mesajı Dinle</button>
 
-    <div class="mors-container">
-      <input type="text" id="mors-input" placeholder="Buraya yazın..." maxlength="30" autocomplete="off">
-      <button class="btn show" id="btn-mors-ilerle" style="position:static;">İlerle</button>
+    <div class="mors-yazi-alani">
+      <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
     </div>
-    <div class="mors-error" id="mors-error">Mesajı yanlış girdiniz.</div>
+    <button class="btn show" id="btn-mors-ilerle" style="left:40%;top:88%;">İlerle</button>
   </div>
 
-  <!-- 4. RAF -->
+  <!-- 4. RAF — dosyaya doğrudan tıklanıyor, buton yok -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
-    <button class="btn show" id="btn-dosya-incele" style="left:40%;top:80%;">Dosyayı İncele</button>
+    <div class="hotspot" id="btn-dosya-incele" style="left:38%;top:40%;width:20%;height:30%;"></div>
   </div>
 
-  <!-- 5. SİSLİDERE DOSYASI -->
+  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
+       kapatınca büyüteç kaybolur ve kapı hotspot'u belirir -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
-    <button class="btn show" id="btn-dosya-incele-ic" style="left:40%;top:82%;">İncele</button>
-    <button class="btn" id="btn-dosya-git" style="left:40%;top:82%;">Git</button>
+    <img class="buyutec" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
+    <div class="hotspot gizli" id="btn-dosya-git" style="left:78%;top:20%;width:14%;height:55%;"></div>
   </div>
 
-  <!-- 6. AT ARABASI -->
+  <!-- 6. AT ARABASI — "Bin" artık görünmez bir hotspot, tam kapı üzerinde -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/at_arabasi.jpg')">
-    <button class="btn show" id="btn-bin" style="left:42%;top:82%;">Bin</button>
+    <div class="hotspot" id="btn-bin" style="left:42%;top:55%;width:14%;height:35%;"></div>
   </div>
 
   <!-- 7. KÖY GİRİŞİ -->
@@ -255,7 +249,6 @@
     <div id="fade-text">(at arabası sesleri...)</div>
   </div>
 
-  <audio id="aud-mesaj" src="assets/ses/mesaj.mp3" preload="auto"></audio>
   <audio id="aud-mors" src="assets/ses/mors_kodu.mp3" preload="auto"></audio>
 
 </div>
@@ -269,21 +262,11 @@ function showScreen(id) {
 /* 1. ANA EKRAN */
 document.getElementById('btn-oyna').addEventListener('click', () => {
   showScreen('scr-ofis');
-  const aud = document.getElementById('aud-mesaj');
-  aud.currentTime = 0;
-  aud.play().then(() => {
-    document.getElementById('btn-mesaj-dinle').classList.add('show');
-  }).catch(() => {
-    document.getElementById('btn-mesaj-dinle').classList.add('show');
-  });
 });
 
-/* 2. OFİS */
-document.getElementById('btn-mesaj-dinle').addEventListener('click', () => {
+/* 2. OFİS — telgrafa tıklayınca mors ekranına geç, ses otomatik başlamıyor */
+document.getElementById('btn-telgraf').addEventListener('click', () => {
   showScreen('scr-mors');
-  const aud = document.getElementById('aud-mors');
-  aud.currentTime = 0;
-  aud.play().catch(() => {});
 });
 
 /* 3. MORS */
@@ -300,23 +283,26 @@ document.getElementById('btn-mors-tekrar').addEventListener('click', () => {
 });
 
 document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
-  const inputVal = normalizeTR(document.getElementById('mors-input').value);
+  const inputEl = document.getElementById('mors-input');
+  const inputVal = normalizeTR(inputEl.value);
   if (inputVal === 'SISLIDERE') {
-    document.getElementById('mors-error').classList.remove('show');
+    inputEl.classList.remove('hata');
     showScreen('scr-raf');
   } else {
-    document.getElementById('mors-error').classList.add('show');
-    setTimeout(() => document.getElementById('mors-error').classList.remove('show'), 2500);
+    inputEl.classList.add('hata');
   }
 });
 
 /* 4. RAF & 5. DOSYA */
 document.getElementById('btn-dosya-incele').addEventListener('click', () => showScreen('scr-dosya'));
-document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => document.getElementById('popup-overlay').classList.add('show'));
+
+document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
+  document.getElementById('popup-overlay').classList.add('show');
+});
 document.getElementById('popup-close').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.remove('show');
-  document.getElementById('btn-dosya-incele-ic').classList.remove('show');
-  document.getElementById('btn-dosya-git').classList.add('show');
+  document.getElementById('btn-dosya-incele-ic').classList.add('gizli');
+  document.getElementById('btn-dosya-git').classList.remove('gizli');
 });
 document.getElementById('btn-dosya-git').addEventListener('click', () => showScreen('scr-araba'));
 

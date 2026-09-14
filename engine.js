@@ -122,7 +122,7 @@ function openStatement(index) {
   const total = CASE.statements.length;
 
   const audioHtml = s.audio ? `
-    <div class="reader-audio" id="readerAudio">
+    <div class="reader-audio reader-audio-wide" id="readerAudio">
       <div class="ring" id="readerRing" onclick="toggleStatementAudio('${s.audio}')">▶</div>
       <div>
         <div class="meta">Fonografta Dinle</div>
@@ -131,24 +131,25 @@ function openStatement(index) {
     </div>` : '';
 
   showModal(`
-    <div class="reader-nav">
+    <div class="reader-topbar">
       <span class="reader-name">${s.name}</span>
-      <span style="font-size:11px;color:var(--paper-dim);">${index + 1} / ${total}</span>
+      <span class="reader-count">${index + 1} / ${total}</span>
+      <button class="reader-close" onclick="closeModal()">✕</button>
     </div>
-    <img class="reader-card-img" src="${s.cardImage}"
-         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+    <div class="reader-stage">
+      <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
+      <img class="reader-card-img-wide" src="${s.cardImage}"
+           onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+      <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
+    </div>
     ${audioHtml}
-    <div class="reader-nav">
-      <button class="reader-arrow" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled style="opacity:.3"' : ''}>‹</button>
-      <button class="ghost" onclick="closeModal()">Kapat</button>
-      <button class="reader-arrow" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled style="opacity:.3"' : ''}>›</button>
-    </div>
   `, true);
+  document.getElementById('modalBody').classList.add('reader');
 }
 
 // Modal açıkken ve bir ifade kartı gösterilirken klavye ok tuşlarıyla da gezinilebilir
 document.addEventListener('keydown', (e) => {
-  if (!document.querySelector('.reader-card-img')) return;
+  if (!document.querySelector('.reader-card-img-wide')) return;
   if (e.key === 'ArrowRight' && currentStatementIndex < CASE.statements.length - 1) openStatement(currentStatementIndex + 1);
   if (e.key === 'ArrowLeft' && currentStatementIndex > 0) openStatement(currentStatementIndex - 1);
 });
@@ -293,7 +294,7 @@ function toggleTape() {
 function showModal(html, wide) {
   const body = document.getElementById('modalBody');
   body.innerHTML = html;
-  body.classList.toggle('wide', !!wide);
+  body.className = 'modal' + (wide ? ' wide' : ''); // önceki modal'dan kalan class'lar (ör. 'reader') burada temizleniyor
   document.getElementById('modalBg').classList.add('active');
 }
 function closeModal() {
