@@ -96,14 +96,14 @@
     "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
     "suspectLayout": {
       "photoTop": "8%",
-      "photoLeft": "8%",
-      "photoWidth": "24%",
+      "photoLeft": "6%",
+      "photoHeight": "55%",
       "nameTop": "6%",
-      "nameLeft": "36%",
-      "noteTop": "26%",
-      "noteLeft": "36%",
-      "noteWidth": "60%",
-      "noteHeight": "70%"
+      "nameLeft": "44%",
+      "noteTop": "24%",
+      "noteLeft": "44%",
+      "noteWidth": "52%",
+      "noteHeight": "72%"
     },
     "suspects": [
       { "name": "Nadire",             "image": "assets/supheliler/nadire.jpg" },

@@ -478,15 +478,15 @@ function renderNotebookPage() {
   // Yerleşim yüzdeleri case.json'dan geliyor — CSS'i değiştirmeden,
   // doğrudan case.json → notebook → suspectLayout içinden ince ayar yapılabilir.
   const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
-  const photoTop   = yerlesim.photoTop   || '8%';
-  const photoLeft  = yerlesim.photoLeft  || '8%';
-  const photoWidth = yerlesim.photoWidth || '24%';
-  const nameTop    = yerlesim.nameTop    || '6%';
-  const nameLeft   = yerlesim.nameLeft   || '36%';
-  const noteTop    = yerlesim.noteTop    || '26%';
-  const noteLeft   = yerlesim.noteLeft   || '36%';
-  const noteWidth  = yerlesim.noteWidth  || '60%';
-  const noteHeight = yerlesim.noteHeight || '70%';
+  const photoTop    = yerlesim.photoTop    || '8%';
+  const photoLeft   = yerlesim.photoLeft   || '6%';
+  const photoHeight = yerlesim.photoHeight || '55%';
+  const nameTop     = yerlesim.nameTop     || '6%';
+  const nameLeft    = yerlesim.nameLeft    || '44%';
+  const noteTop     = yerlesim.noteTop     || '24%';
+  const noteLeft    = yerlesim.noteLeft    || '44%';
+  const noteWidth   = yerlesim.noteWidth   || '52%';
+  const noteHeight  = yerlesim.noteHeight  || '72%';
 
   // --- SOL SAYFA: sabit fotoğraf+isim (case.json'dan) + serbest yazı/çizim (kayıtlı state'ten) ---
   NB_SOL_SATIRLAR.forEach((satir, i) => {
@@ -499,6 +499,10 @@ function renderNotebookPage() {
     // fallback (görsel yok) kutusuna dönüşse bile aynı yerleşimi korur.
     // ÖNEMLİ: not alanı artık TÜM satırı değil, isminin altına denk gelen
     // sağ sütunu kaplıyor — fotoğrafın üstüne binmesi artık mümkün değil.
+    // ÖNEMLİ 2: fotoğraf artık YÜKSEKLİK ile boyutlanıyor (genişlik değil) —
+    // satırın yüksekliği her zaman kesin bilindiği için bu çok daha
+    // güvenilir; genişlik fotoğrafın kendi gerçek en-boy oranından
+    // (aspect-ratio) otomatik hesaplanıyor, asla satırdan taşmıyor.
     nameEl.style.top = nameTop;
     nameEl.style.left = nameLeft;
     notesEl.style.top = noteTop;
@@ -508,7 +512,8 @@ function renderNotebookPage() {
     if (photoEl.tagName === 'IMG') {
       photoEl.style.top = photoTop;
       photoEl.style.left = photoLeft;
-      photoEl.style.width = photoWidth;
+      photoEl.style.height = photoHeight;
+      photoEl.style.width = 'auto';
     }
 
     if (suspect) {
@@ -520,7 +525,7 @@ function renderNotebookPage() {
         fallback.id = photoEl.id;
         fallback.style.top = photoTop;
         fallback.style.left = photoLeft;
-        fallback.style.width = photoWidth;
+        fallback.style.height = photoHeight;
         fallback.textContent = `görsel yok:\n${suspect.image}`;
         photoEl.replaceWith(fallback);
       };
