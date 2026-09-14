@@ -339,7 +339,7 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   line-height:1.15;
 }
 .nb-suspect-photo-missing{
-  position:absolute;top:8%;left:14%;height:55%;width:auto;aspect-ratio:4/5;
+  position:absolute;top:4%;left:12%;height:70%;width:auto;aspect-ratio:4/5;
   border:1px dashed #6b4a30;background:#d8c9a3;
   display:flex;align-items:center;justify-content:center;text-align:center;
   color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;white-space:pre-line;
