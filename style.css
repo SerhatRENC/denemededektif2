@@ -324,7 +324,7 @@ h1{font-size:14px;color:var(--amber-bright);text-transform:uppercase;letter-spac
   position: absolute;
   top: 2% !important;                 /* Yukarıya iyice yaklaştırıyoruz */
   left: 8% !important;                /* Sola biraz yanaştırıyoruz */
-  height: 80% !important;             /* JS'ten gelen yüksekliği '!important' ile eziyoruz */
+  height: 75% !important;             /* JS'ten gelen yüksekliği '!important' ile eziyoruz */
   width: auto !important;
   max-height: none !important;        /* Olası bir max-height engelini kaldırıyoruz */
   aspect-ratio: 4/5;
