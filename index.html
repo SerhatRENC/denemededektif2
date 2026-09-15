@@ -19,6 +19,20 @@
     overflow: hidden;
   }
 
+  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster */
+  @media screen and (orientation: portrait) {
+    html {
+      transform: rotate(-90deg);
+      transform-origin: left top;
+      width: 100vh;
+      height: 100vw;
+      overflow-x: hidden;
+      position: absolute;
+      top: 100%;
+      left: 0;
+    }
+  }
+
   #stage-frame {
     position: absolute;
     top: 50%; left: 50%;
@@ -78,6 +92,20 @@
     box-shadow: 0 6px 0 #1c110a, 0 10px 16px rgba(0,0,0,0.7);
   }
 
+  /* Nabız gibi hafif büyüyüp küçülen ikonlar — büyüteç ve ayak izi ortak kullanır */
+  .nabiz-ikon {
+    position: absolute;
+    cursor: pointer;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
+    animation: ikonNabiz 1.6s ease-in-out infinite;
+    z-index: 6;
+  }
+  .gizli { opacity: 0; pointer-events: none; }
+  @keyframes ikonNabiz {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+
   /* Mors mesajı yazı alanı — kağıdın üstüne oturan, çizgili tek satır input */
   .mors-yazi-alani {
     position: absolute;
@@ -100,20 +128,6 @@
   .mors-yazi-alani input.hata {
     border-bottom-color: #c0392b;
     color: #c0392b;
-  }
-
-  /* Büyüteç ikonu — dosya üstünde nabız gibi hafif büyüyüp küçülür */
-  .buyutec {
-    position: absolute;
-    cursor: pointer;
-    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
-    animation: buyutecNabiz 1.6s ease-in-out infinite;
-    z-index: 6;
-  }
-  .gizli { opacity: 0; pointer-events: none; }
-  @keyframes buyutecNabiz {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
   }
 
   .character {
@@ -194,9 +208,11 @@
     <div class="hotspot" id="btn-cikis" style="left:4%;top:53%;width:19%;height:9%;"></div>
   </div>
 
-  <!-- 2. OFİS / ŞEHİR — artık "Mesajı Dinle" butonu yok, telgrafa tıklanınca mors ekranına geçilir -->
+  <!-- 2. OFİS / ŞEHİR — "Mesajı Dinle" butonu mesaj.mp3'ü çalar (ekran değiştirmez),
+       telgrafa tıklayınca mors ekranına geçilir -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
     <div class="hotspot" id="btn-telgraf" style="left:8%;top:35%;width:16%;height:30%;"></div>
+    <button class="btn show" id="btn-mesaj-dinle" style="left:40%;top:80%;">Mesajı Dinle</button>
   </div>
 
   <!-- 3. MORS KAĞIDI — "Mesajı Dinle" butonu hep görünür, ses bu ekrana gelince otomatik BAŞLAMAZ -->
@@ -215,15 +231,15 @@
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
-       kapatınca büyüteç kaybolur ve kapı hotspot'u belirir -->
+       kapatınca büyüteç kaybolur ve ayak izi (gidilecek yön) belirir -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
-    <img class="buyutec" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
-    <div class="hotspot gizli" id="btn-dosya-git" style="left:78%;top:20%;width:14%;height:55%;"></div>
+    <img class="nabiz-ikon" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
+    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:78%;top:38%;width:6%;">
   </div>
 
-  <!-- 6. AT ARABASI — "Bin" artık görünmez bir hotspot, tam kapı üzerinde -->
+  <!-- 6. AT ARABASI — ayak izi tam kapının önünde -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/at_arabasi.jpg')">
-    <div class="hotspot" id="btn-bin" style="left:42%;top:55%;width:14%;height:35%;"></div>
+    <img class="nabiz-ikon" id="btn-bin" src="assets/ayak.png" alt="Bin" style="left:44%;top:68%;width:6%;">
   </div>
 
   <!-- 7. KÖY GİRİŞİ -->
@@ -249,6 +265,7 @@
     <div id="fade-text">(at arabası sesleri...)</div>
   </div>
 
+  <audio id="aud-mesaj" src="assets/ses/mesaj.mp3" preload="auto"></audio>
   <audio id="aud-mors" src="assets/ses/mors_kodu.mp3" preload="auto"></audio>
 
 </div>
@@ -264,7 +281,12 @@ document.getElementById('btn-oyna').addEventListener('click', () => {
   showScreen('scr-ofis');
 });
 
-/* 2. OFİS — telgrafa tıklayınca mors ekranına geç, ses otomatik başlamıyor */
+/* 2. OFİS — "Mesajı Dinle" mesaj.mp3'ü çalar; telgrafa tıklayınca mors ekranına geçilir */
+document.getElementById('btn-mesaj-dinle').addEventListener('click', () => {
+  const aud = document.getElementById('aud-mesaj');
+  aud.currentTime = 0;
+  aud.play().catch(() => {});
+});
 document.getElementById('btn-telgraf').addEventListener('click', () => {
   showScreen('scr-mors');
 });
