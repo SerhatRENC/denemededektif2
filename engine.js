@@ -50,25 +50,36 @@ function renderRoom() {
       // nabız atan, MERKEZ noktalı küçük bir ikon olarak çiziliyor
       // (index.html'deki .nabiz-ikon ile birebir aynı mantık). x/y bu ikonun
       // TAM ORTASI, iconWidth genişliği belirler (yoksa varsayılan %8).
+      // "label" verilirse ikonun altında küçük bir isim etiketi çıkar.
+      // Ekran/oda açılır açılmaz değil, 2 saniye sonra belirir.
       if (h.icon && !h.w && !h.h) {
-        const el = document.createElement('img');
-        el.className = 'hotspot-pulse-icon';
-        el.src = h.icon;
-        el.alt = h.hint || '';
-        el.style.left = h.x;
-        el.style.top = h.y;
-        el.style.width = h.iconWidth || '8%';
-        el.onclick = () => { if (!calibMode) handleHotspot(h); };
-        el.onerror = () => {
+        const wrap = document.createElement('div');
+        wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
+        wrap.style.left = h.x;
+        wrap.style.top = h.y;
+        wrap.style.width = h.iconWidth || '8%';
+
+        const img = document.createElement('img');
+        img.src = h.icon;
+        img.alt = h.hint || '';
+        img.onerror = () => {
           const fallback = document.createElement('div');
           fallback.className = 'hotspot-pulse-icon-missing';
-          fallback.style.left = h.x;
-          fallback.style.top = h.y;
           fallback.textContent = `görsel yok:\n${h.icon}`;
-          fallback.onclick = el.onclick;
-          el.replaceWith(fallback);
+          img.replaceWith(fallback);
         };
-        stage.appendChild(el);
+        wrap.appendChild(img);
+
+        if (h.label) {
+          const lbl = document.createElement('div');
+          lbl.className = 'hotspot-pulse-label';
+          lbl.textContent = h.label;
+          wrap.appendChild(lbl);
+        }
+
+        wrap.onclick = () => { if (!calibMode) handleHotspot(h); };
+        stage.appendChild(wrap);
+        setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
         return; // eski dikdörtgen hotspot kutusu ÇİZİLMEZ
       }
 

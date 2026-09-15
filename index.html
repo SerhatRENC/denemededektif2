@@ -89,6 +89,7 @@
     animation: ikonNabiz 1.6s ease-in-out infinite;
     z-index: 6;
     transform: translate(-50%, -50%);
+    transition: opacity .5s ease;
   }
   .gizli { opacity: 0; pointer-events: none; }
   @keyframes ikonNabiz {
@@ -241,15 +242,15 @@
   </div>
 
   <!-- 2. OFİS / ŞEHİR — ekrana gelince 2 sn sonra mesaj.mp3 otomatik çalar,
-       telgrafın üstünde nabız atan el.png belirir; ona tıklayınca ses kesilir
-       ve mors ekranına geçilir -->
+       aynı anda telgrafın üstünde nabız atan el.png belirir; ona tıklayınca
+       ses kesilir ve mors ekranına geçilir -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
-    <img class="nabiz-ikon" id="btn-telgraf" src="assets/el.png" alt="Telgrafa Bas" style="left:25.4%;top:82.6%;width:8%;">
+    <img class="nabiz-ikon gec-bekle gizli" id="btn-telgraf" src="assets/el.png" alt="Telgrafa Bas" style="left:25.4%;top:82.6%;width:8%;">
   </div>
 
   <!-- 3. MORS KAĞIDI — telgrafın altında kulak.png ikonu mesajı tekrar dinletir -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
-    <img class="nabiz-ikon" id="btn-mors-tekrar" src="assets/kulak.png" alt="Mesajı Dinle" style="left:17.7%;top:59.2%;width:8%;">
+    <img class="nabiz-ikon gec-bekle gizli" id="btn-mors-tekrar" src="assets/kulak.png" alt="Mesajı Dinle" style="left:17.7%;top:59.2%;width:8%;">
 
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
@@ -259,26 +260,27 @@
 
   <!-- 4. RAF — dosyanın üstünde nabız atan el.png -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
-    <img class="nabiz-ikon" id="btn-dosya-incele" src="assets/el.png" alt="İncele" style="left:64.4%;top:47.4%;width:8%;">
+    <img class="nabiz-ikon gec-bekle gizli" id="btn-dosya-incele" src="assets/el.png" alt="İncele" style="left:64.4%;top:47.4%;width:8%;">
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
-       kapatınca büyüteç kaybolur ve ekranın SOLUNDAKİ kapının üstünde ayak izi belirir -->
+       kapatınca büyüteç kaybolur ve 2 sn sonra ekranın SOLUNDAKİ kapının
+       üstünde ayak izi belirir -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
-    <img class="nabiz-ikon" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
-    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:9%;">
+    <img class="nabiz-ikon gec-bekle gizli" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
+    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:6%;">
   </div>
 
   <!-- 6. AT ARABASI — ayak izi tam kapının önünde -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/at_arabasi.jpg')">
-    <img class="nabiz-ikon" id="btn-bin" src="assets/ayak.png" alt="Bin" style="left:58.9%;top:73.7%;width:6%;">
+    <img class="nabiz-ikon gec-bekle gizli" id="btn-bin" src="assets/ayak.png" alt="Bin" style="left:58.9%;top:73.7%;width:5%;">
   </div>
 
-  <!-- 7. KÖY GİRİŞİ — Halit (muhtar) ile konuşma bitince ayak izi belirir -->
+  <!-- 7. KÖY GİRİŞİ — Halit (muhtar) ile konuşma bitince 2 sn sonra ayak izi belirir -->
   <div class="screen" id="scr-koy" style="background-image:url('assets/koy_giris.jpg')">
     <img class="character" id="char-halit" src="assets/karakterler/halit.png" alt="Halit">
     <div class="subtitle" id="sub-halit"></div>
-    <img class="nabiz-ikon gizli" id="btn-ofise-git" src="assets/ayak.png" alt="Ofise Git" style="left:49.5%;top:62.8%;width:7%;">
+    <img class="nabiz-ikon gizli" id="btn-ofise-git" src="assets/ayak.png" alt="Ofise Git" style="left:49.5%;top:62.8%;width:5%;">
   </div>
 
   <!-- 8. DEDEKTİF OFİSİ -->
@@ -305,7 +307,14 @@
 <script>
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const scr = document.getElementById(id);
+  scr.classList.add('active');
+  // O ekrana özel, "ekran açılır açılmaz değil, 2 sn sonra belirsin" işaretli
+  // ikonlar (gec-bekle) — dosya-git/ofise-git gibi belirli bir oyun olayına
+  // bağlı ikonlar bu sınıfı taşımıyor, onlar kendi tetikleyicisinde gecikir.
+  scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli').forEach(el => {
+    setTimeout(() => el.classList.remove('gizli'), 2000);
+  });
 }
 
 /* 1. ANA EKRAN */
@@ -361,7 +370,9 @@ document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
 document.getElementById('popup-close').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.remove('show');
   document.getElementById('btn-dosya-incele-ic').classList.add('gizli');
-  document.getElementById('btn-dosya-git').classList.remove('gizli');
+  setTimeout(() => {
+    document.getElementById('btn-dosya-git').classList.remove('gizli');
+  }, 2000);
 });
 document.getElementById('btn-dosya-git').addEventListener('click', () => showScreen('scr-araba'));
 
@@ -388,7 +399,10 @@ document.getElementById('char-halit').addEventListener('click', () => {
   } else {
     sub.classList.remove('show');
     document.getElementById('char-halit').classList.remove('show');
-    document.getElementById('btn-ofise-git').classList.remove('gizli');
+    setTimeout(() => {
+      document.getElementById('btn-ofise-git').classList.remove('gizli');
+    }, 2000);
+    halitState = 0;
   }
 });
 

@@ -61,23 +61,35 @@ h1{display:none;}
 
 /* YENİ: nabız atan, MERKEZ noktalı küçük "buraya tıkla" ikonları
    (büyüteç, ayak izi, el, kulak, uyku vb.) — case.json'da w/h verilmeyen
-   ikonlu hotspot'lar için. left/top bu ikonun TAM ORTASI. */
-.hotspot-pulse-icon{
+   ikonlu hotspot'lar için. left/top bu ikonun TAM ORTASI. "label" varsa
+   ikonun altında küçük bir isim etiketi (ör. "Muhtarın Evi") görünür.
+   Oda açılır açılmaz değil, engine.js'te 2 saniye sonra belirir. */
+.hotspot-pulse-wrap{
   position:absolute;cursor:pointer;
-  filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));
-  animation:hotspotIkonNabiz 1.6s ease-in-out infinite;
   transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
   z-index:6;
+  animation:hotspotIkonNabiz 1.6s ease-in-out infinite;
+  transition:opacity .5s ease;
+}
+.hotspot-pulse-wrap.ikon-bekliyor{opacity:0;pointer-events:none;}
+.hotspot-pulse-wrap img{
+  width:100%;height:auto;display:block;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));
+}
+.hotspot-pulse-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.03em;
+  color:var(--amber-bright);background:rgba(10,10,8,.75);
+  padding:2px 7px;border-radius:4px;white-space:nowrap;
 }
 @keyframes hotspotIkonNabiz{
   0%,100%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.12);}
+  50%{transform:translate(-50%,-50%) scale(1.1);}
 }
 .hotspot-pulse-icon-missing{
-  position:absolute;transform:translate(-50%,-50%);
   border:1px dashed var(--amber);border-radius:6px;color:var(--amber-bright);
-  font-size:9px;font-family:var(--mono);padding:6px 8px;white-space:pre-line;text-align:center;
-  cursor:pointer;background:rgba(10,10,8,.6);z-index:6;
+  font-size:9px;font-family:var(--mono);padding:6px 8px;white-space:pre-line;
+  text-align:center;background:rgba(10,10,8,.6);
 }
 
 /* ============================================================
