@@ -8,7 +8,23 @@ html,body{height:100%;}
 body{
   margin:0;background:#0a0806;color:var(--paper);font-family:var(--mono);
   width:100vw;height:100vh;height:100dvh;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+/* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
+   Sayfanın tamamı 90° döndürülüp ekrana yeniden oturtuluyor —
+   telefon dönme kilidi açık/kapalı olsun fark etmez. */
+@media screen and (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
 }
 
 h1{display:none;}
@@ -21,6 +37,10 @@ h1{display:none;}
   border-radius:0;
   overflow:hidden;
   box-shadow:0 0 50px rgba(0,0,0,0.9);
+}
+
+.stage-wrap{
+  display:flex;flex-direction:column;align-items:center;
 }
 
 .stage{
@@ -112,10 +132,17 @@ h1{display:none;}
 .calib-marker{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber-bright);
   transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 6px var(--amber-bright);}
 
-.calib-toggle{margin-top:14px;background:#1c1d18;border:1px solid #3a3b30;color:var(--paper-dim);
-  padding:8px 14px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:.03em;}
+.calib-toggle{
+  position:fixed;bottom:10px;left:10px;z-index:90;
+  background:#1c1d18;border:1px solid #3a3b30;color:var(--paper-dim);
+  padding:8px 14px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:.03em;
+}
 .calib-toggle.on{color:var(--amber-bright);border-color:var(--amber);}
-.calib-readout{margin-top:8px;font-size:11px;color:var(--paper-dim);text-align:center;white-space:pre;min-height:16px;}
+.calib-readout{
+  position:fixed;bottom:46px;left:10px;z-index:90;
+  font-size:11px;color:var(--paper-dim);text-align:left;white-space:pre;min-height:16px;
+  background:rgba(10,10,8,.7);padding:4px 8px;border-radius:4px;
+}
 
 .inventory{display:flex;gap:8px;margin-top:14px;min-height:44px;flex-wrap:wrap;}
 .inv-item{width:44px;height:44px;border-radius:6px;background:#1c1d18;border:1px solid #35362c;
