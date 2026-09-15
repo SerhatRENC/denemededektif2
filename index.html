@@ -19,20 +19,6 @@
     overflow: hidden;
   }
 
-  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster */
-  @media screen and (orientation: portrait) {
-    html {
-      transform: rotate(-90deg);
-      transform-origin: left top;
-      width: 100vh;
-      height: 100vw;
-      overflow-x: hidden;
-      position: absolute;
-      top: 100%;
-      left: 0;
-    }
-  }
-
   #stage-frame {
     position: absolute;
     top: 50%; left: 50%;
@@ -106,10 +92,11 @@
     50% { transform: scale(1.12); }
   }
 
-  /* Mors mesajı yazı alanı — kağıdın üstüne oturan, çizgili tek satır input */
+  /* Mors mesajı yazı alanı — ekran görüntüsündeki kırmızı işaretli
+     "yazıyı buraya girin" kutusuna denk getirildi */
   .mors-yazi-alani {
     position: absolute;
-    left: 38%; top: 62%; width: 34%;
+    left: 56%; top: 80%; width: 23%;
     z-index: 15;
   }
   .mors-yazi-alani input {
@@ -140,7 +127,18 @@
     transition: opacity 0.5s ease;
     z-index: 5;
   }
-  .character.show { opacity: 1; pointer-events: auto; }
+  .character.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: karakterNabiz 1.8s ease-in-out infinite;
+  }
+  .character.talking {
+    animation: none; /* konuşma başlayınca düzgün durur, nabız atmayı bırakır */
+  }
+  @keyframes karakterNabiz {
+    0%,100% { filter: drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+    50% { filter: drop-shadow(0 6px 18px rgba(227,169,74,.55)); }
+  }
 
   .subtitle {
     position: absolute;
@@ -195,6 +193,35 @@
     opacity: 0; transition: opacity 0.8s ease;
   }
   #fade-text.show { opacity: 1; }
+
+  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
+     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — vw/vh yer
+     değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
+     yukarıdaki normal kurallardan SONRA gelmezse hiç etkili olmaz
+     (CSS'te eşit özgüllükte son gelen kural kazanır). */
+  @media screen and (orientation: portrait) {
+    html {
+      transform: rotate(-90deg);
+      transform-origin: left top;
+      width: 100vh;
+      height: 100vw;
+      overflow-x: hidden;
+      position: absolute;
+      top: 100%;
+      left: 0;
+    }
+    body {
+      width: 100vh;
+      height: 100vw;
+    }
+    /* vw/vh döndürülmüş ekranda "mantıken" yer değiştirir: fiziksel
+       yükseklik artık yatay genişlik gibi davranır, bu yüzden formülde
+       vw ve vh birbirinin yerine geçiyor. */
+    #stage-frame {
+      width: min(100vh, calc(100vw * 16 / 9));
+      height: min(100vw, calc(100vh * 9 / 16));
+    }
+  }
 </style>
 </head>
 <body>
@@ -208,16 +235,16 @@
     <div class="hotspot" id="btn-cikis" style="left:4%;top:53%;width:19%;height:9%;"></div>
   </div>
 
-  <!-- 2. OFİS / ŞEHİR — "Mesajı Dinle" butonu mesaj.mp3'ü çalar (ekran değiştirmez),
-       telgrafa tıklayınca mors ekranına geçilir -->
+  <!-- 2. OFİS / ŞEHİR — ekrana gelince 2 sn sonra mesaj.mp3 otomatik çalar,
+       telgrafın üstünde nabız atan el.png belirir; ona tıklayınca ses kesilir
+       ve mors ekranına geçilir -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
-    <div class="hotspot" id="btn-telgraf" style="left:8%;top:35%;width:16%;height:30%;"></div>
-    <button class="btn show" id="btn-mesaj-dinle" style="left:40%;top:80%;">Mesajı Dinle</button>
+    <img class="nabiz-ikon" id="btn-telgraf" src="assets/el.png" alt="Telgrafa Bas" style="left:8%;top:35%;width:8%;">
   </div>
 
-  <!-- 3. MORS KAĞIDI — "Mesajı Dinle" butonu hep görünür, ses bu ekrana gelince otomatik BAŞLAMAZ -->
+  <!-- 3. MORS KAĞIDI — telgrafın altında kulak.png ikonu mesajı tekrar dinletir -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
-    <button class="btn show" id="btn-mors-tekrar" style="left:6%;top:75%;">Mesajı Dinle</button>
+    <img class="nabiz-ikon" id="btn-mors-tekrar" src="assets/kulak.png" alt="Mesajı Dinle" style="left:8%;top:78%;width:8%;">
 
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
@@ -225,16 +252,16 @@
     <button class="btn show" id="btn-mors-ilerle" style="left:40%;top:88%;">İlerle</button>
   </div>
 
-  <!-- 4. RAF — dosyaya doğrudan tıklanıyor, buton yok -->
+  <!-- 4. RAF — dosyanın üstünde nabız atan el.png -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
-    <div class="hotspot" id="btn-dosya-incele" style="left:38%;top:40%;width:20%;height:30%;"></div>
+    <img class="nabiz-ikon" id="btn-dosya-incele" src="assets/el.png" alt="İncele" style="left:44%;top:48%;width:8%;">
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
-       kapatınca büyüteç kaybolur ve ayak izi (gidilecek yön) belirir -->
+       kapatınca büyüteç kaybolur ve ekranın SOLUNDAKİ kapının üstünde ayak izi belirir -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <img class="nabiz-ikon" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
-    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:78%;top:38%;width:6%;">
+    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:9%;">
   </div>
 
   <!-- 6. AT ARABASI — ayak izi tam kapının önünde -->
@@ -279,15 +306,20 @@ function showScreen(id) {
 /* 1. ANA EKRAN */
 document.getElementById('btn-oyna').addEventListener('click', () => {
   showScreen('scr-ofis');
+  // Ofis ekranına gelince 2 saniye sonra mesaj kendiliğinden çalmaya başlar
+  setTimeout(() => {
+    const aud = document.getElementById('aud-mesaj');
+    aud.currentTime = 0;
+    aud.play().catch(() => {});
+  }, 2000);
 });
 
-/* 2. OFİS — "Mesajı Dinle" mesaj.mp3'ü çalar; telgrafa tıklayınca mors ekranına geçilir */
-document.getElementById('btn-mesaj-dinle').addEventListener('click', () => {
-  const aud = document.getElementById('aud-mesaj');
-  aud.currentTime = 0;
-  aud.play().catch(() => {});
-});
+/* 2. OFİS — telgrafın üstündeki el.png'ye tıklayınca mesaj sesi kesilir,
+   mors ekranına geçilir */
 document.getElementById('btn-telgraf').addEventListener('click', () => {
+  const aud = document.getElementById('aud-mesaj');
+  aud.pause();
+  aud.currentTime = 0;
   showScreen('scr-mors');
 });
 
@@ -342,9 +374,11 @@ document.getElementById('btn-bin').addEventListener('click', () => {
 let halitState = 0;
 document.getElementById('char-halit').addEventListener('click', () => {
   const sub = document.getElementById('sub-halit');
+  const char = document.getElementById('char-halit');
   if (halitState === 0) {
     sub.textContent = "Hoş geldiniz dedektif! Sisledere Köyü'ne varışınız tam zamanında oldu.";
     sub.classList.add('show');
+    char.classList.add('talking'); // konuşurken nabız durur, düzgün durur
     halitState = 1;
   } else {
     sub.classList.remove('show');
@@ -362,9 +396,11 @@ document.getElementById('btn-ofise-git').addEventListener('click', () => {
 let polisState = 0;
 document.getElementById('char-polis').addEventListener('click', () => {
   const sub = document.getElementById('sub-polis');
+  const char = document.getElementById('char-polis');
   if (polisState === 0) {
     sub.textContent = "Başkomiserim, durum dosyasını masaya bıraktım. Soruşturmaya başlayabilirsiniz.";
     sub.classList.add('show');
+    char.classList.add('talking'); // konuşurken nabız durur, düzgün durur
     polisState = 1;
   } else {
     sub.classList.remove('show');
