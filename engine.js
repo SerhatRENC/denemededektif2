@@ -45,6 +45,34 @@ function renderRoom() {
     room.hotspots.forEach(h => {
       if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
       if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
+
+      // YENİ: ikonu olan ama dikdörtgen (w/h) VERİLMEMİŞ hotspot'lar artık
+      // nabız atan, MERKEZ noktalı küçük bir ikon olarak çiziliyor
+      // (index.html'deki .nabiz-ikon ile birebir aynı mantık). x/y bu ikonun
+      // TAM ORTASI, iconWidth genişliği belirler (yoksa varsayılan %8).
+      if (h.icon && !h.w && !h.h) {
+        const el = document.createElement('img');
+        el.className = 'hotspot-pulse-icon';
+        el.src = h.icon;
+        el.alt = h.hint || '';
+        el.style.left = h.x;
+        el.style.top = h.y;
+        el.style.width = h.iconWidth || '8%';
+        el.onclick = () => { if (!calibMode) handleHotspot(h); };
+        el.onerror = () => {
+          const fallback = document.createElement('div');
+          fallback.className = 'hotspot-pulse-icon-missing';
+          fallback.style.left = h.x;
+          fallback.style.top = h.y;
+          fallback.textContent = `görsel yok:\n${h.icon}`;
+          fallback.onclick = el.onclick;
+          el.replaceWith(fallback);
+        };
+        stage.appendChild(el);
+        return; // eski dikdörtgen hotspot kutusu ÇİZİLMEZ
+      }
+
+      // ESKİ: dikdörtgen hotspot (w/h var) — obje ikonlu (sorgu/defter gibi) ya da görünmez
       const el = document.createElement('div');
       el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
       el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
