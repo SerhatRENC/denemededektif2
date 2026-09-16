@@ -25,6 +25,11 @@
     transform: translate(-50%, -50%);
     width: min(100vw, calc(100vh * 16 / 9));
     height: min(100vh, calc(100vw * 9 / 16));
+    /* dvh/dvw (dinamik viewport birimleri) mobilde tarayıcı çubuğu
+       açılıp kapandıkça daha doğru boyut verir; desteklemeyen eski
+       tarayıcılar bu satırı geçersiz sayıp yukarıdaki vw/vh'a döner. */
+    width: min(100dvw, calc(100dvh * 16 / 9));
+    height: min(100dvh, calc(100dvw * 9 / 16));
     aspect-ratio: 16 / 9;
     background: #000;
     overflow: hidden;
@@ -125,7 +130,7 @@
 
   .character {
     position: absolute;
-    right: 5%; bottom: 0;
+    right: 5%; bottom: -15%;
     height: 85%;
     cursor: pointer;
     opacity: 0;
@@ -200,6 +205,18 @@
   }
   #fade-text.show { opacity: 1; }
 
+  /* Tam ekran düğmesi — mobilde tarayıcı çubuğunu gizleyip oyunun tüm
+     ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, tüm ekranlarda sabit. */
+  .tam-ekran-btn{
+    position:absolute;top:10px;right:10px;z-index:999;
+    width:34px;height:34px;border-radius:6px;
+    background:rgba(28,29,24,.75);border:1px solid var(--accent);
+    color:var(--parchment);font-size:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    opacity:.55;transition:opacity .2s ease;
+  }
+  .tam-ekran-btn:hover{opacity:1;}
+
   /* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
      ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — vw/vh yer
      değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
@@ -227,12 +244,23 @@
       width: min(100vh, calc(100vw * 16 / 9));
       height: min(100vw, calc(100vh * 9 / 16));
     }
+    /* dvh/dvw ile aynı mantık, mobil tarayıcı çubuğu değişimlerine karşı
+       daha doğru — desteklemeyen tarayıcılarda bu satırlar geçersiz sayılıp
+       yukarıdaki vw/vh sürümüne geri düşülür. */
+    html { width: 100dvh; height: 100dvw; }
+    body { width: 100dvh; height: 100dvw; }
+    #stage-frame {
+      width: min(100dvh, calc(100dvw * 16 / 9));
+      height: min(100dvw, calc(100dvh * 9 / 16));
+    }
   }
 </style>
 </head>
 <body>
 
 <div id="stage-frame">
+
+  <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
   <!-- 1. ANA EKRAN -->
   <div class="screen active" id="scr-ana" style="background-image:url('assets/ana_ekran.jpg')">
@@ -425,6 +453,21 @@ document.getElementById('char-polis').addEventListener('click', () => {
     sub.classList.remove('show');
     document.getElementById('char-polis').classList.remove('show');
     setTimeout(() => { window.location.href = "oyun.html"; }, 500);
+  }
+});
+
+/* Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
+   gizler, oyun gerçekten tüm ekranı kaplar. Tarayıcı güvenlik kısıtı
+   gereği sadece bir tıklama sonrası çalışabilir, sayfa açılışında otomatik
+   tetiklenemez. */
+document.getElementById('tamEkranBtn').addEventListener('click', () => {
+  const el = document.documentElement;
+  if (!document.fullscreenElement) {
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (req) req.call(el).catch(() => {});
+  } else {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (exit) exit.call(document).catch(() => {});
   }
 });
 </script>

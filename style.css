@@ -17,6 +17,10 @@ h1{display:none;}
   position:relative;
   width:min(100vw, calc(100vh * 16 / 9));
   height:min(100vh, calc(100vw * 9 / 16));
+  /* dvh/dvw ile mobilde tarayıcı çubuğu değişimine karşı daha doğru boyut;
+     desteklemeyen tarayıcılar bu satırı geçersiz sayıp yukarıdakine döner. */
+  width:min(100dvw, calc(100dvh * 16 / 9));
+  height:min(100dvh, calc(100dvw * 9 / 16));
   aspect-ratio:16/9;
   border-radius:0;
   overflow:hidden;
@@ -146,6 +150,18 @@ h1{display:none;}
   .corner-icon-btn{width:52px;height:52px;}
 }
 
+/* Tam ekran düğmesi — mobilde tarayıcı çubuğunu gizleyip oyunun tüm
+   ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, her zaman sabit. */
+.tam-ekran-btn{
+  position:absolute;top:10px;right:10px;z-index:999;
+  width:34px;height:34px;border-radius:6px;
+  background:rgba(28,29,24,.75);border:1px solid var(--amber);
+  color:var(--amber-bright);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.55;transition:opacity .2s ease;
+}
+.tam-ekran-btn:hover{opacity:1;}
+
 .calib-marker{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber-bright);
   transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 6px var(--amber-bright);}
 
@@ -198,57 +214,52 @@ h1{display:none;}
 /* ---- İFADE ZAPTI: liste + okuyucu ---- */
 .modal.wide{max-width:640px;}
 
-/* ---- İFADE ZAPTI: BÜYÜK, ÇERÇEVESİZ GÖRÜNÜM ----
-   .modal.reader eklendiğinde standart koyu kutu/çerçeve devre dışı kalır,
-   kağıt ekranın büyük kısmını kaplar, oklar resmin sol/sağ kenarında durur. */
+/* ---- İFADE ZAPTI: TAM EKRAN, ÇERÇEVESİZ GÖRÜNÜM
+   (index.html'deki Ali İhsan popup'ıyla birebir aynı görsel dil) ----
+   Sadece: yanlarda ok, ortada büyük görsel, altta tek "Sorguyu Oynat"
+   butonu, köşede X. Ayrı bir kutu/çerçeve yok, kaydırma yok. */
+.modal-bg.reader-mode{ padding:0; }
 .modal.reader{
-  background:none;border:none;box-shadow:none;max-width:96%;width:auto;padding:0;max-height:96%;
+  background:none;border:none;box-shadow:none;
+  max-width:100%;width:100%;max-height:100%;height:100%;
+  padding:0;overflow:visible;
+  display:flex;align-items:center;justify-content:center;position:relative;
 }
-.reader-topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:8px;padding:0 4px;
-}
-.reader-name{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--amber-bright);}
-.reader-count{font-size:11px;color:var(--paper-dim);font-family:var(--mono);}
 .reader-close{
-  background:#1c1d18;border:1px solid #3a3b30;color:var(--paper-dim);
-  width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;
+  position:absolute;top:4%;right:4%;z-index:10;
+  width:2.2em;height:2.2em;border-radius:50%;
+  background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
+  font-size:14px;cursor:pointer;
 }
-.reader-close:hover{border-color:var(--amber);color:var(--amber-bright);}
-
-.reader-stage{position:relative;display:flex;align-items:center;justify-content:center;}
+.reader-close:hover{background:var(--amber);color:#171712;}
 .reader-card-img-wide{
-  max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;
-  border-radius:6px;background:transparent;display:block;
+  max-width:78%;max-height:80%;width:auto;height:auto;object-fit:contain;
+  border-radius:4px;background:transparent;display:block;
 }
 .reader-side-arrow{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:44px;height:44px;border-radius:50%;background:rgba(28,29,24,.85);
+  position:absolute;top:45%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;background:rgba(28,29,24,.85);
   border:1px solid var(--amber);color:var(--amber-bright);font-size:20px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;z-index:5;
+  display:flex;align-items:center;justify-content:center;z-index:8;
 }
 .reader-side-arrow:hover{background:rgba(28,29,24,1);}
 .reader-side-arrow:disabled{opacity:.25;cursor:default;}
-.reader-side-arrow.left{left:-4px;}
-.reader-side-arrow.right{right:-4px;}
-@media (max-width:480px){
-  .reader-side-arrow{width:34px;height:34px;font-size:16px;}
-  .reader-side-arrow.left{left:-2px;}
-  .reader-side-arrow.right{right:-2px;}
+.reader-side-arrow.left{left:3%;}
+.reader-side-arrow.right{right:3%;}
+.reader-play-simple{
+  position:absolute;bottom:5%;left:50%;transform:translateX(-50%);
+  background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
+  color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;z-index:8;
 }
-.reader-audio-wide{display:flex;align-items:center;gap:10px;margin-top:10px;justify-content:center;}
+@media (max-width:480px){
+  .reader-side-arrow{width:36px;height:36px;font-size:16px;}
+  .reader-close{width:1.9em;height:1.9em;font-size:12px;}
+}
 
 /* Eski (küçük) ifade kartı görseli — openPhoto() gibi başka yerlerde hâlâ kullanılıyor */
 .reader-card-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;
   border-radius:6px;display:block;margin:0 auto 12px;background:#1a1b15;}
-.reader-audio{display:flex;align-items:center;gap:12px;background:#1c1d18;border:1px solid #35362c;
-  border-radius:8px;padding:10px 14px;margin-bottom:12px;}
-.reader-audio .ring{width:34px;height:34px;border-radius:50%;border:2px solid var(--amber);
-  display:flex;align-items:center;justify-content:center;color:var(--amber-bright);font-size:13px;
-  cursor:pointer;flex-shrink:0;}
-.reader-audio.playing .ring{background:var(--amber);color:#171712;}
-.reader-audio .meta{font-size:11px;color:var(--paper-dim);}
-.reader-audio .time{font-size:11px;color:var(--amber-bright);font-variant-numeric:tabular-nums;}
 
 /* ---- GÜN GEÇİŞİ EKRANI ---- */
 .sleep-overlay{
@@ -446,5 +457,14 @@ h1{display:none;}
   .stage-frame {
     width: min(100vh, calc(100vw * 16 / 9));
     height: min(100vw, calc(100vh * 9 / 16));
+  }
+  /* dvh/dvw ile aynı mantık — mobil tarayıcı çubuğu (adres/tab) açılıp
+     kapandıkça daha doğru boyut verir. Desteklemeyen tarayıcılarda bu
+     satırlar geçersiz sayılıp yukarıdaki vw/vh sürümüne geri düşülür. */
+  html { width: 100dvh; height: 100dvw; }
+  body { width: 100dvh; height: 100dvw; }
+  .stage-frame {
+    width: min(100dvh, calc(100dvw * 16 / 9));
+    height: min(100dvw, calc(100dvh * 9 / 16));
   }
 }

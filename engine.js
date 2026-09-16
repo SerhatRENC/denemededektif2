@@ -151,7 +151,9 @@ function wakeUp() {
   renderRoom(); // gün değiştiği için bazı hotspot'lar görünür/gizli olabilir
 }
 
-/* ---------- ifade zaptı okuyucu ---------- */
+/* ---------- ifade zaptı okuyucu — çerçevesiz, tam ekran (index.html'deki
+   Ali İhsan popup'ıyla aynı görsel dil): sadece yan oklar + altta tek
+   basit "Sorguyu Oynat" butonu ---------- */
 let currentStatementIndex = 0;
 
 function openStatement(index) {
@@ -160,30 +162,20 @@ function openStatement(index) {
   const s = CASE.statements[index];
   const total = CASE.statements.length;
 
-  const audioHtml = s.audio ? `
-    <div class="reader-audio reader-audio-wide" id="readerAudio">
-      <div class="ring" id="readerRing" onclick="toggleStatementAudio('${s.audio}')">▶</div>
-      <div>
-        <div class="meta">Fonografta Dinle</div>
-        <div class="time" id="readerTime">00:00</div>
-      </div>
-    </div>` : '';
+  const audioHtml = s.audio
+    ? `<button class="reader-play-simple" id="readerPlayBtn" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
+    : '';
 
   showModal(`
-    <div class="reader-topbar">
-      <span class="reader-name">${s.name}</span>
-      <span class="reader-count">${index + 1} / ${total}</span>
-      <button class="reader-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="reader-stage">
-      <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
-      <img class="reader-card-img-wide" src="${s.cardImage}"
-           onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
-      <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
-    </div>
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
+    <img class="reader-card-img-wide" src="${s.cardImage}"
+         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+    <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
   document.getElementById('modalBody').classList.add('reader');
+  document.getElementById('modalBg').classList.add('reader-mode');
 }
 
 // Modal açıkken ve bir ifade kartı gösterilirken klavye ok tuşlarıyla da gezinilebilir
@@ -193,30 +185,21 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft' && currentStatementIndex > 0) openStatement(currentStatementIndex - 1);
 });
 
-let statementAudio = null, statementPlaying = false, statementSeconds = 0, statementInterval = null;
+let statementAudio = null, statementPlaying = false;
 function toggleStatementAudio(src) {
   if (!statementAudio) statementAudio = new Audio(src);
   statementPlaying = !statementPlaying;
-  const ring = document.getElementById('readerRing');
+  const btn = document.getElementById('readerPlayBtn');
   if (statementPlaying) {
     statementAudio.play().catch(() => {});
-    ring.textContent = '⏸';
-    statementInterval = setInterval(() => {
-      statementSeconds++;
-      const m = String(Math.floor(statementSeconds / 60)).padStart(2, '0');
-      const s2 = String(statementSeconds % 60).padStart(2, '0');
-      const timeEl = document.getElementById('readerTime');
-      if (timeEl) timeEl.textContent = `${m}:${s2}`;
-    }, 1000);
+    if (btn) btn.textContent = '⏸ Duraklat';
   } else {
     statementAudio.pause();
-    ring.textContent = '▶';
-    clearInterval(statementInterval);
+    if (btn) btn.textContent = '▶ Sorguyu Oynat';
   }
 }
 function stopStatementAudio() {
-  clearInterval(statementInterval);
-  statementPlaying = false; statementSeconds = 0;
+  statementPlaying = false;
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }
 }
 
@@ -334,13 +317,16 @@ function showModal(html, wide) {
   const body = document.getElementById('modalBody');
   body.innerHTML = html;
   body.className = 'modal' + (wide ? ' wide' : ''); // önceki modal'dan kalan class'lar (ör. 'reader') burada temizleniyor
-  document.getElementById('modalBg').classList.add('active');
+  const bg = document.getElementById('modalBg');
+  bg.classList.remove('reader-mode'); // her yeni modalda sıfırlanır, openStatement gerekirse tekrar ekler
+  bg.classList.add('active');
 }
 function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
   stopStatementAudio();
   document.getElementById('modalBg').classList.remove('active');
+  document.getElementById('modalBg').classList.remove('reader-mode');
 }
 document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
 

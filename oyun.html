@@ -2,10 +2,10 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -18,6 +18,10 @@
       <!-- Gün sayacı — oyun ekranının sağ üst köşesinde -->
       <div class="stage-day-tag" id="dayBadge">GÜN 1</div>
 
+      <!-- Tam ekran düğmesi — mobilde tarayıcı çubuğunu (adres/tab satırı)
+           gizleyip oyunun tüm ekranı kaplamasını sağlar -->
+      <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
+
       <div class="corner-icons">
         <button class="corner-icon-btn" onclick="openMap()" title="Harita">
           <img src="assets/harita.png" alt="Harita">
@@ -27,7 +31,7 @@
         </button>
       </div>
 
-      <!-- ============ HARİTA OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <!-- ============ HARİTA OVERLAY ============ -->
       <div class="map-overlay" id="mapOverlay">
         <button class="map-overlay-close" onclick="closeMap()">✕</button>
         <div class="map-scroll">
@@ -38,7 +42,7 @@
         </div>
       </div>
 
-      <!-- ============ NOT DEFTERİ OVERLAY (artık oyun ekranının İÇİNDE) ============ -->
+      <!-- ============ NOT DEFTERİ OVERLAY ============ -->
       <div class="notebook-overlay" id="notebookOverlay">
         <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
         <div class="notebook-scroll">
@@ -47,7 +51,6 @@
             <img id="notebookImage" src="" alt="Not Defteri">
             <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
 
-            <!-- SOL SAYFA: 2 şüpheli satırı — fotoğraf+isim sabit, altları/yanları serbest -->
             <div class="nb-page sol" id="nbPageSol">
               <div class="nb-suspect-row" id="nbRow0">
                 <div class="nb-suspect-notes" id="nbNotesSolUst">
@@ -69,17 +72,12 @@
               </div>
             </div>
 
-            <!-- SAĞ SAYFA: tamamen serbest not alanı, değişmiyor -->
             <div class="nb-page sag" id="nbPageSag">
               <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this)" placeholder="buraya not al..."></textarea>
             </div>
 
-            <!-- TEK BÜYÜK ÇİZİM KATMANI: tüm çift sayfanın üstünü kaplar,
-                 "Çiz" moduna geçince artık defterin HER noktasına (fotoğrafların
-                 üstüne bile) serbestçe çizilebilir — ayrı ayrı kutulara hapsolmuyor. -->
             <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
 
-            <!-- Defterin kenarlarından sayfa çevirme -->
             <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
             <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
           </div>
@@ -93,7 +91,7 @@
         </div>
       </div>
 
-      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI (artık oyun ekranının İÇİNDE) ============ -->
+      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
       <div class="modal-bg" id="modalBg">
         <div class="modal" id="modalBody"></div>
       </div>
@@ -112,6 +110,22 @@
     </div>
   </div>
 
-  <script src="engine.js?v=11"></script>
+  <script src="engine.js?v=13"></script>
+  <script>
+    // Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
+    // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
+    // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
+    // bu yüzden sayfa yüklenince otomatik açılamaz.
+    document.getElementById('tamEkranBtn').addEventListener('click', () => {
+      const el = document.documentElement;
+      if (!document.fullscreenElement) {
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        if (req) req.call(el).catch(() => {});
+      } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (exit) exit.call(document).catch(() => {});
+      }
+    });
+  </script>
 </body>
 </html>
