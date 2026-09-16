@@ -6,8 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="apple-touch-icon" href="assets/icon-192.png?v=2">
 <title>Sislidere Köyü Davası</title>
 <style>
   :root {
@@ -451,6 +451,9 @@ document.getElementById('char-polis').addEventListener('click', () => {
    gizler, oyun gerçekten tüm ekranı kaplar. Tarayıcı güvenlik kısıtı
    gereği sadece bir tıklama sonrası çalışabilir, sayfa açılışında otomatik
    tetiklenemez. */
+   if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('tamEkranBtn').style.display = 'none';
+}
 document.getElementById('tamEkranBtn').addEventListener('click', () => {
   const el = document.documentElement;
   if (!document.fullscreenElement) {

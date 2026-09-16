@@ -10,12 +10,14 @@ body{
   width:100vw;height:100vh;height:100dvh;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
+.calib-toggle, .calib-readout { display: none; }
 
 h1{display:none;}
 
 .stage-frame{
   position:relative;
-  width:min(100vw, calc(100vh * 16 / 9));
+  container-type:inline-size;
+  width:min(100vw, calc(100vh * 16 / 9));  
   height:min(100vh, calc(100vw * 9 / 16));
   /* dvh/dvw ile mobilde tarayıcı çubuğu değişimine karşı daha doğru boyut;
      desteklemeyen tarayıcılar bu satırı geçersiz sayıp yukarıdakine döner. */
@@ -29,7 +31,10 @@ h1{display:none;}
 
 .stage-wrap{
   display:flex;flex-direction:column;align-items:center;
-}
+  container-type:inline-size;
+  width:min(100vw, calc(100vh * 16 / 9));
+  width:min(100dvw, calc(100dvh * 16 / 9));
+  }
 
 .stage{
   position:absolute;inset:0;
@@ -131,7 +136,7 @@ h1{display:none;}
 
 /* Gün sayacı — oyun ekranının sağ üst köşesinde */
 .stage-day-tag{
-  position:absolute;top:8px;right:8px;z-index:15;
+  position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
   padding:4px 12px;border-radius:4px;
   font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
@@ -141,22 +146,18 @@ h1{display:none;}
    butonları — büyütüldü, artık daha rahat tıklanıyor */
 .corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
 .corner-icon-btn{
-  width:64px;height:64px;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
+  width:8cqw;height:8cqw;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
   cursor:pointer;overflow:hidden;padding:6px;transition:.15s;
-}
+  }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
 .corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
-@media (max-width: 480px){
-  .corner-icon-btn{width:52px;height:52px;}
-}
-
 /* Tam ekran düğmesi — mobilde tarayıcı çubuğunu gizleyip oyunun tüm
    ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, her zaman sabit. */
 .tam-ekran-btn{
-  position:absolute;top:10px;left:10px;z-index:999;  
-  width:34px;height:34px;border-radius:6px;
+  position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:999;  
+  width:4.2cqw;height:4.2cqw;border-radius:6px;
   background:rgba(28,29,24,.75);border:1px solid var(--amber);
-  color:var(--amber-bright);font-size:16px;cursor:pointer;
+  color:var(--amber-bright);font-size:2.2cqw;cursor:pointer;  
   display:flex;align-items:center;justify-content:center;
   opacity:.55;transition:opacity .2s ease;
 }
@@ -177,11 +178,11 @@ h1{display:none;}
   background:rgba(10,10,8,.7);padding:4px 8px;border-radius:4px;
 }
 
-.inventory{display:flex;gap:8px;margin-top:14px;min-height:44px;flex-wrap:wrap;}
-.inv-item{width:44px;height:44px;border-radius:6px;background:#1c1d18;border:1px solid #35362c;
-  display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--amber-bright);
+.inventory{display:flex;gap:1.6cqw;margin-top:14px;min-height:5.5cqw;flex-wrap:wrap;}
+.inv-item{width:5.5cqw;height:5.5cqw;border-radius:6px;background:#1c1d18;border:1px solid #35362c;
+  display:flex;align-items:center;justify-content:center;font-size:2.2cqw;cursor:pointer;color:var(--amber-bright);
   background-size:cover;background-position:center;}
-.inv-empty{font-size:10.5px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;}
+  .inv-empty{font-size:10.5px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;}
 
 .modal-bg{position:absolute;inset:0;background:rgba(6,6,5,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:5%;border-radius:10px;}
 .modal-bg.active{display:flex;}
@@ -227,10 +228,10 @@ h1{display:none;}
 }
 .reader-close{
   position:absolute;top:4%;right:4%;z-index:10;
-  width:2.2em;height:2.2em;border-radius:50%;
+  width:4.8cqw;height:4.8cqw;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
-  font-size:14px;cursor:pointer;
-}
+  font-size:1.8cqw;cursor:pointer;
+  }
 .reader-close:hover{background:var(--amber);color:#171712;}
 .reader-card-img-wide{
   max-width:78%;max-height:80%;width:auto;height:auto;object-fit:contain;
@@ -238,8 +239,8 @@ h1{display:none;}
 }
 .reader-side-arrow{
   position:absolute;top:45%;transform:translateY(-50%);
-  width:46px;height:46px;border-radius:50%;background:rgba(28,29,24,.85);
-  border:1px solid var(--amber);color:var(--amber-bright);font-size:20px;cursor:pointer;
+  width:6cqw;height:6cqw;border-radius:50%;background:rgba(28,29,24,.85);
+  border:1px solid var(--amber);color:var(--amber-bright);font-size:2.6cqw;cursor:pointer;
   display:flex;align-items:center;justify-content:center;z-index:8;
 }
 .reader-side-arrow:hover{background:rgba(28,29,24,1);}
@@ -248,13 +249,9 @@ h1{display:none;}
 .reader-side-arrow.right{right:3%;}
 .reader-play-simple{
   position:absolute;bottom:5%;left:50%;transform:translateX(-50%);
-  background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
-  color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--amber);border:none;padding:1.3cqw 2.8cqw;border-radius:6px;
+  color:#171712;font-weight:700;font-size:1.5cqw;letter-spacing:.05em;text-transform:uppercase;
   cursor:pointer;z-index:8;
-}
-@media (max-width:480px){
-  .reader-side-arrow{width:36px;height:36px;font-size:16px;}
-  .reader-close{width:1.9em;height:1.9em;font-size:12px;}
 }
 
 /* Eski (küçük) ifade kartı görseli — openPhoto() gibi başka yerlerde hâlâ kullanılıyor */
@@ -289,19 +286,19 @@ h1{display:none;}
   display:flex;align-items:center;justify-content:center;
 }
 .map-overlay-close{
-  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;width:3.8cqw;height:3.8cqw;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
-  font-size:14px;cursor:pointer;z-index:22;
-}
+  font-size:1.8cqw;cursor:pointer;z-index:22;
+  }
 .map-box{position:relative;display:inline-block;max-width:100%;max-height:100%;}
 .map-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;
   border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 #mapHotspots{position:absolute;inset:0;}
 .map-hotspot{
-  position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  position:absolute;width:3.3cqw;height:3.3cqw;margin:-1.65cqw 0 0 -1.65cqw;border-radius:50%;
   background:radial-gradient(circle, rgba(227,169,74,.85), rgba(227,169,74,.1));
   border:2px solid var(--amber-bright);cursor:pointer;
-}
+  }
 .map-hotspot:hover{background:radial-gradient(circle, rgba(227,169,74,1), rgba(227,169,74,.25));}
 .map-hotspot-label{
   position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
@@ -325,10 +322,10 @@ h1{display:none;}
   display:flex;align-items:stretch;justify-content:center;
 }
 .notebook-overlay-close{
-  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;width:3.8cqw;height:3.8cqw;border-radius:50%;
   background:#1c1d18;border:1px solid var(--amber);color:var(--amber-bright);
-  font-size:14px;cursor:pointer;z-index:22;
-}
+  font-size:1.8cqw;cursor:pointer;z-index:22;
+  }
 .notebook-box{
   width:100%;max-width:100%;height:100%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -411,18 +408,15 @@ h1{display:none;}
 /* Defterin kenarlarından sayfa çevirme okları */
 .nb-edge-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
-  width:38px;height:38px;border-radius:50%;
+  width:4.8cqw;height:4.8cqw;border-radius:50%;
   background:rgba(28,29,24,.8);border:1px solid var(--amber);
-  color:var(--amber-bright);font-size:19px;cursor:pointer;z-index:16;
+  color:var(--amber-bright);font-size:2.4cqw;cursor:pointer;z-index:16;
   display:flex;align-items:center;justify-content:center;
-}
+  }
 .nb-edge-arrow:hover{background:rgba(28,29,24,1);}
 .nb-edge-arrow:disabled{opacity:.25;cursor:default;}
 .nb-edge-left{left:1%;}
 .nb-edge-right{right:1%;}
-@media (max-width:480px){
-  .nb-edge-arrow{width:30px;height:30px;font-size:15px;}
-}
 
 .notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
 .nb-btn{

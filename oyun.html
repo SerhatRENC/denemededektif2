@@ -121,6 +121,9 @@
     // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
     // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
     // bu yüzden sayfa yüklenince otomatik açılamaz.
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('tamEkranBtn').style.display = 'none';
+}
     document.getElementById('tamEkranBtn').addEventListener('click', () => {
       const el = document.documentElement;
       if (!document.fullscreenElement) {
