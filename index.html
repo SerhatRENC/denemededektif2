@@ -227,6 +227,56 @@
      değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
      yukarıdaki normal kurallardan SONRA gelmezse hiç etkili olmaz
      (CSS'te eşit özgüllükte son gelen kural kazanır). */
+     /* ============================================================
+     OYUN HAKKINDA EKRANI
+     ============================================================ */
+  .hakkinda-scroll{
+    position:absolute; inset:0; overflow-y:auto;
+    background:var(--parchment-dark);
+    padding:4% 5%;
+  }
+  .hakkinda-panel{
+    position:relative;
+    max-width:700px; margin:0 auto;
+    background:var(--parchment);
+    color:var(--ink);
+    border-radius:10px;
+    padding:28px 24px 40px;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+  }
+  .hakkinda-geri{
+    position:sticky; top:0; float:right;
+    background:var(--accent); color:var(--parchment);
+    border:none; border-radius:6px; padding:8px 14px;
+    font-family:inherit; font-size:13px; font-weight:bold; cursor:pointer;
+    margin-bottom:10px;
+  }
+  .hakkinda-baslik{ font-size:clamp(20px,3vw,30px); margin-bottom:14px; clear:both; }
+  .hakkinda-alt-baslik{ font-size:clamp(15px,2vw,19px); margin:22px 0 10px; color:var(--accent); }
+  .hakkinda-metin p{ font-size:clamp(13px,1.4vw,16px); line-height:1.6; margin-bottom:10px; }
+  .hakkinda-metin a{ color:var(--accent); }
+  .hakkinda-blok{ margin-top:6px; }
+  .hakkinda-blok-baslik{ font-weight:bold; font-size:14px; margin-bottom:6px; }
+  .credits-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+    gap:14px; margin-top:8px;
+  }
+  .credit-item{ text-align:center; font-size:12px; }
+  .credit-item img{
+    width:100%; aspect-ratio:3/4; object-fit:contain; border-radius:8px;
+    border:2px solid var(--accent); margin-bottom:5px; background:#00000012;
+  }
+  .credit-name{ font-weight:bold; }
+  .credit-voice{ color:#5a4530; font-size:11px; }
+  @media (max-width:600px){
+    .credits-grid{ grid-template-columns:repeat(3,1fr); }
+  }
+
+  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
+     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — vw/vh yer
+     değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
+     yukarıdaki normal kurallardan SONRA gelmezse hiç etkili olmaz
+     (CSS'te eşit özgüllükte son gelen kural kazanır). */
     .donme-uyarisi{
     display:none;
     position:fixed;inset:0;z-index:9999;
@@ -302,12 +352,55 @@
     <img class="nabiz-ikon gizli" id="btn-ofise-git" src="assets/ayak.png" alt="Ofise Git" style="left:49.5%;top:62.8%;width:5%;">
   </div>
 
-  <!-- 8. DEDEKTİF OFİSİ -->
+    <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/dedektif_ofis.jpg')">
     <img class="character" id="char-polis" src="assets/karakterler/polis.png" alt="Polis">
     <div class="subtitle" id="sub-polis"></div>
   </div>
 
+  <!-- 9. OYUN HAKKINDA -->
+  <div class="screen" id="scr-hakkinda">
+    <div class="hakkinda-scroll">
+      <div class="hakkinda-panel">
+        <button class="hakkinda-geri" id="btn-hakkinda-geri">‹ Ana Menü</button>
+        <h2 class="hakkinda-baslik">Oyun Hakkında</h2>
+        <div class="hakkinda-metin">
+          <p>Merhaba! Ben RENC.</p>
+          <p>Hikaye anlatıcılığına ve içerik üretmeye olan tutkumla RENC YouTube Kanalı üzerinden fikirlerimi, projelerimi ve dünyamı sizlerle paylaşıyorum.</p>
+          <p>Oyun geliştirme serüvenim, fiziksel olarak tasarlayıp hazırladığım zarf içi dedektiflik oyunuyla başladı. Masada dokunarak, zarfları açıp ipuçlarını birleştirerek oynanan o ilk deneyimin ardından, hikayelerimizi ve gizemlerimizi çok daha geniş kitlelere ulaştırabilmek adına ikinci oyunumuzla birlikte dijital dünyaya adım attık.</p>
+          <p>Bu projeyi hayata geçirirken amacımız; sizi sürükleyici bir atmosfere çekmek, detaylarda gizlenmiş sırları çözdürürken unutulmaz bir dedektiflik deneyimi yaşatmaktı. Umarız oyunu oynarken bizlerin hazırlarken duyduğu heyecanı ve keyfi hissedersiniz!</p>
+          <p>İyi seyirler ve bol şans dedektif!</p>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">🎬 Emeği Geçenler</h3>
+
+        <div class="hakkinda-blok">
+          <div class="hakkinda-blok-baslik">✍️ Hikaye &amp; Senaryo</div>
+          <p>RENC</p>
+          <p>Aylin Kılınçarslan</p>
+        </div>
+
+        <div class="hakkinda-blok">
+          <div class="hakkinda-blok-baslik">🎙️ Seslendirme Kadrosu</div>
+          <div class="credits-grid">
+            <div class="credit-item"><img src="assets/karakterler/anselm.png" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/aylin.png" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cabbar.png" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cevdet.png" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/halit.png" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/kamuran.png" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/mustafa.png" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/nadire.png" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/polis.png" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/riza.png" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+          </div>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">🌐 Sosyal Medya &amp; İletişim</h3>
+        <p class="hakkinda-metin"><a href="https://youtube.com/@RENC_official" target="_blank" rel="noopener">YouTube: youtube.com/@RENC_official</a></p>
+      </div>
+    </div>
+  </div>
   <!-- KATMANLAR VE SESLER -->
   <div id="popup-overlay">
     <button id="popup-close">×</button>
@@ -337,6 +430,12 @@ function showScreen(id) {
 }
 
 /* 1. ANA EKRAN */
+document.getElementById('btn-hakkinda').addEventListener('click', () => {
+  showScreen('scr-hakkinda');
+});
+document.getElementById('btn-hakkinda-geri').addEventListener('click', () => {
+  showScreen('scr-ana');
+});
 document.getElementById('btn-oyna').addEventListener('click', () => {
   showScreen('scr-ofis');
   // Ofis ekranına gelince 2 saniye sonra mesaj kendiliğinden çalmaya başlar
