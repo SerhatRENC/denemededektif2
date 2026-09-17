@@ -54,11 +54,21 @@ function renderRoom() {
       geri.innerHTML = `<div class="hint">← Köy Merkezine dön</div>`;
       geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
       stage.appendChild(geri);
-      renderCharacter();
+
+      const kapiTikla = document.createElement('div');
+      kapiTikla.className = 'hotspot';
+      kapiTikla.style.left = '20%'; kapiTikla.style.top = '10%'; kapiTikla.style.width = '75%'; kapiTikla.style.height = '80%';
+      kapiTikla.innerHTML = `<div class="hint">Kapıyı çal</div>`;
+      kapiTikla.onclick = () => {
+        showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
+      };
+      stage.appendChild(kapiTikla);
+
+      // renderCharacter() BİLEREK çağrılmıyor — kapalı kapı ekranında
+      // o odaya atanmış karakter görünmemeli.
       stage.classList.remove('fading');
       return;
     }
-
     room.hotspots.forEach(h => {
           if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
       if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
@@ -449,6 +459,7 @@ function closeMap() {
    ============================================================ */
 let notebookState = null;
 let notebookMod = 'yaz'; // 'yaz' | 'ciz' | 'sil'
+let notebookRenk = '#1a1a1a'; // varsayılan: koyu siyaha yakın
 function notebookKey() {
   return 'sd_notebook_v3_' + CASE.caseLabel;
 }
@@ -646,6 +657,12 @@ function notebookModAyarla(mod) {
   document.getElementById('nbCanvasFull').classList.toggle('pasif', mod === 'yaz');
   document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
+
+function notebookRenkSec(renk) {
+  notebookRenk = renk;
+  document.getElementById('nbRenkSiyah').classList.toggle('aktif', renk === '#1a1a1a');
+  document.getElementById('nbRenkKirmizi').classList.toggle('aktif', renk === '#8f2a1e');
+}
 function nbKalemKur(canvas, taraf) {
   const ctx = canvas.getContext('2d');
   let çiziyor = false;
@@ -659,7 +676,7 @@ function nbKalemKur(canvas, taraf) {
     if (notebookMod === 'yaz') return;
     çiziyor = true;
     ctx.globalCompositeOperation = notebookMod === 'sil' ? 'destination-out' : 'source-over';
-    ctx.strokeStyle = '#c98a2c';
+    ctx.strokeStyle = notebookMod === 'sil' ? '#000' : notebookRenk;
     ctx.lineWidth = notebookMod === 'sil' ? 24 : 2;
     ctx.lineCap = 'round';
     const { x, y } = konum(e);
@@ -678,13 +695,13 @@ function nbKalemKur(canvas, taraf) {
     notebookState.pages[notebookState.page][taraf] = canvas.toDataURL();
     saveNotebook();
   }
-  canvas.addEventListener('mousedown', başla);
+    canvas.addEventListener('mousedown', başla);
   canvas.addEventListener('mousemove', çiz);
   window.addEventListener('mouseup', bitir);
-  canvas.addEventListener('touchstart', başla);
-  canvas.addEventListener('touchmove', çiz);
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); başla(e); }, { passive: false });
+  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
-}
+  }
 nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
 /* ============================================================
