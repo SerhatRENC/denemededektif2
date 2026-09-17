@@ -56,19 +56,27 @@
 
     "han":          { "label": "Han",               "background": "assets/han.jpg",          "hotspots": [
       { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" },
-      { "x":"70%","y":"25%","w":"14%","h":"50%","type":"navigate","target":"gazeteci_oda","hint":"Gazetecinin kaldığı odaya çık" }
+      { "x":"70%","y":"25%","w":"14%","h":"50%","type":"navigate","target":"gazeteci_oda","hint":"Gazetecinin kaldığı odaya çık" },
+      { "x":"40%","y":"30%","w":"14%","h":"50%","type":"navigate","target":"han_mutfak","hint":"Mutfağa geç" },
+      { "x":"55%","y":"30%","w":"14%","h":"50%","type":"navigate","target":"han_depo","hint":"Depoya geç" }
+    ] },
+    "han_mutfak":   { "label": "Han Mutfağı",        "background": "assets/han_mutfak.jpg",   "hotspots": [
+      { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"han","hint":"← Hana dön" }
+    ] },
+    "han_depo":     { "label": "Han Deposu",         "background": "assets/han_depo.jpg",     "hotspots": [
+      { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"han","hint":"← Hana dön" }
     ] },
     "gazeteci_oda": { "label": "Gazetecinin Odası",  "background": "assets/gazeteci_oda.jpg", "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"han","hint":"← Hana dön" } ] },
-    "kilise":       { "label": "Kilise",             "background": "assets/kilise.jpg",       "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
+    "kilise":       { "label": "Kilise",             "background": "assets/kilise.jpg",       "closedOnDays": [1], "closedImage": "assets/kilise_kapi.jpg", "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "mezarlik":     { "label": "Mezarlık",           "background": "assets/mezarlik.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "cadi":         { "label": "Cadının Evi",        "background": "assets/cadi.jpg",         "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
-    "muhtar":       { "label": "Muhtarın Evi",       "background": "assets/muhtar.jpg",       "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
+    "muhtar":       { "label": "Muhtarlık",          "background": "assets/muhtar.jpg",       "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "yikik":        { "label": "Yıkık Şapel",        "background": "assets/yikik.jpg",        "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "demirci":      { "label": "Demirci",            "background": "assets/demirci.jpg",      "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "degirmenci":   { "label": "Değirmenci",         "background": "assets/degirmenci.jpg",   "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "sifahane":     { "label": "Şifahane",           "background": "assets/sifahane.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
     "nadire_ev":    { "label": "Nadire Ev",          "background": "assets/nadire_ev.jpg",    "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] },
-    "halit_ev":     { "label": "Halit Ev",           "background": "assets/halit_ev.jpg",     "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] }
+    "halit_ev":     { "label": "Halit Ev",           "background": "assets/halit_ev.jpg",     "closedOnDays": [2], "closedImage": "assets/halit_ev_kapi.jpg", "hotspots": [ { "x":"4%","y":"30%","w":"10%","h":"55%","type":"navigate","target":"merkez","hint":"← Köy Merkezine dön" } ] }
   },
 
   "map": {

@@ -10,6 +10,8 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=2">
 <title>Sislidere Köyü Davası</title>
 <style>
+.zoom-wrap{ overflow:hidden; touch-action:none; cursor:zoom-in; }
+.zoom-wrap img{ transform-origin:center center; will-change:transform; }
   :root {
     --parchment: #e9dcc0;
     --parchment-dark: #3a2c1a;
@@ -404,7 +406,9 @@
   <!-- KATMANLAR VE SESLER -->
   <div id="popup-overlay">
     <button id="popup-close">×</button>
-    <img src="assets/ali_ihsan.png" alt="Ali İhsan">
+    <div class="zoom-wrap" style="max-width:65%;max-height:75%;">
+      <img id="popupImg" src="assets/ali_ihsan.png" alt="Ali İhsan">
+    </div>
   </div>
 
   <div id="fade-layer">
@@ -487,7 +491,7 @@ document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
 });
 document.getElementById('popup-close').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.remove('show');
-  document.getElementById('btn-dosya-incele-ic').classList.add('gizli');
+  aliIhsanZoom.sifirla();
   setTimeout(() => {
     document.getElementById('btn-dosya-git').classList.remove('gizli');
   }, 2000);
@@ -550,7 +554,7 @@ document.getElementById('char-polis').addEventListener('click', () => {
    gizler, oyun gerçekten tüm ekranı kaplar. Tarayıcı güvenlik kısıtı
    gereği sadece bir tıklama sonrası çalışabilir, sayfa açılışında otomatik
    tetiklenemez. */
-   if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+   if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
   document.getElementById('tamEkranBtn').style.display = 'none';
 }
 document.getElementById('tamEkranBtn').addEventListener('click', () => {
@@ -563,6 +567,57 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
     if (exit) exit.call(document).catch(() => {});
   }
 });
+function zoomKur(wrap, img) {
+  let scale = 1, panX = 0, panY = 0;
+  let startDist = 0, startScale = 1;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  let sürükleniyor = false, fareBasili = false, fareX = 0, fareY = 0;
+
+  function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+  function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
+  function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+
+  wrap.addEventListener('dblclick', () => {
+    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
+    uygula();
+  });
+  wrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
+    else if (e.touches.length === 1 && scale > 1) {
+      sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      startPanX = panX; startPanY = panY;
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
+      sinirla(); uygula();
+    } else if (e.touches.length === 1 && sürükleniyor) {
+      panX = startPanX + (e.touches[0].clientX - startX);
+      panY = startPanY + (e.touches[0].clientY - startY);
+      uygula();
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => { sürükleniyor = false; });
+  wrap.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
+    sinirla(); uygula();
+  }, { passive: false });
+  wrap.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!fareBasili) return;
+    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
+    uygula();
+  });
+  window.addEventListener('mouseup', () => { fareBasili = false; });
+
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
+}
+const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
 </script>
 </body>
 </html>

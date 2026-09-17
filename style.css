@@ -2,7 +2,6 @@
   --ink:#0e0f0c; --paper:#e9e2cf; --paper-dim:#9a9a8c;
   --amber:#c98a2c; --amber-bright:#e3a94a; --evid-red:#8f3a2e;
   --mono:'Courier New',Courier,monospace; --sans:-apple-system,'Segoe UI',Roboto,sans-serif;
-  --envanter-pay: 64px; /* envanter satırı (kutu + üst boşluk) için ayrılan sabit alan */
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
@@ -18,12 +17,10 @@ h1{display:none;}
 .stage-frame{
   position:relative;
   container-type:inline-size;
-  width:min(100vw, calc((100vh - var(--envanter-pay)) * 16 / 9));
-  height:min(calc(100vh - var(--envanter-pay)), calc(100vw * 9 / 16));
-  /* dvh/dvw ile mobilde tarayıcı çubuğu değişimine karşı daha doğru boyut;
-     desteklemeyen tarayıcılar bu satırı geçersiz sayıp yukarıdakine döner. */
-  width:min(100dvw, calc((100dvh - var(--envanter-pay)) * 16 / 9));
-  height:min(calc(100dvh - var(--envanter-pay)), calc(100dvw * 9 / 16));
+  width:min(100vw, calc(100vh * 16 / 9));
+  height:min(100vh, calc(100vw * 9 / 16));
+  width:min(100dvw, calc(100dvh * 16 / 9));
+  height:min(100dvh, calc(100dvw * 9 / 16));
   aspect-ratio:16/9;
   border-radius:0;
   overflow:hidden;
@@ -32,11 +29,7 @@ h1{display:none;}
 
 .stage-wrap{
   display:flex;flex-direction:column;align-items:center;
-  container-type:inline-size;
-  width:min(100vw, calc((100vh - var(--envanter-pay)) * 16 / 9));
-  width:min(100dvw, calc((100dvh - var(--envanter-pay)) * 16 / 9));
 }
-
 .stage{
   position:absolute;inset:0;
   background-size:cover;background-position:center;background-color:#1a1b16;
@@ -179,12 +172,11 @@ h1{display:none;}
   background:rgba(10,10,8,.7);padding:4px 8px;border-radius:4px;
 }
 
-.inventory{display:flex;gap:1.6cqw;margin-top:14px;min-height:5.5cqw;flex-wrap:wrap;}
-.inv-item{width:5.5cqw;height:5.5cqw;border-radius:6px;background:#1c1d18;border:1px solid #35362c;
-  display:flex;align-items:center;justify-content:center;font-size:2.2cqw;cursor:pointer;color:var(--amber-bright);
+.inventory{position:absolute;bottom:10px;left:10px;z-index:20;display:flex;gap:1.2cqw;max-width:50%;flex-wrap:wrap;}
+.inv-item{width:8cqw;height:8cqw;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
+  display:flex;align-items:center;justify-content:center;font-size:3cqw;cursor:pointer;color:var(--amber-bright);
   background-size:cover;background-position:center;}
-  .inv-empty{font-size:10.5px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;}
-
+.inv-empty{font-size:10px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;background:rgba(10,10,8,.6);padding:4px 8px;border-radius:6px;}
 .modal-bg{position:absolute;inset:0;background:rgba(6,6,5,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:5%;border-radius:10px;}
 .modal-bg.active{display:flex;}
 .modal{background:#17170f;border:1px solid #3a3b30;border-radius:10px;max-width:440px;width:100%;padding:16px;font-family:var(--sans);max-height:92%;overflow-y:auto;}
@@ -329,10 +321,10 @@ h1{display:none;}
   }
 .notebook-box{
   width:100%;max-width:100%;height:100%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2%;
 }
 .notebook-img-wrap{
-  position:relative;flex:1 1 auto;min-height:0;width:auto;max-width:100%;
+  position:relative;flex:1 1 auto;min-height:0;width:auto;max-width:100%;max-height:100%;
   aspect-ratio:813/454;
 }
 .notebook-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;}
@@ -419,7 +411,7 @@ h1{display:none;}
 .nb-edge-left{left:1%;}
 .nb-edge-right{right:1%;}
 
-.notebook-toolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.notebook-toolbar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;flex:0 0 auto;}
 .nb-btn{
   background:#1c1d18;color:var(--paper);border:1px solid #3a3b30;padding:7px 14px;
   border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.03em;
@@ -445,3 +437,6 @@ h1{display:none;}
   .donme-uyarisi{display:flex;}
   .stage-wrap{display:none;}
 }
+
+.zoom-wrap{ overflow:hidden; touch-action:none; cursor:zoom-in; }
+.zoom-wrap img, .zoom-wrap .doc-img{ transform-origin:center center; will-change:transform; }

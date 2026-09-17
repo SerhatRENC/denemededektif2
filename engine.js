@@ -40,10 +40,27 @@ function renderRoom() {
   stage.classList.add('fading');
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
-    stage.style.backgroundImage = `url(${room.background})`;
+
+    // Kapalı kapı kontrolü: case.json'da bu odaya closedOnDays/closedImage
+    // tanımlıysa ve bugün o günlerden biriyse, normal hotspot'lar yerine
+    // sadece geri dönme seçeneği olan kapalı bir görünüm gösterilir.
+    const kapali = room.closedOnDays && room.closedOnDays.includes(currentDay);
+    stage.style.backgroundImage = `url(${kapali ? room.closedImage : room.background})`;
+
+    if (kapali) {
+      const geri = document.createElement('div');
+      geri.className = 'hotspot';
+      geri.style.left = '4%'; geri.style.top = '25%'; geri.style.width = '10%'; geri.style.height = '55%';
+      geri.innerHTML = `<div class="hint">← Köy Merkezine dön</div>`;
+      geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
+      stage.appendChild(geri);
+      renderCharacter();
+      stage.classList.remove('fading');
+      return;
+    }
 
     room.hotspots.forEach(h => {
-      if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
+          if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
       if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
 
       // YENİ: ikonu olan ama dikdörtgen (w/h) VERİLMEMİŞ hotspot'lar artık
@@ -115,12 +132,13 @@ function handleHotspot(h) {
 /* ---------- salt fotoğraf gösterici (başlık/açıklama YOK, sadece görsel) ---------- */
 function openPhoto(src) {
   showModal(`
-    <img class="reader-card-img" src="${src}" style="margin-bottom:14px;"
-         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
+    <div class="zoom-wrap"><img class="reader-card-img" id="photoZoomImg" src="${src}" style="margin-bottom:14px;"
+         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'"></div>
     <button class="ghost" onclick="closeModal()">Kapat</button>
   `);
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
 }
-
 /* ---------- gün döngüsü ---------- */
 function updateDayBadge() {
   document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
@@ -169,13 +187,17 @@ function openStatement(index) {
   showModal(`
     <button class="reader-close" onclick="closeModal()">✕</button>
     <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
-    <img class="reader-card-img-wide" src="${s.cardImage}"
-         onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+    <div class="zoom-wrap" style="max-width:78%;max-height:80%;">
+      <img class="reader-card-img-wide" id="statementZoomImg" src="${s.cardImage}"
+           onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
+    </div>
     <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
   document.getElementById('modalBody').classList.add('reader');
   document.getElementById('modalBg').classList.add('reader-mode');
+    const sImg = document.getElementById('statementZoomImg');
+  if (sImg) zoomKur(sImg.parentElement, sImg);
 }
 
 // Modal açıkken ve bir ifade kartı gösterilirken klavye ok tuşlarıyla da gezinilebilir
@@ -207,9 +229,8 @@ function stopStatementAudio() {
 function openExamine(itemId) {
   const item = CASE.items[itemId];
   const imgHtml = item.image
-    ? `<img class="doc-img" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'">`
+    ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
     : `<div class="doc-fallback">görsel yok</div>`;
-
   let bodyHtml = `<h3>${item.title}</h3>${imgHtml}<p>${item.desc || ''}</p>`;
 
   if (item.lockedCode) {
@@ -225,6 +246,7 @@ function openExamine(itemId) {
   bodyHtml += `<button class="ghost" onclick="closeModal()">Kapat</button>`;
 
   showModal(bodyHtml);
+  if (item.image) { const el = document.getElementById('examineZoomImg'); if (el) zoomKur(el.parentElement, el); }
 }
 
 function tryUnlock(itemId) {
@@ -426,8 +448,7 @@ function closeMap() {
    için eski v2 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
    ============================================================ */
 let notebookState = null;
-let notebookDrawMode = false;
-
+let notebookMod = 'yaz'; // 'yaz' | 'ciz' | 'sil'
 function notebookKey() {
   return 'sd_notebook_v3_' + CASE.caseLabel;
 }
@@ -617,19 +638,16 @@ function notebookTemizle() {
   renderNotebookPage();
 }
 
-function notebookModAyarla(çizim) {
-  notebookDrawMode = çizim;
-  document.getElementById('nbModYaz').classList.toggle('active', !çizim);
-  document.getElementById('nbModCiz').classList.toggle('active', çizim);
-  document.getElementById('nbCanvasFull').classList.toggle('pasif', !çizim);
-  document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = çizim ? 'none' : 'auto');
+function notebookModAyarla(mod) {
+  notebookMod = mod;
+  document.getElementById('nbModYaz').classList.toggle('active', mod === 'yaz');
+  document.getElementById('nbModCiz').classList.toggle('active', mod === 'ciz');
+  document.getElementById('nbModSil').classList.toggle('active', mod === 'sil');
+  document.getElementById('nbCanvasFull').classList.toggle('pasif', mod === 'yaz');
+  document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
-
 function nbKalemKur(canvas, taraf) {
   const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#c98a2c'; // --amber ile aynı ton, kalem izi
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
   let çiziyor = false;
 
   function konum(e) {
@@ -638,18 +656,22 @@ function nbKalemKur(canvas, taraf) {
     return { x: t.clientX - rect.left, y: t.clientY - rect.top };
   }
   function başla(e) {
-    if (!notebookDrawMode) return;
+    if (notebookMod === 'yaz') return;
     çiziyor = true;
+    ctx.globalCompositeOperation = notebookMod === 'sil' ? 'destination-out' : 'source-over';
+    ctx.strokeStyle = '#c98a2c';
+    ctx.lineWidth = notebookMod === 'sil' ? 24 : 2;
+    ctx.lineCap = 'round';
     const { x, y } = konum(e);
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
   function çiz(e) {
-    if (!notebookDrawMode || !çiziyor) return;
+    if (notebookMod === 'yaz' || !çiziyor) return;
     const { x, y } = konum(e);
     ctx.lineTo(x, y);
     ctx.stroke();
-  }
+  }  
   function bitir() {
     if (!çiziyor) return;
     çiziyor = false;
@@ -739,4 +761,58 @@ function toggleCharacterLine(ch) {
     if (c) c.remove();
     dialogueActive = false;
   }
+}
+
+/* ============================================================
+   BELGE YAKINLAŞTIRMA (ZOOM/PAN)
+   ============================================================ */
+function zoomKur(wrap, img) {
+  let scale = 1, panX = 0, panY = 0;
+  let startDist = 0, startScale = 1;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  let sürükleniyor = false, fareBasili = false, fareX = 0, fareY = 0;
+
+  function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+  function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
+  function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+
+  wrap.addEventListener('dblclick', () => {
+    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
+    uygula();
+  });
+  wrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
+    else if (e.touches.length === 1 && scale > 1) {
+      sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      startPanX = panX; startPanY = panY;
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
+      sinirla(); uygula();
+    } else if (e.touches.length === 1 && sürükleniyor) {
+      panX = startPanX + (e.touches[0].clientX - startX);
+      panY = startPanY + (e.touches[0].clientY - startY);
+      uygula();
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => { sürükleniyor = false; });
+  wrap.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
+    sinirla(); uygula();
+  }, { passive: false });
+  wrap.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!fareBasili) return;
+    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
+    uygula();
+  });
+  window.addEventListener('mouseup', () => { fareBasili = false; });
+
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
 }

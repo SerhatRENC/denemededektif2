@@ -81,24 +81,24 @@
             <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
             <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
           </div>
-          <div class="notebook-toolbar">
-            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla(false)">✎ Yaz</button>
-            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla(true)">✏️ Çiz</button>
-            <button class="nb-btn" onclick="notebookTemizle()">🗑 Temizle</button>
+                    <div class="notebook-toolbar">
+            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla('yaz')">✎ Yaz</button>
+            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla('ciz')">✏️ Çiz</button>
+            <button class="nb-btn" id="nbModSil" onclick="notebookModAyarla('sil')">🧽 Sil</button>
             <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
           </div>
-        </div>
+         </div>
         </div>
       </div>
 
-      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
+       <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
       <div class="modal-bg" id="modalBg">
         <div class="modal" id="modalBody"></div>
       </div>
-    </div>
-    <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
-  </div>
 
+      <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
+    </div>
+  </div>
     <div class="donme-uyarisi">
     <div class="ikon">📱</div>
     <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
@@ -121,7 +121,7 @@
     // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
     // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
     // bu yüzden sayfa yüklenince otomatik açılamaz.
-    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
   document.getElementById('tamEkranBtn').style.display = 'none';
 }
     document.getElementById('tamEkranBtn').addEventListener('click', () => {
