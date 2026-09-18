@@ -63,9 +63,9 @@ h1{display:none;}
 }
 
 /* YENİ: nabız atan, MERKEZ noktalı küçük "buraya tıkla" ikonları
-   (büyüteç, ayak izi, el, kulak, uyku vb.) — case.json'da w/h verilmeyen
+   (büyüteç, ayak izi, el, kulak, uyku, geri vb.) — case.json'da w/h verilmeyen
    ikonlu hotspot'lar için. left/top bu ikonun TAM ORTASI. "label" varsa
-   ikonun altında küçük bir isim etiketi (ör. "Muhtarın Evi") görünür.
+   ikonun altında küçük bir isim etiketi (ör. "Muhtarlık") görünür.
    Oda açılır açılmaz değil, engine.js'te 2 saniye sonra belirir. */
 .hotspot-pulse-wrap{
   position:absolute;cursor:pointer;
@@ -227,7 +227,7 @@ h1{display:none;}
   }
 .reader-close:hover{background:var(--amber);color:#171712;}
 .reader-card-img-wide{
-  max-width:78%;max-height:80%;width:auto;height:auto;object-fit:contain;
+  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;
   border-radius:4px;background:transparent;display:block;
 }
 .reader-side-arrow{
@@ -394,7 +394,9 @@ h1{display:none;}
 }
 
 /* TEK BÜYÜK ÇİZİM KATMANI — tüm çift sayfayı (notebook-img-wrap'ın tamamını)
-   kaplar, "Çiz" modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir. */
+   kaplar, "Çiz" modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir.
+   touch-action:none — mobilde çizerken tarayıcının aynı hareketi sayfa
+   kaydırma olarak yorumlayıp ekranı titretmesini engeller. */
 .nb-canvas-full{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;z-index:10;touch-action:none;}
 .nb-canvas-full.pasif{pointer-events:none;}
 
@@ -422,6 +424,7 @@ h1{display:none;}
 .nb-renkler{display:flex;gap:8px;}
 .nb-renk-btn{width:22px;height:22px;border-radius:50%;border:2px solid #3a3b30;cursor:pointer;padding:0;}
 .nb-renk-btn.aktif{border-color:var(--amber-bright);box-shadow:0 0 0 2px rgba(227,169,74,.4);}
+
 /* Telefon dikey tutulunca oyunu zorla döndürmek yerine, kullanıcıdan
    telefonu çevirmesini isteyen basit bir ekran gösteriyoruz. */
 .donme-uyarisi{

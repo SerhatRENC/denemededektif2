@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -81,7 +81,7 @@
             <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
             <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
           </div>
-                    <div class="notebook-toolbar">
+          <div class="notebook-toolbar">
             <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla('yaz')">✎ Yaz</button>
             <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla('ciz')">✏️ Çiz</button>
             <button class="nb-btn" id="nbModSil" onclick="notebookModAyarla('sil')">🧽 Sil</button>
@@ -90,11 +90,12 @@
               <button class="nb-renk-btn" id="nbRenkKirmizi" style="background:#8f2a1e" onclick="notebookRenkSec('#8f2a1e')" title="Kırmızı"></button>
             </div>
             <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
-          </div>         </div>
+          </div>
+        </div>
         </div>
       </div>
 
-       <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
+      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
       <div class="modal-bg" id="modalBg">
         <div class="modal" id="modalBody"></div>
       </div>
@@ -102,7 +103,8 @@
       <div class="inventory" id="inventory"><span class="inv-empty">envanter boş</span></div>
     </div>
   </div>
-    <div class="donme-uyarisi">
+
+  <div class="donme-uyarisi">
     <div class="ikon">📱</div>
     <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
   </div>
@@ -118,15 +120,17 @@
     </div>
   </div>
 
-  <script src="engine.js?v=13"></script>
+  <script src="engine.js?v=14"></script>
   <script>
     // Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
     // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
     // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
-    // bu yüzden sayfa yüklenince otomatik açılamaz.
+    // bu yüzden sayfa yüklenince otomatik açılamaz. iPhone Safari normal
+    // sekmede bu API'yi hiç desteklemediği için (document.fullscreenEnabled
+    // === false) buton orada otomatik gizlenir.
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
-  document.getElementById('tamEkranBtn').style.display = 'none';
-}
+      document.getElementById('tamEkranBtn').style.display = 'none';
+    }
     document.getElementById('tamEkranBtn').addEventListener('click', () => {
       const el = document.documentElement;
       if (!document.fullscreenElement) {

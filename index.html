@@ -183,8 +183,13 @@
     z-index: 50;
   }
   #popup-overlay.show { opacity: 1; pointer-events: auto; }
+  #popup-overlay .zoom-wrap {
+    max-width: 60vw; max-height: 70vh;
+  }
   #popup-overlay img {
-    max-width: 65%; max-height: 75%;
+    display: block;
+    max-width: 100%; max-height: 100%;
+    width: auto; height: auto;
     border: 6px solid var(--parchment);
     border-radius: 4px;
   }
@@ -224,12 +229,7 @@
   }
   .tam-ekran-btn:hover{opacity:1;}
 
-  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
-     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — vw/vh yer
-     değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
-     yukarıdaki normal kurallardan SONRA gelmezse hiç etkili olmaz
-     (CSS'te eşit özgüllükte son gelen kural kazanır). */
-     /* ============================================================
+  /* ============================================================
      OYUN HAKKINDA EKRANI
      ============================================================ */
   .hakkinda-scroll{
@@ -274,12 +274,11 @@
     .credits-grid{ grid-template-columns:repeat(3,1fr); }
   }
 
-  /* Telefon dikey tutulsa bile oyunu her zaman yatay göster.
-     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — vw/vh yer
-     değiştirmesi (aşağıda) ve #stage-frame üzerindeki geçersiz kılma,
-     yukarıdaki normal kurallardan SONRA gelmezse hiç etkili olmaz
-     (CSS'te eşit özgüllükte son gelen kural kazanır). */
-    .donme-uyarisi{
+  /* Telefon dikey tutulunca oyunu zorla döndürmek yerine, kullanıcıdan
+     telefonu çevirmesini isteyen basit bir ekran gösteriyoruz.
+     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — CSS'te eşit
+     özgüllükte son gelen kural kazanır. */
+  .donme-uyarisi{
     display:none;
     position:fixed;inset:0;z-index:9999;
     background:#0a0806;color:var(--parchment);
@@ -293,7 +292,8 @@
   @media screen and (orientation: portrait) {
     .donme-uyarisi{display:flex;}
     #stage-frame{display:none;}
-  }</style>
+  }
+</style>
 </head>
 <body>
 <div class="donme-uyarisi">
@@ -335,8 +335,8 @@
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
-       kapatınca büyüteç kaybolur ve 2 sn sonra ekranın SOLUNDAKİ kapının
-       üstünde ayak izi belirir -->
+       kapatınca 2 sn sonra ekranın SOLUNDAKİ kapının üstünde ayak izi belirir.
+       Büyüteç kalıcı kalır — kapattıktan sonra da tekrar incelenebilir. -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <img class="nabiz-ikon gec-bekle gizli" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
     <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:6%;">
@@ -354,7 +354,7 @@
     <img class="nabiz-ikon gizli" id="btn-ofise-git" src="assets/ayak.png" alt="Ofise Git" style="left:49.5%;top:62.8%;width:5%;">
   </div>
 
-    <!-- 8. DEDEKTİF OFİSİ -->
+  <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/dedektif_ofis.jpg')">
     <img class="character" id="char-polis" src="assets/karakterler/polis.png" alt="Polis">
     <div class="subtitle" id="sub-polis"></div>
@@ -403,10 +403,11 @@
       </div>
     </div>
   </div>
+
   <!-- KATMANLAR VE SESLER -->
   <div id="popup-overlay">
     <button id="popup-close">×</button>
-    <div class="zoom-wrap" style="max-width:65%;max-height:75%;">
+    <div class="zoom-wrap">
       <img id="popupImg" src="assets/ali_ihsan.png" alt="Ali İhsan">
     </div>
   </div>
@@ -421,6 +422,61 @@
 </div>
 
 <script>
+/* ============================================================
+   BELGE YAKINLAŞTIRMA (ZOOM/PAN) — oyun.html'deki engine.js ile
+   aynı fonksiyon, bu sayfa ayrı olduğu için burada da tanımlı.
+   ============================================================ */
+function zoomKur(wrap, img) {
+  let scale = 1, panX = 0, panY = 0;
+  let startDist = 0, startScale = 1;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  let sürükleniyor = false, fareBasili = false, fareX = 0, fareY = 0;
+
+  function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+  function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
+  function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+
+  wrap.addEventListener('dblclick', () => {
+    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
+    uygula();
+  });
+  wrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
+    else if (e.touches.length === 1 && scale > 1) {
+      sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      startPanX = panX; startPanY = panY;
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
+      sinirla(); uygula();
+    } else if (e.touches.length === 1 && sürükleniyor) {
+      panX = startPanX + (e.touches[0].clientX - startX);
+      panY = startPanY + (e.touches[0].clientY - startY);
+      uygula();
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => { sürükleniyor = false; });
+  wrap.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
+    sinirla(); uygula();
+  }, { passive: false });
+  wrap.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!fareBasili) return;
+    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
+    uygula();
+  });
+  window.addEventListener('mouseup', () => { fareBasili = false; });
+
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const scr = document.getElementById(id);
@@ -553,8 +609,9 @@ document.getElementById('char-polis').addEventListener('click', () => {
 /* Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
    gizler, oyun gerçekten tüm ekranı kaplar. Tarayıcı güvenlik kısıtı
    gereği sadece bir tıklama sonrası çalışabilir, sayfa açılışında otomatik
-   tetiklenemez. */
-   if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
+   tetiklenemez. iPhone Safari normal sekmede bu API'yi hiç desteklemediği
+   için (document.fullscreenEnabled === false) buton orada otomatik gizlenir. */
+if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
   document.getElementById('tamEkranBtn').style.display = 'none';
 }
 document.getElementById('tamEkranBtn').addEventListener('click', () => {
@@ -567,56 +624,7 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
     if (exit) exit.call(document).catch(() => {});
   }
 });
-function zoomKur(wrap, img) {
-  let scale = 1, panX = 0, panY = 0;
-  let startDist = 0, startScale = 1;
-  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-  let sürükleniyor = false, fareBasili = false, fareX = 0, fareY = 0;
 
-  function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
-  function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
-  function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
-
-  wrap.addEventListener('dblclick', () => {
-    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
-    uygula();
-  });
-  wrap.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
-    else if (e.touches.length === 1 && scale > 1) {
-      sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-      startPanX = panX; startPanY = panY;
-    }
-  }, { passive: true });
-  wrap.addEventListener('touchmove', (e) => {
-    if (e.touches.length === 2) {
-      scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
-      sinirla(); uygula();
-    } else if (e.touches.length === 1 && sürükleniyor) {
-      panX = startPanX + (e.touches[0].clientX - startX);
-      panY = startPanY + (e.touches[0].clientY - startY);
-      uygula();
-    }
-  }, { passive: true });
-  wrap.addEventListener('touchend', () => { sürükleniyor = false; });
-  wrap.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
-    sinirla(); uygula();
-  }, { passive: false });
-  wrap.addEventListener('mousedown', (e) => {
-    if (scale <= 1) return;
-    fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
-  });
-  window.addEventListener('mousemove', (e) => {
-    if (!fareBasili) return;
-    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
-    uygula();
-  });
-  window.addEventListener('mouseup', () => { fareBasili = false; });
-
-  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
-}
 const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
 </script>
 </body>

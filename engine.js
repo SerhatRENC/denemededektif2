@@ -43,17 +43,19 @@ function renderRoom() {
 
     // Kapalı kapı kontrolü: case.json'da bu odaya closedOnDays/closedImage
     // tanımlıysa ve bugün o günlerden biriyse, normal hotspot'lar yerine
-    // sadece geri dönme seçeneği olan kapalı bir görünüm gösterilir.
+    // sadece geri dönme + "kapıyı çal" seçeneği olan kapalı bir görünüm
+    // gösterilir. O odaya atanmış karakter BİLEREK gösterilmez.
     const kapali = room.closedOnDays && room.closedOnDays.includes(currentDay);
     stage.style.backgroundImage = `url(${kapali ? room.closedImage : room.background})`;
 
     if (kapali) {
       const geri = document.createElement('div');
-      geri.className = 'hotspot';
-      geri.style.left = '4%'; geri.style.top = '25%'; geri.style.width = '10%'; geri.style.height = '55%';
-      geri.innerHTML = `<div class="hint">← Köy Merkezine dön</div>`;
+      geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
+      geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '6%';
+      geri.innerHTML = `<img src="assets/geri.png" alt="Geri dön">`;
       geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
       stage.appendChild(geri);
+      setTimeout(() => geri.classList.remove('ikon-bekliyor'), 2000);
 
       const kapiTikla = document.createElement('div');
       kapiTikla.className = 'hotspot';
@@ -64,13 +66,12 @@ function renderRoom() {
       };
       stage.appendChild(kapiTikla);
 
-      // renderCharacter() BİLEREK çağrılmıyor — kapalı kapı ekranında
-      // o odaya atanmış karakter görünmemeli.
       stage.classList.remove('fading');
       return;
     }
+
     room.hotspots.forEach(h => {
-          if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
+      if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
       if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
 
       // YENİ: ikonu olan ama dikdörtgen (w/h) VERİLMEMİŞ hotspot'lar artık
@@ -197,7 +198,7 @@ function openStatement(index) {
   showModal(`
     <button class="reader-close" onclick="closeModal()">✕</button>
     <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
-    <div class="zoom-wrap" style="max-width:78%;max-height:80%;">
+    <div class="zoom-wrap" style="max-width:70vw;max-height:80vh;">
       <img class="reader-card-img-wide" id="statementZoomImg" src="${s.cardImage}"
            onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
     </div>
@@ -206,7 +207,7 @@ function openStatement(index) {
   `, true);
   document.getElementById('modalBody').classList.add('reader');
   document.getElementById('modalBg').classList.add('reader-mode');
-    const sImg = document.getElementById('statementZoomImg');
+  const sImg = document.getElementById('statementZoomImg');
   if (sImg) zoomKur(sImg.parentElement, sImg);
 }
 
@@ -453,6 +454,8 @@ function closeMap() {
    Sağ sayfa tamamen serbest not alanı.
    ÇİZİM tek bir katman (nbCanvasFull) — tüm çift sayfayı kaplar, "Çiz"
    modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir.
+   "Sil" modunda aynı katman destination-out ile gerçekten siliniyor
+   (tüm sayfayı değil, dokunulan yeri).
    Her sayfa: { solUst, solAlt, sag: metin | pageDrawing: tek canvas dataURL }
    localStorage: sd_notebook_v3_<caseLabel>  (v3: çizim tek katmana indirgendi
    için eski v2 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
@@ -460,6 +463,7 @@ function closeMap() {
 let notebookState = null;
 let notebookMod = 'yaz'; // 'yaz' | 'ciz' | 'sil'
 let notebookRenk = '#1a1a1a'; // varsayılan: koyu siyaha yakın
+
 function notebookKey() {
   return 'sd_notebook_v3_' + CASE.caseLabel;
 }
@@ -663,6 +667,7 @@ function notebookRenkSec(renk) {
   document.getElementById('nbRenkSiyah').classList.toggle('aktif', renk === '#1a1a1a');
   document.getElementById('nbRenkKirmizi').classList.toggle('aktif', renk === '#8f2a1e');
 }
+
 function nbKalemKur(canvas, taraf) {
   const ctx = canvas.getContext('2d');
   let çiziyor = false;
@@ -688,20 +693,23 @@ function nbKalemKur(canvas, taraf) {
     const { x, y } = konum(e);
     ctx.lineTo(x, y);
     ctx.stroke();
-  }  
+  }
   function bitir() {
     if (!çiziyor) return;
     çiziyor = false;
     notebookState.pages[notebookState.page][taraf] = canvas.toDataURL();
     saveNotebook();
   }
-    canvas.addEventListener('mousedown', başla);
+  canvas.addEventListener('mousedown', başla);
   canvas.addEventListener('mousemove', çiz);
   window.addEventListener('mouseup', bitir);
+  // preventDefault: mobilde çizerken tarayıcının aynı hareketi sayfa
+  // kaydırma olarak yorumlayıp ekranı titretmesini engeller (touch-action:none
+  // CSS'te de var, burada JS tarafında ek güvence).
   canvas.addEventListener('touchstart', (e) => { e.preventDefault(); başla(e); }, { passive: false });
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
-  }
+}
 nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
 /* ============================================================
