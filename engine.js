@@ -60,7 +60,7 @@ function renderRoom() {
       const tokmak = document.createElement('div');
       tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
       tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%';
-      tokmak.innerHTML = `<img src="assets/tokmak.png" alt="Kapıyı çal">`;
+      tokmak.innerHTML = `<img src="assets/tokmak.png" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
       tokmak.onclick = () => {
         showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
       };
@@ -106,7 +106,7 @@ function renderRoom() {
           wrap.appendChild(lbl);
         }
 
-        wrap.onclick = () => { if (!calibMode) handleHotspot(h); };
+        wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
         stage.appendChild(wrap);
         setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
         return; // eski dikdörtgen hotspot kutusu ÇİZİLMEZ
@@ -120,7 +120,7 @@ function renderRoom() {
         ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
         : '';
       el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-      el.onclick = (e) => { if (!calibMode) handleHotspot(h); };
+      el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
       stage.appendChild(el);
     });
 
@@ -199,7 +199,7 @@ function openStatement(index) {
   showModal(`
     <button class="reader-close" onclick="closeModal()">✕</button>
     <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
-    <div class="zoom-wrap" style="max-width:70vw;max-height:80vh;">
+    <div class="zoom-wrap" style="width:70vw;height:80vh;">
       <img class="reader-card-img-wide" id="statementZoomImg" src="${s.cardImage}"
            onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${s.cardImage}</div>'">
     </div>
@@ -817,14 +817,35 @@ function zoomKur(wrap, img) {
   function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
   function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
   function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+  function orta(t1, t2) { return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 }; }
 
-  wrap.addEventListener('dblclick', () => {
-    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
+  // Tıklanan/dokunulan noktayı resmin kendi oranına göre yüzdeye çevirip
+  // transform-origin olarak ayarlar — böylece büyütme her zaman ortadan
+  // değil, işaret edilen noktadan başlar. getBoundingClientRect() mevcut
+  // ölçeği de içerdiği için oran (bölme) her zaman aynı sonucu verir.
+  function origadaAyarla(clientX, clientY) {
+    const rect = img.getBoundingClientRect();
+    const oranX = ((clientX - rect.left) / rect.width) * 100;
+    const oranY = ((clientY - rect.top) / rect.height) * 100;
+    img.style.transformOrigin = `${oranX}% ${oranY}%`;
+  }
+
+  wrap.addEventListener('dblclick', (e) => {
+    if (scale === 1) {
+      origadaAyarla(e.clientX, e.clientY);
+      scale = 2.5;
+    } else {
+      scale = 1; panX = 0; panY = 0;
+    }
     uygula();
   });
   wrap.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
-    else if (e.touches.length === 1 && scale > 1) {
+    if (e.touches.length === 2) {
+      startDist = uzaklik(e.touches[0], e.touches[1]);
+      startScale = scale;
+      const m = orta(e.touches[0], e.touches[1]);
+      origadaAyarla(m.x, m.y);
+    } else if (e.touches.length === 1 && scale > 1) {
       sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
       startPanX = panX; startPanY = panY;
     }
@@ -842,6 +863,7 @@ function zoomKur(wrap, img) {
   wrap.addEventListener('touchend', () => { sürükleniyor = false; });
   wrap.addEventListener('wheel', (e) => {
     e.preventDefault();
+    if (scale === 1 && e.deltaY < 0) origadaAyarla(e.clientX, e.clientY);
     scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
     sinirla(); uygula();
   }, { passive: false });
@@ -856,5 +878,5 @@ function zoomKur(wrap, img) {
   });
   window.addEventListener('mouseup', () => { fareBasili = false; });
 
-  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; img.style.transformOrigin = 'center center'; uygula(); } };
 }

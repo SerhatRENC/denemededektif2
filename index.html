@@ -109,6 +109,28 @@
     50% { transform: translate(-50%, -50%) scale(1.12); }
   }
 
+  /* Altında küçük bir eylem etiketi (Bak/Dinle/Çal/İncele vb.) olan ikonlar
+     için sarmalayıcı — .nabiz-ikon ile aynı konumlandırma/animasyon mantığı,
+     sadece ikon+etiket dikey olarak gruplanıyor. */
+  .nabiz-ikon-wrap {
+    position: absolute;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    z-index: 6;
+    animation: ikonNabiz 1.6s ease-in-out infinite;
+    transition: opacity .5s ease;
+  }
+  .nabiz-ikon-wrap img {
+    width: 100%; height: auto; display: block;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
+  }
+  .nabiz-ikon-etiket {
+    font-family: inherit; font-size: 11px; letter-spacing: .03em;
+    color: var(--parchment); background: rgba(20,14,8,.75);
+    padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+  }
+
   /* Mors mesajı yazı alanı — hafif döndürülmüş (sağ üst yukarı bakıyor)
      ve az sağa kaydırılmış, fotoğraftaki eğime uysun diye */
   .mors-yazi-alani {
@@ -184,12 +206,12 @@
   }
   #popup-overlay.show { opacity: 1; pointer-events: auto; }
   #popup-overlay .zoom-wrap {
-    max-width: 60vw; max-height: 70vh;
+    width: 60vw; height: 70vh;
   }
   #popup-overlay img {
     display: block;
-    max-width: 100%; max-height: 100%;
-    width: auto; height: auto;
+    width: 100%; height: 100%;
+    object-fit: contain;
     border: 6px solid var(--parchment);
     border-radius: 4px;
   }
@@ -316,12 +338,18 @@
        aynı anda telgrafın üstünde nabız atan el.png belirir; ona tıklayınca
        ses kesilir ve mors ekranına geçilir -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
-    <img class="nabiz-ikon gec-bekle gizli" id="btn-telgraf" src="assets/el.png" alt="Telgrafa Bas" style="left:25.4%;top:82.6%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:25.4%;top:82.6%;width:8%;">
+      <img src="assets/el.png" alt="Telgrafa Bas">
+      <div class="nabiz-ikon-etiket">Bak</div>
+    </div>
   </div>
 
   <!-- 3. MORS KAĞIDI — telgrafın altında kulak.png ikonu mesajı tekrar dinletir -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
-    <img class="nabiz-ikon gec-bekle gizli" id="btn-mors-tekrar" src="assets/kulak.png" alt="Mesajı Dinle" style="left:17.7%;top:59.2%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
+      <img src="assets/kulak.png" alt="Mesajı Dinle">
+      <div class="nabiz-ikon-etiket">Dinle</div>
+    </div>
 
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
@@ -331,14 +359,20 @@
 
   <!-- 4. RAF — dosyanın üstünde nabız atan el.png -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
-    <img class="nabiz-ikon gec-bekle gizli" id="btn-dosya-incele" src="assets/el.png" alt="İncele" style="left:64.4%;top:47.4%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
+      <img src="assets/el.png" alt="İncele">
+      <div class="nabiz-ikon-etiket">Bak</div>
+    </div>
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
        kapatınca 2 sn sonra ekranın SOLUNDAKİ kapının üstünde ayak izi belirir.
        Büyüteç kalıcı kalır — kapattıktan sonra da tekrar incelenebilir. -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
-    <img class="nabiz-ikon gec-bekle gizli" id="btn-dosya-incele-ic" src="assets/buyutec.png" alt="İncele" style="left:55%;top:45%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
+      <img src="assets/buyutec.png" alt="İncele">
+      <div class="nabiz-ikon-etiket">İncele</div>
+    </div>
     <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:6%;">
   </div>
 
@@ -435,14 +469,31 @@ function zoomKur(wrap, img) {
   function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
   function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
   function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+  function orta(t1, t2) { return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 }; }
 
-  wrap.addEventListener('dblclick', () => {
-    if (scale === 1) scale = 2.5; else { scale = 1; panX = 0; panY = 0; }
+  function origadaAyarla(clientX, clientY) {
+    const rect = img.getBoundingClientRect();
+    const oranX = ((clientX - rect.left) / rect.width) * 100;
+    const oranY = ((clientY - rect.top) / rect.height) * 100;
+    img.style.transformOrigin = `${oranX}% ${oranY}%`;
+  }
+
+  wrap.addEventListener('dblclick', (e) => {
+    if (scale === 1) {
+      origadaAyarla(e.clientX, e.clientY);
+      scale = 2.5;
+    } else {
+      scale = 1; panX = 0; panY = 0;
+    }
     uygula();
   });
   wrap.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 2) { startDist = uzaklik(e.touches[0], e.touches[1]); startScale = scale; }
-    else if (e.touches.length === 1 && scale > 1) {
+    if (e.touches.length === 2) {
+      startDist = uzaklik(e.touches[0], e.touches[1]);
+      startScale = scale;
+      const m = orta(e.touches[0], e.touches[1]);
+      origadaAyarla(m.x, m.y);
+    } else if (e.touches.length === 1 && scale > 1) {
       sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
       startPanX = panX; startPanY = panY;
     }
@@ -460,6 +511,7 @@ function zoomKur(wrap, img) {
   wrap.addEventListener('touchend', () => { sürükleniyor = false; });
   wrap.addEventListener('wheel', (e) => {
     e.preventDefault();
+    if (scale === 1 && e.deltaY < 0) origadaAyarla(e.clientX, e.clientY);
     scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
     sinirla(); uygula();
   }, { passive: false });
@@ -474,7 +526,7 @@ function zoomKur(wrap, img) {
   });
   window.addEventListener('mouseup', () => { fareBasili = false; });
 
-  return { sifirla: () => { scale = 1; panX = 0; panY = 0; uygula(); } };
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; img.style.transformOrigin = 'center center'; uygula(); } };
 }
 
 function showScreen(id) {
@@ -484,7 +536,7 @@ function showScreen(id) {
   // O ekrana özel, "ekran açılır açılmaz değil, 2 sn sonra belirsin" işaretli
   // ikonlar (gec-bekle) — dosya-git/ofise-git gibi belirli bir oyun olayına
   // bağlı ikonlar bu sınıfı taşımıyor, onlar kendi tetikleyicisinde gecikir.
-  scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli').forEach(el => {
+  scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli, .nabiz-ikon-wrap.gec-bekle.gizli').forEach(el => {
     setTimeout(() => el.classList.remove('gizli'), 2000);
   });
 }
