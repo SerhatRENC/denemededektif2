@@ -57,14 +57,15 @@ function renderRoom() {
       stage.appendChild(geri);
       setTimeout(() => geri.classList.remove('ikon-bekliyor'), 2000);
 
-      const kapiTikla = document.createElement('div');
-      kapiTikla.className = 'hotspot';
-      kapiTikla.style.left = '20%'; kapiTikla.style.top = '10%'; kapiTikla.style.width = '75%'; kapiTikla.style.height = '80%';
-      kapiTikla.innerHTML = `<div class="hint">Kapıyı çal</div>`;
-      kapiTikla.onclick = () => {
+      const tokmak = document.createElement('div');
+      tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
+      tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%';
+      tokmak.innerHTML = `<img src="assets/tokmak.png" alt="Kapıyı çal">`;
+      tokmak.onclick = () => {
         showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
       };
-      stage.appendChild(kapiTikla);
+      stage.appendChild(tokmak);
+      setTimeout(() => tokmak.classList.remove('ikon-bekliyor'), 2000);
 
       stage.classList.remove('fading');
       return;
@@ -723,10 +724,12 @@ nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
    ============================================================ */
 let characterAudio = null;
 let dialogueActive = false;
+let dialogIndex = 0;
 
 function renderCharacter() {
   dialogueActive = false;
   characterAudio = null;
+  dialogIndex = 0;
 
   const ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return; // bu odaya atanmış karakter yok
@@ -758,34 +761,48 @@ function renderCharacter() {
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage');
   const charEl = document.getElementById('sceneCharacter');
+  // Yeni: case.json'da "dialog": [{speaker, text}, ...] tanımlıysa çok satırlı,
+  // tıklayarak ilerleyen konuşma kullanılır. Tanımlı değilse eski tek satırlık
+  // "text" alanına (geriye dönük uyumluluk için) düşülür.
+  const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
 
   if (!dialogueActive) {
-    // İLK TIK — konuşmayı başlat, altyazı kalıcı kalsın
+    // İLK TIK — konuşmayı başlat, ilk satırı göster
     dialogueActive = true;
+    dialogIndex = 0;
     if (charEl) charEl.classList.add('talking');
-
-    let sub = document.getElementById('sceneSubtitle');
-    if (!sub) {
-      sub = document.createElement('div');
-      sub.id = 'sceneSubtitle';
-      sub.className = 'scene-subtitle';
-      stage.appendChild(sub);
-    }
-    sub.innerHTML = `<div class="scene-subtitle-name">${ch.name}</div><div class="scene-subtitle-text">${ch.text || ''}</div>`;
-
     if (ch.audio) {
       characterAudio = new Audio(ch.audio);
       characterAudio.play().catch(() => {});
     }
+    gosterDialogSatiri(dialog);
   } else {
-    // İKİNCİ TIK — konuşmayı bitir, karakter ve altyazı kaybolsun
-    if (characterAudio) { characterAudio.pause(); characterAudio = null; }
-    const sub = document.getElementById('sceneSubtitle');
-    if (sub) sub.remove();
-    const c = document.getElementById('sceneCharacter');
-    if (c) c.remove();
-    dialogueActive = false;
+    // SONRAKİ TIKLAR — bir sonraki satıra geç; son satırdaysa konuşmayı bitir
+    dialogIndex++;
+    if (dialogIndex >= dialog.length) {
+      if (characterAudio) { characterAudio.pause(); characterAudio = null; }
+      const sub = document.getElementById('sceneSubtitle');
+      if (sub) sub.remove();
+      const c = document.getElementById('sceneCharacter');
+      if (c) c.remove();
+      dialogueActive = false;
+      return;
+    }
+    gosterDialogSatiri(dialog);
   }
+}
+
+function gosterDialogSatiri(dialog) {
+  const stage = document.getElementById('stage');
+  let sub = document.getElementById('sceneSubtitle');
+  if (!sub) {
+    sub = document.createElement('div');
+    sub.id = 'sceneSubtitle';
+    sub.className = 'scene-subtitle';
+    stage.appendChild(sub);
+  }
+  const satir = dialog[dialogIndex];
+  sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
 /* ============================================================
