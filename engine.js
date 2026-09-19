@@ -157,10 +157,13 @@ function updateDayBadge() {
 }
 
 function confirmSleep() {
+  const sonGun = currentDay >= 7;
   showModal(`
     <h3>Uyumadan Önce</h3>
-    <p>Uyumak istediğine emin misin? Köyde henüz bulmadığın kanıtlar olabilir — şimdi uyursan onları kaçırmış olarak bir sonraki güne geçeceksin.</p>
-    <button onclick="closeModal(); sleep();">Evet, Uyu</button>
+    <p>${sonGun
+      ? 'Bu son gece. Uyumadan önce köyde henüz bulmadığın kanıtlar olabilir mi bir kontrol et — uyuyunca artık bir suçlama yapman gerekecek.'
+      : 'Uyumak istediğine emin misin? Köyde henüz bulmadığın kanıtlar olabilir — şimdi uyursan onları kaçırmış olarak bir sonraki güne geçeceksin.'}</p>
+    <button onclick="closeModal(); ${sonGun ? 'finalSuclamayaBaslat();' : 'sleep();'}">Evet, Uyu</button>
     <button class="ghost" onclick="closeModal()">Vazgeç</button>
   `);
 }
@@ -179,6 +182,102 @@ function sleep() {
 function wakeUp() {
   document.getElementById('sleepOverlay').classList.remove('active');
   renderRoom(); // gün değiştiği için bazı hotspot'lar görünür/gizli olabilir
+}
+
+/* ============================================================
+   SON GÜN — SUÇLAMA / OYUN SONU
+   Akış: şüpheli seç → (Mustafa değilse) {isim}_final_sorgu.png göster
+   → "Katili bulamadın." → Tekrar Başla (day 1'e sıfırlanıp index.html'e
+   döner). (Mustafa ise) mustafa_final_itiraf.png göster → "Bravo
+   dedektif, katili buldun!" → Emeği Geçenler → Tekrar Oyna (aynı şekilde
+   sıfırlanır). Şüpheli listesi CASE.notebook.suspects'ten geliyor (zaten
+   polis hariç 9 kişilik roster, ayrı bir liste tutmaya gerek yok).
+   ============================================================ */
+function dosyaAdiNormalle(str) {
+  return str.toLocaleLowerCase('tr-TR')
+    .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
+    .replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
+}
+
+function suclamaGoster(html) {
+  const ov = document.getElementById('suclamaOverlay');
+  ov.innerHTML = html;
+  ov.classList.add('active');
+}
+
+function finalSuclamayaBaslat() {
+  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
+  const kartlar = suspects.map(s => `
+    <div class="suclama-kart" onclick="suphesecildi('${s.name}')">
+      <img src="${s.image}" alt="${s.name}">
+      <div class="suclama-isim">${s.name}</div>
+    </div>
+  `).join('');
+  suclamaGoster(`
+    <h2 class="suclama-baslik">Katil Kim?</h2>
+    <div class="suclama-grid">${kartlar}</div>
+  `);
+}
+
+function suphesecildi(isim) {
+  if (isim === 'Mustafa') {
+    const dosya = 'assets/mustafa_final_itiraf.png';
+    suclamaGoster(`
+      <div class="zoom-wrap" style="width:70vw;height:80vh;">
+        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı"
+             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
+      </div>
+      <button class="suclama-devam-btn" onclick="oyunKazanildi()">Devam Et</button>
+    `);
+    const itirafImg = document.getElementById('itirafZoomImg');
+    if (itirafImg) zoomKur(itirafImg.parentElement, itirafImg);
+  } else {
+    const dosya = `assets/${dosyaAdiNormalle(isim)}_final_sorgu.png`;
+    suclamaGoster(`
+      <div class="zoom-wrap" style="width:70vw;height:80vh;">
+        <img class="suclama-gorsel" id="sorguZoomImg" src="${dosya}" alt="${isim} - Sorgu"
+             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
+      </div>
+      <button class="suclama-devam-btn" onclick="oyunKaybedildi()">Devam Et</button>
+    `);
+    const sorguImg = document.getElementById('sorguZoomImg');
+    if (sorguImg) zoomKur(sorguImg.parentElement, sorguImg);
+  }
+}
+
+function oyunKaybedildi() {
+  suclamaGoster(`
+    <p class="suclama-sonuc">Katili bulamadın.</p>
+    <button class="suclama-devam-btn" onclick="oyunuSifirla()">Tekrar Başla</button>
+  `);
+}
+
+function oyunKazanildi() {
+  suclamaGoster(`
+    <p class="suclama-sonuc">Bravo dedektif, katili buldun!</p>
+    <button class="suclama-devam-btn" onclick="emegiGecenlerGoster()">Devam Et</button>
+  `);
+}
+
+function emegiGecenlerGoster() {
+  suclamaGoster(`
+    <h2 class="suclama-baslik">Emeği Geçenler</h2>
+    <p class="suclama-credits">✍️ Hikaye &amp; Senaryo — RENC, Aylin Kılınçarslan</p>
+    <button class="suclama-devam-btn" onclick="finalEkranGoster()">Devam Et</button>
+  `);
+}
+
+function finalEkranGoster() {
+  suclamaGoster(`
+    <button class="suclama-devam-btn" onclick="oyunuSifirla()">Tekrar Oyna</button>
+  `);
+}
+
+function oyunuSifirla() {
+  localStorage.removeItem('sd_day_' + CASE.caseLabel);
+  localStorage.removeItem('sd_inv_' + CASE.caseLabel);
+  localStorage.removeItem('sd_notebook_v3_' + CASE.caseLabel);
+  window.location.href = 'index.html';
 }
 
 /* ---------- ifade zaptı okuyucu — çerçevesiz, tam ekran (index.html'deki
