@@ -139,7 +139,8 @@
        oradan sağa doğru hafif yukarı eğimli uzanır. */
     left: 58.2%; bottom: 26.0%; width: 23%;
     transform-origin: left bottom;
-    transform: rotate(-5deg);
+    /* translateY(150%) = alanın KENDİ yüksekliğinin 1.5 katı kadar aşağı */
+    transform: translateY(150%) rotate(-5deg);
     z-index: 15;
   }
   .mors-yazi-alani input {
@@ -217,8 +218,6 @@
     display: block;
     width: 100%; height: 100%;
     object-fit: contain;
-    border: 6px solid var(--parchment);
-    border-radius: 4px;
   }
   #popup-close {
     position: absolute; top: 8%; right: 12%;
@@ -333,7 +332,7 @@
   }
 </style>
 <!-- Öğretici kartları + tıklanabilirlik ipuçları (index.html'deki inline stillerden sonra yüklenir) -->
-<link rel="stylesheet" href="ogretici.css?v=2">
+<link rel="stylesheet" href="ogretici.css?v=3">
 </head>
 <body>
 <div class="donme-uyarisi">
@@ -347,21 +346,25 @@
 
   <!-- 1. ANA EKRAN -->
   <div class="screen active" id="scr-ana" style="background-image:url('assets/giris.jpg')">
-    <div class="hotspot" id="btn-oyna" style="left:3.0%;top:33.3%;width:19%;height:9%;"></div>
+    <div class="hotspot" id="btn-oyna" style="left:3.0%;top:30.8%;width:19%;height:9%;"></div>
     <div class="hotspot" id="btn-hakkinda" style="left:3.4%;top:43.5%;width:19%;height:9%;"></div>
-    <div class="hotspot" id="btn-nasil" style="left:3.4%;top:54.7%;width:19%;height:9%;"></div>
+    <div class="hotspot" id="btn-nasil" style="left:3.4%;top:57.2%;width:19%;height:9%;"></div>
   </div>
 
   <!-- 2. OFİS / ŞEHİR — ekrana gelince 2 sn sonra mesaj.mp3 otomatik çalar,
        aynı anda telgrafın üstünde nabız atan el.png belirir; ona tıklayınca
        ses kesilir ve mors ekranına geçilir.
-       Dosya incelendikten sonra buraya geri dönülür: telgraf ikonu gizlenir,
-       KAPININ üstünde ayak izi belirir → at arabasına gider.
+       Dosya popup'ındaki çarpıya basınca doğrudan buraya dönülür: telgraf ikonu gizlenir,
+       ekranın ortasında "İncele" (dosyaya tekrar bak) ve kapıda "Git" (at arabası) belirir.
        (Alt+tık koordinat yardımcısı ile yerler ince ayar yapılabilir) -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
       <img src="assets/el.png" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
+    </div>
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
+      <img src="assets/buyutec.png" alt="İncele">
+      <div class="nabiz-ikon-etiket">İncele</div>
     </div>
     <div class="nabiz-ikon-wrap gizli" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
       <img src="assets/ayak.png" alt="Git">
@@ -390,9 +393,9 @@
     </div>
   </div>
 
-  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır.
-       Popup kapatılınca 2 sn sonra GERİ ikonu belirir; tıklayınca ofis_sehir.jpg'ye dönülür.
-       Büyüteç kalıcı kalır — kapattıktan sonra da tekrar incelenebilir. -->
+  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır;
+       popup'taki çarpı doğrudan ofis_sehir.jpg'ye döndürür. GERİ ikonu sadece bu ekrana
+       ofisten ikinci kez gelindiğinde çıkış olarak belirir. -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
       <img src="assets/buyutec.png" alt="İncele">
@@ -747,21 +750,32 @@ document.getElementById('btn-dosya-incele').addEventListener('click', () => show
 document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.add('show');
 });
+
+// Ofis ekranına dönüldüğünde: "İncele" (dosyaya tekrar bak) ve kapıdaki "Git" belirir
+function ofisDonusIkonlari() {
+  setTimeout(() => {
+    document.getElementById('btn-ofis-incele').classList.remove('gizli');
+    document.getElementById('btn-kapi-ayak').classList.remove('gizli');
+  }, IKON_BEKLEME_MS);
+}
+
+// Dosya popup'ındaki ÇARPI → doğrudan ofis_sehir.jpg
 document.getElementById('popup-close').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.remove('show');
   aliIhsanZoom.sifirla();
-  // Dosya incelendi → 2 sn sonra GERİ ikonu belirir
-  setTimeout(() => {
-    document.getElementById('btn-dosya-geri').classList.remove('gizli');
-  }, IKON_BEKLEME_MS);
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
 });
 
-// GERİ → yine ofis_sehir.jpg; 2 sn sonra KAPININ üstünde ayak izi belirir
+// Ofisteki İNCELE → yine sislidere_dosya.jpg (çarpıyla çıkınca yine ofise döner).
+// Dosya ekranına ikinci gelişte büyüteç zaten görünür; popup'ı açmak istemezse çıkış için GERİ de belirir.
+document.getElementById('btn-ofis-incele').addEventListener('click', () => {
+  showScreen('scr-dosya');
+  setTimeout(() => document.getElementById('btn-dosya-geri').classList.remove('gizli'), IKON_BEKLEME_MS);
+});
 document.getElementById('btn-dosya-geri').addEventListener('click', () => {
   showScreen('scr-ofis');
-  setTimeout(() => {
-    document.getElementById('btn-kapi-ayak').classList.remove('gizli');
-  }, IKON_BEKLEME_MS);
+  ofisDonusIkonlari();
 });
 // Kapıdaki ayak izi → at arabası
 document.getElementById('btn-kapi-ayak').addEventListener('click', () => showScreen('scr-araba'));

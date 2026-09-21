@@ -132,3 +132,27 @@
   }
   .ogr-ikon, .ogr-vurgu, .ogr-demo-el{ animation:none; }
 }
+
+/* ---------- GERİ DÜĞMESİ: koyu çerçeve ----------
+   Harita / not defteri düğmeleriyle aynı koyu kaplama; geri ikonu daha belirgin olsun.
+   Hem oyun.html (case.json'daki geri ikonları + kapalı kapı) hem index.html için geçerli. */
+.hotspot-pulse-wrap img[src$="geri.png"],
+.nabiz-ikon-wrap img[src$="geri.png"]{
+  box-sizing:border-box; padding:7%;
+  background:#1c1d18; border:1px solid #3a3b30; border-radius:9px;
+  box-shadow:0 3px 10px rgba(0,0,0,.6);
+}
+
+/* ---------- "(Mekana yürünüyor...)" KATMANI (yukleme.js) ---------- */
+.yuk-katman{
+  position:absolute; inset:0; z-index:250; background:#050403;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .35s ease;
+}
+.yuk-katman.aktif{ opacity:1; pointer-events:auto; }
+.yuk-metin{
+  color:#e9dcc0; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+  font-size:clamp(16px,2.6cqw,30px); animation:yukNabiz 1.8s ease-in-out infinite;
+}
+@keyframes yukNabiz{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .yuk-metin{ animation:none; } }

@@ -6,7 +6,7 @@
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
-<link rel="stylesheet" href="ogretici.css?v=2">
+<link rel="stylesheet" href="ogretici.css?v=3">
 </head>
 <body>
 
@@ -126,14 +126,26 @@
 
   <script src="engine.js?v=14"></script>
   <script src="ogretici.js?v=2"></script>
+  <script src="yukleme.js?v=1"></script>
   <script>
-    // Öğretici bağlantısı — engine.js'e DOKUNMADAN: oda her çizildiğinde
-    // (ilk yükleme, oda geçişi, uyanma) o odanın öğreticisi varsa ve ilk kez
-    // görülüyorsa case.json → "ogretici" bloğundan kart gösterilir.
-    const IKON_BEKLEME_MS = 1000; // simgelerin belirme süresi (ms)
+    // ------------------------------------------------------------------
+    // engine.js'e DOKUNMADAN iki şey bağlanıyor:
+    //  1) Yükleme: oda görseli hazırsa anında geçilir; hazır değilse ve 300 ms'den
+    //     uzun sürerse "(Mekana yürünüyor...)" ekranı + yürüme sesi (yukleme.js).
+    //  2) Öğretici: oda çizildiğinde ilk kez görülüyorsa case.json → "ogretici" kartı.
+    // ------------------------------------------------------------------
+    const IKON_BEKLEME_MS = 1000;       // simgelerin belirme süresi (ms)
+    const ARKA_PLAN_YUKLEME = true;     // false yaparsan sıradaki odalar önceden indirilmez
+    const YURUME_SESI = 'assets/ses/yurume_sesi.mp3';
+
+    Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
+
     const _renderRoomOrijinal = renderRoom;
-    renderRoom = function () {
-      _renderRoomOrijinal.apply(this, arguments);
+    let _odaJetonu = 0;          // arka arkaya hızlı geçişlerde eski isteği yok saymak için
+    let _arkaPlanBasladi = false;
+
+    function _odaCiz() {
+      _renderRoomOrijinal();
       Ogretici.kur({
         sahne: document.getElementById('stageFrame'),
         icerik: CASE.ogretici || {},
@@ -162,6 +174,40 @@
           }
         });
       }, 220);
+
+      // İlk oda çizildikten sonra diğer odaların görselleri sırayla arka planda indirilir
+      if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi) {
+        _arkaPlanBasladi = true;
+        Yukleme.arkaPlanda(_arkaPlanListesi());
+      }
+    }
+
+    function _arkaPlanListesi() {
+      const liste = [];
+      const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
+      const oncelik = ['masa', 'merkez'];   // ofisten hemen gidilenler önce
+      const sirali = oncelik.concat(Object.keys(CASE.rooms).filter(k => !oncelik.includes(k)));
+      sirali.forEach(k => {
+        const oda = CASE.rooms[k];
+        if (!oda) return;
+        ekle(oda.background);
+        if (oda.closedOnDays && oda.closedOnDays.includes(currentDay)) ekle(oda.closedImage);
+        if (CASE.characters && CASE.characters[k]) ekle(CASE.characters[k].image);
+      });
+      ekle(CASE.map && CASE.map.image);
+      ekle(CASE.notebook && CASE.notebook.image);
+      return liste;
+    }
+
+    renderRoom = function () {
+      const jeton = ++_odaJetonu;
+      const oda = CASE.rooms[currentRoom];
+      const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
+      const karakter = (!kapali && CASE.characters && CASE.characters[currentRoom]) ? CASE.characters[currentRoom].image : null;
+      Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
+        if (jeton !== _odaJetonu) return;   // aradan yeni bir geçiş başladıysa bu istek geçersiz
+        _odaCiz();
+      });
     };
 
     // Tam ekran düğmesi — mobilde tarayıcı arayüzünü (adres çubuğu, sekmeler)
