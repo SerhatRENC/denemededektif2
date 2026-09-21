@@ -136,17 +136,17 @@
       "noteHeight": "60%"
     },
     "suspects": [
-    { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem.png" },
-    { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.png" },
-    { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.png" },
-    { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.png" },
-    { "name": "Halit", "image": "assets/karakalem/halit_karakalem.png" },
-    { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.png" },
-    { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.png" },
-    { "name": "Nadire", "image": "assets/karakalem/nadire_karakalem.png" },
-    { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.png" }
-  	]
-    },
+      { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem.png" },
+      { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.png" },
+      { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.png" },
+      { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.png" },
+      { "name": "Halit", "image": "assets/karakalem/halit_karakalem.png" },
+      { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.png" },
+      { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.png" },
+      { "name": "Nadire", "image": "assets/karakalem/nadire_karakalem.png" },
+      { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.png" }
+    ]
+  },
 
   "characters": {
     "kilise": { "name": "Peder Anselm", "image": "assets/karakterler/anselm.png", "audio": "assets/karakterler/anselm.mp3", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "-15%" },
@@ -269,6 +269,37 @@
   "items": {},
 
   "devices": {},
+
+  "ogretici": {
+    "ofis": {
+      "baslik": "Soruşturma araçların",
+      "metin": "Sağ alttaki simgelere tıklayarak araçlarını açabilirsin.",
+      "maddeler": [
+        { "ikon": "assets/harita.png", "baslik": "Harita", "metin": "köyde gitmek istediğin yeri seç, oraya hemen git" },
+        { "ikon": "assets/defter.png", "baslik": "Not defteri", "metin": "ipuçlarını yaz, şüphelilerin yanına not al, çizim yap" },
+        { "ikon": "assets/uyku.png", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadan önce ipuçlarını topladığından emin ol" }
+      ],
+      "vurgu": [".corner-icon-btn"],
+      "konum": "ust-orta",
+      "gecikme": 1200
+    },
+    "genel": {
+      "baslik": "Yardım",
+      "metin": "Nabız gibi atan simgeler ve parıldayan karakterler tıklanabilir.",
+      "maddeler": [
+        { "ikon": "assets/buyutec.png", "baslik": "İncele", "metin": "belgeyi yakından gör" },
+        { "ikon": "assets/ayak.png", "baslik": "Git", "metin": "başka yere geç" },
+        { "ikon": "assets/harita.png", "baslik": "Harita", "metin": "istediğin yere hemen git" },
+        { "ikon": "assets/defter.png", "baslik": "Not defteri", "metin": "not al, çizim yap" }
+      ],
+      "demo": {
+        "karakter": "assets/karakterler/halit.png",
+        "isim": "Karakter",
+        "satirlar": ["Buyrun dedektif bey.", "Size bir şey göstermem lazım."]
+      },
+      "konum": "orta"
+    }
+  },
 
   "statements": [
     { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/ifadeler/anselm.png", "audio": "assets/ifadeler/anselm.mp3" },

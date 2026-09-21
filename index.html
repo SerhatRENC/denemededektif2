@@ -170,14 +170,16 @@
   .character.show {
     opacity: 1;
     pointer-events: auto;
-    animation: karakterNabiz 1.8s ease-in-out infinite;
+    animation: karakterNabiz 2s ease-in-out infinite;
   }
   .character.talking {
     animation: none; /* konuşma başlayınca düzgün durur, nabız atmayı bırakır */
   }
+  /* Tıklanabilir karakter: renkli, çok hafif bir hale + yavaş nabız.
+     Üç drop-shadow her iki karede de aynı sayıda — tarayıcı yumuşak geçiş yapsın diye. */
   @keyframes karakterNabiz {
-    0%,100% { filter: drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
-    50% { filter: drop-shadow(0 6px 18px rgba(227,169,74,.55)); }
+    0%,100% { filter: drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+    50%     { filter: drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
   }
 
   .subtitle {
@@ -316,6 +318,8 @@
     #stage-frame{display:none;}
   }
 </style>
+<!-- Öğretici kartları + tıklanabilirlik ipuçları (index.html'deki inline stillerden sonra yüklenir) -->
+<link rel="stylesheet" href="ogretici.css?v=1">
 </head>
 <body>
 <div class="donme-uyarisi">
@@ -336,12 +340,16 @@
 
   <!-- 2. OFİS / ŞEHİR — ekrana gelince 2 sn sonra mesaj.mp3 otomatik çalar,
        aynı anda telgrafın üstünde nabız atan el.png belirir; ona tıklayınca
-       ses kesilir ve mors ekranına geçilir -->
+       ses kesilir ve mors ekranına geçilir.
+       Dosya incelendikten sonra buraya geri dönülür: telgraf ikonu gizlenir,
+       KAPININ üstünde ayak izi belirir → at arabasına gider.
+       (btn-kapi-ayak koordinatları GEÇİCİ — Alt+tık ile kapının tam yerini bulup güncelle) -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:25.4%;top:82.6%;width:8%;">
       <img src="assets/el.png" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
+    <img class="nabiz-ikon gizli" id="btn-kapi-ayak" src="assets/ayak.png" alt="Git" style="left:50%;top:50%;width:6%;">
   </div>
 
   <!-- 3. MORS KAĞIDI — telgrafın altında kulak.png ikonu mesajı tekrar dinletir -->
@@ -365,15 +373,15 @@
     </div>
   </div>
 
-  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır,
-       kapatınca 2 sn sonra ekranın SOLUNDAKİ kapının üstünde ayak izi belirir.
+  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır.
+       Popup kapatılınca 2 sn sonra GERİ ikonu belirir; tıklayınca ofis_sehir.jpg'ye dönülür.
        Büyüteç kalıcı kalır — kapattıktan sonra da tekrar incelenebilir. -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
       <img src="assets/buyutec.png" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
-    <img class="nabiz-ikon gizli" id="btn-dosya-git" src="assets/ayak.png" alt="Git" style="left:4%;top:30%;width:6%;">
+    <img class="nabiz-ikon gizli" id="btn-dosya-geri" src="assets/geri.png" alt="Geri" style="left:9%;top:57.5%;width:6%;">
   </div>
 
   <!-- 6. AT ARABASI — ayak izi tam kapının önünde -->
@@ -455,7 +463,67 @@
 
 </div>
 
+<script src="ogretici.js?v=1"></script>
 <script>
+/* ============================================================
+   ÖĞRETİCİ İÇERİĞİ — ilk kez gelinen ekranlarda bir kez çıkan bilgi kartları.
+   Metinleri buradan değiştirebilirsin. (Mekanik: ogretici.js, görünüm: ogretici.css)
+   ============================================================ */
+const OGRETICI_ICERIK = {
+  ofis_sehir: {
+    baslik: 'Nasıl oynanır?',
+    metin: [
+      'Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir. Simgelere tıklayarak oyunda ilerlersin.',
+      'Başlamak için telgrafın üzerindeki simgeye tıkla.'
+    ],
+    maddeler: [
+      { ikon: 'assets/el.png',      baslik: 'Bak',    metin: 'nesneye dokun' },
+      { ikon: 'assets/buyutec.png', baslik: 'İncele', metin: 'belgeyi yakından gör' },
+      { ikon: 'assets/kulak.png',   baslik: 'Dinle',  metin: 'sesi çal' },
+      { ikon: 'assets/ayak.png',    baslik: 'Git',    metin: 'başka yere geç' }
+    ],
+    konum: 'ust-orta',
+    gecikme: 2600
+  },
+  mors_kagidi: {
+    baslik: 'Mors kodunu çöz',
+    metin: [
+      'Kulak simgesine tıklayıp mesajı dinle. Duyduğun mors kodunu çöz, çıkan kelimeyi parlayan çizgiye yaz ve İlerle\'ye bas.',
+      'Mors alfabesini bilmiyorsan internetteki bir tabloya bakabilirsin.'
+    ],
+    maddeler: [
+      { ikon: 'assets/kulak.png', baslik: 'Dinle', metin: 'mesajı tekrar çalar' }
+    ],
+    vurgu: ['.mors-yazi-alani'],
+    konum: 'ust-orta',
+    gecikme: 1200
+  },
+  koy_giris: {
+    baslik: 'İnsanlarla sohbet et',
+    metin: 'Konuşmak için karakterin üzerine tıkla. Konuşmayı ilerletmek için karaktere tekrar tıkla.',
+    demo: {
+      karakter: 'assets/karakterler/halit.png',
+      isim: 'Halit',
+      satirlar: ['Buyrun dedektif bey.', 'Size bir şey göstermem lazım.']
+    },
+    konum: 'ust-sol',
+    gecikme: 3000   // karakter, sahne açıldıktan ~1.2 sn sonra belirdiği için kart biraz daha geç çıkar
+  }
+};
+
+// Ekran → öğretici eşlemesi
+const OGRETICI_EKRANLAR = {
+  'scr-ofis': 'ofis_sehir',
+  'scr-mors': 'mors_kagidi',
+  'scr-koy':  'koy_giris'
+};
+
+Ogretici.kur({
+  sahne: document.getElementById('stage-frame'),
+  icerik: OGRETICI_ICERIK,
+  onek: 'sislidere'
+});
+
 /* ============================================================
    BELGE YAKINLAŞTIRMA (ZOOM/PAN) — oyun.html'deki engine.js ile
    aynı fonksiyon, bu sayfa ayrı olduğu için burada da tanımlı.
@@ -534,11 +602,14 @@ function showScreen(id) {
   const scr = document.getElementById(id);
   scr.classList.add('active');
   // O ekrana özel, "ekran açılır açılmaz değil, 2 sn sonra belirsin" işaretli
-  // ikonlar (gec-bekle) — dosya-git/ofise-git gibi belirli bir oyun olayına
+  // ikonlar (gec-bekle) — dosya-geri/kapi-ayak/ofise-git gibi belirli bir oyun olayına
   // bağlı ikonlar bu sınıfı taşımıyor, onlar kendi tetikleyicisinde gecikir.
   scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli, .nabiz-ikon-wrap.gec-bekle.gizli').forEach(el => {
     setTimeout(() => el.classList.remove('gizli'), 2000);
   });
+  // Önceki ekranın öğretici kartını kaldır; bu ekranın öğreticisi varsa ve ilk kez görülüyorsa göster
+  Ogretici.iptal();
+  if (OGRETICI_EKRANLAR[id]) Ogretici.goster(OGRETICI_EKRANLAR[id]);
 }
 
 /* 1. ANA EKRAN */
@@ -585,6 +656,8 @@ document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
   const inputVal = normalizeTR(inputEl.value);
   if (inputVal === 'SISLIDERE') {
     inputEl.classList.remove('hata');
+    // Telgraf işi bitti: ofis ekranına geri dönüldüğünde telgraf ikonu tekrar çıkmasın
+    document.getElementById('btn-telgraf').style.display = 'none';
     showScreen('scr-raf');
   } else {
     inputEl.classList.add('hata');
@@ -600,11 +673,21 @@ document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
 document.getElementById('popup-close').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.remove('show');
   aliIhsanZoom.sifirla();
+  // Dosya incelendi → 2 sn sonra GERİ ikonu belirir
   setTimeout(() => {
-    document.getElementById('btn-dosya-git').classList.remove('gizli');
+    document.getElementById('btn-dosya-geri').classList.remove('gizli');
   }, 2000);
 });
-document.getElementById('btn-dosya-git').addEventListener('click', () => showScreen('scr-araba'));
+
+// GERİ → yine ofis_sehir.jpg; 2 sn sonra KAPININ üstünde ayak izi belirir
+document.getElementById('btn-dosya-geri').addEventListener('click', () => {
+  showScreen('scr-ofis');
+  setTimeout(() => {
+    document.getElementById('btn-kapi-ayak').classList.remove('gizli');
+  }, 2000);
+});
+// Kapıdaki ayak izi → at arabası
+document.getElementById('btn-kapi-ayak').addEventListener('click', () => showScreen('scr-araba'));
 
 /* 6. AT ARABASI */
 document.getElementById('btn-bin').addEventListener('click', () => {
@@ -622,6 +705,9 @@ document.getElementById('char-halit').addEventListener('click', () => {
   const sub = document.getElementById('sub-halit');
   const char = document.getElementById('char-halit');
   if (halitState === 0) {
+    // Oyuncu sohbeti zaten başlattı: öğretici kartı gereksiz, kaldır ve "görüldü" say
+    Ogretici.isaretle('koy_giris');
+    Ogretici.iptal();
     sub.textContent = "Hoş geldiniz dedektif! Sisledere Köyü'ne varışınız tam zamanında oldu.";
     sub.classList.add('show');
     char.classList.add('talking'); // konuşurken nabız durur, düzgün durur
@@ -678,6 +764,38 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
 });
 
 const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
+
+/* ============================================================
+   KOORDİNAT YARDIMCISI — Alt (Mac'te Option) tuşuna basılı tutarak
+   ekrana tıkla: tıklanan noktanın "left/top" yüzdesi ekranın altında
+   ve konsolda görünür. İkonların left/top'u zaten TAM ORTA noktası,
+   yani çıkan değeri doğrudan style="..." içine yapıştırabilirsin.
+   Alt basılı değilken oyuna hiçbir etkisi yok.
+   ============================================================ */
+(function () {
+  const frame = document.getElementById('stage-frame');
+  let toast = null, zamanlayici = null;
+  frame.addEventListener('click', (e) => {
+    if (!e.altKey) return;
+    e.preventDefault();
+    e.stopPropagation(); // Alt+tık, altındaki ikonu tetiklemesin
+    const r = frame.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+    const y = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+    const yazi = `left:${x}%;top:${y}%;`;
+    console.log('Koordinat →', yazi);
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.style.cssText = 'position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:9999;' +
+        'background:rgba(0,0,0,.85);color:#e3a94a;font:12px monospace;padding:6px 12px;border-radius:6px;pointer-events:none;';
+      frame.appendChild(toast);
+    }
+    toast.textContent = yazi;
+    toast.style.display = 'block';
+    clearTimeout(zamanlayici);
+    zamanlayici = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }, true);
+})();
 </script>
 </body>
 </html>

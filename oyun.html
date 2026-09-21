@@ -6,6 +6,7 @@
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="ogretici.css?v=1">
 </head>
 <body>
 
@@ -23,6 +24,8 @@
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
+        <!-- Yardım: bulunduğun odanın ipucu kartını tekrar açar (odaya özel kart yoksa genel yardım) -->
+        <button class="ogr-yardim-btn" onclick="Ogretici.yeniden()" title="Yardım">?</button>
         <button class="corner-icon-btn" onclick="openMap()" title="Harita">
           <img src="assets/harita.png" alt="Harita">
         </button>
@@ -124,8 +127,25 @@
   </div>
 
   <script src="engine.js?v=14"></script>
+  <script src="ogretici.js?v=1"></script>
   <script>
-    // Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
+    // Öğretici bağlantısı — engine.js'e DOKUNMADAN: oda her çizildiğinde
+    // (ilk yükleme, oda geçişi, uyanma) o odanın öğreticisi varsa ve ilk kez
+    // görülüyorsa case.json → "ogretici" bloğundan kart gösterilir.
+    const _renderRoomOrijinal = renderRoom;
+    renderRoom = function () {
+      _renderRoomOrijinal.apply(this, arguments);
+      Ogretici.kur({
+        sahne: document.getElementById('stageFrame'),
+        icerik: CASE.ogretici || {},
+        onek: CASE.caseLabel,
+        mevcut: () => currentRoom
+      });
+      Ogretici.iptal();
+      Ogretici.goster(currentRoom);
+    };
+
+    // Tam ekran düğmesi — mobilde tarayıcı arayüzünü (adres çubuğu, sekmeler)
     // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
     // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
     // bu yüzden sayfa yüklenince otomatik açılamaz. iPhone Safari normal
