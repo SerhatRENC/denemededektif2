@@ -18,9 +18,9 @@
       "label": "Dedektif Ofisi",
       "background": "assets/dedektif_ofis.jpg",
       "hotspots": [
-        { "x": "30.6%", "y": "71.6%", "type": "navigate", "target": "masa", "icon": "assets/buyutec.png", "label": "İncele", "hint": "Masaya yaklaş" },
-        { "x": "91.5%", "y": "76.9%", "type": "sleep", "icon": "assets/uyku.png", "hint": "Uyu (bir sonraki güne geç)" },
-        { "x": "62.6%", "y": "42.8%", "type": "navigate", "target": "merkez", "icon": "assets/ayak.png", "iconWidth": "6%", "hint": "Dışarı çık — Köy Merkezi" }
+        { "x": "19.9%", "y": "81.3%", "type": "navigate", "target": "masa", "icon": "assets/buyutec.png", "label": "İncele", "hint": "Masaya yaklaş" },
+        { "x": "64.8%", "y": "62.1%", "type": "sleep", "icon": "assets/uyku.png", "hint": "Uyu (bir sonraki güne geç)" },
+        { "x": "46.5%", "y": "58.1%", "type": "navigate", "target": "merkez", "icon": "assets/ayak.png", "iconWidth": "6%", "label": "Git", "hint": "Dışarı çık — Köy Merkezi" }
       ]
     },
 
@@ -28,7 +28,7 @@
       "label": "Çalışma Masası",
       "background": "assets/masa.jpg",
       "hotspots": [
-        { "x": "12%", "y": "12%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Geri çekil" },
+        { "x": "12%", "y": "12%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Geri çekil" },
         { "x": "28%", "y": "36%", "w": "22%", "h": "34%", "type": "dosya", "icon": "assets/sorgu.png", "hint": "İfade zaptlarını incele" },
         { "x": "54%", "y": "36%", "w": "20%", "h": "34%", "type": "notebook", "icon": "assets/defter.png", "hint": "Not defterini aç" }
       ]
@@ -38,66 +38,62 @@
       "label": "Köy Merkezi",
       "background": "assets/merkez.jpg",
       "hotspots": [
-        { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Dedektif Ofisine dön" },
-        { "x": "21%", "y": "75%", "type": "navigate", "target": "han", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Han", "hint": "Hana git" },
-        { "x": "60.9%", "y": "45.7%", "type": "navigate", "target": "kilise", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Kilise", "hint": "Kiliseye git" },
-        { "x": "66%", "y": "70%", "type": "navigate", "target": "mezarlik", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Mezarlık", "hint": "Mezarlığa git" },
-        { "x": "91.7%", "y": "35.4%", "type": "navigate", "target": "cadi", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Cevdet'in Evi", "hint": "Cadının Evine git" },
-        { "x": "43.4%", "y": "45.2%", "type": "navigate", "target": "muhtar", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Muhtarlık", "hint": "Muhtarlığa git" },
-        { "x": "61%", "y": "30.5%", "type": "navigate", "target": "yikik", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Yıkık Şapel", "hint": "Yıkık Şapele git" },
-        { "x": "13%", "y": "89%", "type": "navigate", "target": "demirci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Demirci", "hint": "Demirciye git" },
-        { "x": "54.3%", "y": "32.4%", "type": "navigate", "target": "degirmenci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Değirmenci", "hint": "Değirmenciye git" },
-        { "x": "68.7%", "y": "40.4%", "type": "navigate", "target": "sifahane", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Şifahane", "hint": "Şifahaneye git" },
-        { "x": "17%", "y": "46%", "type": "navigate", "target": "nadire_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Nadire Ev", "hint": "Nadire'nin Evine git" },
-        { "x": "33.5%", "y": "44.9%", "type": "navigate", "target": "halit_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Halit'in Evi", "hint": "Halit'in Evine git" },
-        { "x": "78.7%", "y": "50.1%", "type": "photo", "image": "assets/tablo.jpg", "icon": "assets/buyutec.png", "label": "İncele", "hint": "Tabloya bak" }
+        { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Dedektif Ofisine dön" },
+        { "x": "38.2%", "y": "57.3%", "type": "navigate", "target": "han", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Han", "hint": "Hana git" },
+        { "x": "44.8%", "y": "53.3%", "type": "navigate", "target": "kilise", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Kilise", "hint": "Kiliseye git" },
+        { "x": "41.4%", "y": "52.8%", "type": "navigate", "target": "mezarlik", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Mezarlık", "hint": "Mezarlığa git" },
+        { "x": "74.1%", "y": "62.1%", "type": "navigate", "target": "cadi", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Cevdet'in Evi", "hint": "Cadının Evine git" },
+        { "x": "38.1%", "y": "57.6%", "type": "navigate", "target": "muhtar", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Muhtarlık", "hint": "Muhtarlığa git" },
+        { "x": "61.6%", "y": "58.1%", "type": "navigate", "target": "demirci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Demirci", "hint": "Demirciye git" },
+        { "x": "51.9%", "y": "55.2%", "type": "navigate", "target": "degirmenci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Değirmenci", "hint": "Değirmenciye git" },
+        { "x": "9.7%", "y": "63.7%", "type": "navigate", "target": "sifahane", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Şifahane", "hint": "Şifahaneye git" },
+        { "x": "31.6%", "y": "56.8%", "type": "navigate", "target": "nadire_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Nadire Ev", "hint": "Nadire'nin Evine git" },
+        { "x": "26.8%", "y": "59.7%", "type": "navigate", "target": "halit_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Halit'in Evi", "hint": "Halit'in Evine git" },
+        { "x": "41.1%", "y": "72.3%", "type": "photo", "image": "assets/tablo.jpg", "icon": "assets/buyutec.png", "label": "İncele", "hint": "Tabloya bak" }
       ]
     },
 
     "han": { "label": "Han", "background": "assets/han.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" },
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
       { "x": "77%", "y": "50%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya çık" },
       { "x": "47%", "y": "55%", "type": "navigate", "target": "han_mutfak", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
       { "x": "62%", "y": "55%", "type": "navigate", "target": "han_depo", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" }
     ] },
     "han_mutfak": { "label": "Han Mutfağı", "background": "assets/han_mutfak.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Hana dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" }
     ] },
     "han_depo": { "label": "Han Deposu", "background": "assets/han_depo.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Hana dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" }
     ] },
     "gazeteci_oda": { "label": "Gazetecinin Odası", "background": "assets/gazeteci_oda.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Hana dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" }
     ] },
     "kilise": { "label": "Kilise", "background": "assets/kilise.jpg", "closedOnDays": [1], "closedImage": "assets/kilise_kapi.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "mezarlik": { "label": "Mezarlık", "background": "assets/mezarlik.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "cadi": { "label": "Cadının Evi", "background": "assets/cadi.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "muhtar": { "label": "Muhtarlık", "background": "assets/muhtar.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
-    ] },
-    "yikik": { "label": "Yıkık Şapel", "background": "assets/yikik.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "demirci": { "label": "Demirci", "background": "assets/demirci.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "degirmenci": { "label": "Değirmenci", "background": "assets/degirmenci.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "sifahane": { "label": "Şifahane", "background": "assets/sifahane.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "nadire_ev": { "label": "Nadire Ev", "background": "assets/nadire_ev.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] },
     "halit_ev": { "label": "Halit Ev", "background": "assets/halit_ev.jpg", "closedOnDays": [2], "closedImage": "assets/halit_ev_kapi.jpg", "hotspots": [
-      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "6%", "hint": "Köy Merkezine dön" }
+      { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" }
     ] }
   },
 
@@ -282,22 +278,6 @@
       "vurgu": [".corner-icon-btn"],
       "konum": "ust-orta",
       "gecikme": 1200
-    },
-    "genel": {
-      "baslik": "Yardım",
-      "metin": "Nabız gibi atan simgeler ve parıldayan karakterler tıklanabilir.",
-      "maddeler": [
-        { "ikon": "assets/buyutec.png", "baslik": "İncele", "metin": "belgeyi yakından gör" },
-        { "ikon": "assets/ayak.png", "baslik": "Git", "metin": "başka yere geç" },
-        { "ikon": "assets/harita.png", "baslik": "Harita", "metin": "istediğin yere hemen git" },
-        { "ikon": "assets/defter.png", "baslik": "Not defteri", "metin": "not al, çizim yap" }
-      ],
-      "demo": {
-        "karakter": "assets/karakterler/halit.png",
-        "isim": "Karakter",
-        "satirlar": ["Buyrun dedektif bey.", "Size bir şey göstermem lazım."]
-      },
-      "konum": "orta"
     }
   },
 

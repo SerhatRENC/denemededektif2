@@ -77,7 +77,7 @@ const Ogretici = (function () {
 
     const metinler = [].concat(veri.metin || []);
     const maddeler = veri.maddeler || [];
-    let html = '<button class="ogr-kapat" type="button" aria-label="Kapat">✕</button>';
+    let html = '<div class="ogr-icerik">';
     if (veri.baslik) html += `<div class="ogr-baslik">${veri.baslik}</div>`;
     if (metinler.length) html += '<div class="ogr-metin">' + metinler.map(m => `<p>${m}</p>`).join('') + '</div>';
     if (veri.demo) html += demoHtml(veri.demo);
@@ -90,7 +90,9 @@ const Ogretici = (function () {
           </div>`).join('') +
         '</div>';
     }
-    html += '<button class="ogr-tamam" type="button">Anladım</button>';
+    html += '<button class="ogr-tamam" type="button">Anladım</button></div>';
+    // ✕ düğmesi kartın DIŞINA taşan bir çıkıntı (içerik kaydırılsa bile sabit kalır)
+    html += '<button class="ogr-kapat" type="button" aria-label="Kapat">✕</button>';
 
     kart = document.createElement('div');
     kart.className = 'ogr-kart ogr-' + (veri.konum || 'ust-orta');

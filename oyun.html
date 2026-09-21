@@ -6,7 +6,7 @@
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
-<link rel="stylesheet" href="ogretici.css?v=1">
+<link rel="stylesheet" href="ogretici.css?v=2">
 </head>
 <body>
 
@@ -24,8 +24,6 @@
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
-        <!-- Yardım: bulunduğun odanın ipucu kartını tekrar açar (odaya özel kart yoksa genel yardım) -->
-        <button class="ogr-yardim-btn" onclick="Ogretici.yeniden()" title="Yardım">?</button>
         <button class="corner-icon-btn" onclick="openMap()" title="Harita">
           <img src="assets/harita.png" alt="Harita">
         </button>
@@ -127,11 +125,12 @@
   </div>
 
   <script src="engine.js?v=14"></script>
-  <script src="ogretici.js?v=1"></script>
+  <script src="ogretici.js?v=2"></script>
   <script>
     // Öğretici bağlantısı — engine.js'e DOKUNMADAN: oda her çizildiğinde
     // (ilk yükleme, oda geçişi, uyanma) o odanın öğreticisi varsa ve ilk kez
     // görülüyorsa case.json → "ogretici" bloğundan kart gösterilir.
+    const IKON_BEKLEME_MS = 1000; // simgelerin belirme süresi (ms)
     const _renderRoomOrijinal = renderRoom;
     renderRoom = function () {
       _renderRoomOrijinal.apply(this, arguments);
@@ -143,6 +142,26 @@
       });
       Ogretici.iptal();
       Ogretici.goster(currentRoom);
+
+      // Simgeler oda açıldıktan ~1 sn sonra belirsin (engine.js 2 sn bekliyor; yarıya indirildi).
+      // Engine odayı 180 ms sonra çizdiği için bekleme onun üstüne eklenir.
+      setTimeout(() => {
+        document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
+      }, 180 + IKON_BEKLEME_MS);
+
+      // Kapalı kapı görünümündeki geri simgesi (engine içinde sabit çiziliyor): büyüt + "Geri" etiketi
+      setTimeout(() => {
+        document.querySelectorAll('#stage img[alt="Geri dön"]').forEach(img => {
+          const kap = img.parentElement;
+          kap.style.width = '7.5%';
+          if (!kap.querySelector('.hotspot-pulse-label')) {
+            const et = document.createElement('div');
+            et.className = 'hotspot-pulse-label';
+            et.textContent = 'Geri';
+            kap.appendChild(et);
+          }
+        });
+      }, 220);
     };
 
     // Tam ekran düğmesi — mobilde tarayıcı arayüzünü (adres çubuğu, sekmeler)
