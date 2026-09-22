@@ -29,8 +29,8 @@
       "background": "assets/masa.jpg",
       "hotspots": [
         { "x": "12%", "y": "12%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Geri çekil" },
-        { "x": "28%", "y": "36%", "w": "22%", "h": "34%", "type": "dosya", "icon": "assets/sorgu.png", "hint": "İfade zaptlarını incele" },
-        { "x": "54%", "y": "36%", "w": "20%", "h": "34%", "type": "notebook", "icon": "assets/defter.png", "hint": "Not defterini aç" }
+        { "x": "24%", "y": "30%", "w": "32%", "h": "48%", "type": "dosya", "icon": "assets/sorgu.png", "hint": "İfade zaptlarını incele" },
+        { "x": "58%", "y": "30%", "w": "30%", "h": "48%", "type": "notebook", "icon": "assets/defter.png", "hint": "Not defterini aç" }
       ]
     },
 
