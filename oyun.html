@@ -6,7 +6,7 @@
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
-<link rel="stylesheet" href="ogretici.css?v=5">
+<link rel="stylesheet" href="ogretici.css?v=6">
 </head>
 <body>
 
@@ -17,19 +17,25 @@
       <div class="stage" id="stage"></div>
 
       <!-- Gün sayacı — oyun ekranının sağ üst köşesinde -->
-      <div class="stage-day-tag" id="dayBadge" data-gun="1"></div>
+      <img class="stage-day-tag" id="dayBadge" src="assets/takvim_gun1.png" alt="Gün 1">
 
       <!-- Tam ekran düğmesi — mobilde tarayıcı çubuğunu (adres/tab satırı)
            gizleyip oyunun tüm ekranı kaplamasını sağlar -->
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
-        <button class="corner-icon-btn" onclick="kosePop(this, openMap)" title="Harita">
-          <img src="assets/harita.png" alt="Harita">
-        </button>
-        <button class="corner-icon-btn" onclick="kosePop(this, openNotebook)" title="Not Defteri">
-          <img src="assets/defter.png" alt="Not Defteri">
-        </button>
+        <div class="corner-icon-item">
+          <button class="corner-icon-btn" onclick="kosePop(this, openMap)" title="Harita">
+            <img src="assets/harita.png" alt="Harita">
+          </button>
+          <div class="corner-icon-label">Harita</div>
+        </div>
+        <div class="corner-icon-item">
+          <button class="corner-icon-btn" onclick="kosePop(this, openNotebook)" title="Not Defteri">
+            <img src="assets/defter.png" alt="Not Defteri">
+          </button>
+          <div class="corner-icon-label">Defter</div>
+        </div>
       </div>
 
       <!-- ============ HARİTA OVERLAY ============ -->
@@ -152,8 +158,17 @@
     // Gün sayacı: CSS ::after içeriği data-gun attribute'undan okunuyor, metni değil.
     const _updateDayBadgeOrijinal = updateDayBadge;
     updateDayBadge = function () {
-      document.getElementById('dayBadge').setAttribute('data-gun', currentDay);
+      const rozet = document.getElementById('dayBadge');
+      rozet.src = 'assets/takvim_gun' + currentDay + '.png';
+      rozet.alt = 'Gün ' + currentDay;
     };
+    // takvim_gunN.png o gün için henüz yüklenmediyse kırık resim yerine metne düş
+    document.getElementById('dayBadge').addEventListener('error', function () {
+      this.classList.add('yuklenemedi');
+    });
+    document.getElementById('dayBadge').addEventListener('load', function () {
+      this.classList.remove('yuklenemedi');
+    });
 
     const _renderRoomOrijinal = renderRoom;
     let _odaJetonu = 0;          // arka arkaya hızlı geçişlerde eski isteği yok saymak için

@@ -72,7 +72,7 @@
     border: 2px solid #2c1c0e;
     border-radius: 6px;
     font-family: inherit;
-    font-size: clamp(13px, 1.5vw, 18px);
+    font-size: clamp(13px, 1.5cqw, 18px);
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6);
@@ -126,7 +126,7 @@
     filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
   }
   .nabiz-ikon-etiket {
-    font-family: inherit; font-size: 11px; letter-spacing: .03em;
+    font-family: inherit; font-size: clamp(9px, 1.6cqw, 13px); letter-spacing: .03em;
     color: var(--parchment); background: rgba(20,14,8,.75);
     padding: 2px 7px; border-radius: 4px; white-space: nowrap;
   }
@@ -152,7 +152,7 @@
     border: none;
     border-bottom: 2px solid var(--ink);
     font-family: inherit;
-    font-size: clamp(14px, 1.8vw, 20px);
+    font-size: clamp(14px, 1.8cqw, 20px);
     color: var(--ink);
     padding: 0.3em 0.2em;
     text-transform: uppercase;
@@ -197,7 +197,7 @@
     padding: 1.2em 1.5em;
     border-radius: 8px;
     border-left: 5px solid var(--accent);
-    font-size: clamp(13px, 1.5vw, 18px);
+    font-size: clamp(13px, 1.5cqw, 18px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
@@ -215,7 +215,7 @@
   }
   #popup-overlay.show { opacity: 1; pointer-events: auto; }
   #popup-overlay .zoom-wrap {
-    width: 60vw; height: 70vh;
+    width: 60cqi; height: 39.4cqi;
   }
   #popup-overlay img {
     display: block;
@@ -241,7 +241,7 @@
   #fade-text {
     color: var(--parchment);
     font-style: italic;
-    font-size: clamp(18px, 2.5vw, 30px);
+    font-size: clamp(18px, 2.5cqw, 30px);
     opacity: 0; transition: opacity 0.8s ease;
   }
   #fade-text.show { opacity: 1; }
@@ -250,9 +250,9 @@
      ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, tüm ekranlarda sabit. */
   .tam-ekran-btn{
     position:absolute;top:10px;left:10px;z-index:999;
-    width:34px;height:34px;border-radius:6px;
+    width:clamp(28px,4.2cqw,44px);height:clamp(28px,4.2cqw,44px);border-radius:6px;
     background:rgba(28,29,24,.75);border:1px solid var(--accent);
-    color:var(--parchment);font-size:16px;cursor:pointer;
+    color:var(--parchment);font-size:clamp(14px,2.2cqw,20px);cursor:pointer;
     display:flex;align-items:center;justify-content:center;
     opacity:.55;transition:opacity .2s ease;
   }
@@ -282,9 +282,9 @@
     font-family:inherit; font-size:13px; font-weight:bold; cursor:pointer;
     margin-bottom:10px;
   }
-  .hakkinda-baslik{ font-size:clamp(20px,3vw,30px); margin-bottom:14px; clear:both; }
-  .hakkinda-alt-baslik{ font-size:clamp(15px,2vw,19px); margin:22px 0 10px; color:var(--accent); }
-  .hakkinda-metin p{ font-size:clamp(13px,1.4vw,16px); line-height:1.6; margin-bottom:10px; }
+  .hakkinda-baslik{ font-size:clamp(20px,3cqw,30px); margin-bottom:14px; clear:both; }
+  .hakkinda-alt-baslik{ font-size:clamp(15px,2cqw,19px); margin:22px 0 10px; color:var(--accent); }
+  .hakkinda-metin p{ font-size:clamp(13px,1.4cqw,16px); line-height:1.6; margin-bottom:10px; }
   .hakkinda-metin a{ color:var(--accent); }
   .hakkinda-blok{ margin-top:6px; }
   .hakkinda-blok-baslik{ font-weight:bold; font-size:14px; margin-bottom:6px; }
@@ -308,7 +308,7 @@
     display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
     gap:10px 18px; margin:8px 0 6px;
   }
-  .nasil-madde{ display:flex; align-items:center; gap:10px; font-size:clamp(13px,1.4vw,16px); line-height:1.4; }
+  .nasil-madde{ display:flex; align-items:center; gap:10px; font-size:clamp(13px,1.4cqw,16px); line-height:1.4; }
   .nasil-madde img{
     width:44px; height:44px; flex:none; object-fit:contain;
     background:var(--parchment-dark); border-radius:8px; padding:5px;
@@ -335,7 +335,7 @@
   }
 </style>
 <!-- Öğretici kartları + tıklanabilirlik ipuçları (index.html'deki inline stillerden sonra yüklenir) -->
-<link rel="stylesheet" href="ogretici.css?v=3">
+<link rel="stylesheet" href="ogretici.css?v=6">
 </head>
 <body>
 <div class="donme-uyarisi">

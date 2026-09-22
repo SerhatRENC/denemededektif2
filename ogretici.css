@@ -171,34 +171,32 @@
 
 /* ---------- KÖŞE İKONLARI: kare kutu yerine, elde tutulan iki kağıt parçası hissi ----------
    Harita hafif sola, not defteri hafif sağa yatık; üst üste biner, hover'da doğrulup büyür. */
-#stageFrame .corner-icons{
-  bottom:12px; right:12px; gap:2%;
-}
-/* Kutu/kart arka planı YOK — sadece ikon, etrafında ince bir kontur (outline)
-   renk var ki arka plan koyu/açık her ne olursa olsun görünür kalsın. */
+#stageFrame .corner-icons{ bottom:12px; right:12px; gap:3%; align-items:flex-end; }
+#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.35em; }
+/* Kalın kutu YOK — sadece çok ince, yarı saydam bir zemin + yumuşak gölge (kontur değil) */
 #stageFrame .corner-icon-btn{
   width:9.5cqw; height:9.5cqw; min-width:44px; min-height:44px; max-width:76px; max-height:76px;
-  background:none; border:none; padding:6%;
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:12px;
+  padding:8%;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
 }
-#stageFrame .corner-icon-btn img{
-  /* PNG'nin kendi silüetinin etrafına 8 yönde 0-bulanıklıklı drop-shadow dizerek
-     ince bir kontur çizgisi elde ediliyor — dolgulu bir "kutu" değil. */
-  filter:
-    drop-shadow(.16cqw 0 0 var(--amber-bright)) drop-shadow(-.16cqw 0 0 var(--amber-bright))
-    drop-shadow(0 .16cqw 0 var(--amber-bright)) drop-shadow(0 -.16cqw 0 var(--amber-bright))
-    drop-shadow(.12cqw .12cqw 0 var(--amber-bright)) drop-shadow(-.12cqw -.12cqw 0 var(--amber-bright))
-    drop-shadow(.12cqw -.12cqw 0 var(--amber-bright)) drop-shadow(-.12cqw .12cqw 0 var(--amber-bright))
-    drop-shadow(0 2px 4px rgba(0,0,0,.6));
+#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 5px rgba(0,0,0,.5)); }
+#stageFrame .corner-icon-label{
+  font-family:var(--mono); font-size:clamp(9px,1.5cqw,12px); letter-spacing:.05em;
+  color:var(--amber-bright); background:rgba(10,10,8,.7); padding:2px 8px; border-radius:4px;
 }
 /* Harita ikonu dikey (portre) çevrildi, not defterinin yanında aynı duruşta duruyor */
 #stageFrame .corner-icons button:first-child img{ transform:rotate(90deg); }
-#stageFrame .corner-icons button:first-child{ transform:rotate(-6deg); z-index:1; }
-#stageFrame .corner-icons button:last-child{ transform:rotate(5deg); z-index:2; }
-#stageFrame .corner-icons button:first-child:hover,
-#stageFrame .corner-icons button:first-child.tiklandi{ transform:rotate(-2deg) scale(1.16); z-index:3; }
-#stageFrame .corner-icons button:last-child:hover,
-#stageFrame .corner-icons button:last-child.tiklandi{ transform:rotate(2deg) scale(1.16); z-index:3; }
+#stageFrame .corner-icons button:first-child{ transform:rotate(-5deg); }
+#stageFrame .corner-icons button:last-child{ transform:rotate(4deg); }
+#stageFrame .corner-icons button:hover,
+#stageFrame .corner-icons button.tiklandi{
+  transform:scale(1.14) rotate(0deg);
+  background:rgba(28,24,16,.55); box-shadow:0 6px 18px rgba(0,0,0,.6);
+}
+#stageFrame .corner-icons button:first-child:hover img,
+#stageFrame .corner-icons button:first-child.tiklandi img{ transform:rotate(90deg); }
 
 /* Açılan harita/defter: küçülmüş+saydam başlayıp büyüyerek beliriyor */
 #stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
@@ -224,24 +222,6 @@
   #stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{ animation:none; }
 }
 
-/* ---------- GÜN SAYACI: yırtık takvim yaprağı ---------- */
-#stageFrame .stage-day-tag{
-  top:calc(8px + env(safe-area-inset-top)); right:10px;
-  width:11cqw; min-width:48px; max-width:78px;
-  aspect-ratio:5/6; padding:0;
-  display:flex; flex-direction:column; align-items:center;
-  background:linear-gradient(165deg, #f3ead2, #e2d3ab);
-  border:1px solid rgba(60,42,20,.35);
-  box-shadow:0 4px 10px rgba(0,0,0,.55);
-  transform:rotate(2.5deg);
-  /* alt kenar: yırtık/pürüzlü takvim yaprağı hissi (zikzak) */
-  clip-path:polygon(
-    0% 0%,100% 0%,100% 88%,
-    92% 100%,84% 89%,76% 100%,68% 89%,60% 100%,52% 89%,
-    44% 100%,36% 89%,28% 100%,20% 89%,12% 100%,4% 89%,0% 100%
-  );
-  font-size:0;
-}
 #stageFrame .stage-day-tag::before{
   content:'GÜN'; display:block; width:100%; box-sizing:border-box;
   margin-top:10%;
@@ -252,4 +232,18 @@
   content:attr(data-gun); display:block; width:100%; text-align:center;
   font-family:Georgia,'Times New Roman',serif; font-weight:700;
   font-size:clamp(16px,2.6cqw,26px); color:#241a0f; line-height:1.15; margin-top:2%;
+}
+
+/* ---------- GÜN SAYACI: takvim_gunN.png (kullanıcının kendi tasarımı) ---------- */
+#stageFrame .stage-day-tag{
+  position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px;
+  width:clamp(42px,11cqw,78px); height:auto;   /* PNG'nin kendi en-boy oranı korunur */
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));
+  z-index:15;
+}
+/* Görsel henüz yüklenmediyse (o güne ait PNG eksikse) kırık resim yerine sade bir rozet */
+#stageFrame .stage-day-tag.yuklenemedi{
+  aspect-ratio:5/6; background:#1c1d18; border:1px solid var(--amber); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--amber-bright); font-family:var(--mono); font-size:clamp(11px,1.8cqw,15px);
 }
