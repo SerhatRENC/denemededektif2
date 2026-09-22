@@ -135,12 +135,15 @@
      ve az sağa kaydırılmış, fotoğraftaki eğime uysun diye */
   .mors-yazi-alani {
     position: absolute;
-    /* Yazı çizgisinin SOL ALT ucu (58.2%, 74.0%) noktasında sabit; çizgi
-       oradan sağa doğru hafif yukarı eğimli uzanır. */
-    left: 58.2%; bottom: 26.0%; width: 23%;
+    /* Yazı çizgisinin SOL ALT ucu sabit bir yüzde konumunda (tarayıcı zoom'undan
+       etkilenmesin diye transform:translateY(%) YERİNE doğrudan bottom değeri
+       kullanılıyor — %-tabanlı transform + rotate birlikte kullanılınca farklı
+       zoom seviyelerinde birikimli yuvarlama kayması oluşabiliyordu).
+       Eskiden 26.0% idi; kendi yüksekliğinin ~1.5 katı kadar aşağı inmesi için
+       sabit bir değer olarak 18.5% kullanıldı — tam yeri uymazsa söyle, ince ayar yaparım. */
+    left: 58.2%; bottom: 18.5%; width: 23%;
     transform-origin: left bottom;
-    /* translateY(150%) = alanın KENDİ yüksekliğinin 1.5 katı kadar aşağı */
-    transform: translateY(150%) rotate(-5deg);
+    transform: rotate(-5deg);
     z-index: 15;
   }
   .mors-yazi-alani input {

@@ -165,62 +165,40 @@
 /* ---------- TAM EKRAN düğmesi: sol üstteki mekan etiketiyle çakışıyordu.
    Kullanılmayan sol-alt köşeye (kalibrasyon çubuğunun eski yeri) taşındı. */
 #stageFrame .tam-ekran-btn{
-  top:auto; left:calc(10px + env(safe-area-inset-left));
-  bottom:calc(10px + env(safe-area-inset-bottom));
-}
-
-/* ---------- GÜN SAYACI: köşeli amber etiket yerine küçük bir cep saati ---------- */
-#stageFrame .stage-day-tag{
-  top:calc(8px + env(safe-area-inset-top)); right:10px;
-  width:9.5cqw; height:9.5cqw; min-width:46px; min-height:46px; max-width:74px; max-height:74px;
-  padding:0; border-radius:50%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255,255,255,.10), rgba(0,0,0,0) 45%),
-    radial-gradient(circle, #221a10 60%, #171209 100%);
-  border:2px solid var(--amber); box-shadow:0 3px 10px rgba(0,0,0,.6), inset 0 0 0 3px rgba(227,169,74,.18);
-  font-size:0; letter-spacing:normal;
-}
-#stageFrame .stage-day-tag::before{
-  content:'GÜN'; display:block; font-size:clamp(6.5px,1cqw,9px);
-  color:var(--paper-dim); letter-spacing:.14em; margin-bottom:1px;
-}
-#stageFrame .stage-day-tag::after{
-  content:attr(data-gun); display:block; font-size:clamp(13px,2.1cqw,20px);
-  color:var(--amber-bright); font-weight:700; line-height:1;
-}
-/* saat kadranı çizgileri (dekoratif) */
-#stageFrame .stage-day-tag{ position:absolute; }
-#stageFrame .stage-day-tag i{
-  position:absolute; inset:0; border-radius:50%; pointer-events:none;
-  background:
-    repeating-conic-gradient(from 0deg, rgba(227,169,74,.35) 0deg 1.2deg, transparent 1.2deg 30deg);
-  -webkit-mask:radial-gradient(circle, transparent 78%, #000 79%, #000 86%, transparent 87%);
-          mask:radial-gradient(circle, transparent 78%, #000 79%, #000 86%, transparent 87%);
+  /* mekan adı etiketinin (.room-label, üstte solda) hemen altına iner ki üst üste binmesin */
+  top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
 }
 
 /* ---------- KÖŞE İKONLARI: kare kutu yerine, elde tutulan iki kağıt parçası hissi ----------
    Harita hafif sola, not defteri hafif sağa yatık; üst üste biner, hover'da doğrulup büyür. */
 #stageFrame .corner-icons{
-  bottom:12px; right:12px; gap:0;
+  bottom:12px; right:12px; gap:2%;
 }
+/* Kutu/kart arka planı YOK — sadece ikon, etrafında ince bir kontur (outline)
+   renk var ki arka plan koyu/açık her ne olursa olsun görünür kalsın. */
 #stageFrame .corner-icon-btn{
   width:9.5cqw; height:9.5cqw; min-width:44px; min-height:44px; max-width:76px; max-height:76px;
-  background:linear-gradient(160deg, #efe6cf, #d9cca4);
-  border:1px solid rgba(45,32,15,.35);
-  border-radius:5px 8px 6px 9px/7px 5px 9px 6px;  /* elle kesilmiş kağıt hissi */
-  box-shadow:0 4px 10px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.25);
-  padding:9%;
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
+  background:none; border:none; padding:6%;
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
 }
-#stageFrame .corner-icon-btn img{ filter:sepia(.15) contrast(1.05); }
-#stageFrame .corner-icons button:first-child{ transform:rotate(-7deg) translate(3%, 2%); z-index:1; }
-#stageFrame .corner-icons button:last-child{ transform:rotate(6deg); margin-left:-14%; z-index:2; }
+#stageFrame .corner-icon-btn img{
+  /* PNG'nin kendi silüetinin etrafına 8 yönde 0-bulanıklıklı drop-shadow dizerek
+     ince bir kontur çizgisi elde ediliyor — dolgulu bir "kutu" değil. */
+  filter:
+    drop-shadow(.16cqw 0 0 var(--amber-bright)) drop-shadow(-.16cqw 0 0 var(--amber-bright))
+    drop-shadow(0 .16cqw 0 var(--amber-bright)) drop-shadow(0 -.16cqw 0 var(--amber-bright))
+    drop-shadow(.12cqw .12cqw 0 var(--amber-bright)) drop-shadow(-.12cqw -.12cqw 0 var(--amber-bright))
+    drop-shadow(.12cqw -.12cqw 0 var(--amber-bright)) drop-shadow(-.12cqw .12cqw 0 var(--amber-bright))
+    drop-shadow(0 2px 4px rgba(0,0,0,.6));
+}
+/* Harita ikonu dikey (portre) çevrildi, not defterinin yanında aynı duruşta duruyor */
+#stageFrame .corner-icons button:first-child img{ transform:rotate(90deg); }
+#stageFrame .corner-icons button:first-child{ transform:rotate(-6deg); z-index:1; }
+#stageFrame .corner-icons button:last-child{ transform:rotate(5deg); z-index:2; }
 #stageFrame .corner-icons button:first-child:hover,
-#stageFrame .corner-icons button:first-child.tiklandi{ transform:rotate(-3deg) translate(3%, 2%) scale(1.14); z-index:3; }
+#stageFrame .corner-icons button:first-child.tiklandi{ transform:rotate(-2deg) scale(1.16); z-index:3; }
 #stageFrame .corner-icons button:last-child:hover,
-#stageFrame .corner-icons button:last-child.tiklandi{ transform:rotate(2deg) scale(1.14); z-index:3; }
-#stageFrame .corner-icon-btn:hover{ box-shadow:0 6px 16px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.35); }
+#stageFrame .corner-icons button:last-child.tiklandi{ transform:rotate(2deg) scale(1.16); z-index:3; }
 
 /* Açılan harita/defter: küçülmüş+saydam başlayıp büyüyerek beliriyor */
 #stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
@@ -244,4 +222,34 @@
 }
 @media (prefers-reduced-motion: reduce){
   #stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{ animation:none; }
+}
+
+/* ---------- GÜN SAYACI: yırtık takvim yaprağı ---------- */
+#stageFrame .stage-day-tag{
+  top:calc(8px + env(safe-area-inset-top)); right:10px;
+  width:11cqw; min-width:48px; max-width:78px;
+  aspect-ratio:5/6; padding:0;
+  display:flex; flex-direction:column; align-items:center;
+  background:linear-gradient(165deg, #f3ead2, #e2d3ab);
+  border:1px solid rgba(60,42,20,.35);
+  box-shadow:0 4px 10px rgba(0,0,0,.55);
+  transform:rotate(2.5deg);
+  /* alt kenar: yırtık/pürüzlü takvim yaprağı hissi (zikzak) */
+  clip-path:polygon(
+    0% 0%,100% 0%,100% 88%,
+    92% 100%,84% 89%,76% 100%,68% 89%,60% 100%,52% 89%,
+    44% 100%,36% 89%,28% 100%,20% 89%,12% 100%,4% 89%,0% 100%
+  );
+  font-size:0;
+}
+#stageFrame .stage-day-tag::before{
+  content:'GÜN'; display:block; width:100%; box-sizing:border-box;
+  margin-top:10%;
+  font-family:'Courier New',Courier,monospace; font-size:clamp(6.5px,1cqw,9px);
+  letter-spacing:.14em; text-align:center; color:#8f3a2e;
+}
+#stageFrame .stage-day-tag::after{
+  content:attr(data-gun); display:block; width:100%; text-align:center;
+  font-family:Georgia,'Times New Roman',serif; font-weight:700;
+  font-size:clamp(16px,2.6cqw,26px); color:#241a0f; line-height:1.15; margin-top:2%;
 }
