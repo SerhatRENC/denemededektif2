@@ -39,17 +39,17 @@
       "background": "assets/merkez.jpg",
       "hotspots": [
         { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/geri.png", "iconWidth": "7.5%", "label": "Geri", "hint": "Dedektif Ofisine dön" },
-        { "x": "47.6%", "y": "49.9%", "type": "navigate", "target": "han", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Han", "hint": "Hana git" },
-        { "x": "55.8%", "y": "46.4%", "type": "navigate", "target": "kilise", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Kilise", "hint": "Kiliseye git" },
-        { "x": "51.5%", "y": "45.9%", "type": "navigate", "target": "mezarlik", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Mezarlık", "hint": "Mezarlığa git" },
-        { "x": "92.2%", "y": "54.1%", "type": "navigate", "target": "cadi", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Cevdet'in Evi", "hint": "Cadının Evine git" },
-        { "x": "47.4%", "y": "50.1%", "type": "navigate", "target": "muhtar", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Muhtarlık", "hint": "Muhtarlığa git" },
-        { "x": "76.7%", "y": "50.6%", "type": "navigate", "target": "demirci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Demirci", "hint": "Demirciye git" },
-        { "x": "64.6%", "y": "48.0%", "type": "navigate", "target": "degirmenci", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Değirmenci", "hint": "Değirmenciye git" },
-        { "x": "12.1%", "y": "55.5%", "type": "navigate", "target": "sifahane", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Şifahane", "hint": "Şifahaneye git" },
-        { "x": "39.4%", "y": "49.4%", "type": "navigate", "target": "nadire_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Nadire Ev", "hint": "Nadire'nin Evine git" },
-        { "x": "33.4%", "y": "52.0%", "type": "navigate", "target": "halit_ev", "icon": "assets/ayak.png", "iconWidth": "4%", "label": "Halit'in Evi", "hint": "Halit'in Evine git" },
-        { "x": "51.1%", "y": "62.9%", "type": "photo", "image": "assets/tablo.jpg", "icon": "assets/buyutec.png", "label": "İncele", "hint": "Tabloya bak" }
+        { "x": "47.6%", "y": "49.9%", "type": "navigate", "target": "han", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Han", "hint": "Hana git" },
+        { "x": "55.8%", "y": "46.4%", "type": "navigate", "target": "kilise", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Kilise", "hint": "Kiliseye git" },
+        { "x": "51.5%", "y": "45.9%", "type": "navigate", "target": "mezarlik", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Mezarlık", "hint": "Mezarlığa git" },
+        { "x": "92.2%", "y": "54.1%", "type": "navigate", "target": "cadi", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Cevdet'in Evi", "hint": "Cadının Evine git" },
+        { "x": "47.4%", "y": "50.1%", "type": "navigate", "target": "muhtar", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Muhtarlık", "hint": "Muhtarlığa git" },
+        { "x": "76.7%", "y": "50.6%", "type": "navigate", "target": "demirci", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Demirci", "hint": "Demirciye git" },
+        { "x": "64.6%", "y": "48.0%", "type": "navigate", "target": "degirmenci", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Değirmenci", "hint": "Değirmenciye git" },
+        { "x": "12.1%", "y": "55.5%", "type": "navigate", "target": "sifahane", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Şifahane", "hint": "Şifahaneye git" },
+        { "x": "39.4%", "y": "49.4%", "type": "navigate", "target": "nadire_ev", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Nadire Ev", "hint": "Nadire'nin Evine git" },
+        { "x": "33.4%", "y": "52.0%", "type": "navigate", "target": "halit_ev", "icon": "assets/tokmak.png", "iconWidth": "4.6%", "label": "Halit'in Evi", "hint": "Halit'in Evine git" },
+        { "x": "51.1%", "y": "62.9%", "type": "photo", "image": "assets/tablo.jpg", "icon": "assets/buyutec.png", "label": "Duyuru Panosu", "hint": "Tabloya bak" }
       ]
     },
 
