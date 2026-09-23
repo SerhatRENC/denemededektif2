@@ -7,6 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
 <link rel="stylesheet" href="ogretici.css?v=9">
+<!-- VFX & SFX Sistem Stili ve Scriptleri -->
+<link rel="stylesheet" href="vfx.css">
+<script src="vfx.js"></script>
+<script src="sfx.js"></script>
 </head>
 <body>
 
@@ -16,11 +20,8 @@
     <div class="stage-frame" id="stageFrame">
       <div class="stage" id="stage"></div>
 
-      <!-- Gün sayacı — oyun ekranının sağ üst köşesinde -->
       <img class="stage-day-tag" id="dayBadge" src="assets/takvim_gun1.png" alt="Gün 1">
 
-      <!-- Tam ekran düğmesi — mobilde tarayıcı çubuğunu (adres/tab satırı)
-           gizleyip oyunun tüm ekranı kaplamasını sağlar -->
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
@@ -38,7 +39,7 @@
         </div>
       </div>
 
-      <!-- ============ HARİTA OVERLAY ============ -->
+      <!-- HARİTA OVERLAY -->
       <div class="map-overlay" id="mapOverlay">
         <button class="map-overlay-close" onclick="closeMap()">✕</button>
         <div class="map-scroll">
@@ -49,7 +50,7 @@
         </div>
       </div>
 
-      <!-- ============ NOT DEFTERİ OVERLAY ============ -->
+      <!-- NOT DEFTERİ OVERLAY -->
       <div class="notebook-overlay" id="notebookOverlay">
         <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
         <div class="notebook-scroll">
@@ -102,10 +103,10 @@
         </div>
       </div>
 
-      <!-- ============ SON GÜN — SUÇLAMA / OYUN SONU KATMANI ============ -->
+      <!-- SUÇLAMA / OYUN SONU KATMANI -->
       <div class="suclama-overlay" id="suclamaOverlay"></div>
 
-      <!-- ============ SORGU/İNCELEME/TV/KAYIT MODALI ============ -->
+      <!-- MODAL -->
       <div class="modal-bg" id="modalBg">
         <div class="modal" id="modalBody"></div>
       </div>
@@ -134,10 +135,6 @@
   <script src="ogretici.js?v=3"></script>
   <script src="yukleme.js?v=1"></script>
   <script>
-    // Sorgu kağıdı okuyucusu: sol/sağ oklar artık ekranın değil, kağıdın (imgın
-    // gerçek render edilmiş kenarının) hemen dışına oturuyor — kağıt her zaman
-    // 70cqi×45cqi'lik kutunun ortasında "contain" ile küçültülüyor, kutunun kendi
-    // kenarına sabit bırakmak boşluk bırakıyordu.
     function hizalaSorguOklari() {
       const img = document.getElementById('statementZoomImg');
       const modal = document.getElementById('modalBody');
@@ -157,21 +154,12 @@
       if (img) { if (img.complete) requestAnimationFrame(hizalaSorguOklari); else img.onload = hizalaSorguOklari; }
     };
 
-    // ------------------------------------------------------------------
-    // engine.js'e DOKUNMADAN iki şey bağlanıyor:
-    //  1) Yükleme: oda görseli hazırsa anında geçilir; hazır değilse ve 300 ms'den
-    //     uzun sürerse "(Mekana yürünüyor...)" ekranı + yürüme sesi (yukleme.js).
-    //  2) Öğretici: oda çizildiğinde ilk kez görülüyorsa case.json → "ogretici" kartı.
-    // ------------------------------------------------------------------
-    const IKON_BEKLEME_MS = 1000;       // simgelerin belirme süresi (ms)
-    const ARKA_PLAN_YUKLEME = true;     // false yaparsan sıradaki odalar önceden indirilmez
+    const IKON_BEKLEME_MS = 1000;
+    const ARKA_PLAN_YUKLEME = true;
     const YURUME_SESI = 'assets/ses/yuru.mp3';
 
     Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
 
-    // Köşedeki harita/defter düğmesi: kısa bir "elden kalkma" animasyonu oynar,
-    // asıl overlay (openMap/openNotebook) o kalkış tam bitmeden hafif önce açılır
-    // ki büyüyerek beliren kart animasyonuyla üst üste binsin.
     function kosePop(btn, ac, ses) {
       if (ses) calSes(ses);
       btn.classList.add('tiklandi');
@@ -179,14 +167,12 @@
       setTimeout(ac, 90);
     }
 
-    // Gün sayacı: CSS ::after içeriği data-gun attribute'undan okunuyor, metni değil.
     const _updateDayBadgeOrijinal = updateDayBadge;
     updateDayBadge = function () {
       const rozet = document.getElementById('dayBadge');
       rozet.src = 'assets/takvim_gun' + currentDay + '.png';
       rozet.alt = 'Gün ' + currentDay;
     };
-    // takvim_gunN.png o gün için henüz yüklenmediyse kırık resim yerine metne düş
     document.getElementById('dayBadge').addEventListener('error', function () {
       this.classList.add('yuklenemedi');
     });
@@ -194,11 +180,6 @@
       this.classList.remove('yuklenemedi');
     });
 
-    // ------------------------------------------------------------------
-    // SES SİSTEMİ — engine.js'e DOKUNMADAN, ilgili global fonksiyonlar sarmalanıyor
-    // ya da olay delegasyonu kullanılıyor. calSes() ogretici.js içinde tanımlı,
-    // assets/ses/<ad>.mp3 çalar.
-    // ------------------------------------------------------------------
     const _handleHotspotOrijinal = handleHotspot;
     handleHotspot = function (h) {
       if (h.icon) {
@@ -207,32 +188,24 @@
         else if (h.icon.endsWith('ayak.png') && h.label === 'Git') calSes('kapi_git');
         else if (h.icon.endsWith('buyutec.png')) calSes('incele');
       }
-      if (h.type === 'dosya') calSes('harita');   // masadaki sorgu kağıdını açma
+      if (h.type === 'dosya') calSes('harita');
       _handleHotspotOrijinal(h);
     };
 
-    // Haritada bir mekân noktasına (pin) tıklanınca — pinler openMap() her
-    // açılışta yeniden çiziliyor, o yüzden kalıcı üst kapsayıcıda delege ediliyor.
     document.getElementById('mapHotspots').addEventListener('click', (e) => {
       if (e.target.closest('.map-hotspot')) calSes('kapi');
     });
 
-    // Sorgu kağıdı okuyucusunda sol/sağ ok (sayfa geçişi) tıklaması — #modalBg
-    // kalıcı, içeriği (dolayısıyla oklar) her openStatement()'ta yeniden çiziliyor.
     document.getElementById('modalBg').addEventListener('click', (e) => {
       if (e.target.closest('.reader-side-arrow')) calSes('sayfa');
     });
 
-    // Uyuma: kararma zaten CSS geçişiyle (ogretici.css → .sleep-overlay) yumuşatıldı,
-    // burada sadece ses ekleniyor.
     const _sleepOrijinal = sleep;
     sleep = function () {
       calSes('uyuma');
       _sleepOrijinal();
     };
 
-    // Uyanma: "aydınlıktan açılma" hissi için kısa bir beyaz/sıcak parlama katmanı
-    // eklenip söndürülüyor, ses çalınıyor.
     const _wakeUpOrijinal = wakeUp;
     wakeUp = function () {
       calSes('sabah');
@@ -245,7 +218,7 @@
     };
 
     const _renderRoomOrijinal = renderRoom;
-    let _odaJetonu = 0;          // arka arkaya hızlı geçişlerde eski isteği yok saymak için
+    let _odaJetonu = 0;
     let _arkaPlanBasladi = false;
 
     function _odaCiz() {
@@ -259,13 +232,10 @@
       Ogretici.iptal();
       Ogretici.goster(currentRoom);
 
-      // Simgeler oda açıldıktan ~1 sn sonra belirsin (engine.js 2 sn bekliyor; yarıya indirildi).
-      // Engine odayı 180 ms sonra çizdiği için bekleme onun üstüne eklenir.
       setTimeout(() => {
         document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
       }, 180 + IKON_BEKLEME_MS);
 
-      // Kapalı kapı görünümündeki geri simgesi (engine içinde sabit çiziliyor): büyüt + "Geri" etiketi
       setTimeout(() => {
         document.querySelectorAll('#stage img[alt="Geri dön"]').forEach(img => {
           const kap = img.parentElement;
@@ -279,7 +249,10 @@
         });
       }, 220);
 
-      // İlk oda çizildikten sonra diğer odaların görselleri sırayla arka planda indirilir
+      // VFX VE SFX TETİKLEYİCİSİ
+      if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || document.getElementById('stage'));
+      if (typeof SFX !== 'undefined') SFX.play(currentRoom);
+
       if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi) {
         _arkaPlanBasladi = true;
         Yukleme.arkaPlanda(_arkaPlanListesi());
@@ -289,7 +262,7 @@
     function _arkaPlanListesi() {
       const liste = [];
       const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
-      const oncelik = ['masa', 'merkez'];   // ofisten hemen gidilenler önce
+      const oncelik = ['masa', 'merkez'];
       const sirali = oncelik.concat(Object.keys(CASE.rooms).filter(k => !oncelik.includes(k)));
       sirali.forEach(k => {
         const oda = CASE.rooms[k];
@@ -309,17 +282,11 @@
       const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
       const karakter = (!kapali && CASE.characters && CASE.characters[currentRoom]) ? CASE.characters[currentRoom].image : null;
       Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
-        if (jeton !== _odaJetonu) return;   // aradan yeni bir geçiş başladıysa bu istek geçersiz
+        if (jeton !== _odaJetonu) return;
         _odaCiz();
       });
     };
 
-    // Tam ekran düğmesi — mobilde tarayıcı arayüzünü (adres çubuğu, sekmeler)
-    // gizleyerek oyunun gerçekten tüm ekranı kaplamasını sağlar. Tarayıcı
-    // güvenlik kısıtı gereği sadece bir tıklama/dokunma sonrası çalışabilir,
-    // bu yüzden sayfa yüklenince otomatik açılamaz. iPhone Safari normal
-    // sekmede bu API'yi hiç desteklemediği için (document.fullscreenEnabled
-    // === false) buton orada otomatik gizlenir.
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
       document.getElementById('tamEkranBtn').style.display = 'none';
     }

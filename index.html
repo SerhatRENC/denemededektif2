@@ -32,9 +32,6 @@
     transform: translate(-50%, -50%);
     width: min(100vw, calc(100vh * 16 / 9));
     height: min(100vh, calc(100vw * 9 / 16));
-    /* dvh/dvw (dinamik viewport birimleri) mobilde tarayıcı çubuğu
-       açılıp kapandıkça daha doğru boyut verir; desteklemeyen eski
-       tarayıcılar bu satırı geçersiz sayıp yukarıdaki vw/vh'a döner. */
     width: min(100dvw, calc(100dvh * 16 / 9));
     height: min(100dvh, calc(100dvw * 9 / 16));
     aspect-ratio: 16 / 9;
@@ -90,10 +87,6 @@
     box-shadow: 0 6px 0 #1c110a, 0 10px 16px rgba(0,0,0,0.7);
   }
 
-  /* Nabız gibi hafif büyüyüp küçülen ikonlar — büyüteç, ayak izi, el, kulak
-     ORTAK kullanır. ÖNEMLİ: left/top artık ikonun SOL-ÜST köşesi değil,
-     TAM ORTASI. Yani "bu ikonu tam şu noktaya otursun" dediğin nokta neyse
-     left/top'a direkt onu yaz, genişlik yarısı falan hesaplamana gerek yok. */
   .nabiz-ikon {
     position: absolute;
     cursor: pointer;
@@ -109,9 +102,6 @@
     50% { transform: translate(-50%, -50%) scale(1.12); }
   }
 
-  /* Altında küçük bir eylem etiketi (Bak/Dinle/Çal/İncele vb.) olan ikonlar
-     için sarmalayıcı — .nabiz-ikon ile aynı konumlandırma/animasyon mantığı,
-     sadece ikon+etiket dikey olarak gruplanıyor. */
   .nabiz-ikon-wrap {
     position: absolute;
     cursor: pointer;
@@ -131,16 +121,8 @@
     padding: 2px 7px; border-radius: 4px; white-space: nowrap;
   }
 
-  /* Mors mesajı yazı alanı — hafif döndürülmüş (sağ üst yukarı bakıyor)
-     ve az sağa kaydırılmış, fotoğraftaki eğime uysun diye */
   .mors-yazi-alani {
     position: absolute;
-    /* Yazı çizgisinin SOL ALT ucu sabit bir yüzde konumunda (tarayıcı zoom'undan
-       etkilenmesin diye transform:translateY(%) YERİNE doğrudan bottom değeri
-       kullanılıyor — %-tabanlı transform + rotate birlikte kullanılınca farklı
-       zoom seviyelerinde birikimli yuvarlama kayması oluşabiliyordu).
-       Eskiden 26.0% idi; kendi yüksekliğinin ~1.5 katı kadar aşağı inmesi için
-       sabit bir değer olarak 18.5% kullanıldı — tam yeri uymazsa söyle, ince ayar yaparım. */
     left: 58.2%; bottom: 18.5%; width: 23%;
     transform-origin: left bottom;
     transform: rotate(-5deg);
@@ -180,13 +162,11 @@
     animation: karakterNabiz 2s ease-in-out infinite;
   }
   .character.talking {
-    animation: none; /* konuşma başlayınca düzgün durur, nabız atmayı bırakır */
+    animation: none;
   }
-  /* Tıklanabilir karakter: renkli, çok hafif bir hale + yavaş nabız.
-     Üç drop-shadow her iki karede de aynı sayıda — tarayıcı yumuşak geçiş yapsın diye. */
   @keyframes karakterNabiz {
     0%,100% { filter: drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
-    50%     { filter: drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+    50%      { filter: drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
   }
 
   .subtitle {
@@ -246,8 +226,6 @@
   }
   #fade-text.show { opacity: 1; }
 
-  /* Tam ekran düğmesi — mobilde tarayıcı çubuğunu gizleyip oyunun tüm
-     ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, tüm ekranlarda sabit. */
   .tam-ekran-btn{
     position:absolute;top:10px;left:10px;z-index:999;
     width:clamp(32px,4.8cqw,50px);height:clamp(32px,4.8cqw,50px);border-radius:6px;
@@ -258,9 +236,6 @@
   }
   .tam-ekran-btn:hover{opacity:1;}
 
-  /* ============================================================
-     OYUN HAKKINDA EKRANI
-     ============================================================ */
   .hakkinda-scroll{
     position:absolute; inset:0; overflow-y:auto;
     background:var(--parchment-dark);
@@ -303,7 +278,6 @@
     .credits-grid{ grid-template-columns:repeat(3,1fr); }
   }
 
-  /* Nasıl Oynanır ekranı — simge listesi */
   .nasil-ikonlar{
     display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
     gap:10px 18px; margin:8px 0 6px;
@@ -314,10 +288,6 @@
     background:var(--parchment-dark); border-radius:8px; padding:5px;
   }
 
-  /* Telefon dikey tutulunca oyunu zorla döndürmek yerine, kullanıcıdan
-     telefonu çevirmesini isteyen basit bir ekran gösteriyoruz.
-     ÖNEMLİ: bu blok dosyanın EN SONUNDA olmak zorunda — CSS'te eşit
-     özgüllükte son gelen kural kazanır. */
   .donme-uyarisi{
     display:none;
     position:fixed;inset:0;z-index:9999;
@@ -334,8 +304,11 @@
     #stage-frame{display:none;}
   }
 </style>
-<!-- Öğretici kartları + tıklanabilirlik ipuçları (index.html'deki inline stillerden sonra yüklenir) -->
 <link rel="stylesheet" href="ogretici.css?v=9">
+<!-- VFX & SFX Sistem Stili ve Scriptleri -->
+<link rel="stylesheet" href="vfx.css">
+<script src="vfx.js"></script>
+<script src="sfx.js"></script>
 </head>
 <body>
 <div class="donme-uyarisi">
@@ -354,12 +327,7 @@
     <div class="hotspot" id="btn-nasil" style="left:3.4%;top:57.2%;width:19%;height:9%;"></div>
   </div>
 
-  <!-- 2. OFİS / ŞEHİR — ekrana gelince 2 sn sonra mesaj.mp3 otomatik çalar,
-       aynı anda telgrafın üstünde nabız atan el.png belirir; ona tıklayınca
-       ses kesilir ve mors ekranına geçilir.
-       Dosya popup'ındaki çarpıya basınca doğrudan buraya dönülür: telgraf ikonu gizlenir,
-       ekranın ortasında "İncele" (dosyaya tekrar bak) ve kapıda "Git" (at arabası) belirir.
-       (Alt+tık koordinat yardımcısı ile yerler ince ayar yapılabilir) -->
+  <!-- 2. OFİS / ŞEHİR -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
       <img src="assets/el.png" alt="Telgrafa Bas">
@@ -375,7 +343,7 @@
     </div>
   </div>
 
-  <!-- 3. MORS KAĞIDI — telgrafın altında kulak.png ikonu mesajı tekrar dinletir -->
+  <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
       <img src="assets/kulak.png" alt="Mesajı Dinle">
@@ -388,7 +356,7 @@
     <button class="btn show" id="btn-mors-ilerle" style="left:82.0%;top:76.0%;">İlerle</button>
   </div>
 
-  <!-- 4. RAF — dosyanın üstünde nabız atan el.png -->
+  <!-- 4. RAF -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
       <img src="assets/el.png" alt="İncele">
@@ -396,9 +364,7 @@
     </div>
   </div>
 
-  <!-- 5. SİSLİDERE DOSYASI — büyüteç ikonuna tıklayınca Ali İhsan popup açılır;
-       popup'taki çarpı doğrudan ofis_sehir.jpg'ye döndürür. GERİ ikonu sadece bu ekrana
-       ofisten ikinci kez gelindiğinde çıkış olarak belirir. -->
+  <!-- 5. SİSLİDERE DOSYASI -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
       <img src="assets/buyutec.png" alt="İncele">
@@ -410,7 +376,7 @@
     </div>
   </div>
 
-  <!-- 6. AT ARABASI — ayak izi tam kapının önünde -->
+  <!-- 6. AT ARABASI -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/at_arabasi.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
       <img src="assets/ayak.png" alt="Bin">
@@ -418,7 +384,7 @@
     </div>
   </div>
 
-  <!-- 7. KÖY GİRİŞİ — Halit (muhtar) ile konuşma bitince 2 sn sonra ayak izi belirir -->
+  <!-- 7. KÖY GİRİŞİ -->
   <div class="screen" id="scr-koy" style="background-image:url('assets/koy_giris.jpg')">
     <img class="character" id="char-halit" src="assets/karakterler/halit.png" alt="Halit">
     <div class="subtitle" id="sub-halit"></div>
@@ -518,7 +484,6 @@
     </div>
   </div>
 
-  <!-- KATMANLAR VE SESLER -->
   <div id="popup-overlay">
     <button id="popup-close">×</button>
     <div class="zoom-wrap">
@@ -537,10 +502,6 @@
 
 <script src="ogretici.js?v=3"></script>
 <script>
-/* ============================================================
-   ÖĞRETİCİ İÇERİĞİ — ilk kez gelinen ekranlarda bir kez çıkan bilgi kartları.
-   Metinleri buradan değiştirebilirsin. (Mekanik: ogretici.js, görünüm: ogretici.css)
-   ============================================================ */
 const OGRETICI_ICERIK = {
   ofis_sehir: {
     baslik: 'Nasıl oynanır?',
@@ -579,14 +540,12 @@ const OGRETICI_ICERIK = {
       satirlar: ['Buyrun dedektif bey.', 'Size bir şey göstermem lazım.']
     },
     konum: 'ust-sol',
-    gecikme: 3000   // karakter, sahne açıldıktan ~1.2 sn sonra belirdiği için kart biraz daha geç çıkar
+    gecikme: 3000
   }
 };
 
-// Simgelerin ekran açıldıktan sonra belirme süresi (ms). Eskiden 2000'di, yarıya indirildi.
 const IKON_BEKLEME_MS = 1000;
 
-// Ekran → öğretici eşlemesi
 const OGRETICI_EKRANLAR = {
   'scr-ofis': 'ofis_sehir',
   'scr-mors': 'mors_kagidi',
@@ -599,10 +558,6 @@ Ogretici.kur({
   onek: 'sislidere'
 });
 
-/* ============================================================
-   BELGE YAKINLAŞTIRMA (ZOOM/PAN) — oyun.html'deki engine.js ile
-   aynı fonksiyon, bu sayfa ayrı olduğu için burada da tanımlı.
-   ============================================================ */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;
@@ -676,19 +631,19 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const scr = document.getElementById(id);
   scr.classList.add('active');
-  // O ekrana özel, "ekran açılır açılmaz değil, 2 sn sonra belirsin" işaretli
-  // ikonlar (gec-bekle) — dosya-geri/kapi-ayak/ofise-git gibi belirli bir oyun olayına
-  // bağlı ikonlar bu sınıfı taşımıyor, onlar kendi tetikleyicisinde gecikir.
+  
   scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli, .nabiz-ikon-wrap.gec-bekle.gizli').forEach(el => {
     setTimeout(() => el.classList.remove('gizli'), IKON_BEKLEME_MS);
   });
-  // Önceki ekranın öğretici kartını kaldır; bu ekranın öğreticisi varsa ve ilk kez görülüyorsa göster
+  
   Ogretici.iptal();
   if (OGRETICI_EKRANLAR[id]) Ogretici.goster(OGRETICI_EKRANLAR[id]);
+
+  // VFX ve SFX Tetikleyici
+  if (typeof VFX !== 'undefined') VFX.load(id, scr);
+  if (typeof SFX !== 'undefined') SFX.play(id);
 }
 
-/* 1. ANA EKRAN */
-// Giriş görseli: assets/giris.jpg bulunamazsa eski assets/ana_ekran.jpg'ye düşer
 (function () {
   const t = new Image();
   t.onerror = () => { document.getElementById('scr-ana').style.backgroundImage = "url('assets/ana_ekran.jpg')"; };
@@ -704,7 +659,6 @@ document.getElementById('btn-hakkinda-geri').addEventListener('click', () => {
 });
 document.getElementById('btn-oyna').addEventListener('click', () => {
   showScreen('scr-ofis');
-  // Ofis ekranına gelince 2 saniye sonra mesaj kendiliğinden çalmaya başlar
   setTimeout(() => {
     const aud = document.getElementById('aud-mesaj');
     aud.currentTime = 0;
@@ -712,8 +666,6 @@ document.getElementById('btn-oyna').addEventListener('click', () => {
   }, 2000);
 });
 
-/* 2. OFİS — telgrafın üstündeki el.png'ye tıklayınca mesaj sesi kesilir,
-   mors ekranına geçilir */
 document.getElementById('btn-telgraf').addEventListener('click', () => {
   calSes('al');
   const aud = document.getElementById('aud-mesaj');
@@ -722,7 +674,6 @@ document.getElementById('btn-telgraf').addEventListener('click', () => {
   showScreen('scr-mors');
 });
 
-/* 3. MORS */
 function normalizeTR(str) {
   return str.trim().toLocaleLowerCase('tr-TR')
     .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
@@ -740,7 +691,6 @@ document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
   const inputVal = normalizeTR(inputEl.value);
   if (inputVal === 'SISLIDERE') {
     inputEl.classList.remove('hata');
-    // Telgraf işi bitti: ofis ekranına geri dönüldüğünde telgraf ikonu tekrar çıkmasın
     document.getElementById('btn-telgraf').style.display = 'none';
     showScreen('scr-raf');
   } else {
@@ -748,7 +698,6 @@ document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
   }
 });
 
-/* 4. RAF & 5. DOSYA */
 document.getElementById('btn-dosya-incele').addEventListener('click', () => { calSes('al'); showScreen('scr-dosya'); });
 
 document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
@@ -756,7 +705,6 @@ document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
   document.getElementById('popup-overlay').classList.add('show');
 });
 
-// Ofis ekranına dönüldüğünde: "İncele" (dosyaya tekrar bak) ve kapıdaki "Git" belirir
 function ofisDonusIkonlari() {
   setTimeout(() => {
     document.getElementById('btn-ofis-incele').classList.remove('gizli');
@@ -764,7 +712,6 @@ function ofisDonusIkonlari() {
   }, IKON_BEKLEME_MS);
 }
 
-// Dosya popup'ındaki ÇARPI → doğrudan ofis_sehir.jpg
 document.getElementById('popup-close').addEventListener('click', () => {
   calSes('geri');
   document.getElementById('popup-overlay').classList.remove('show');
@@ -773,8 +720,6 @@ document.getElementById('popup-close').addEventListener('click', () => {
   ofisDonusIkonlari();
 });
 
-// Ofisteki İNCELE → yine sislidere_dosya.jpg (çarpıyla çıkınca yine ofise döner).
-// Dosya ekranına ikinci gelişte büyüteç zaten görünür; popup'ı açmak istemezse çıkış için GERİ de belirir.
 document.getElementById('btn-ofis-incele').addEventListener('click', () => {
   calSes('incele');
   showScreen('scr-dosya');
@@ -785,12 +730,10 @@ document.getElementById('btn-dosya-geri').addEventListener('click', () => {
   showScreen('scr-ofis');
   ofisDonusIkonlari();
 });
-// Kapıdaki ayak izi → at arabası
 document.getElementById('btn-kapi-ayak').addEventListener('click', () => { calSes('kapi_git'); showScreen('scr-araba'); });
 
-/* 6. AT ARABASI */
 document.getElementById('btn-bin').addEventListener('click', () => {
-  calSes('at_arabasi');   // burası "Git" etiketli olsa da kendi özel sesi var, kapi_git.mp3 ÇALINMIYOR
+  calSes('at_arabasi');
   const fadeLayer = document.getElementById('fade-layer');
   const fadeText = document.getElementById('fade-text');
   fadeLayer.classList.add('show');
@@ -799,18 +742,16 @@ document.getElementById('btn-bin').addEventListener('click', () => {
   setTimeout(() => { fadeLayer.classList.remove('show'); document.getElementById('char-halit').classList.add('show'); }, 4200);
 });
 
-/* 7. KÖY GİRİŞİ */
 let halitState = 0;
 document.getElementById('char-halit').addEventListener('click', () => {
   const sub = document.getElementById('sub-halit');
   const char = document.getElementById('char-halit');
   if (halitState === 0) {
-    // Oyuncu sohbeti zaten başlattı: öğretici kartı gereksiz, kaldır ve "görüldü" say
     Ogretici.isaretle('koy_giris');
     Ogretici.iptal();
     sub.textContent = "Hoş geldiniz dedektif! Sisledere Köyü'ne varışınız tam zamanında oldu.";
     sub.classList.add('show');
-    char.classList.add('talking'); // konuşurken nabız durur, düzgün durur
+    char.classList.add('talking');
     halitState = 1;
   } else {
     sub.classList.remove('show');
@@ -828,7 +769,6 @@ document.getElementById('btn-ofise-git').addEventListener('click', () => {
   document.getElementById('char-polis').classList.add('show');
 });
 
-/* 8. POLİS VE ANA OYUNA GEÇİŞ */
 let polisState = 0;
 document.getElementById('char-polis').addEventListener('click', () => {
   const sub = document.getElementById('sub-polis');
@@ -836,7 +776,7 @@ document.getElementById('char-polis').addEventListener('click', () => {
   if (polisState === 0) {
     sub.textContent = "Başkomiserim, durum dosyasını masaya bıraktım. Soruşturmaya başlayabilirsiniz.";
     sub.classList.add('show');
-    char.classList.add('talking'); // konuşurken nabız durur, düzgün durur
+    char.classList.add('talking');
     polisState = 1;
   } else {
     sub.classList.remove('show');
@@ -845,11 +785,6 @@ document.getElementById('char-polis').addEventListener('click', () => {
   }
 });
 
-/* Tam ekran düğmesi — mobil tarayıcı arayüzünü (adres çubuğu, sekmeler)
-   gizler, oyun gerçekten tüm ekranı kaplar. Tarayıcı güvenlik kısıtı
-   gereği sadece bir tıklama sonrası çalışabilir, sayfa açılışında otomatik
-   tetiklenemez. iPhone Safari normal sekmede bu API'yi hiç desteklemediği
-   için (document.fullscreenEnabled === false) buton orada otomatik gizlenir. */
 if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
   document.getElementById('tamEkranBtn').style.display = 'none';
 }
@@ -866,20 +801,13 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
 
 const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
 
-/* ============================================================
-   KOORDİNAT YARDIMCISI — Alt (Mac'te Option) tuşuna basılı tutarak
-   ekrana tıkla: tıklanan noktanın "left/top" yüzdesi ekranın altında
-   ve konsolda görünür. İkonların left/top'u zaten TAM ORTA noktası,
-   yani çıkan değeri doğrudan style="..." içine yapıştırabilirsin.
-   Alt basılı değilken oyuna hiçbir etkisi yok.
-   ============================================================ */
 (function () {
   const frame = document.getElementById('stage-frame');
   let toast = null, zamanlayici = null;
   frame.addEventListener('click', (e) => {
     if (!e.altKey) return;
     e.preventDefault();
-    e.stopPropagation(); // Alt+tık, altındaki ikonu tetiklemesin
+    e.stopPropagation();
     const r = frame.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
     const y = ((e.clientY - r.top) / r.height * 100).toFixed(1);
