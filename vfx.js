@@ -1,5 +1,5 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası
+   VFX ENGINE - Sislidere Köyü Davası (v2 - Belirgin & Optimize)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
@@ -8,18 +8,18 @@ const VFX = (function () {
   // Mekan bazlı efekt konfigürasyonları (X, Y yüzdesel konumlar)
   const roomVFXConfig = {
     // Lambalı ve Işıklı İç Mekanlar
-    'dedektif': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(230, 160, 60, 0.5)', size: '18cqw' }] },
-    'ofis': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(230, 160, 60, 0.5)', size: '18cqw' }] },
-    'halit_ev': { dust: true, lights: [{ x: '10%', y: '58%', color: 'rgba(240, 150, 50, 0.45)', size: '15cqw' }, { x: '85%', y: '70%', color: 'rgba(220, 100, 40, 0.4)', size: '20cqw' }] },
-    'nadire_ev': { dust: true, lights: [{ x: '22%', y: '55%', color: 'rgba(240, 150, 50, 0.5)', size: '16cqw' }, { x: '45%', y: '65%', color: 'rgba(220, 100, 40, 0.35)', size: '18cqw' }] },
-    'sifahane': { dust: true, lights: [{ x: '73%', y: '58%', color: 'rgba(220, 100, 40, 0.4)', size: '20cqw' }] },
+    'dedektif': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }] },
+    'ofis': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }] },
+    'halit_ev': { dust: true, lights: [{ x: '10%', y: '58%', color: 'rgba(255, 160, 40, 0.7)', size: '20cqw' }, { x: '85%', y: '70%', color: 'rgba(240, 100, 30, 0.65)', size: '25cqw' }] },
+    'nadire_ev': { dust: true, lights: [{ x: '22%', y: '55%', color: 'rgba(255, 160, 40, 0.75)', size: '22cqw' }, { x: '45%', y: '65%', color: 'rgba(230, 100, 30, 0.6)', size: '24cqw' }] },
+    'sifahane': { dust: true, lights: [{ x: '73%', y: '58%', color: 'rgba(230, 110, 30, 0.65)', size: '26cqw' }] },
     
     // Ateşli / Isı Odaklı Mekanlar
-    'demirci': { sparks: true, lights: [{ x: '60%', y: '42%', color: 'rgba(255, 90, 20, 0.6)', size: '28cqw' }] },
-    'han_depo': { dust: true, lights: [{ x: '57%', y: '48%', color: 'rgba(230, 120, 40, 0.5)', size: '12cqw' }] },
+    'demirci': { sparks: true, lights: [{ x: '60%', y: '42%', color: 'rgba(255, 100, 20, 0.85)', size: '35cqw' }] },
+    'han_depo': { dust: true, lights: [{ x: '57%', y: '48%', color: 'rgba(255, 140, 40, 0.7)', size: '18cqw' }] },
     
     // Sisli ve Atmosferik Mekanlar
-    'mezarlik': { dust: true, fog: true, lights: [{ x: '28%', y: '78%', color: 'rgba(240, 180, 80, 0.35)', size: '22cqw' }] },
+    'mezarlik': { dust: true, fog: true, lights: [{ x: '28%', y: '78%', color: 'rgba(255, 190, 80, 0.6)', size: '28cqw' }] },
     'kilise': { dust: true },
     'degirmenci': { dust: true },
     'merkez': { fog: true },
@@ -38,7 +38,6 @@ const VFX = (function () {
     cleanup();
     if (!stageElement || !roomId) return;
 
-    // Anahtar kelime eşleşmesi (örn: 'scr-ofis' -> 'ofis')
     let configKey = Object.keys(roomVFXConfig).find(key => roomId.includes(key));
     let config = configKey ? roomVFXConfig[configKey] : { dust: true };
 
@@ -63,7 +62,7 @@ const VFX = (function () {
       stageElement.appendChild(fog);
     }
 
-    // 3. Canvas Parçacıkları (Toz veya Kıvılcım)
+    // 3. Canvas Parçacıkları (Daha Büyük & Belirgin Tozlar)
     if (config.dust || config.sparks) {
       const canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
@@ -74,15 +73,18 @@ const VFX = (function () {
       canvas.height = rect.height || 450;
       const ctx = canvas.getContext('2d');
 
-      const particleCount = config.sparks ? 30 : 20;
+      // Sayıyı sadece biraz artırdık (35-45 arası), ama boyutları büyüttük!
+      const particleCount = config.sparks ? 45 : 35;
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: config.sparks ? Math.random() * 1.8 + 0.6 : Math.random() * 1.4 + 0.5,
-          vx: (Math.random() - 0.5) * (config.sparks ? 0.8 : 0.3),
-          vy: config.sparks ? -(Math.random() * 0.8 + 0.3) : (Math.random() - 0.5) * 0.2,
-          alpha: Math.random() * 0.6 + 0.2,
+          // Toz boyutları 0.5px yerine 1.8px - 3.2px arası yapıldı (daha net görünür)
+          radius: config.sparks ? Math.random() * 2.2 + 0.8 : Math.random() * 2.0 + 1.2,
+          vx: (Math.random() - 0.5) * (config.sparks ? 1.0 : 0.5),
+          vy: config.sparks ? -(Math.random() * 1.0 + 0.4) : (Math.random() - 0.5) * 0.35,
+          // Opaklık artırıldı
+          alpha: Math.random() * 0.5 + 0.45,
           isSpark: !!config.sparks
         });
       }
@@ -100,9 +102,18 @@ const VFX = (function () {
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.isSpark 
-            ? `rgba(255, 160, 50, ${p.alpha})` 
-            : `rgba(230, 220, 190, ${p.alpha * 0.5})`;
+          
+          if (p.isSpark) {
+            ctx.fillStyle = `rgba(255, 170, 50, ${p.alpha})`;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(255, 120, 0, 0.8)';
+          } else {
+            // Tozlar hafif parlayan sıcak krem rengi yapıldı
+            ctx.fillStyle = `rgba(245, 235, 210, ${p.alpha})`;
+            ctx.shadowBlur = 2;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+          }
+          
           ctx.fill();
         });
         animFrameId = requestAnimationFrame(render);
