@@ -51,7 +51,6 @@ h1{display:none;}
 .hotspot:hover .hint{opacity:1;}
 .hotspot.locked-hint .hint{color:var(--evid-red);}
 
-/* İkonlu hotspot: masa üstünde duran sorgu kağıdı / not defteri gibi görünür nesneler */
 .hotspot.hotspot-icon{transition:transform .15s;}
 .hotspot.hotspot-icon:hover{background:none;outline:none;transform:scale(1.06);}
 .hotspot-icon-img{width:100%;height:100%;object-fit:contain;pointer-events:none;
@@ -62,11 +61,6 @@ h1{display:none;}
   font-size:9px;font-family:var(--mono);padding:4px;pointer-events:none;
 }
 
-/* YENİ: nabız atan, MERKEZ noktalı küçük "buraya tıkla" ikonları
-   (büyüteç, ayak izi, el, kulak, uyku, geri vb.) — case.json'da w/h verilmeyen
-   ikonlu hotspot'lar için. left/top bu ikonun TAM ORTASI. "label" varsa
-   ikonun altında küçük bir isim etiketi (ör. "Muhtarlık") görünür.
-   Oda açılır açılmaz değil, engine.js'te 2 saniye sonra belirir. */
 .hotspot-pulse-wrap{
   position:absolute;cursor:pointer;
   transform:translate(-50%,-50%);
@@ -95,9 +89,6 @@ h1{display:none;}
   text-align:center;background:rgba(10,10,8,.6);
 }
 
-/* ============================================================
-   ORTAMDAKİ KARAKTER MEKANİĞİ
-   ============================================================ */
 .scene-character{
   position:absolute;right:2%;bottom:0;height:90%;width:auto;max-width:38%;
   object-fit:contain;cursor:pointer;z-index:8;
@@ -127,7 +118,6 @@ h1{display:none;}
   .scene-character{max-width:44%;}
 }
 
-/* Gün sayacı — oyun ekranının sağ üst köşesinde */
 .stage-day-tag{
   position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
@@ -135,8 +125,6 @@ h1{display:none;}
   font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
 }
 
-/* Oyun ekranının (stage-frame) içinde, sağ altta duran harita/not defteri
-   butonları — büyütüldü, artık daha rahat tıklanıyor */
 .corner-icons{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;}
 .corner-icon-btn{
   width:8cqw;height:8cqw;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
@@ -144,8 +132,7 @@ h1{display:none;}
   }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
 .corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
-/* Tam ekran düğmesi — mobilde tarayıcı çubuğunu gizleyip oyunun tüm
-   ekranı kaplamasını sağlar. stage-frame'in İÇİNDE, her zaman sabit. */
+
 .tam-ekran-btn{
   position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:999;  
   width:4.2cqw;height:4.2cqw;border-radius:6px;
@@ -204,13 +191,8 @@ h1{display:none;}
 
 .tv-screen video, .tv-screen{width:100%;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:#000;margin-bottom:10px;display:block;}
 
-/* ---- İFADE ZAPTI: liste + okuyucu ---- */
 .modal.wide{max-width:640px;}
 
-/* ---- İFADE ZAPTI: TAM EKRAN, ÇERÇEVESİZ GÖRÜNÜM
-   (index.html'deki Ali İhsan popup'ıyla birebir aynı görsel dil) ----
-   Sadece: yanlarda ok, ortada büyük görsel, altta tek "Sorguyu Oynat"
-   butonu, köşede X. Ayrı bir kutu/çerçeve yok, kaydırma yok. */
 .modal-bg.reader-mode{ padding:0; }
 .modal.reader{
   background:none;border:none;box-shadow:none;
@@ -246,11 +228,9 @@ h1{display:none;}
   cursor:pointer;z-index:8;
 }
 
-/* Eski (küçük) ifade kartı görseli — openPhoto() gibi başka yerlerde hâlâ kullanılıyor */
 .reader-card-img{max-width:100%;max-height:42vh;width:auto;height:auto;object-fit:contain;
   border-radius:6px;display:block;margin:0 auto 12px;background:#1a1b15;}
 
-/* ---- GÜN GEÇİŞİ EKRANI ---- */
 .sleep-overlay{
   position:fixed;inset:0;background:#0a0b08;display:none;align-items:center;justify-content:center;
   z-index:60;text-align:center;padding:30px;
@@ -263,9 +243,6 @@ h1{display:none;}
 .sleep-overlay button{background:var(--amber);border:none;padding:10px 22px;border-radius:6px;
   color:#171712;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
 
-/* ============================================================
-   HARİTA MEKANİĞİ
-   ============================================================ */
 .map-overlay{
   position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
   align-items:stretch;justify-content:center;z-index:70;
@@ -300,9 +277,6 @@ h1{display:none;}
 }
 .map-hotspot:hover .map-hotspot-label{opacity:1;}
 
-/* ============================================================
-   NOT DEFTERİ MEKANİĞİ
-   ============================================================ */
 .notebook-overlay{
   position:absolute;inset:0;background:rgba(6,6,5,.92);display:none;
   align-items:stretch;justify-content:center;z-index:70;
@@ -334,36 +308,21 @@ h1{display:none;}
   color:#c98a2c;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
 }
 
-/* Not defterine yazılan HER ŞEY el yazısı fontuyla — okunaklı ama samimi.
-   overflow:hidden — JS tarafı zaten alan dolunca yazmayı durduruyor,
-   bu satır o an oluşabilecek kaydırma çubuğu titremesini de engelliyor. */
 .nb-yazi{
   position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;
   resize:none;outline:none;overflow:hidden;font-family:'Caveat',cursive;font-weight:600;
   color:#2b2018;padding:2px 6px;
 }
 
-/* SAĞ SAYFA — tamamen serbest not alanı. Font büyütüldü: 19px → 23px.
-   Varsayılan konum değerleri case.json → notebook → pageSag'dan JS ile
-   üzerine yazılır (konum: index.html'deki #nbPageSag elementine JS tarafından
-   inline style olarak uygulanır — bu CSS sadece case.json okunamazsa devreye
-   giren güvenlik ağı). */
 .nb-page.sag{position:absolute;top:6%;bottom:8%;left:58%;width:34%;}
 .nb-page.sag .nb-yazi{font-size:23px;line-height:1.45;padding:4px 8px 4px 14px;}
 
-/* SOL SAYFA — 2 sabit şüpheli satırı. Fotoğraf+isim CASE.notebook.suspects'tan
-   gelir ve sabittir; altlarındaki/yanlarındaki TÜM alan serbest yazı alanıdır.
-   Not fontu büyütüldü: 14px → 17px. İsim etiketi büyütüldü: 16px → 19px.
-   Konum değerleri case.json → notebook → suspectLayout içinden JS tarafından
-   her render'da inline style ile üzerine yazılır (bkz. engine.js
-   renderNotebookPage()) — buradaki değerler sadece güvenlik ağı. */
 .nb-page.sol{position:absolute;top:6%;bottom:8%;left:14%;width:30%;
   display:flex;flex-direction:column;justify-content:space-between;gap:4%;}
 .nb-suspect-row{position:relative;height:48%;}
 .nb-suspect-notes{position:absolute;top:32%;left:52%;width:46%;height:60%;}
 .nb-suspect-notes .nb-yazi{font-size:17px;line-height:1.25;padding:2px 4px;}
 
-/* Fotoğraf+isim: tıklanamaz bir katman olarak notların ÜSTÜNDE durur. */
 .nb-suspect-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;}
 .nb-suspect-photo {
   position: absolute;
@@ -392,14 +351,9 @@ h1{display:none;}
   color:#6b4a30;font-size:7px;font-family:var(--mono);padding:3px;white-space:pre-line;
 }
 
-/* TEK BÜYÜK ÇİZİM KATMANI — tüm çift sayfayı (notebook-img-wrap'ın tamamını)
-   kaplar, "Çiz" modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir.
-   touch-action:none — mobilde çizerken tarayıcının aynı hareketi sayfa
-   kaydırma olarak yorumlayıp ekranı titretmesini engeller. */
 .nb-canvas-full{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;z-index:10;touch-action:none;}
 .nb-canvas-full.pasif{pointer-events:none;}
 
-/* Defterin kenarlarından sayfa çevirme okları */
 .nb-edge-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
   width:4.8cqw;height:4.8cqw;border-radius:50%;
@@ -424,8 +378,6 @@ h1{display:none;}
 .nb-renk-btn{width:22px;height:22px;border-radius:50%;border:2px solid #3a3b30;cursor:pointer;padding:0;}
 .nb-renk-btn.aktif{border-color:var(--amber-bright);box-shadow:0 0 0 2px rgba(227,169,74,.4);}
 
-/* Telefon dikey tutulunca oyunu zorla döndürmek yerine, kullanıcıdan
-   telefonu çevirmesini isteyen basit bir ekran gösteriyoruz. */
 .donme-uyarisi{
   display:none;
   position:fixed;inset:0;z-index:9999;
@@ -445,9 +397,6 @@ h1{display:none;}
 .zoom-wrap{ overflow:hidden; touch-action:none; cursor:zoom-in; }
 .zoom-wrap img, .zoom-wrap .doc-img{ transform-origin:center center; will-change:transform; }
 
-/* ============================================================
-   SON GÜN — SUÇLAMA / OYUN SONU KATMANI
-   ============================================================ */
 .suclama-overlay{
   position:absolute;inset:0;background:#050403;display:none;
   z-index:200;align-items:center;justify-content:center;flex-direction:column;
@@ -480,3 +429,50 @@ h1{display:none;}
 }
 .suclama-credits{color:#c9cabd;font-family:var(--sans);font-size:14px;line-height:1.8;margin-bottom:6px;}
 .suclama-gorsel{ width:100%;height:100%;object-fit:contain;display:block;border-radius:4px;background:transparent; }
+
+/* ============================================================
+   VFX & ATMOSFER KATMANLARI - Sislidere Köyü Davası (v3 - Entegre)
+   ============================================================ */
+
+/* 1. Canvas Katmanı (Toz, Un, Kıvılcım Parçacıkları) */
+.vfx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* 2. Dinamik Işık / Gaz Lambası Titremesi */
+.vfx-flicker-light {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  mix-blend-mode: screen;
+}
+
+@keyframes vfxSlowFlicker {
+  0% { opacity: 0.50; transform: translate(-50%, -50%) scale(0.94); }
+  35% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.02); }
+  70% { opacity: 0.58; transform: translate(-50%, -50%) scale(0.97); }
+  100% { opacity: 0.68; transform: translate(-50%, -50%) scale(1.00); }
+}
+
+/* 3. Hareketli Sis Katmanı (Merkez Meydan) */
+.vfx-fog-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: radial-gradient(circle at 50% 75%, rgba(220, 210, 190, 0.25), transparent 70%);
+  opacity: 0.60;
+  animation: sisKayma 18s linear infinite alternate;
+}
+
+@keyframes sisKayma {
+  0% { transform: translateX(-4%) scale(1); opacity: 0.45; }
+  100% { transform: translateX(4%) scale(1.08); opacity: 0.70; }
+}
