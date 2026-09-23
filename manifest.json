@@ -6,7 +6,7 @@
   "background_color": "#0a0806",
   "theme_color": "#0a0806",
   "icons": [
-    { "src": "assets/arayuz/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/arayuz/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }

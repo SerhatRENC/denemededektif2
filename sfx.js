@@ -32,7 +32,7 @@ const SFX = (function () {
       }
     }
 
-    // Eski ses yumuşakça fade-out olsun
+    // Eski ses yumuşakça fads-out olsun
     if (currentAmbience) {
       let oldAudio = currentAmbience;
       let fadeOut = setInterval(() => {
@@ -58,7 +58,7 @@ const SFX = (function () {
             clearInterval(fadeIn);
           }
         }, 50);
-      }).catch(() => {});
+      }).catch(() => {}); // Kullanıcı henüz ekrana dokunmadıysa tarayıcı engeline takılmaması için
     }
   }
 

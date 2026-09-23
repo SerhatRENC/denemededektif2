@@ -1,5 +1,6 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Yeni Yollar & Tıklanabilir Karakterler)
+   ODA MOTORU — bu dosyayı değiştirmene gerek yok.
+   Tüm içerik case.json içinden okunuyor.
    ============================================================ */
 
 let CASE = null;
@@ -16,6 +17,7 @@ fetch('case.json')
     document.getElementById('caseTitle').textContent = CASE.title || '';
     currentRoom = CASE.startRoom;
 
+    // localStorage'dan kaldığı yerden devam et
     const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
     const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
     currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
@@ -27,26 +29,15 @@ fetch('case.json')
   })
   .catch(err => {
     document.getElementById('stage').innerHTML =
-      '<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">case.json okunamadı.</div>';
+      '<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">case.json okunamadı. Aynı klasörde olduğundan ve bir local server üzerinden açtığından emin ol (dosyayı doğrudan çift tıklayarak açarsan fetch çalışmaz — VSCode "Live Server" eklentisi veya GitHub Pages kullan).</div>';
     console.error(err);
   });
 
-/* ---------- KÖŞE BUTON YARDIMCISI ---------- */
-function kosePop(btn, ac, ses) {
-  if (typeof calSes === 'function' && ses) calSes(ses);
-  if (btn && btn.classList) {
-    btn.classList.add('tiklandi');
-    setTimeout(() => btn.classList.remove('tiklandi'), 260);
-  }
-  if (typeof ac === 'function') setTimeout(ac, 90);
-}
-
-/* ---------- ODA ÇİZİMİ ---------- */
+/* ---------- oda çizimi ---------- */
 function renderRoom() {
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
   stage.classList.add('fading');
-
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
 
@@ -118,11 +109,12 @@ function renderRoom() {
         ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
         : '';
       el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-      el.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+      el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
       stage.appendChild(el);
     });
 
     renderCharacter();
+
     stage.classList.remove('fading');
   }, 180);
 }
@@ -149,15 +141,7 @@ function openPhoto(src) {
 }
 
 function updateDayBadge() {
-  const badge = document.getElementById('dayBadge');
-  if (badge) {
-    if (badge.tagName === 'IMG') {
-      badge.src = `assets/arayuz/takvim_gun${currentDay}.webp`;
-      badge.alt = `Gün ${currentDay}`;
-    } else {
-      badge.textContent = `GÜN ${currentDay}`;
-    }
-  }
+  document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
 }
 
 function confirmSleep() {
@@ -188,7 +172,6 @@ function wakeUp() {
   renderRoom();
 }
 
-/* ---------- FİNAL SUÇLAMA SİSTEMİ ---------- */
 function dosyaAdiNormalle(str) {
   return str.toLocaleLowerCase('tr-TR')
     .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
@@ -216,27 +199,37 @@ function finalSuclamayaBaslat() {
 }
 
 function suphesecildi(isim) {
-  const normIsim = dosyaAdiNormalle(isim);
+  const finalDosyaMap = {
+    'ansel': 'ansel_final_sorgu.png',
+    'aylin': 'aylin_fnal_srogu.png',
+    'cabbar': 'cabbar_final_srogu.png',
+    'cevdet': 'cevdet_final_sorgu.png',
+    'halit': 'halit_final_sorgu.png',
+    'kamuran': 'kamuran_final_srogu.png',
+    'mustafa': 'mustafa_final_sorgu.png',
+    'nadire': 'nadire_final_sorgu.png',
+    'riza': 'riza_final_sorgu.png'
+  };
+
+  const key = dosyaAdiNormalle(isim);
+  const dosyaAdi = finalDosyaMap[key] || `${key}_final_sorgu.png`;
+  const dosya = `assets/sorgu/final_sorgu/${dosyaAdi}`;
+
   if (isim === 'Mustafa') {
-    const dosya = 'assets/sorgu/final_sorgu/mustafa_final_sorgu.png';
     suclamaGoster(`
       <div class="zoom-wrap" style="width:70vw;height:80vh;">
-        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı">
+        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı"
+             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
       </div>
       <button class="suclama-devam-btn" onclick="oyunKazanildi()">Devam Et</button>
     `);
     const itirafImg = document.getElementById('itirafZoomImg');
     if (itirafImg) zoomKur(itirafImg.parentElement, itirafImg);
   } else {
-    let dosyaIsmi = `${normIsim}_final_sorgu.png`;
-    if (normIsim === 'aylin') dosyaIsmi = 'aylin_fnal_srogu.png';
-    if (normIsim === 'cabbar') dosyaIsmi = 'cabbar_final_srogu.png';
-    if (normIsim === 'kamuran') dosyaIsmi = 'kamuran_final_srogu.png';
-
-    const dosya = `assets/sorgu/final_sorgu/${dosyaIsmi}`;
     suclamaGoster(`
       <div class="zoom-wrap" style="width:70vw;height:80vh;">
-        <img class="suclama-gorsel" id="sorguZoomImg" src="${dosya}" alt="${isim} - Sorgu">
+        <img class="suclama-gorsel" id="sorguZoomImg" src="${dosya}" alt="${isim} - Sorgu"
+             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
       </div>
       <button class="suclama-devam-btn" onclick="oyunKaybedildi()">Devam Et</button>
     `);
@@ -280,7 +273,6 @@ function oyunuSifirla() {
   window.location.href = 'index.html';
 }
 
-/* ---------- İFADE DOSYALARI VE OKUYUCU ---------- */
 let currentStatementIndex = 0;
 
 function openStatement(index) {
@@ -303,7 +295,6 @@ function openStatement(index) {
     <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
-
   document.getElementById('modalBody').classList.add('reader');
   document.getElementById('modalBg').classList.add('reader-mode');
   const sImg = document.getElementById('statementZoomImg');
@@ -334,10 +325,8 @@ function stopStatementAudio() {
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }
 }
 
-/* ---------- ETKİLEŞİM VE İNCELEME ---------- */
 function openExamine(itemId) {
-  const item = CASE.items && CASE.items[itemId];
-  if (!item) return;
+  const item = CASE.items[itemId];
   const imgHtml = item.image
     ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
     : `<div class="doc-fallback">görsel yok</div>`;
@@ -379,12 +368,11 @@ function collect(collectId, image) {
   renderRoom();
 }
 
-function renderInventory() {
+function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
-  if (!inv) return;
   if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
   inv.innerHTML = '';
-  inventory.forEach(() => {
+  inventory.forEach(id => {
     const el = document.createElement('div');
     el.className = 'inv-item';
     el.textContent = '📄';
@@ -393,8 +381,7 @@ function renderInventory() {
 }
 
 function openTV(deviceId) {
-  const dev = CASE.devices && CASE.devices[deviceId];
-  if (!dev) return;
+  const dev = CASE.devices[deviceId];
   showModal(`
     <h3>${dev.title}</h3>
     <video class="tv-screen" controls ${dev.autoplay ? 'autoplay' : ''}>
@@ -407,8 +394,7 @@ function openTV(deviceId) {
 
 let tapeAudio = null, tapeInterval = null, tapePlaying = false, tapeSeconds = 0;
 function openRecorder(deviceId) {
-  const dev = CASE.devices && CASE.devices[deviceId];
-  if (!dev) return;
+  const dev = CASE.devices[deviceId];
   showModal(`
     <h3>${dev.title}</h3>
     <div class="recorder">
@@ -428,21 +414,18 @@ function toggleTape() {
   const reelL = document.getElementById('reelL'), reelR = document.getElementById('reelR');
   if (tapePlaying) {
     tapeAudio.play().catch(()=>{});
-    if (btn) { btn.textContent = '⏸'; btn.classList.add('active'); }
-    if (reelL) reelL.classList.add('spin');
-    if (reelR) reelR.classList.add('spin');
+    btn.textContent = '⏸'; btn.classList.add('active');
+    reelL.classList.add('spin'); reelR.classList.add('spin');
     tapeInterval = setInterval(() => {
       tapeSeconds++;
       const m = String(Math.floor(tapeSeconds/60)).padStart(2,'0');
       const s = String(tapeSeconds%60).padStart(2,'0');
-      const counter = document.getElementById('counter');
-      if (counter) counter.textContent = `${m}:${s}`;
+      document.getElementById('counter').textContent = `${m}:${s}`;
     }, 1000);
   } else {
     tapeAudio.pause();
-    if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
-    if (reelL) reelL.classList.remove('spin');
-    if (reelR) reelR.classList.remove('spin');
+    btn.textContent = '▶'; btn.classList.remove('active');
+    reelL.classList.remove('spin'); reelR.classList.remove('spin');
     clearInterval(tapeInterval);
   }
 }
@@ -455,68 +438,60 @@ function showModal(html, wide) {
   bg.classList.remove('reader-mode');
   bg.classList.add('active');
 }
-
 function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
   stopStatementAudio();
-  const bg = document.getElementById('modalBg');
-  if (bg) {
-    bg.classList.remove('active');
-    bg.classList.remove('reader-mode');
-  }
+  document.getElementById('modalBg').classList.remove('active');
+  document.getElementById('modalBg').classList.remove('reader-mode');
 }
 document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
 
-/* ---------- KALİBRASYON KONTROLLERİ ---------- */
 const calibToggle = document.getElementById('calibToggle');
 const stageEl = document.getElementById('stage');
 const readout = document.getElementById('calibReadout');
 
-if (calibToggle && stageEl) {
-  calibToggle.onclick = () => {
-    calibMode = !calibMode;
+calibToggle.onclick = () => {
+  calibMode = !calibMode;
+  calibClicks = [];
+  calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
+  calibToggle.classList.toggle('on', calibMode);
+  stageEl.classList.toggle('calib-active', calibMode);
+  readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
+};
+
+stageEl.addEventListener('click', (e) => {
+  if (!calibMode) return;
+  const rect = stageEl.getBoundingClientRect();
+  const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+  const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+
+  const marker = document.createElement('div');
+  marker.className = 'calib-marker';
+  marker.style.left = xPct + '%';
+  marker.style.top = yPct + '%';
+  stageEl.appendChild(marker);
+
+  calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
+
+  if (calibClicks.length === 2) {
+    const [p1, p2] = calibClicks;
+    const x = Math.min(p1.x, p2.x).toFixed(1);
+    const y = Math.min(p1.y, p2.y).toFixed(1);
+    const w = Math.abs(p2.x - p1.x).toFixed(1);
+    const h = Math.abs(p2.y - p1.y).toFixed(1);
+    const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
+    readout.textContent = snippet;
+    console.log('Hotspot koordinatı:', snippet);
     calibClicks = [];
-    calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
-    calibToggle.classList.toggle('on', calibMode);
-    stageEl.classList.toggle('calib-active', calibMode);
-    if (readout) readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
-  };
+    setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
+  } else {
+    readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
+  }
+});
 
-  stageEl.addEventListener('click', (e) => {
-    if (!calibMode) return;
-    const rect = stageEl.getBoundingClientRect();
-    const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-    const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-
-    const marker = document.createElement('div');
-    marker.className = 'calib-marker';
-    marker.style.left = xPct + '%';
-    marker.style.top = yPct + '%';
-    stageEl.appendChild(marker);
-
-    calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
-
-    if (calibClicks.length === 2) {
-      const [p1, p2] = calibClicks;
-      const x = Math.min(p1.x, p2.x).toFixed(1);
-      const y = Math.min(p1.y, p2.y).toFixed(1);
-      const w = Math.abs(p2.x - p1.x).toFixed(1);
-      const h = Math.abs(p2.y - p1.y).toFixed(1);
-      const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
-      if (readout) readout.textContent = snippet;
-      console.log('Hotspot koordinatı:', snippet);
-      calibClicks = [];
-      setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
-    } else {
-      if (readout) readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
-    }
-  });
-}
-
-/* ---------- HARİTA SİSTEMİ ---------- */
 function openMap() {
-  if (!CASE || !CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil.'); return; }
+  if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
   document.getElementById('mapImage').src = CASE.map.image;
 
   const wrap = document.getElementById('mapHotspots');
@@ -541,12 +516,10 @@ function openMap() {
 
   document.getElementById('mapOverlay').classList.add('active');
 }
-
 function closeMap() {
   document.getElementById('mapOverlay').classList.remove('active');
 }
 
-/* ---------- NOT DEFTERİ SİSTEMİ ---------- */
 let notebookState = null;
 let notebookMod = 'yaz';
 let notebookRenk = '#1a1a1a';
@@ -565,7 +538,6 @@ function loadNotebook() {
     }))
   };
 }
-
 function saveNotebook() {
   localStorage.setItem(notebookKey(), JSON.stringify(notebookState));
 }
@@ -581,35 +553,29 @@ function openNotebook() {
   const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
   const solEl = document.getElementById('nbPageSol');
   const sagEl = document.getElementById('nbPageSag');
-
   ['top', 'bottom', 'left', 'width'].forEach(k => {
-    if (pageSol[k] && solEl) solEl.style[k] = pageSol[k];
-    if (pageSag[k] && sagEl) sagEl.style[k] = pageSag[k];
+    if (pageSol[k]) solEl.style[k] = pageSol[k];
+    if (pageSag[k]) sagEl.style[k] = pageSag[k];
   });
 
-  if (nbImg) {
-    nbImg.style.display = '';
-    if (nbFallback) nbFallback.style.display = 'none';
-    nbImg.onerror = () => {
-      nbImg.style.display = 'none';
-      if (nbFallback) {
-        nbFallback.style.display = 'flex';
-        nbFallback.textContent = `görsel bulunamadı: ${src}`;
-      }
-    };
-    nbImg.onload = () => {
-      if (nbImg.naturalWidth && nbImg.naturalHeight && nbWrap) {
-        nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
-      }
-      renderNotebookPage();
-    };
-    nbImg.src = src;
-  }
+  nbImg.style.display = '';
+  nbFallback.style.display = 'none';
+  nbImg.onerror = () => {
+    nbImg.style.display = 'none';
+    nbFallback.style.display = 'flex';
+    nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
+  };
+  nbImg.onload = () => {
+    if (nbImg.naturalWidth && nbImg.naturalHeight) {
+      nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
+    }
+    renderNotebookPage();
+  };
+  nbImg.src = src;
 
   document.getElementById('notebookOverlay').classList.add('active');
   requestAnimationFrame(renderNotebookPage);
 }
-
 function closeNotebook() {
   document.getElementById('notebookOverlay').classList.remove('active');
 }
@@ -620,7 +586,6 @@ const NB_SOL_SATIRLAR = [
 ];
 
 function renderNotebookPage() {
-  if (!notebookState) return;
   const total = notebookState.pages.length;
   const p = notebookState.pages[notebookState.page];
   const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
@@ -642,51 +607,49 @@ function renderNotebookPage() {
     const nameEl = document.getElementById(satir.nameId);
     const notesEl = document.getElementById(satir.notesId);
 
-    if (nameEl) { nameEl.style.top = nameTop; nameEl.style.left = nameLeft; }
-    if (notesEl) { notesEl.style.top = noteTop; notesEl.style.left = noteLeft; notesEl.style.width = noteWidth; notesEl.style.height = noteHeight; }
+    nameEl.style.top = nameTop;
+    nameEl.style.left = nameLeft;
+    notesEl.style.top = noteTop;
+    notesEl.style.left = noteLeft;
+    notesEl.style.width = noteWidth;
+    notesEl.style.height = noteHeight;
+    if (photoEl.tagName === 'IMG') {
+      photoEl.style.top = photoTop;
+      photoEl.style.left = photoLeft;
+      photoEl.style.height = photoHeight;
+      photoEl.style.width = 'auto';
+    }
 
-    if (photoEl) {
-      if (photoEl.tagName === 'IMG') {
-        photoEl.style.top = photoTop;
-        photoEl.style.left = photoLeft;
-        photoEl.style.height = photoHeight;
-        photoEl.style.width = 'auto';
-      }
-
-      if (suspect) {
-        if (nameEl) nameEl.textContent = suspect.name;
-        photoEl.style.display = '';
-        photoEl.onerror = () => {
-          const fallback = document.createElement('div');
-          fallback.className = 'nb-suspect-photo-missing';
-          fallback.id = photoEl.id;
-          fallback.textContent = `görsel yok:\n${suspect.image}`;
-          photoEl.replaceWith(fallback);
-        };
-        photoEl.src = suspect.image;
-      } else {
-        if (nameEl) nameEl.textContent = '';
-        photoEl.style.display = 'none';
-      }
+    if (suspect) {
+      nameEl.textContent = suspect.name;
+      photoEl.style.display = '';
+      photoEl.onerror = () => {
+        const fallback = document.createElement('div');
+        fallback.className = 'nb-suspect-photo-missing';
+        fallback.id = photoEl.id;
+        fallback.style.top = photoTop;
+        fallback.style.left = photoLeft;
+        fallback.style.height = photoHeight;
+        fallback.textContent = `görsel yok:\n${suspect.image}`;
+        photoEl.replaceWith(fallback);
+      };
+      photoEl.src = suspect.image;
+    } else {
+      nameEl.textContent = '';
+      photoEl.style.display = 'none';
     }
 
     const yaziEl = document.getElementById(satir.yaziId);
-    if (yaziEl) yaziEl.value = p[satir.taraf] || '';
+    yaziEl.value = p[satir.taraf] || '';
   });
 
-  const sagYazi = document.getElementById('nbYaziSag');
-  if (sagYazi) sagYazi.value = p.sag || '';
+  document.getElementById('nbYaziSag').value = p.sag || '';
 
-  const canvas = document.getElementById('nbCanvasFull');
-  if (canvas) canvasResizeVeCiz(canvas, p.pageDrawing);
+  canvasResizeVeCiz(document.getElementById('nbCanvasFull'), p.pageDrawing);
 
-  const sayfaGost = document.getElementById('nbSayfaGöstergesi');
-  if (sayfaGost) sayfaGost.textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
-
-  const btnGeri = document.getElementById('nbEdgeGeri');
-  const btnIleri = document.getElementById('nbEdgeIleri');
-  if (btnGeri) btnGeri.disabled = notebookState.page === 0;
-  if (btnIleri) btnIleri.disabled = notebookState.page === total - 1;
+  document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
+  document.getElementById('nbEdgeGeri').disabled = notebookState.page === 0;
+  document.getElementById('nbEdgeIleri').disabled = notebookState.page === total - 1;
 }
 
 function canvasResizeVeCiz(canvas, dataURL) {
@@ -713,7 +676,6 @@ function notebookYaziKaydet(taraf, el) {
 function notebookSayfaGeri() {
   if (notebookState.page > 0) { notebookState.page--; saveNotebook(); renderNotebookPage(); }
 }
-
 function notebookSayfaIleri() {
   if (notebookState.page < notebookState.pages.length - 1) { notebookState.page++; saveNotebook(); renderNotebookPage(); }
 }
@@ -728,21 +690,20 @@ function notebookTemizle() {
 
 function notebookModAyarla(mod) {
   notebookMod = mod;
-  document.getElementById('nbModYaz')?.classList.toggle('active', mod === 'yaz');
-  document.getElementById('nbModCiz')?.classList.toggle('active', mod === 'ciz');
-  document.getElementById('nbModSil')?.classList.toggle('active', mod === 'sil');
-  document.getElementById('nbCanvasFull')?.classList.toggle('pasif', mod === 'yaz');
+  document.getElementById('nbModYaz').classList.toggle('active', mod === 'yaz');
+  document.getElementById('nbModCiz').classList.toggle('active', mod === 'ciz');
+  document.getElementById('nbModSil').classList.toggle('active', mod === 'sil');
+  document.getElementById('nbCanvasFull').classList.toggle('pasif', mod === 'yaz');
   document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
 
 function notebookRenkSec(renk) {
   notebookRenk = renk;
-  document.getElementById('nbRenkSiyah')?.classList.toggle('aktif', renk === '#1a1a1a');
-  document.getElementById('nbRenkKirmizi')?.classList.toggle('aktif', renk === '#8f2a1e');
+  document.getElementById('nbRenkSiyah').classList.toggle('aktif', renk === '#1a1a1a');
+  document.getElementById('nbRenkKirmizi').classList.toggle('aktif', renk === '#8f2a1e');
 }
 
 function nbKalemKur(canvas, taraf) {
-  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let çiziyor = false;
 
@@ -781,11 +742,8 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
 }
+nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
-const canvasFullEl = document.getElementById('nbCanvasFull');
-if (canvasFullEl) nbKalemKur(canvasFullEl, 'pageDrawing');
-
-/* ---------- KARAKTER VE DİYALOG SİSTEMİ ---------- */
 let characterAudio = null;
 let dialogueActive = false;
 let dialogIndex = 0;
@@ -799,19 +757,6 @@ function renderCharacter() {
   if (!ch) return;
 
   const stage = document.getElementById('stage');
-
-  // Tıklanabilir Şeffaf Katman Görseli Varsa
-  if (ch.clickableImage) {
-    const clickOverlay = document.createElement('img');
-    clickOverlay.id = 'roomCharOverlay';
-    clickOverlay.className = 'room-character-overlay';
-    clickOverlay.src = ch.clickableImage;
-    clickOverlay.alt = ch.name;
-    clickOverlay.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
-    stage.appendChild(clickOverlay);
-  }
-
-  // Ana Karakter Görseli
   const el = document.createElement('img');
   el.id = 'sceneCharacter';
   el.className = 'scene-character';
@@ -832,6 +777,7 @@ function renderCharacter() {
 }
 
 function toggleCharacterLine(ch) {
+  const stage = document.getElementById('stage');
   const charEl = document.getElementById('sceneCharacter');
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
 
@@ -850,7 +796,8 @@ function toggleCharacterLine(ch) {
       if (characterAudio) { characterAudio.pause(); characterAudio = null; }
       const sub = document.getElementById('sceneSubtitle');
       if (sub) sub.remove();
-      if (charEl) charEl.classList.remove('talking');
+      const c = document.getElementById('sceneCharacter');
+      if (c) c.remove();
       dialogueActive = false;
       return;
     }
@@ -871,7 +818,6 @@ function gosterDialogSatiri(dialog) {
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
-/* ---------- GÖRSEL ZOOM MOTORU ---------- */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;

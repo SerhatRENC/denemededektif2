@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=14">
 <link rel="stylesheet" href="ogretici.css?v=9">
 <link rel="stylesheet" href="vfx.css">
 <script src="vfx.js"></script>
@@ -53,52 +53,52 @@
       <div class="notebook-overlay" id="notebookOverlay">
         <button class="notebook-overlay-close" onclick="closeNotebook()">✕</button>
         <div class="notebook-scroll">
-          <div class="notebook-box">
-            <div class="notebook-img-wrap" id="notebookImgWrap">
-              <img id="notebookImage" src="" alt="Not Defteri">
-              <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
+        <div class="notebook-box">
+          <div class="notebook-img-wrap" id="notebookImgWrap">
+            <img id="notebookImage" src="" alt="Not Defteri">
+            <div class="notebook-img-fallback" id="notebookImgFallback" style="display:none;"></div>
 
-              <div class="nb-page sol" id="nbPageSol">
-                <div class="nb-suspect-row" id="nbRow0">
-                  <div class="nb-suspect-notes" id="nbNotesSolUst">
-                    <textarea class="nb-yazi" id="nbYaziSolUst" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solUst', this)"></textarea>
-                  </div>
-                  <div class="nb-suspect-overlay">
-                    <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
-                    <div class="nb-suspect-name" id="nbName0"></div>
-                  </div>
+            <div class="nb-page sol" id="nbPageSol">
+              <div class="nb-suspect-row" id="nbRow0">
+                <div class="nb-suspect-notes" id="nbNotesSolUst">
+                  <textarea class="nb-yazi" id="nbYaziSolUst" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solUst', this)"></textarea>
                 </div>
-                <div class="nb-suspect-row" id="nbRow1">
-                  <div class="nb-suspect-notes" id="nbNotesSolAlt">
-                    <textarea class="nb-yazi" id="nbYaziSolAlt" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solAlt', this)"></textarea>
-                  </div>
-                  <div class="nb-suspect-overlay">
-                    <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
-                    <div class="nb-suspect-name" id="nbName1"></div>
-                  </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto0" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName0"></div>
                 </div>
               </div>
-
-              <div class="nb-page sag" id="nbPageSag">
-                <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this)" placeholder="buraya not al..."></textarea>
+              <div class="nb-suspect-row" id="nbRow1">
+                <div class="nb-suspect-notes" id="nbNotesSolAlt">
+                  <textarea class="nb-yazi" id="nbYaziSolAlt" placeholder="buraya not alabilirsin..." oninput="notebookYaziKaydet('solAlt', this)"></textarea>
+                </div>
+                <div class="nb-suspect-overlay">
+                  <img class="nb-suspect-photo" id="nbPhoto1" src="" alt="">
+                  <div class="nb-suspect-name" id="nbName1"></div>
+                </div>
               </div>
-
-              <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
-
-              <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
-              <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
             </div>
-            <div class="notebook-toolbar">
-              <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla('yaz')">✎ Yaz</button>
-              <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla('ciz')">✏️ Çiz</button>
-              <button class="nb-btn" id="nbModSil" onclick="notebookModAyarla('sil')">🧽 Sil</button>
-              <div class="nb-renkler">
-                <button class="nb-renk-btn aktif" id="nbRenkSiyah" style="background:#1a1a1a" onclick="notebookRenkSec('#1a1a1a')" title="Siyah"></button>
-                <button class="nb-renk-btn" id="nbRenkKirmizi" style="background:#8f2a1e" onclick="notebookRenkSec('#8f2a1e')" title="Kırmızı"></button>
-              </div>
-              <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
+
+            <div class="nb-page sag" id="nbPageSag">
+              <textarea class="nb-yazi" id="nbYaziSag" oninput="notebookYaziKaydet('sag', this)" placeholder="buraya not al..."></textarea>
             </div>
+
+            <canvas class="nb-canvas-full pasif" id="nbCanvasFull"></canvas>
+
+            <button class="nb-edge-arrow nb-edge-left" id="nbEdgeGeri" onclick="notebookSayfaGeri()">‹</button>
+            <button class="nb-edge-arrow nb-edge-right" id="nbEdgeIleri" onclick="notebookSayfaIleri()">›</button>
           </div>
+          <div class="notebook-toolbar">
+            <button class="nb-btn active" id="nbModYaz" onclick="notebookModAyarla('yaz')">✎ Yaz</button>
+            <button class="nb-btn" id="nbModCiz" onclick="notebookModAyarla('ciz')">✏️ Çiz</button>
+            <button class="nb-btn" id="nbModSil" onclick="notebookModAyarla('sil')">🧽 Sil</button>
+            <div class="nb-renkler">
+              <button class="nb-renk-btn aktif" id="nbRenkSiyah" style="background:#1a1a1a" onclick="notebookRenkSec('#1a1a1a')" title="Siyah"></button>
+              <button class="nb-renk-btn" id="nbRenkKirmizi" style="background:#8f2a1e" onclick="notebookRenkSec('#8f2a1e')" title="Kırmızı"></button>
+            </div>
+            <span class="nb-sayfa-gösterge" id="nbSayfaGöstergesi">Sayfa 1 / 5</span>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -114,6 +114,14 @@
     </div>
   </div>
 
+  <div class="donme-uyarisi">
+    <div class="ikon">📱</div>
+    <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
+  </div>
+
+  <button class="calib-toggle" id="calibToggle">🎯 Kalibrasyon Modu: Kapalı</button>
+  <div class="calib-readout" id="calibReadout"></div>
+
   <div class="sleep-overlay" id="sleepOverlay">
     <div class="content">
       <div class="day-num" id="sleepDayNum">GÜN 2</div>
@@ -122,8 +130,174 @@
     </div>
   </div>
 
-  <script src="engine.js?v=15"></script>
+  <script src="engine.js?v=14"></script>
   <script src="ogretici.js?v=3"></script>
   <script src="yukleme.js?v=1"></script>
+  <script>
+    function hizalaSorguOklari() {
+      const img = document.getElementById('statementZoomImg');
+      const modal = document.getElementById('modalBody');
+      if (!img || !modal) return;
+      const sol = modal.querySelector('.reader-side-arrow.left');
+      const sag = modal.querySelector('.reader-side-arrow.right');
+      const imgRect = img.getBoundingClientRect();
+      const modalRect = modal.getBoundingClientRect();
+      if (sol) sol.style.left = Math.max(8, imgRect.left - modalRect.left - sol.offsetWidth * 0.5) + 'px';
+      if (sag) sag.style.right = Math.max(8, modalRect.right - imgRect.right - sag.offsetWidth * 0.5) + 'px';
+    }
+    window.addEventListener('resize', hizalaSorguOklari);
+    const _openStatementOrijinal = openStatement;
+    openStatement = function (index) {
+      _openStatementOrijinal(index);
+      const img = document.getElementById('statementZoomImg');
+      if (img) { if (img.complete) requestAnimationFrame(hizalaSorguOklari); else img.onload = hizalaSorguOklari; }
+    };
+
+    const IKON_BEKLEME_MS = 1000;
+    const ARKA_PLAN_YUKLEME = true;
+    const YURUME_SESI = 'assets/ses/yuru.mp3';
+
+    Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
+
+    function kosePop(btn, ac, ses) {
+      if (ses) calSes(ses);
+      btn.classList.add('tiklandi');
+      setTimeout(() => btn.classList.remove('tiklandi'), 260);
+      setTimeout(ac, 90);
+    }
+
+    const _updateDayBadgeOrijinal = updateDayBadge;
+    updateDayBadge = function () {
+      const rozet = document.getElementById('dayBadge');
+      rozet.src = 'assets/arayuz/takvim_gun' + currentDay + '.webp';
+      rozet.alt = 'Gün ' + currentDay;
+    };
+    document.getElementById('dayBadge').addEventListener('error', function () {
+      this.classList.add('yuklenemedi');
+    });
+    document.getElementById('dayBadge').addEventListener('load', function () {
+      this.classList.remove('yuklenemedi');
+    });
+
+    const _handleHotspotOrijinal = handleHotspot;
+    handleHotspot = function (h) {
+      if (h.icon) {
+        if (h.icon.endsWith('tokmak.webp')) calSes('kapi');
+        else if (h.icon.endsWith('geri.webp')) calSes('geri');
+        else if (h.icon.endsWith('ayak.webp') && h.label === 'Git') calSes('kapi_git');
+        else if (h.icon.endsWith('buyutec.webp')) calSes('incele');
+      }
+      if (h.type === 'dosya') calSes('harita');
+      _handleHotspotOrijinal(h);
+    };
+
+    document.getElementById('mapHotspots').addEventListener('click', (e) => {
+      if (e.target.closest('.map-hotspot')) calSes('kapi');
+    });
+
+    document.getElementById('modalBg').addEventListener('click', (e) => {
+      if (e.target.closest('.reader-side-arrow')) calSes('sayfa');
+    });
+
+    const _sleepOrijinal = sleep;
+    sleep = function () {
+      calSes('uyuma');
+      _sleepOrijinal();
+    };
+
+    const _wakeUpOrijinal = wakeUp;
+    wakeUp = function () {
+      calSes('sabah');
+      const parlak = document.createElement('div');
+      parlak.className = 'sabah-parlama';
+      document.getElementById('stageFrame').appendChild(parlak);
+      requestAnimationFrame(() => parlak.classList.add('aktif'));
+      _wakeUpOrijinal();
+      setTimeout(() => parlak.remove(), 1300);
+    };
+
+    const _renderRoomOrijinal = renderRoom;
+    let _odaJetonu = 0;
+    let _arkaPlanBasladi = false;
+
+    function _odaCiz() {
+      _renderRoomOrijinal();
+      Ogretici.kur({
+        sahne: document.getElementById('stageFrame'),
+        icerik: CASE.ogretici || {},
+        onek: CASE.caseLabel,
+        mevcut: () => currentRoom
+      });
+      Ogretici.iptal();
+      Ogretici.goster(currentRoom);
+
+      setTimeout(() => {
+        document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
+      }, 180 + IKON_BEKLEME_MS);
+
+      setTimeout(() => {
+        document.querySelectorAll('#stage img[alt="Geri dön"]').forEach(img => {
+          const kap = img.parentElement;
+          kap.style.width = '7.5%';
+          if (!kap.querySelector('.hotspot-pulse-label')) {
+            const et = document.createElement('div');
+            et.className = 'hotspot-pulse-label';
+            et.textContent = 'Geri';
+            kap.appendChild(et);
+          }
+        });
+      }, 220);
+
+      if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || document.getElementById('stage'));
+      if (typeof SFX !== 'undefined') SFX.play(currentRoom);
+
+      if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi) {
+        _arkaPlanBasladi = true;
+        Yukleme.arkaPlanda(_arkaPlanListesi());
+      }
+    }
+
+    function _arkaPlanListesi() {
+      const liste = [];
+      const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
+      const oncelik = ['masa', 'merkez'];
+      const sirali = oncelik.concat(Object.keys(CASE.rooms).filter(k => !oncelik.includes(k)));
+      sirali.forEach(k => {
+        const oda = CASE.rooms[k];
+        if (!oda) return;
+        ekle(oda.background);
+        if (oda.closedOnDays && oda.closedOnDays.includes(currentDay)) ekle(oda.closedImage);
+        if (CASE.characters && CASE.characters[k]) ekle(CASE.characters[k].image);
+      });
+      ekle(CASE.map && CASE.map.image);
+      ekle(CASE.notebook && CASE.notebook.image);
+      return liste;
+    }
+
+    renderRoom = function () {
+      const jeton = ++_odaJetonu;
+      const oda = CASE.rooms[currentRoom];
+      const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
+      const karakter = (!kapali && CASE.characters && CASE.characters[currentRoom]) ? CASE.characters[currentRoom].image : null;
+      Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
+        if (jeton !== _odaJetonu) return;
+        _odaCiz();
+      });
+    };
+
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
+      document.getElementById('tamEkranBtn').style.display = 'none';
+    }
+    document.getElementById('tamEkranBtn').addEventListener('click', () => {
+      const el = document.documentElement;
+      if (!document.fullscreenElement) {
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        if (req) req.call(el).catch(() => {});
+      } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (exit) exit.call(document).catch(() => {});
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,22 +1,43 @@
 /* ============================================================
-   ÖĞRETİCİ MODÜLÜ — Sislidere Köyü Davası
+   ÖĞRETİCİ MODÜLÜ — engine.js'ten bağımsız.
+   index.html (giriş sekansı) ve oyun.html (ana oyun) ikisi de kullanır.
+
+   Fikir: oyuncu bir ekrana/odaya İLK kez geldiğinde, o ekrana özel kısa bir
+   bilgi kartı çıkar. Kapat (✕) ya da "Anladım" ile kapanır; bir daha çıkmaz
+   (localStorage). Kartın metni kod içinde değil, "içerik" nesnesinde durur:
+     - oyun.html  → case.json içindeki "ogretici" bloğu
+     - index.html → kendi içindeki OGRETICI_ICERIK nesnesi
+
+   İçerik biçimi (hepsi isteğe bağlı, sadece baslik/metin bile yeter):
+     "oda_id": {
+       "baslik":  "Kartın başlığı",
+       "metin":   "Tek paragraf"  veya  ["paragraf 1", "paragraf 2"],
+       "maddeler":[ { "ikon": "assets/el.png", "baslik": "Bak", "metin": "açıklama" } ],
+       "demo":    { "karakter": "assets/karakterler/halit.png", "isim": "Halit",
+                    "satirlar": ["1. cümle", "2. cümle"] },   // "tıkla, tekrar tıkla" örneği
+       "vurgu":   [".css-secici"],   // kart açıkken bu öğelere parlayan halka eklenir
+       "konum":   "ust-orta" | "ust-sol" | "ust-sag" | "alt-orta" | "orta",
+       "gecikme": 800                // ms — ekran açıldıktan kaç ms sonra çıksın
+     }
+
+   Konsoldan test: Ogretici.sifirla()  → tüm öğreticiler tekrar "ilk kez" olur.
    ============================================================ */
 const Ogretici = (function () {
   const DEPO_ONEK = 'renc_ogretici_v1_';
-  let sahne = null;
+  let sahne = null;      // kartın ekleneceği kapsayıcı (stage-frame)
   let icerik = {};
-  let onek = 'oyun';
-  let mevcutFn = null;
+  let onek = 'oyun';     // localStorage anahtarı için oyun/vaka adı
+  let mevcutFn = null;   // '?' düğmesi için: şu anki oda id'sini döndüren fonksiyon
   let kart = null;
   let vurgular = [];
-  let bekleyen = null;
+  let bekleyen = null;   // gecikmeli gösterim için zamanlayıcı
 
   function depoAnahtar(k) { return DEPO_ONEK + onek + '_' + k; }
   function goruldu(k) {
     try { return localStorage.getItem(depoAnahtar(k)) === '1'; } catch (e) { return false; }
   }
   function gordu(k) {
-    try { localStorage.setItem(depoAnahtar(k), '1'); } catch (e) {}
+    try { localStorage.setItem(depoAnahtar(k), '1'); } catch (e) { /* özel gezinme vb. */ }
   }
 
   function kur(ayar) {
@@ -32,7 +53,7 @@ const Ogretici = (function () {
       <div class="ogr-demo">
         <div class="ogr-demo-sol">
           <img class="ogr-demo-kar" src="${d.karakter}" alt="">
-          <img class="ogr-demo-el" src="${d.el || 'assets/arayuz/el.webp'}" alt="">
+          <img class="ogr-demo-el" src="${d.el || 'assets/el.png'}" alt="">
         </div>
         <div class="ogr-demo-sag">
           <div class="ogr-demo-balon">
@@ -70,6 +91,7 @@ const Ogretici = (function () {
         '</div>';
     }
     html += '<button class="ogr-tamam" type="button">Anladım</button></div>';
+    // ✕ düğmesi kartın DIŞINA taşan bir çıkıntı (içerik kaydırılsa bile sabit kalır)
     html += '<button class="ogr-kapat" type="button" aria-label="Kapat">✕</button>';
 
     kart = document.createElement('div');
@@ -80,11 +102,12 @@ const Ogretici = (function () {
     kart.querySelector('.ogr-tamam').onclick = () => kapat();
     sahne.appendChild(kart);
 
+    // Vurgulanacak öğeler (ör. mors yazı alanı, köşedeki harita/defter ikonları)
     (veri.vurgu || []).forEach(sel => {
       sahne.querySelectorAll(sel).forEach(el => { el.classList.add('ogr-vurgu'); vurgular.push(el); });
     });
 
-    gordu(k);
+    gordu(k); // kart ekrana geldiği anda "görüldü" sayılır
   }
 
   function kapat() {
@@ -93,11 +116,13 @@ const Ogretici = (function () {
     vurgular = [];
   }
 
+  // Bekleyen kartı iptal eder, açık kart varsa kapatır (ekran/oda değişirken çağır)
   function iptal() {
     if (bekleyen) { clearTimeout(bekleyen); bekleyen = null; }
     kapat();
   }
 
+  // İlk kez görülüyorsa (ve içeriği varsa) kartı gecikmeyle gösterir
   function goster(anahtar, secenek) {
     const veri = icerik[anahtar];
     if (!veri || goruldu(anahtar)) return false;
@@ -108,6 +133,7 @@ const Ogretici = (function () {
     return true;
   }
 
+  // '?' düğmesi: görülmüş olsa bile şimdi göster. Odaya özel içerik yoksa "genel" kartı açılır.
   function yeniden(anahtar) {
     anahtar = anahtar || (mevcutFn ? mevcutFn() : null);
     const k = icerik[anahtar] ? anahtar : 'genel';
@@ -116,6 +142,7 @@ const Ogretici = (function () {
     ac(k, Object.assign({}, icerik[k], { konum: icerik[k].konum || 'orta' }));
   }
 
+  // Oyuncu zaten gösterilecek şeyi yaptıysa (ör. karaktere tıkladıysa) kartı "görüldü" say
   function isaretle(anahtar) { gordu(anahtar); }
 
   function sifirla() {
@@ -123,12 +150,18 @@ const Ogretici = (function () {
       Object.keys(localStorage)
         .filter(k => k.indexOf(DEPO_ONEK) === 0)
         .forEach(k => localStorage.removeItem(k));
-    } catch (e) {}
+    } catch (e) { /* yoksay */ }
   }
 
   return { kur, goster, yeniden, iptal, kapat, isaretle, sifirla };
 })();
 
+/* ============================================================
+   SES YARDIMCISI — hem index.html hem oyun.html kullanıyor.
+   assets/ses/<ad>.mp3 dosyasını bir kez çalar. Her çağrıda yeni bir Audio
+   nesnesi oluşturuluyor ki art arda hızlı tıklamalarda sesler birbirini
+   kesmesin.
+   ============================================================ */
 function calSes(ad) {
-  try { new Audio('assets/ses/' + ad + '.mp3').play().catch(() => {}); } catch (e) {}
+  try { new Audio('assets/ses/' + ad + '.mp3').play().catch(() => {}); } catch (e) { /* yoksay */ }
 }

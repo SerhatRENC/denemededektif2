@@ -1,9 +1,14 @@
 /* ============================================================
-   ÖĞRETİCİ STİLLERİ
+   ÖĞRETİCİ + TIKLANABİLİRLİK İPUÇLARI  (ogretici.js ile birlikte çalışır)
+   index.html ve oyun.html ikisi de bu dosyayı yükler.
+   style.css / engine.js'e dokunmaz.
    ============================================================ */
 
+/* cqw birimleri için sahne bir "container" olmalı.
+   oyun.html'de style.css zaten yapıyor; index.html'de bu satır sağlıyor. */
 #stage-frame, #stageFrame { container-type: inline-size; }
 
+/* ---------- ÖĞRETİCİ KARTI ---------- */
 .ogr-kart{
   position:absolute; z-index:45;
   width:46cqw; max-width:calc(100% - 4cqw);
@@ -20,8 +25,10 @@
   to{ opacity:1; transform:none; }
 }
 
+/* İçerik uzunsa kart değil, sadece içerik kayar; ✕ düğmesi kartın köşesinde sabit kalır */
 .ogr-icerik{ max-height:44cqw; overflow-y:auto; }
 
+/* konumlar — kart ortalanırken transform kullanılmıyor (giriş animasyonuyla çakışmasın diye) */
 .ogr-ust-orta{ top:3cqw; left:0; right:0; margin:0 auto; }
 .ogr-ust-sol { top:3cqw; left:8cqw; }
 .ogr-ust-sag { top:6cqw; right:3cqw; }
@@ -36,7 +43,7 @@
 
 .ogr-kapat{
   position:absolute; top:0; right:0; padding:0; z-index:1;
-  transform:translate(40%,-40%);
+  transform:translate(40%,-40%);   /* kartın sağ üst köşesinden dışarı taşar */
   width:clamp(30px,3.2cqw,42px); height:clamp(30px,3.2cqw,42px);
   border-radius:50%; background:#1c1d18; border:1px solid #c98a2c;
   color:#e3a94a; font-size:clamp(13px,1.6cqw,19px); line-height:1;
@@ -52,6 +59,7 @@
 }
 .ogr-tamam:hover{ background:#e3a94a; }
 
+/* ---------- İKON + AÇIKLAMA SATIRLARI ---------- */
 .ogr-maddeler{ display:grid; grid-template-columns:1fr; gap:.8cqw 1.6cqw; margin-top:.8cqw; }
 .ogr-maddeler.iki-sutun{ grid-template-columns:1fr 1fr; }
 .ogr-madde{ display:flex; align-items:center; gap:.9cqw; }
@@ -63,6 +71,7 @@
 @keyframes ogrIkonNabiz{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.1); } }
 .ogr-madde-metin b{ color:#e3a94a; font-weight:700; }
 
+/* ---------- SOHBET MİNİ ÖRNEĞİ (2 tık gösterir) ---------- */
 .ogr-demo{
   display:flex; align-items:center; gap:1.4cqw;
   margin-top:.8cqw; padding:.8cqw 1cqw;
@@ -97,6 +106,7 @@
   64%{ transform:translate(0,0) scale(1); }
 }
 
+/* ---------- VURGU HALKASI (öğretici açıkken gösterilen öğe) ---------- */
 .ogr-vurgu{ animation:ogrHalka 1.5s ease-in-out infinite; }
 .mors-yazi-alani.ogr-vurgu{ background:rgba(227,169,74,.16); border-radius:4px; }
 @keyframes ogrHalka{
@@ -104,12 +114,17 @@
   50%{ box-shadow:0 0 0 3px rgba(227,169,74,1), 0 0 16px 6px rgba(227,169,74,.5); }
 }
 
+/* ---------- KARAKTER PARILTISI (oyun.html: tıklanabilir karakterler) ----------
+   Renkli, çok hafif bir hale + yavaş bir nabız. Konuşma başlayınca (.talking)
+   engine'in kendi sabit parlaması devralır, nabız durur.
+   Üç drop-shadow her iki karede de aynı sayıda: tarayıcı böylece yumuşak geçiş yapar. */
 @keyframes ogrKarakterNabiz{
   0%,100%{ filter:drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 10px 25px rgba(0,0,0,.6)); }
   50%{     filter:drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 10px 25px rgba(0,0,0,.6)); }
 }
 .scene-character:not(.talking){ animation:ogrKarakterNabiz 2s ease-in-out infinite; }
 
+/* Hareket azaltma tercihi olan cihazlar için animasyonlar kapanır */
 @media (prefers-reduced-motion: reduce){
   .scene-character:not(.talking){
     animation:none;
@@ -118,15 +133,17 @@
   .ogr-ikon, .ogr-vurgu, .ogr-demo-el{ animation:none; }
 }
 
+/* ---------- GERİ DÜĞMESİ: koyu çerçeve ----------
+   Harita / not defteri düğmeleriyle aynı koyu kaplama; geri ikonu daha belirgin olsun.
+   Hem oyun.html (case.json'daki geri ikonları + kapalı kapı) hem index.html için geçerli. */
 .hotspot-pulse-wrap img[src$="geri.png"],
-.hotspot-pulse-wrap img[src$="geri.webp"],
-.nabiz-ikon-wrap img[src$="geri.png"],
-.nabiz-ikon-wrap img[src$="geri.webp"]{
+.nabiz-ikon-wrap img[src$="geri.png"]{
   box-sizing:border-box; padding:7%;
   background:#1c1d18; border:1px solid #3a3b30; border-radius:9px;
   box-shadow:0 3px 10px rgba(0,0,0,.6);
 }
 
+/* ---------- "(Mekana yürünüyor...)" KATMANI (yukleme.js) ---------- */
 .yuk-katman{
   position:absolute; inset:0; z-index:250; background:#050403;
   display:flex; align-items:center; justify-content:center;
@@ -140,12 +157,23 @@
 @keyframes yukNabiz{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
 @media (prefers-reduced-motion: reduce){ .yuk-metin{ animation:none; } }
 
+/* ============================================================
+   OYUN.HTML'E ÖZEL GÖRSEL DÜZELTMELER (#stageFrame ile kapsamlı,
+   index.html'in kendi #stage-frame'ini etkilemez)
+   ============================================================ */
+
+/* ---------- TAM EKRAN düğmesi: sol üstteki mekan etiketiyle çakışıyordu.
+   Kullanılmayan sol-alt köşeye (kalibrasyon çubuğunun eski yeri) taşındı. */
 #stageFrame .tam-ekran-btn{
+  /* mekan adı etiketinin (.room-label, üstte solda) hemen altına iner ki üst üste binmesin */
   top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
 }
 
+/* ---------- KÖŞE İKONLARI: kare kutu yerine, elde tutulan iki kağıt parçası hissi ----------
+   Harita hafif sola, not defteri hafif sağa yatık; üst üste biner, hover'da doğrulup büyür. */
 #stageFrame .corner-icons{ bottom:12px; right:12px; gap:3%; align-items:flex-end; }
 #stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.35em; }
+/* Kalın kutu YOK — sadece çok ince, yarı saydam bir zemin + yumuşak gölge (kontur değil) */
 #stageFrame .corner-icon-btn{
   width:19cqw; height:19cqw; min-width:88px; min-height:88px; max-width:152px; max-height:152px;
   background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:12px;
@@ -158,6 +186,8 @@
   font-family:var(--mono); font-size:clamp(24px,3.8cqw,32px); letter-spacing:.05em;
   color:var(--amber-bright); background:rgba(10,10,8,.7); padding:4px 14px; border-radius:5px;
 }
+/* Harita hafif sola, defter hafif sağa yatık — kesin sınıflarla, konuma bağlı
+   :first-child/:last-child yerine (sarmalayıcı div'ler yüzünden güvenilmezdi) */
 #stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-5deg); }
 #stageFrame .corner-icon-item.defter .corner-icon-btn{ transform:rotate(4deg); }
 #stageFrame .corner-icon-btn:hover,
@@ -168,6 +198,7 @@
 #stageFrame .corner-icon-btn:hover img,
 #stageFrame .corner-icon-btn.tiklandi img{ transform:rotate(90deg); }
 
+/* Açılan harita/defter: küçülmüş+saydam başlayıp büyüyerek beliriyor */
 #stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
 #stageFrame .map-box, #stageFrame .notebook-box{
   opacity:0; transform:scale(.88); transition:opacity .28s ease, transform .32s cubic-bezier(.22,1,.36,1);
@@ -176,8 +207,10 @@
   opacity:1; transform:scale(1);
 }
 
-#stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"],
-#stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{
+/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI (merkez) ----------
+   İsimler zaten hotspot-pulse-label ile geliyor (aynı "hafif" görünüm); tokmak
+   ikonuna hafif bir parıltı ekleniyor ki kapı olduğu belli olsun. */
+#stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(227,169,74,.55));
   animation:tokmakParilti 2.2s ease-in-out infinite;
 }
@@ -186,21 +219,23 @@
   50%{ filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 10px rgba(227,169,74,.75)); }
 }
 @media (prefers-reduced-motion: reduce){
-  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"],
-  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{ animation:none; }
+  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{ animation:none; }
 }
 
+/* ---------- GÜN SAYACI: takvim_gunN.png (kullanıcının kendi tasarımı) ---------- */
 #stageFrame .stage-day-tag{
   position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px;
-  width:clamp(55px,14.3cqw,101px); height:auto;
+  width:clamp(55px,14.3cqw,101px); height:auto;   /* PNG'nin kendi en-boy oranı korunur */
   z-index:15;
 }
+/* Görsel henüz yüklenmediyse (o güne ait PNG eksikse) kırık resim yerine sade bir rozet */
 #stageFrame .stage-day-tag.yuklenemedi{
   aspect-ratio:5/6; background:#1c1d18; border:1px solid var(--amber); border-radius:6px;
   display:flex; align-items:center; justify-content:center;
   color:var(--amber-bright); font-family:var(--mono); font-size:clamp(13px,2.1cqw,18px);
 }
 
+/* ---------- SORGU KAĞIDI OKUYUCUSU: ok/çarpı ikonları büyütüldü ---------- */
 #stageFrame .reader-close{
   width:clamp(34px,5.4cqw,48px); height:clamp(34px,5.4cqw,48px);
   font-size:clamp(20px,3.2cqw,34px);
@@ -210,18 +245,33 @@
   width:clamp(40px,6.8cqw,60px); height:clamp(40px,6.8cqw,60px);
   font-size:clamp(26px,4.6cqw,52px);
 }
+/* 70vw/80vh yerine çerçevenin kendi genişliğine göre eşdeğeri (80vh ≈ %45 çerçeve
+   genişliği, 16:9 sabit oran üzerinden hesaplandı) — inline stili ezmek için
+   aynı özgüllükte olmayan bir seçici yeterli değil, !important gerekiyor
+   (stil JS'ten satır-içi geliyor, en yüksek özgüllüğe sadece böyle erişilir). */
 #stageFrame .modal.reader .zoom-wrap{ width:70cqi !important; height:45cqi !important; }
 
+/* ---------- MEKAN İSMİ / ENVANTER / HOTSPOT ETİKETLERİ: %60 büyütüldü ----------
+   (.room-label, .inv-empty, .hotspot-pulse-label style.css'in kendi kuralları;
+   engine.js/style.css değişmeden burada daha yüksek özgüllükle eziliyor.) */
 #stageFrame .room-label{ font-size:16.8px; padding:7px 13px; }
 #stageFrame .inv-empty{ font-size:16px; padding:6px 11px; }
 #stageFrame .hotspot-pulse-label{ font-size:16px; padding:3px 10px; }
 
+/* ============================================================
+   UYKU / UYANMA GEÇİŞLERİ
+   sleep-overlay style.css'te display:none/flex ile açılıp kapanıyordu
+   (display değeri animasyonlanamaz) — burada opaklığa çevrildi ki
+   yumuşak kararsın/aydınlansın. #stageFrame DIŞINDA (tam ekranı kaplıyor,
+   bilerek), o yüzden kapsamsız (yalnızca oyun.html'de var).
+   ============================================================ */
 .sleep-overlay{
   display:flex !important; opacity:0; pointer-events:none;
   transition:opacity .6s ease;
 }
 .sleep-overlay.active{ opacity:1; pointer-events:auto; }
 
+/* Uyanınca kısa bir "sabah ışığı" parlaması — oyun.html'deki wakeUp() sarmalayıcısı ekliyor */
 #stageFrame .sabah-parlama{
   position:absolute; inset:0; z-index:300; pointer-events:none;
   background:radial-gradient(circle, #fff8e8 0%, #e9dcc0 75%);

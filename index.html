@@ -3,10 +3,307 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json?v=2">
-<link rel="apple-touch-icon" href="assets/arayuz/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="assets/icon-192.png?v=2">
 <title>Sislidere Köyü Davası</title>
-<link rel="stylesheet" href="style.css?v=16">
+<style>
+.zoom-wrap{ overflow:hidden; touch-action:none; cursor:zoom-in; }
+.zoom-wrap img{ transform-origin:center center; will-change:transform; }
+  :root {
+    --parchment: #e9dcc0;
+    --parchment-dark: #3a2c1a;
+    --ink: #241a0f;
+    --accent: #8a5a2b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0806;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    overflow: hidden;
+  }
+
+  #stage-frame {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+    width: min(100dvw, calc(100dvh * 16 / 9));
+    height: min(100dvh, calc(100dvw * 9 / 16));
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .hotspot {
+    position: absolute;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0);
+  }
+
+  .btn {
+    position: absolute;
+    padding: 0.8em 1.8em;
+    background: linear-gradient(180deg, #6b4423, #4a2f18);
+    color: var(--parchment);
+    border: 2px solid #2c1c0e;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: clamp(16px, 1.9cqw, 22px);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .btn.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #1c110a, 0 10px 16px rgba(0,0,0,0.7);
+  }
+
+  .nabiz-ikon {
+    position: absolute;
+    cursor: pointer;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
+    animation: ikonNabiz 1.6s ease-in-out infinite;
+    z-index: 6;
+    transform: translate(-50%, -50%);
+    transition: opacity .5s ease;
+  }
+  .gizli { opacity: 0; pointer-events: none; }
+  @keyframes ikonNabiz {
+    0%,100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .nabiz-ikon-wrap {
+    position: absolute;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    z-index: 6;
+    animation: ikonNabiz 1.6s ease-in-out infinite;
+    transition: opacity .5s ease;
+  }
+  .nabiz-ikon-wrap img {
+    width: 100%; height: auto; display: block;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.6));
+  }
+  .nabiz-ikon-etiket {
+    font-family: inherit; font-size: clamp(12px, 2cqw, 16px); letter-spacing: .03em;
+    color: var(--parchment); background: rgba(20,14,8,.75);
+    padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+  }
+
+  .mors-yazi-alani {
+    position: absolute;
+    left: 58.2%; bottom: 18.5%; width: 23%;
+    transform-origin: left bottom;
+    transform: rotate(-5deg);
+    z-index: 15;
+  }
+  .mors-yazi-alani input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    font-family: inherit;
+    font-size: clamp(18px, 2.3cqw, 25px);
+    color: var(--ink);
+    padding: 0.3em 0.2em;
+    text-transform: uppercase;
+    outline: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .mors-yazi-alani input.hata {
+    border-bottom-color: #c0392b;
+    color: #c0392b;
+  }
+
+  .character {
+    position: absolute;
+    right: 5%; bottom: -15%;
+    height: 85%;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    z-index: 5;
+  }
+  .character.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: karakterNabiz 2s ease-in-out infinite;
+  }
+  .character.talking {
+    animation: none;
+  }
+  @keyframes karakterNabiz {
+    0%,100% { filter: drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+    50%      { filter: drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+  }
+
+  .subtitle {
+    position: absolute;
+    left: 5%; right: 32%; bottom: 6%;
+    background: rgba(20, 14, 8, 0.9);
+    color: var(--parchment);
+    padding: 1.2em 1.5em;
+    border-radius: 8px;
+    border-left: 5px solid var(--accent);
+    font-size: clamp(16px, 1.9cqw, 22px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 10;
+  }
+  .subtitle.show { opacity: 1; pointer-events: auto; }
+
+  #popup-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 50;
+  }
+  #popup-overlay.show { opacity: 1; pointer-events: auto; }
+  #popup-overlay .zoom-wrap {
+    width: 60cqi; height: 39.4cqi;
+  }
+  #popup-overlay img {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: contain;
+  }
+  #popup-close {
+    position: absolute; top: 8%; right: 12%;
+    width: 2.5em; height: 2.5em; border-radius: 50%;
+    background: var(--parchment-dark); color: var(--parchment);
+    border: 2px solid var(--parchment);
+    font-size: 24px; font-weight: bold; cursor: pointer;
+  }
+
+  #fade-layer {
+    position: absolute; inset: 0;
+    background: #000; opacity: 0; pointer-events: none;
+    transition: opacity 1.5s ease;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 60;
+  }
+  #fade-layer.show { opacity: 1; pointer-events: auto; }
+  #fade-text {
+    color: var(--parchment);
+    font-style: italic;
+    font-size: clamp(22px, 3.1cqw, 36px);
+    opacity: 0; transition: opacity 0.8s ease;
+  }
+  #fade-text.show { opacity: 1; }
+
+  .tam-ekran-btn{
+    position:absolute;top:10px;left:10px;z-index:999;
+    width:clamp(32px,4.8cqw,50px);height:clamp(32px,4.8cqw,50px);border-radius:6px;
+    background:rgba(28,29,24,.75);border:1px solid var(--accent);
+    color:var(--parchment);font-size:clamp(16px,2.6cqw,24px);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    opacity:.55;transition:opacity .2s ease;
+  }
+  .tam-ekran-btn:hover{opacity:1;}
+
+  .hakkinda-scroll{
+    position:absolute; inset:0; overflow-y:auto;
+    background:var(--parchment-dark);
+    padding:4% 5%;
+  }
+  .hakkinda-panel{
+    position:relative;
+    max-width:700px; margin:0 auto;
+    background:var(--parchment);
+    color:var(--ink);
+    border-radius:10px;
+    padding:28px 24px 40px;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+  }
+  .hakkinda-geri{
+    position:sticky; top:0; float:right;
+    background:var(--accent); color:var(--parchment);
+    border:none; border-radius:6px; padding:8px 14px;
+    font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer;
+    margin-bottom:10px;
+  }
+  .hakkinda-baslik{ font-size:clamp(24px,3.6cqw,36px); margin-bottom:14px; clear:both; }
+  .hakkinda-alt-baslik{ font-size:clamp(18px,2.4cqw,23px); margin:22px 0 10px; color:var(--accent); }
+  .hakkinda-metin p{ font-size:clamp(16px,1.7cqw,19px); line-height:1.6; margin-bottom:10px; }
+  .hakkinda-metin a{ color:var(--accent); }
+  .hakkinda-blok{ margin-top:6px; }
+  .hakkinda-blok-baslik{ font-weight:bold; font-size:16px; margin-bottom:6px; }
+  .credits-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+    gap:14px; margin-top:8px;
+  }
+  .credit-item{ text-align:center; font-size:13px; }
+  .credit-item img{
+    width:100%; aspect-ratio:3/4; object-fit:contain; border-radius:8px;
+    border:2px solid var(--accent); margin-bottom:5px; background:#00000012;
+  }
+  .credit-name{ font-weight:bold; }
+  .credit-voice{ color:#5a4530; font-size:12px; }
+  @media (max-width:600px){
+    .credits-grid{ grid-template-columns:repeat(3,1fr); }
+  }
+
+  .nasil-ikonlar{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:10px 18px; margin:8px 0 6px;
+  }
+  .nasil-madde{ display:flex; align-items:center; gap:10px; font-size:clamp(16px,1.7cqw,19px); line-height:1.4; }
+  .nasil-madde img{
+    width:44px; height:44px; flex:none; object-fit:contain;
+    background:var(--parchment-dark); border-radius:8px; padding:5px;
+  }
+
+  .donme-uyarisi{
+    display:none;
+    position:fixed;inset:0;z-index:9999;
+    background:#0a0806;color:var(--parchment);
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px;font-family:inherit;
+  }
+  .donme-uyarisi .ikon{font-size:48px;margin-bottom:16px;animation:donmeIkonAnim 1.6s ease-in-out infinite;}
+  .donme-uyarisi p{font-size:17px;line-height:1.6;max-width:280px;}
+  @keyframes donmeIkonAnim{0%,100%{transform:rotate(0deg);}50%{transform:rotate(90deg);}}
+
+  @media screen and (orientation: portrait) {
+    .donme-uyarisi{display:flex;}
+    #stage-frame{display:none;}
+  }
+</style>
 <link rel="stylesheet" href="ogretici.css?v=9">
 <link rel="stylesheet" href="vfx.css">
 <script src="vfx.js"></script>
@@ -14,9 +311,9 @@
 </head>
 <body>
 <div class="donme-uyarisi">
-  <div class="ikon">📱</div>
-  <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
-</div>
+    <div class="ikon">📱</div>
+    <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
+  </div>
 
 <div id="stage-frame">
 
@@ -31,15 +328,15 @@
 
   <!-- 2. OFİS / ŞEHİR -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/odalar/ofis_sehir.webp')">
-    <div class="nabiz-ikon-wrap" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
       <img src="assets/arayuz/el.webp" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
-    <div class="nabiz-ikon-wrap" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
       <img src="assets/arayuz/buyutec.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
-    <div class="nabiz-ikon-wrap" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
+    <div class="nabiz-ikon-wrap gizli" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
       <img src="assets/arayuz/ayak.webp" alt="Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -47,7 +344,7 @@
 
   <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
-    <div class="nabiz-ikon-wrap" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
       <img src="assets/arayuz/kulak.webp" alt="Mesajı Dinle">
       <div class="nabiz-ikon-etiket">Dinle</div>
     </div>
@@ -55,12 +352,12 @@
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
     </div>
-    <button class="btn show" id="btn-mors-ilerle" style="position:absolute;left:82.0%;top:76.0%;z-index:10;padding:8px 16px;background:#c98a2c;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">İlerle</button>
+    <button class="btn show" id="btn-mors-ilerle" style="left:82.0%;top:76.0%;">İlerle</button>
   </div>
 
   <!-- 4. RAF -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/odalar/raf.webp')">
-    <div class="nabiz-ikon-wrap" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
       <img src="assets/arayuz/el.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
@@ -68,11 +365,11 @@
 
   <!-- 5. SİSLİDERE DOSYASI -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/odalar/sislidere_dosya.webp')">
-    <div class="nabiz-ikon-wrap" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
       <img src="assets/arayuz/buyutec.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
-    <div class="nabiz-ikon-wrap" id="btn-dosya-geri" style="left:9%;top:57.5%;width:7.5%;">
+    <div class="nabiz-ikon-wrap gizli" id="btn-dosya-geri" style="left:9%;top:57.5%;width:7.5%;">
       <img src="assets/arayuz/geri.webp" alt="Geri">
       <div class="nabiz-ikon-etiket">Geri</div>
     </div>
@@ -80,7 +377,7 @@
 
   <!-- 6. AT ARABASI -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/odalar/at_arabasi.webp')">
-    <div class="nabiz-ikon-wrap" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
       <img src="assets/arayuz/ayak.webp" alt="Bin">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -88,9 +385,9 @@
 
   <!-- 7. KÖY GİRİŞİ -->
   <div class="screen" id="scr-koy" style="background-image:url('assets/odalar/koy_giris.webp')">
-    <img class="character" id="char-halit" src="assets/karakterler/halit.webp" alt="Halit" style="position:absolute;right:10%;bottom:0;height:80%;display:none;">
+    <img class="character" id="char-halit" src="assets/karakterler/halit.webp" alt="Halit">
     <div class="subtitle" id="sub-halit"></div>
-    <div class="nabiz-ikon-wrap" id="btn-ofise-git" style="left:49.5%;top:62.8%;width:5%;">
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofise-git" style="left:49.5%;top:62.8%;width:5%;">
       <img src="assets/arayuz/ayak.webp" alt="Ofise Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -98,15 +395,103 @@
 
   <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/odalar/dedektif_ofis.webp')">
-    <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis" style="position:absolute;right:10%;bottom:0;height:80%;display:none;">
+    <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis">
     <div class="subtitle" id="sub-polis"></div>
   </div>
 
-  <div id="popup-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:center;justify-content:center;">
-    <button id="popup-close" style="position:absolute;top:20px;right:20px;font-size:30px;color:#fff;background:none;border:none;cursor:pointer;">×</button>
-    <div class="zoom-wrap">
-      <img id="popupImg" src="assets/arayuz/ali_ihsan.webp" alt="Ali İhsan" style="max-height:80vh;max-width:80vw;">
+  <!-- 9. NASIL OYNANIR -->
+  <div class="screen" id="scr-nasil">
+    <div class="hakkinda-scroll">
+      <div class="hakkinda-panel">
+        <button class="hakkinda-geri" id="btn-nasil-geri">‹ Ana Menü</button>
+        <h2 class="hakkinda-baslik">Nasıl Oynanır?</h2>
+        <div class="hakkinda-metin">
+          <p>Sislidere Köyü'nde yaşanan ölümlerin ardındaki gerçeği araştırıyorsun. Köyü gez, insanlarla konuş, ipuçlarını topla ve doğru kişiyi bul.</p>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">Simgeler</h3>
+        <div class="hakkinda-metin"><p>Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir.</p></div>
+        <div class="nasil-ikonlar">
+          <div class="nasil-madde"><img src="assets/arayuz/el.webp" alt=""><div><b>Bak</b> — nesneye dokun</div></div>
+          <div class="nasil-madde"><img src="assets/arayuz/buyutec.webp" alt=""><div><b>İncele</b> — belgeyi ya da nesneyi yakından gör</div></div>
+          <div class="nasil-madde"><img src="assets/arayuz/kulak.webp" alt=""><div><b>Dinle</b> — sesi çal</div></div>
+          <div class="nasil-madde"><img src="assets/arayuz/ayak.webp" alt=""><div><b>Git</b> — başka bir yere geç</div></div>
+          <div class="nasil-madde"><img src="assets/arayuz/geri.webp" alt=""><div><b>Geri</b> — bir önceki yere dön</div></div>
+          <div class="nasil-madde"><img src="assets/arayuz/uyku.webp" alt=""><div><b>Uyku</b> — bir sonraki güne geç</div></div>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">Sohbet</h3>
+        <div class="hakkinda-metin">
+          <p>Etrafında hafif bir parıltı olan karakterler tıklanabilir. Konuşmak için karaktere tıkla, sonraki cümleye geçmek için tekrar tıkla.</p>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">Harita ve not defteri</h3>
+        <div class="hakkinda-metin">
+          <p>Sağ alttaki harita, köyde gitmek istediğin yere hemen ulaşmanı sağlar. Not defterine ipuçlarını yazabilir, şüphelilerin yanına not alabilir, çizim yapabilirsin.</p>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">Günler</h3>
+        <div class="hakkinda-metin">
+          <p>Oyun yedi gün sürer. Ofisteki yatağa tıklayıp uyuduğunda bir sonraki güne geçersin. Bazı yerler belirli günlerde kapalıdır. Uyumadan önce ipuçlarını topladığından emin ol.</p>
+          <p>Yedinci günün sonunda suçlamanı yapacaksın. Bol şans dedektif!</p>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- 10. OYUN HAKKINDA -->
+  <div class="screen" id="scr-hakkinda">
+    <div class="hakkinda-scroll">
+      <div class="hakkinda-panel">
+        <button class="hakkinda-geri" id="btn-hakkinda-geri">‹ Ana Menü</button>
+        <h2 class="hakkinda-baslik">Oyun Hakkında</h2>
+        <div class="hakkinda-metin">
+          <p>Merhaba! Ben RENC.</p>
+          <p>Hikaye anlatıcılığına ve içerik üretmeye olan tutkumla RENC YouTube Kanalı üzerinden fikirlerimi, projelerimi ve dünyamı sizlerle paylaşıyorum.</p>
+          <p>Oyun geliştirme serüvenim, fiziksel olarak tasarlayıp hazırladığım zarf içi dedektiflik oyunuyla başladı. Masada dokunarak, zarfları açıp ipuçlarını birleştirerek oynanan o ilk deneyimin ardından, hikayelerimizi ve gizemlerimizi çok daha geniş kitlelere ulaştırabilmek adına ikinci oyunumuzla birlikte dijital dünyaya adım attık.</p>
+          <p>Bu projeyi hayata geçirirken amacımız; sizi sürükleyici bir atmosfere çekmek, detaylarda gizlenmiş sırları çözdürürken unutulmaz bir dedektiflik deneyimi yaşatmaktı. Umarız oyunu oynarken bizlerin hazırlarken duyduğu heyecanı ve keyfi hissedersiniz!</p>
+          <p>İyi seyirler ve bol şans dedektif!</p>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">🎬 Emeği Geçenler</h3>
+
+        <div class="hakkinda-blok">
+          <div class="hakkinda-blok-baslik">✍️ Hikaye &amp; Senaryo</div>
+          <p>RENC</p>
+          <p>Aylin Kılınçarslan</p>
+        </div>
+
+        <div class="hakkinda-blok">
+          <div class="hakkinda-blok-baslik">🎙️ Seslendirme Kadrosu</div>
+          <div class="credits-grid">
+            <div class="credit-item"><img src="assets/karakterler/anselm.webp" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/aylin.webp" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cabbar.webp" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cevdet.webp" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/halit.webp" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/kamuran.webp" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/mustafa.webp" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/nadire.webp" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/polis.webp" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/riza.webp" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+          </div>
+        </div>
+
+        <h3 class="hakkinda-alt-baslik">🌐 Sosyal Medya &amp; İletişim</h3>
+        <p class="hakkinda-metin"><a href="https://youtube.com/@RENC_official" target="_blank" rel="noopener">YouTube: youtube.com/@RENC_official</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="popup-overlay">
+    <button id="popup-close">×</button>
+    <div class="zoom-wrap">
+      <img id="popupImg" src="assets/arayuz/ali_ihsan.webp" alt="Ali İhsan">
+    </div>
+  </div>
+
+  <div id="fade-layer">
+    <div id="fade-text">(at arabası sesleri...)</div>
   </div>
 
   <audio id="aud-mesaj" src="assets/ses/mesaj.mp3" preload="auto"></audio>
@@ -114,67 +499,303 @@
 
 </div>
 
-<!-- GİRİŞ AKIŞI / EKRAN GEÇİŞ MANTIĞI -->
+<script src="ogretici.js?v=3"></script>
 <script>
-  function ekranaGec(mevcutId, hedefId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const hedef = document.getElementById(hedefId);
-    if (hedef) {
-      hedef.classList.add('active');
-      if (typeof VFX !== 'undefined') VFX.load(hedefId, hedef);
-      if (typeof SFX !== 'undefined') SFX.play(hedefId);
-    }
+const OGRETICI_ICERIK = {
+  ofis_sehir: {
+    baslik: 'Nasıl oynanır?',
+    metin: [
+      'Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir. Simgelere tıklayarak oyunda ilerlersin.',
+      'Başlamak için telgrafın üzerindeki simgeye tıkla.'
+    ],
+    maddeler: [
+      { ikon: 'assets/arayuz/el.webp',      baslik: 'Bak',    metin: 'nesneye dokun' },
+      { ikon: 'assets/arayuz/buyutec.webp', baslik: 'İncele', metin: 'belgeyi yakından gör' },
+      { ikon: 'assets/arayuz/kulak.webp',   baslik: 'Dinle',  metin: 'sesi çal' },
+      { ikon: 'assets/arayuz/ayak.webp',    baslik: 'Git',    metin: 'başka yere geç' }
+    ],
+    konum: 'ust-orta',
+    gecikme: 1600
+  },
+  mors_kagidi: {
+    baslik: 'Mors kodunu çöz',
+    metin: [
+      'Kulak simgesine tıklayıp mesajı dinle. Duyduğun mors kodunu çöz, çıkan kelimeyi parlayan çizgiye yaz ve İlerle\'ye bas.',
+      'Mors alfabesini bilmiyorsan internetteki bir tabloya bakabilirsin.'
+    ],
+    maddeler: [
+      { ikon: 'assets/arayuz/kulak.webp', baslik: 'Dinle', metin: 'mesajı tekrar çalar' }
+    ],
+    vurgu: ['.mors-yazi-alani'],
+    konum: 'ust-orta',
+    gecikme: 700
+  },
+  koy_giris: {
+    baslik: 'İnsanlarla sohbet et',
+    metin: 'Konuşmak için karakterin üzerine tıkla. Konuşmayı ilerletmek için karaktere tekrar tıkla.',
+    demo: {
+      karakter: 'assets/karakterler/halit.webp',
+      isim: 'Halit',
+      satirlar: ['Buyrun dedektif bey.', 'Size bir şey göstermem lazım.']
+    },
+    konum: 'ust-sol',
+    gecikme: 3000
+  }
+};
+
+const IKON_BEKLEME_MS = 1000;
+
+const OGRETICI_EKRANLAR = {
+  'scr-ofis': 'ofis_sehir',
+  'scr-mors': 'mors_kagidi',
+  'scr-koy':  'koy_giris'
+};
+
+Ogretici.kur({
+  sahne: document.getElementById('stage-frame'),
+  icerik: OGRETICI_ICERIK,
+  onek: 'sislidere'
+});
+
+function zoomKur(wrap, img) {
+  let scale = 1, panX = 0, panY = 0;
+  let startDist = 0, startScale = 1;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  let sürükleniyor = false, fareBasili = false, fareX = 0, fareY = 0;
+
+  function uygula() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+  function sinirla() { if (scale < 1) { scale = 1; panX = 0; panY = 0; } }
+  function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+  function orta(t1, t2) { return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 }; }
+
+  function origadaAyarla(clientX, clientY) {
+    const rect = img.getBoundingClientRect();
+    const oranX = ((clientX - rect.left) / rect.width) * 100;
+    const oranY = ((clientY - rect.top) / rect.height) * 100;
+    img.style.transformOrigin = `${oranX}% ${oranY}%`;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ana Menü Butonları
-    document.getElementById('btn-oyna')?.addEventListener('click', () => ekranaGec('scr-ana', 'scr-ofis'));
-    
-    document.getElementById('btn-hakkinda')?.addEventListener('click', () => {
-      alert("Sislidere Köyü Davası\n\nYazan & Tasarlayan: RENC");
-    });
-
-    document.getElementById('btn-nasil')?.addEventListener('click', () => {
-      alert("Nasıl Oynanır:\n- İpuçlarını toplamak için ekrandaki simgelere tıkla.\n- Şüphelilerle konuşarak ifadeleri topla.\n- Deftere notlar al ve katili tespit et!");
-    });
-
-    // 2. Ofis / Şehir Ekranı
-    document.getElementById('btn-telgraf')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-mors'));
-    document.getElementById('btn-ofis-incele')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-raf'));
-    document.getElementById('btn-kapi-ayak')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-araba'));
-
-    // 3. Mors Ekranı
-    document.getElementById('btn-mors-ilerle')?.addEventListener('click', () => ekranaGec('scr-mors', 'scr-ofis'));
-    document.getElementById('btn-mors-tekrar')?.addEventListener('click', () => {
-      const aud = document.getElementById('aud-mors');
-      if (aud) { aud.currentTime = 0; aud.play().catch(() => {}); }
-    });
-
-    // 4. Raf / Dosya
-    document.getElementById('btn-dosya-incele')?.addEventListener('click', () => ekranaGec('scr-raf', 'scr-dosya'));
-    document.getElementById('btn-dosya-geri')?.addEventListener('click', () => ekranaGec('scr-dosya', 'scr-raf'));
-    document.getElementById('btn-dosya-incele-ic')?.addEventListener('click', () => {
-      document.getElementById('popup-overlay').style.display = 'flex';
-    });
-    document.getElementById('popup-close')?.addEventListener('click', () => {
-      document.getElementById('popup-overlay').style.display = 'none';
-    });
-
-    // 5. At Arabası & Köy Girişi -> Ana Oyuna Geçiş
-    document.getElementById('btn-bin')?.addEventListener('click', () => ekranaGec('scr-araba', 'scr-koy'));
-    document.getElementById('btn-ofise-git')?.addEventListener('click', () => {
-      window.location.href = 'oyun.html';
-    });
-
-    // Tam Ekran Butonu
-    document.getElementById('tamEkranBtn')?.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    });
+  wrap.addEventListener('dblclick', (e) => {
+    if (scale === 1) {
+      origadaAyarla(e.clientX, e.clientY);
+      scale = 2.5;
+    } else {
+      scale = 1; panX = 0; panY = 0;
+    }
+    uygula();
   });
+  wrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      startDist = uzaklik(e.touches[0], e.touches[1]);
+      startScale = scale;
+      const m = orta(e.touches[0], e.touches[1]);
+      origadaAyarla(m.x, m.y);
+    } else if (e.touches.length === 1 && scale > 1) {
+      sürükleniyor = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      startPanX = panX; startPanY = panY;
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
+      sinirla(); uygula();
+    } else if (e.touches.length === 1 && sürükleniyor) {
+      panX = startPanX + (e.touches[0].clientX - startX);
+      panY = startPanY + (e.touches[0].clientY - startY);
+      uygula();
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => { sürükleniyor = false; });
+  wrap.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (scale === 1 && e.deltaY < 0) origadaAyarla(e.clientX, e.clientY);
+    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
+    sinirla(); uygula();
+  }, { passive: false });
+  wrap.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+    fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!fareBasili) return;
+    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
+    uygula();
+  });
+  window.addEventListener('mouseup', () => { fareBasili = false; });
+
+  return { sifirla: () => { scale = 1; panX = 0; panY = 0; img.style.transformOrigin = 'center center'; uygula(); } };
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const scr = document.getElementById(id);
+  scr.classList.add('active');
+  
+  scr.querySelectorAll('.nabiz-ikon.gec-bekle.gizli, .nabiz-ikon-wrap.gec-bekle.gizli').forEach(el => {
+    setTimeout(() => el.classList.remove('gizli'), IKON_BEKLEME_MS);
+  });
+  
+  Ogretici.iptal();
+  if (OGRETICI_EKRANLAR[id]) Ogretici.goster(OGRETICI_EKRANLAR[id]);
+
+  if (typeof VFX !== 'undefined') VFX.load(id, scr);
+  if (typeof SFX !== 'undefined') SFX.play(id);
+}
+
+document.getElementById('btn-nasil').addEventListener('click', () => showScreen('scr-nasil'));
+document.getElementById('btn-nasil-geri').addEventListener('click', () => showScreen('scr-ana'));
+document.getElementById('btn-hakkinda').addEventListener('click', () => {
+  showScreen('scr-hakkinda');
+});
+document.getElementById('btn-hakkinda-geri').addEventListener('click', () => {
+  showScreen('scr-ana');
+});
+document.getElementById('btn-oyna').addEventListener('click', () => {
+  showScreen('scr-ofis');
+  setTimeout(() => {
+    const aud = document.getElementById('aud-mesaj');
+    aud.currentTime = 0;
+    aud.play().catch(() => {});
+  }, 2000);
+});
+
+document.getElementById('btn-telgraf').addEventListener('click', () => {
+  calSes('al');
+  const aud = document.getElementById('aud-mesaj');
+  aud.pause();
+  aud.currentTime = 0;
+  showScreen('scr-mors');
+});
+
+function normalizeTR(str) {
+  return str.trim()
+    .replace(/i/gi, 'I').replace(/ı/gi, 'I')
+    .replace(/ş/gi, 'S').replace(/ğ/gi, 'G')
+    .replace(/ü/gi, 'U').replace(/ö/gi, 'O')
+    .replace(/ç/gi, 'C')
+    .toUpperCase();
+}
+
+document.getElementById('btn-mors-tekrar').addEventListener('click', () => {
+  const aud = document.getElementById('aud-mors');
+  aud.currentTime = 0;
+  aud.play().catch(() => {});
+});
+
+document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
+  const inputEl = document.getElementById('mors-input');
+  const inputVal = normalizeTR(inputEl.value);
+  if (inputVal === 'SISLIDERE') {
+    inputEl.classList.remove('hata');
+    document.getElementById('btn-telgraf').style.display = 'none';
+    showScreen('scr-raf');
+  } else {
+    inputEl.classList.add('hata');
+  }
+});
+
+document.getElementById('btn-dosya-incele').addEventListener('click', () => { calSes('al'); showScreen('scr-dosya'); });
+
+document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
+  calSes('incele');
+  document.getElementById('popup-overlay').classList.add('show');
+});
+
+function ofisDonusIkonlari() {
+  setTimeout(() => {
+    document.getElementById('btn-ofis-incele').classList.remove('gizli');
+    document.getElementById('btn-kapi-ayak').classList.remove('gizli');
+  }, IKON_BEKLEME_MS);
+}
+
+document.getElementById('popup-close').addEventListener('click', () => {
+  calSes('geri');
+  document.getElementById('popup-overlay').classList.remove('show');
+  aliIhsanZoom.sifirla();
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
+});
+
+document.getElementById('btn-ofis-incele').addEventListener('click', () => {
+  calSes('incele');
+  showScreen('scr-dosya');
+  setTimeout(() => document.getElementById('btn-dosya-geri').classList.remove('gizli'), IKON_BEKLEME_MS);
+});
+document.getElementById('btn-dosya-geri').addEventListener('click', () => {
+  calSes('geri');
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
+});
+document.getElementById('btn-kapi-ayak').addEventListener('click', () => { calSes('kapi_git'); showScreen('scr-araba'); });
+
+document.getElementById('btn-bin').addEventListener('click', () => {
+  calSes('at_arabasi');
+  const fadeLayer = document.getElementById('fade-layer');
+  const fadeText = document.getElementById('fade-text');
+  fadeLayer.classList.add('show');
+  setTimeout(() => fadeText.classList.add('show'), 800);
+  setTimeout(() => { showScreen('scr-koy'); fadeText.classList.remove('show'); }, 3000);
+  setTimeout(() => { fadeLayer.classList.remove('show'); document.getElementById('char-halit').classList.add('show'); }, 4200);
+});
+
+let halitState = 0;
+document.getElementById('char-halit').addEventListener('click', () => {
+  const sub = document.getElementById('sub-halit');
+  const char = document.getElementById('char-halit');
+  if (halitState === 0) {
+    Ogretici.isaretle('koy_giris');
+    Ogretici.iptal();
+    sub.textContent = "Hoş geldiniz dedektif! Sisledere Köyü'ne varışınız tam zamanında oldu.";
+    sub.classList.add('show');
+    char.classList.add('talking');
+    halitState = 1;
+  } else {
+    sub.classList.remove('show');
+    document.getElementById('char-halit').classList.remove('show');
+    setTimeout(() => {
+      document.getElementById('btn-ofise-git').classList.remove('gizli');
+    }, IKON_BEKLEME_MS);
+    halitState = 0;
+  }
+});
+
+document.getElementById('btn-ofise-git').addEventListener('click', () => {
+  calSes('kapi_git');
+  showScreen('scr-dedektif');
+  document.getElementById('char-polis').classList.add('show');
+});
+
+let polisState = 0;
+document.getElementById('char-polis').addEventListener('click', () => {
+  const sub = document.getElementById('sub-polis');
+  const char = document.getElementById('char-polis');
+  if (polisState === 0) {
+    sub.textContent = "Başkomiserim, durum dosyasını masaya bıraktım. Soruşturmaya başlayabilirsiniz.";
+    sub.classList.add('show');
+    char.classList.add('talking');
+    polisState = 1;
+  } else {
+    sub.classList.remove('show');
+    document.getElementById('char-polis').classList.remove('show');
+    setTimeout(() => { window.location.href = "oyun.html"; }, 500);
+  }
+});
+
+if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
+  document.getElementById('tamEkranBtn').style.display = 'none';
+}
+document.getElementById('tamEkranBtn').addEventListener('click', () => {
+  const el = document.documentElement;
+  if (!document.fullscreenElement) {
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (req) req.call(el).catch(() => {});
+  } else {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (exit) exit.call(document).catch(() => {});
+  }
+});
+
+const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
 </script>
 </body>
 </html>
