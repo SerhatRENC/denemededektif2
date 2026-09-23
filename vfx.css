@@ -1,8 +1,8 @@
 /* ============================================================
-   VFX & ATMOSFER KATMANLARI - Sislidere Köyü Davası (v2 - Belirgin)
+   VFX & ATMOSFER KATMANLARI - Sislidere Köyü Davası
    ============================================================ */
 
-/* 1. Canvas Katmanı (Toz, Un, Kıvılcım Parçacıkları) */
+/* 1. Canvas Katmanı */
 .vfx-canvas {
   position: absolute;
   inset: 0;
@@ -12,7 +12,7 @@
   z-index: 4;
 }
 
-/* 2. Dinamik Işık / Gaz Lambası / Soba Titremesi (Daha Parlak & Belirgin) */
+/* 2. Dinamik Işık / Gaz Lambası Titremesi */
 .vfx-flicker-light {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -20,30 +20,27 @@
   pointer-events: none;
   z-index: 5;
   mix-blend-mode: screen;
-  animation: lambaTitreme 2.2s ease-in-out infinite alternate;
 }
 
-@keyframes lambaTitreme {
-  0%   { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); }
-  20%  { opacity: 0.90; transform: translate(-50%, -50%) scale(1.05); }
-  40%  { opacity: 0.65; transform: translate(-50%, -50%) scale(0.96); }
-  65%  { opacity: 1.00; transform: translate(-50%, -50%) scale(1.08); }
-  85%  { opacity: 0.70; transform: translate(-50%, -50%) scale(0.98); }
-  100% { opacity: 0.60; transform: translate(-50%, -50%) scale(0.94); }
+@keyframes vfxSlowFlicker {
+  0% { opacity: 0.50; transform: translate(-50%, -50%) scale(0.94); }
+  35% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.02); }
+  70% { opacity: 0.58; transform: translate(-50%, -50%) scale(0.97); }
+  100% { opacity: 0.68; transform: translate(-50%, -50%) scale(1.00); }
 }
 
-/* 3. Hareketli Yüzen Sis Katmanı (Dış Mekanlar - Yoğunlaştırılmış) */
+/* 3. Hareketli Sis Katmanı */
 .vfx-fog-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 3;
-  background: radial-gradient(circle at 50% 75%, rgba(220, 210, 190, 0.35), transparent 70%);
-  opacity: 0.75;
-  animation: sisKayma 16s linear infinite alternate;
+  background: radial-gradient(circle at 50% 75%, rgba(220, 210, 190, 0.25), transparent 70%);
+  opacity: 0.60;
+  animation: sisKayma 18s linear infinite alternate;
 }
 
 @keyframes sisKayma {
-  0% { transform: translateX(-5%) scale(1); opacity: 0.55; }
-  100% { transform: translateX(5%) scale(1.1); opacity: 0.85; }
+  0% { transform: translateX(-4%) scale(1); opacity: 0.45; }
+  100% { transform: translateX(4%) scale(1.08); opacity: 0.70; }
 }
