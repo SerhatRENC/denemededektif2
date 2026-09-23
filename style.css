@@ -1,63 +1,76 @@
 /* ============================================================
-   KARAKTER ETKİLEŞİMİ & ARKA PLAN KARARTMA SİSTEMİ
+   SAYFA VE EKRAN KİLİTLEME (ALT ALTA KAYMAYI ÖNLER)
    ============================================================ */
 
-/* 1. Arka Plan Karartma Katmanı */
-.stage-dim {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-  z-index: 7;
-}
-.stage-dim.active {
-  opacity: 1;
-  pointer-events: auto;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden !important; /* Sayfanın aşağı/sağa kaymasını kesin olarak engeller */
+  background-color: #050403;
+  touch-action: none; /* Mobil kaydırmaları engeller */
 }
 
-/* 2. Oda İçi Tıklanabilir Karakter Katmanı (Masa/Ortam Katmanı) */
-.room-character-overlay {
+/* 1. Giriş Akışı Kapsayıcısı (index.html) */
+#stage-frame {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tüm ekranları aynı noktada üst üste bindir ve gizle */
+.screen {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  z-index: 6;
-  cursor: pointer;
-  transition: filter 0.3s ease, opacity 0.4s ease;
-  filter: drop-shadow(0 0 0px transparent);
-}
-.room-character-overlay:hover {
-  filter: drop-shadow(0 0 8px rgba(227, 169, 74, 0.8)) drop-shadow(0 0 18px rgba(201, 138, 44, 0.5));
-}
-.room-character-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: none; /* Aktif olmayan ekranlar gizlenir */
+  z-index: 1;
 }
 
-/* 3. Diyalog Karakteri (Kararma Üstüne Sağa Süzülen Şeffaf Karakter) */
-.scene-character {
-  position: absolute;
-  right: 2%;
-  bottom: 0;
-  height: 90%;
-  width: auto;
-  max-width: 38%;
-  object-fit: contain;
-  cursor: pointer;
-  z-index: 8;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(30px);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease;
-  filter: drop-shadow(0 10px 25px rgba(0,0,0,.6));
+/* Sadece aktif olan ekran görünsün */
+.screen.active {
+  display: block !important;
+  z-index: 2;
 }
-.scene-character.talking {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-  z-index: 10; /* Karartma katmanının (z-index: 7) üstüne çıkar */
-  filter: drop-shadow(0 0 15px rgba(227, 169, 74, 0.6)) drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+
+/* 2. Ana Oyun Sahnesi Kapsayıcısı (oyun.html) */
+.stage-wrap {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
