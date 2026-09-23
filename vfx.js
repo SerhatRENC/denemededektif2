@@ -1,29 +1,41 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v2 - Belirgin & Optimize)
+   VFX ENGINE - Sislidere Köyü Davası (v3 - Tüm Odalar & Optimize)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
   let particles = [];
 
-  // Mekan bazlı efekt konfigürasyonları (X, Y yüzdesel konumlar)
+  // MEKAN BAZLI GELİŞMİŞ EFEKT HARİTASI
   const roomVFXConfig = {
-    // Lambalı ve Işıklı İç Mekanlar
+    // --- Ateşli & Isı Odaklı Mekanlar (Ateş Parlaklığı + Kıvılcımlar) ---
+    'demirci': { sparks: true, particleCount: 50, lights: [{ x: '60%', y: '42%', color: 'rgba(255, 100, 20, 0.85)', size: '35cqw' }] },
+    'han_mutfak': { sparks: true, particleCount: 45, lights: [{ x: '50%', y: '50%', color: 'rgba(255, 110, 30, 0.8)', size: '30cqw' }] },
+
+    // --- Ekstra Yoğun Tozlu Mekanlar ---
+    'cevdet_ev': { dust: true, particleCount: 60, lights: [{ x: '30%', y: '50%', color: 'rgba(255, 170, 50, 0.75)', size: '25cqw' }] },
+    'degirmenci': { dust: true, particleCount: 55 },
+    'kilise': { dust: true, particleCount: 50 },
+
+    // --- Evler ve İç Mekanlar (Lamba Işığı + Odun/Toz Parçacıkları) ---
     'dedektif': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }] },
     'ofis': { dust: true, lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }] },
     'halit_ev': { dust: true, lights: [{ x: '10%', y: '58%', color: 'rgba(255, 160, 40, 0.7)', size: '20cqw' }, { x: '85%', y: '70%', color: 'rgba(240, 100, 30, 0.65)', size: '25cqw' }] },
     'nadire_ev': { dust: true, lights: [{ x: '22%', y: '55%', color: 'rgba(255, 160, 40, 0.75)', size: '22cqw' }, { x: '45%', y: '65%', color: 'rgba(230, 100, 30, 0.6)', size: '24cqw' }] },
     'sifahane': { dust: true, lights: [{ x: '73%', y: '58%', color: 'rgba(230, 110, 30, 0.65)', size: '26cqw' }] },
-    
-    // Ateşli / Isı Odaklı Mekanlar
-    'demirci': { sparks: true, lights: [{ x: '60%', y: '42%', color: 'rgba(255, 100, 20, 0.85)', size: '35cqw' }] },
-    'han_depo': { dust: true, lights: [{ x: '57%', y: '48%', color: 'rgba(255, 140, 40, 0.7)', size: '18cqw' }] },
-    
-    // Sisli ve Atmosferik Mekanlar
+    'mustafa_ev': { dust: true, lights: [{ x: '40%', y: '50%', color: 'rgba(255, 160, 40, 0.7)', size: '22cqw' }] },
+    'cabbar_ev': { dust: true, lights: [{ x: '35%', y: '45%', color: 'rgba(240, 150, 40, 0.7)', size: '22cqw' }] },
+    'riza_ev': { dust: true, lights: [{ x: '50%', y: '55%', color: 'rgba(240, 140, 30, 0.65)', size: '20cqw' }] },
+    'anselm_ev': { dust: true, lights: [{ x: '45%', y: '48%', color: 'rgba(255, 170, 50, 0.7)', size: '24cqw' }] },
+    'aylin_ev': { dust: true, lights: [{ x: '30%', y: '52%', color: 'rgba(255, 165, 45, 0.7)', size: '22cqw' }] },
+
+    // --- Han ve Depolar ---
+    'han_depo': { dust: true, lights: [{ x: '57%', y: '48%', color: 'rgba(255, 140, 40, 0.7)', size: '20cqw' }] },
+    'han': { dust: true, lights: [{ x: '50%', y: '40%', color: 'rgba(255, 160, 50, 0.7)', size: '26cqw' }] },
+
+    // --- Dış Mekanlar (Sis + Açık Hava Tozları) ---
+    'merkez': { dust: true, fog: true, particleCount: 35, lights: [{ x: '50%', y: '60%', color: 'rgba(255, 180, 70, 0.5)', size: '30cqw' }] },
     'mezarlik': { dust: true, fog: true, lights: [{ x: '28%', y: '78%', color: 'rgba(255, 190, 80, 0.6)', size: '28cqw' }] },
-    'kilise': { dust: true },
-    'degirmenci': { dust: true },
-    'merkez': { fog: true },
-    'koy': { fog: true },
+    'koy': { fog: true, dust: true },
     'araba': { fog: true },
     'giris': { fog: true }
   };
@@ -38,10 +50,12 @@ const VFX = (function () {
     cleanup();
     if (!stageElement || !roomId) return;
 
+    // Isim eşleşmesi (örn: 'scr-han-mutfak' -> 'han_mutfak')
     let configKey = Object.keys(roomVFXConfig).find(key => roomId.includes(key));
+    // Eğer listede özel bir tanımı yoksa varsayılan olarak hafif toz efekti ver
     let config = configKey ? roomVFXConfig[configKey] : { dust: true };
 
-    // 1. Dinamik Işıklar / Lambalar
+    // 1. Dinamik Işıklar / Gaz Lambaları / Soba Ateşleri
     if (config.lights) {
       config.lights.forEach(l => {
         const light = document.createElement('div');
@@ -62,7 +76,7 @@ const VFX = (function () {
       stageElement.appendChild(fog);
     }
 
-    // 3. Canvas Parçacıkları (Daha Büyük & Belirgin Tozlar)
+    // 3. Canvas Parçacıkları (Toz veya Kıvılcım)
     if (config.dust || config.sparks) {
       const canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
@@ -73,18 +87,17 @@ const VFX = (function () {
       canvas.height = rect.height || 450;
       const ctx = canvas.getContext('2d');
 
-      // Sayıyı sadece biraz artırdık (35-45 arası), ama boyutları büyüttük!
-      const particleCount = config.sparks ? 45 : 35;
-      for (let i = 0; i < particleCount; i++) {
+      // Mobil cihazlar için ideal ve kasmayan parçacık sayısı
+      const count = config.particleCount || (config.sparks ? 45 : 40);
+
+      for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // Toz boyutları 0.5px yerine 1.8px - 3.2px arası yapıldı (daha net görünür)
-          radius: config.sparks ? Math.random() * 2.2 + 0.8 : Math.random() * 2.0 + 1.2,
-          vx: (Math.random() - 0.5) * (config.sparks ? 1.0 : 0.5),
-          vy: config.sparks ? -(Math.random() * 1.0 + 0.4) : (Math.random() - 0.5) * 0.35,
-          // Opaklık artırıldı
-          alpha: Math.random() * 0.5 + 0.45,
+          radius: config.sparks ? Math.random() * 2.2 + 0.8 : Math.random() * 2.2 + 1.1,
+          vx: (Math.random() - 0.5) * (config.sparks ? 1.0 : 0.45),
+          vy: config.sparks ? -(Math.random() * 1.1 + 0.4) : (Math.random() - 0.5) * 0.35,
+          alpha: Math.random() * 0.55 + 0.4,
           isSpark: !!config.sparks
         });
       }
@@ -104,14 +117,13 @@ const VFX = (function () {
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           
           if (p.isSpark) {
-            ctx.fillStyle = `rgba(255, 170, 50, ${p.alpha})`;
+            ctx.fillStyle = `rgba(255, 160, 40, ${p.alpha})`;
             ctx.shadowBlur = 4;
-            ctx.shadowColor = 'rgba(255, 120, 0, 0.8)';
+            ctx.shadowColor = 'rgba(255, 100, 0, 0.8)';
           } else {
-            // Tozlar hafif parlayan sıcak krem rengi yapıldı
-            ctx.fillStyle = `rgba(245, 235, 210, ${p.alpha})`;
+            ctx.fillStyle = `rgba(245, 235, 200, ${p.alpha})`;
             ctx.shadowBlur = 2;
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.25)';
           }
           
           ctx.fill();
