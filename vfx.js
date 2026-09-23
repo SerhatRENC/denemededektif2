@@ -1,88 +1,79 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v5 - Işık Huzmesi & Mikro Toz)
+   VFX ENGINE - Sislidere Köyü Davası (v6 - Temizlenmiş & Görünür)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
   let particles = [];
 
-  // MEKAN BAZLI IŞIK HUZMESİ VE EFEKT KONFİGÜRASYONU
-  // beam: { xMin, xMax, yMin, yMax } -> Tozların hapsedildiği ışık huzmesi koordinat yüzdeleri
+  // MEKAN BAZLI TEMİZLENMİŞ IŞIK VE HUZME KORİDORLARI
   const roomVFXConfig = {
-    // --- Işık Huzmesi Olan Özel İç Mekanlar ---
+    // --- 1. Sadece Gerçekten Pencere Işığı Olan İç Mekanlar (Toz Huzmesi) ---
     'ofis': {
-      dust: true, count: 70,
-      beam: { xMin: 0.45, xMax: 0.85, yMin: 0.05, yMax: 0.75 },
-      lights: [{ x: '70%', y: '30%', color: 'rgba(255, 180, 80, 0.4)', size: '28cqw' }]
+      dust: true, count: 110,
+      beam: { xMin: 0.40, xMax: 0.85, yMin: 0.05, yMax: 0.80 }
     },
     'dedektif': {
-      dust: true, count: 70,
-      beam: { xMin: 0.10, xMax: 0.55, yMin: 0.10, yMax: 0.80 },
-      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.65)', size: '24cqw' }]
+      dust: true, count: 110,
+      beam: { xMin: 0.05, xMax: 0.50, yMin: 0.10, yMax: 0.85 },
+      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.55)', size: '20cqw' }] // Masadaki gaz lambası
     },
     'cadi': {
-      dust: true, count: 75,
-      beam: { xMin: 0.50, xMax: 0.85, yMin: 0.20, yMax: 0.85 }
+      dust: true, count: 120,
+      beam: { xMin: 0.52, xMax: 0.88, yMin: 0.20, yMax: 0.85 }
     },
     'degirmenci': {
-      dust: true, count: 80,
-      beam: { xMin: 0.35, xMax: 0.65, yMin: 0.25, yMax: 0.75 }
+      dust: true, count: 130,
+      beam: { xMin: 0.35, xMax: 0.65, yMin: 0.20, yMax: 0.80 }
     },
     'halit_ev': {
-      dust: true, count: 65,
-      beam: { xMin: 0.55, xMax: 0.90, yMin: 0.15, yMax: 0.80 },
-      lights: [{ x: '10%', y: '58%', color: 'rgba(255, 160, 40, 0.5)', size: '20cqw' }]
+      dust: true, count: 100,
+      beam: { xMin: 0.55, xMax: 0.92, yMin: 0.15, yMax: 0.85 }
     },
     'nadire_ev': {
-      dust: true, count: 65,
-      beam: { xMin: 0.18, xMax: 0.42, yMin: 0.20, yMax: 0.85 }
+      dust: true, count: 100,
+      beam: { xMin: 0.18, xMax: 0.45, yMin: 0.20, yMax: 0.85 },
+      lights: [{ x: '22%', y: '55%', color: 'rgba(255, 160, 40, 0.5)', size: '18cqw' }] // Masadaki gaz lambası
     },
     'han_depo': {
-      dust: true, count: 75,
-      beam: { xMin: 0.05, xMax: 0.38, yMin: 0.10, yMax: 0.85 }
+      dust: true, count: 110,
+      beam: { xMin: 0.05, xMax: 0.40, yMin: 0.10, yMax: 0.85 }
     },
     'kilise': {
-      dust: true, count: 70,
+      dust: true, count: 120,
       beam: { xMin: 0.10, xMax: 0.90, yMin: 0.15, yMax: 0.85 }
     },
     'muhtar': {
-      dust: true, count: 70,
-      beam: { xMin: 0.05, xMax: 0.55, yMin: 0.10, yMax: 0.85 }
+      dust: true, count: 110,
+      beam: { xMin: 0.02, xMax: 0.55, yMin: 0.10, yMax: 0.85 }
     },
     'sifahane': {
-      dust: true, count: 65,
-      beam: { xMin: 0.05, xMax: 0.45, yMin: 0.10, yMax: 0.80 },
-      lights: [{ x: '73%', y: '58%', color: 'rgba(230, 110, 30, 0.5)', size: '22cqw' }]
+      dust: true, count: 100,
+      beam: { xMin: 0.05, xMax: 0.45, yMin: 0.10, yMax: 0.80 }
     },
     'gazeteci': {
-      dust: true, count: 60,
+      dust: true, count: 100,
       beam: { xMin: 0.30, xMax: 0.70, yMin: 0.15, yMax: 0.80 }
     },
 
-    // --- Ateş / Ocak Odaklı Genel Atmosferler ---
+    // --- 2. Ateş / Ocak Mekanları (Kıvılcım & Kor) ---
     'demirci': {
-      sparks: true, count: 50,
-      lights: [{ x: '60%', y: '42%', color: 'rgba(255, 100, 20, 0.75)', size: '32cqw' }]
+      sparks: true, count: 60,
+      beam: { xMin: 0.60, xMax: 0.95, yMin: 0.10, yMax: 0.85 }, // Pencere huzmesi
+      lights: [{ x: '60%', y: '42%', color: 'rgba(255, 90, 10, 0.7)', size: '30cqw' }] // Ocak ateşi
     },
     'han_mutfak': {
-      sparks: true, count: 45,
-      lights: [{ x: '50%', y: '50%', color: 'rgba(255, 110, 30, 0.7)', size: '28cqw' }]
+      sparks: true, count: 50,
+      lights: [{ x: '50%', y: '50%', color: 'rgba(255, 100, 20, 0.65)', size: '26cqw' }]
     },
 
-    // --- Diğer İç Mekanlar ve Han ---
-    'cevdet_ev': { dust: true, count: 55, beam: { xMin: 0.20, xMax: 0.60, yMin: 0.15, yMax: 0.80 } },
-    'mustafa_ev': { dust: true, count: 50, beam: { xMin: 0.25, xMax: 0.65, yMin: 0.20, yMax: 0.80 } },
-    'cabbar_ev': { dust: true, count: 50, beam: { xMin: 0.20, xMax: 0.60, yMin: 0.20, yMax: 0.80 } },
-    'riza_ev': { dust: true, count: 50, beam: { xMin: 0.30, xMax: 0.70, yMin: 0.20, yMax: 0.80 } },
-    'anselm_ev': { dust: true, count: 50, beam: { xMin: 0.25, xMax: 0.65, yMin: 0.20, yMax: 0.80 } },
-    'aylin_ev': { dust: true, count: 50, beam: { xMin: 0.20, xMax: 0.60, yMin: 0.20, yMax: 0.80 } },
-    'han': { dust: true, count: 50, beam: { xMin: 0.25, xMax: 0.75, yMin: 0.15, yMax: 0.85 } },
-
-    // --- Dış Mekanlar (Sadece Sis ve Açık Hava) ---
+    // --- 3. Dış Mekanlar (Sadece Hafif Sis - SIFIR YAPAY IŞIK / SIFIR BÖLGE TOZU) ---
     'merkez': { fog: true },
     'mezarlik': { fog: true },
     'koy': { fog: true },
     'araba': { fog: true },
-    'giris': { fog: true }
+    'giris': { fog: true },
+    'halit_ev_kapi': {}, // Dış kapı görünümünde efekt yok
+    'kilise_kapi': {}
   };
 
   function cleanup() {
@@ -100,7 +91,7 @@ const VFX = (function () {
 
     if (!config) return;
 
-    // 1. Dinamik Işıklar / Gaz Lambası Parlaklığı
+    // 1. Gerçek Gaz Lambası / Ateş Parlaması
     if (config.lights) {
       config.lights.forEach(l => {
         const light = document.createElement('div');
@@ -114,14 +105,14 @@ const VFX = (function () {
       });
     }
 
-    // 2. Sis Katmanı (Dış Mekanlar)
+    // 2. Dış Mekan Sisi
     if (config.fog) {
       const fog = document.createElement('div');
       fog.className = 'vfx-fog-overlay';
       stageElement.appendChild(fog);
     }
 
-    // 3. Işık Huzmesi İçinde Süzülen Mikro Tozlar
+    // 3. Işık Huzmesi İçinde Görünür Toz Parçacıkları
     if (config.dust || config.sparks) {
       const canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
@@ -132,10 +123,9 @@ const VFX = (function () {
       canvas.height = rect.height || 450;
       const ctx = canvas.getContext('2d');
 
-      const beam = config.beam || { xMin: 0, xMax: 1, yMin: 0, yMax: 1 };
-      const count = config.count || 50;
+      const beam = config.beam || { xMin: 0.1, xMax: 0.9, yMin: 0.1, yMax: 0.9 };
+      const count = config.count || 100;
 
-      // Parçacıkları doğrudan ışık huzmesinin koordinat aralığında doğur
       for (let i = 0; i < count; i++) {
         const minX = canvas.width * beam.xMin;
         const maxX = canvas.width * beam.xMax;
@@ -145,13 +135,13 @@ const VFX = (function () {
         particles.push({
           x: minX + Math.random() * (maxX - minX),
           y: minY + Math.random() * (maxY - minY),
-          // %30 Küçültülmüş Mikro Toz Boyutu (0.4px - 0.9px)
-          r: config.sparks ? Math.random() * 1.2 + 0.6 : Math.random() * 0.5 + 0.4,
-          vx: (Math.random() - 0.5) * (config.sparks ? 0.6 : 0.18),
-          vy: config.sparks ? -(Math.random() * 0.8 + 0.3) : (Math.random() - 0.5) * 0.12,
-          alpha: Math.random() * 0.65 + 0.25,
-          maxAlpha: Math.random() * 0.6 + 0.3,
-          fadeSpeed: Math.random() * 0.006 + 0.002,
+          // Net Görünür Toz Boyutu (1.2px - 2.2px)
+          r: config.sparks ? Math.random() * 1.8 + 0.8 : Math.random() * 1.0 + 1.2,
+          vx: (Math.random() - 0.5) * (config.sparks ? 0.8 : 0.35),
+          vy: config.sparks ? -(Math.random() * 0.9 + 0.4) : (Math.random() - 0.5) * 0.25,
+          alpha: Math.random() * 0.6 + 0.35, // Daha belirgin opaklık
+          maxAlpha: Math.random() * 0.5 + 0.45,
+          fadeSpeed: Math.random() * 0.008 + 0.003,
           fadingIn: Math.random() > 0.5,
           wobble: Math.random() * Math.PI * 2,
           isSpark: !!config.sparks,
@@ -163,38 +153,39 @@ const VFX = (function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         particles.forEach(p => {
-          // Doğal hava süzülmesi (sinüs dalgası)
-          p.wobble += 0.015;
-          p.x += p.vx + Math.sin(p.wobble) * 0.1;
+          // Doğal süzülüş
+          p.wobble += 0.02;
+          p.x += p.vx + Math.sin(p.wobble) * 0.18;
           p.y += p.vy;
 
-          // Nefes Alma / Yavaş Parlayıp Sönme
+          // Yanıp sönme (Fade in / Fade out)
           if (p.fadingIn) {
             p.alpha += p.fadeSpeed;
             if (p.alpha >= p.maxAlpha) p.fadingIn = false;
           } else {
             p.alpha -= p.fadeSpeed;
-            if (p.alpha <= 0.05) {
+            if (p.alpha <= 0.1) {
               p.fadingIn = true;
-              // Sönünce huzme içinde yeni bir noktada doğsun
               p.x = p.bounds.minX + Math.random() * (p.bounds.maxX - p.bounds.minX);
               p.y = p.bounds.minY + Math.random() * (p.bounds.maxY - p.bounds.minY);
             }
           }
 
-          // Huzme sınırından dışarı çıkarsa içeri geri yönlendir
-          if (p.x < p.bounds.minX || p.x > p.bounds.maxX) p.vx *= -1;
-          if (p.y < p.bounds.minY || p.y > p.bounds.maxY) p.vy *= -1;
+          // Huzme alanı dışına taşarsa sıfırla
+          if (p.x < p.bounds.minX || p.x > p.bounds.maxX || p.y < p.bounds.minY || p.y > p.bounds.maxY) {
+            p.x = p.bounds.minX + Math.random() * (p.bounds.maxX - p.bounds.minX);
+            p.y = p.bounds.minY + Math.random() * (p.bounds.maxY - p.bounds.minY);
+          }
 
-          // MİKRO TOZ ÇİZİMİ
+          // Çizim
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
 
           if (p.isSpark) {
-            ctx.fillStyle = `rgba(255, 165, 40, ${p.alpha})`;
+            ctx.fillStyle = `rgba(255, 175, 50, ${p.alpha})`;
           } else {
-            // Işık huzmesinde parlayan ince altın-krem mikro toz
-            ctx.fillStyle = `rgba(245, 235, 205, ${p.alpha})`;
+            // Parlak krem rengi toz taneleri
+            ctx.fillStyle = `rgba(255, 245, 220, ${p.alpha})`;
           }
 
           ctx.fill();
