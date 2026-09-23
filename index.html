@@ -31,15 +31,15 @@
 
   <!-- 2. OFİS / ŞEHİR -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/odalar/ofis_sehir.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
+    <div class="nabiz-ikon-wrap" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
       <img src="assets/arayuz/el.webp" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
+    <div class="nabiz-ikon-wrap" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
       <img src="assets/arayuz/buyutec.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
+    <div class="nabiz-ikon-wrap" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
       <img src="assets/arayuz/ayak.webp" alt="Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -47,7 +47,7 @@
 
   <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
+    <div class="nabiz-ikon-wrap" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
       <img src="assets/arayuz/kulak.webp" alt="Mesajı Dinle">
       <div class="nabiz-ikon-etiket">Dinle</div>
     </div>
@@ -55,12 +55,12 @@
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
     </div>
-    <button class="btn show" id="btn-mors-ilerle" style="left:82.0%;top:76.0%;">İlerle</button>
+    <button class="btn show" id="btn-mors-ilerle" style="position:absolute;left:82.0%;top:76.0%;z-index:10;padding:8px 16px;background:#c98a2c;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">İlerle</button>
   </div>
 
   <!-- 4. RAF -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/odalar/raf.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
+    <div class="nabiz-ikon-wrap" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
       <img src="assets/arayuz/el.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
@@ -68,11 +68,11 @@
 
   <!-- 5. SİSLİDERE DOSYASI -->
   <div class="screen" id="scr-dosya" style="background-image:url('assets/odalar/sislidere_dosya.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
+    <div class="nabiz-ikon-wrap" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
       <img src="assets/arayuz/buyutec.webp" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-dosya-geri" style="left:9%;top:57.5%;width:7.5%;">
+    <div class="nabiz-ikon-wrap" id="btn-dosya-geri" style="left:9%;top:57.5%;width:7.5%;">
       <img src="assets/arayuz/geri.webp" alt="Geri">
       <div class="nabiz-ikon-etiket">Geri</div>
     </div>
@@ -80,7 +80,7 @@
 
   <!-- 6. AT ARABASI -->
   <div class="screen" id="scr-araba" style="background-image:url('assets/odalar/at_arabasi.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
+    <div class="nabiz-ikon-wrap" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
       <img src="assets/arayuz/ayak.webp" alt="Bin">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -88,9 +88,9 @@
 
   <!-- 7. KÖY GİRİŞİ -->
   <div class="screen" id="scr-koy" style="background-image:url('assets/odalar/koy_giris.webp')">
-    <img class="character" id="char-halit" src="assets/karakterler/halit.webp" alt="Halit">
+    <img class="character" id="char-halit" src="assets/karakterler/halit.webp" alt="Halit" style="position:absolute;right:10%;bottom:0;height:80%;display:none;">
     <div class="subtitle" id="sub-halit"></div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-ofise-git" style="left:49.5%;top:62.8%;width:5%;">
+    <div class="nabiz-ikon-wrap" id="btn-ofise-git" style="left:49.5%;top:62.8%;width:5%;">
       <img src="assets/arayuz/ayak.webp" alt="Ofise Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
@@ -98,14 +98,14 @@
 
   <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/odalar/dedektif_ofis.webp')">
-    <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis">
+    <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis" style="position:absolute;right:10%;bottom:0;height:80%;display:none;">
     <div class="subtitle" id="sub-polis"></div>
   </div>
 
-  <div id="popup-overlay">
-    <button id="popup-close">×</button>
+  <div id="popup-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:center;justify-content:center;">
+    <button id="popup-close" style="position:absolute;top:20px;right:20px;font-size:30px;color:#fff;background:none;border:none;cursor:pointer;">×</button>
     <div class="zoom-wrap">
-      <img id="popupImg" src="assets/arayuz/ali_ihsan.webp" alt="Ali İhsan">
+      <img id="popupImg" src="assets/arayuz/ali_ihsan.webp" alt="Ali İhsan" style="max-height:80vh;max-width:80vw;">
     </div>
   </div>
 
@@ -113,5 +113,68 @@
   <audio id="aud-mors" src="assets/ses/mors_kodu.mp3" preload="auto"></audio>
 
 </div>
+
+<!-- GİRİŞ AKIŞI / EKRAN GEÇİŞ MANTIĞI -->
+<script>
+  function ekranaGec(mevcutId, hedefId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const hedef = document.getElementById(hedefId);
+    if (hedef) {
+      hedef.classList.add('active');
+      if (typeof VFX !== 'undefined') VFX.load(hedefId, hedef);
+      if (typeof SFX !== 'undefined') SFX.play(hedefId);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Ana Menü Butonları
+    document.getElementById('btn-oyna')?.addEventListener('click', () => ekranaGec('scr-ana', 'scr-ofis'));
+    
+    document.getElementById('btn-hakkinda')?.addEventListener('click', () => {
+      alert("Sislidere Köyü Davası\n\nYazan & Tasarlayan: RENC");
+    });
+
+    document.getElementById('btn-nasil')?.addEventListener('click', () => {
+      alert("Nasıl Oynanır:\n- İpuçlarını toplamak için ekrandaki simgelere tıkla.\n- Şüphelilerle konuşarak ifadeleri topla.\n- Deftere notlar al ve katili tespit et!");
+    });
+
+    // 2. Ofis / Şehir Ekranı
+    document.getElementById('btn-telgraf')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-mors'));
+    document.getElementById('btn-ofis-incele')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-raf'));
+    document.getElementById('btn-kapi-ayak')?.addEventListener('click', () => ekranaGec('scr-ofis', 'scr-araba'));
+
+    // 3. Mors Ekranı
+    document.getElementById('btn-mors-ilerle')?.addEventListener('click', () => ekranaGec('scr-mors', 'scr-ofis'));
+    document.getElementById('btn-mors-tekrar')?.addEventListener('click', () => {
+      const aud = document.getElementById('aud-mors');
+      if (aud) { aud.currentTime = 0; aud.play().catch(() => {}); }
+    });
+
+    // 4. Raf / Dosya
+    document.getElementById('btn-dosya-incele')?.addEventListener('click', () => ekranaGec('scr-raf', 'scr-dosya'));
+    document.getElementById('btn-dosya-geri')?.addEventListener('click', () => ekranaGec('scr-dosya', 'scr-raf'));
+    document.getElementById('btn-dosya-incele-ic')?.addEventListener('click', () => {
+      document.getElementById('popup-overlay').style.display = 'flex';
+    });
+    document.getElementById('popup-close')?.addEventListener('click', () => {
+      document.getElementById('popup-overlay').style.display = 'none';
+    });
+
+    // 5. At Arabası & Köy Girişi -> Ana Oyuna Geçiş
+    document.getElementById('btn-bin')?.addEventListener('click', () => ekranaGec('scr-araba', 'scr-koy'));
+    document.getElementById('btn-ofise-git')?.addEventListener('click', () => {
+      window.location.href = 'oyun.html';
+    });
+
+    // Tam Ekran Butonu
+    document.getElementById('tamEkranBtn')?.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+  });
+</script>
 </body>
 </html>
