@@ -1,15 +1,47 @@
 /* ============================================================
-   SAYFA VE EKRAN KİLİTLEME (ALT ALTA KAYMAYI ÖNLER)
+   ANA TEMEL VE SAYFA KİLİTLEME (ALT ALTA KAYMAYI ENGELLEME)
    ============================================================ */
+
+:root {
+  --amber: #c98a2c;
+  --amber-bright: #e3a94a;
+  --bg-dark: #0a0806;
+  --mono: monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden !important; /* Sayfanın aşağı/sağa kaymasını kesin olarak engeller */
+  overflow: hidden !important;
   background-color: #050403;
-  touch-action: none; /* Mobil kaydırmaları engeller */
+  touch-action: none;
+  font-family: system-ui, -apple-system, sans-serif;
+  user-select: none;
+}
+
+/* Telefon Çevirme Uyarısı */
+.donme-uyarisi {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #fff;
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+@media (orientation: portrait) {
+  .donme-uyarisi { display: flex; }
 }
 
 /* 1. Giriş Akışı Kapsayıcısı (index.html) */
@@ -25,7 +57,6 @@ html, body {
   justify-content: center;
 }
 
-/* Tüm ekranları aynı noktada üst üste bindir ve gizle */
 .screen {
   position: absolute;
   inset: 0;
@@ -34,17 +65,20 @@ html, body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  display: none; /* Aktif olmayan ekranlar gizlenir */
+  display: none;
   z-index: 1;
 }
 
-/* Sadece aktif olan ekran görünsün */
 .screen.active {
   display: block !important;
   z-index: 2;
 }
 
 /* 2. Ana Oyun Sahnesi Kapsayıcısı (oyun.html) */
+#caseTitle {
+  display: none;
+}
+
 .stage-wrap {
   position: relative;
   width: 100vw;
@@ -73,4 +107,348 @@ html, body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: opacity 0.2s ease;
+}
+
+.stage.fading {
+  opacity: 0.1;
+}
+
+/* ============================================================
+   KARAKTER ETKİLEŞİMİ & ARKA PLAN KARARTMA SİSTEMİ
+   ============================================================ */
+
+.stage-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 7;
+}
+.stage-dim.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.room-character-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 6;
+  cursor: pointer;
+  transition: filter 0.3s ease, opacity 0.4s ease;
+  filter: drop-shadow(0 0 0px transparent);
+}
+.room-character-overlay:hover {
+  filter: drop-shadow(0 0 8px rgba(227, 169, 74, 0.8)) drop-shadow(0 0 18px rgba(201, 138, 44, 0.5));
+}
+.room-character-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scene-character {
+  position: absolute;
+  right: 2%;
+  bottom: 0;
+  height: 90%;
+  width: auto;
+  max-width: 38%;
+  object-fit: contain;
+  cursor: pointer;
+  z-index: 8;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(30px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,.6));
+}
+.scene-character.talking {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  z-index: 10;
+  filter: drop-shadow(0 0 15px rgba(227, 169, 74, 0.6)) drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+}
+
+.scene-subtitle {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  background: rgba(15, 12, 8, 0.92);
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 12px 20px;
+  z-index: 12;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.scene-subtitle-name {
+  color: var(--amber-bright);
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 4px;
+}
+
+.scene-subtitle-text {
+  color: #e9e2cf;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   HOTSPOT VE ETKİLEŞİM İKONLARI
+   ============================================================ */
+
+.hotspot {
+  position: absolute;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.hotspot-pulse-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hotspot-pulse-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+  transition: transform 0.2s ease;
+}
+
+.hotspot-pulse-wrap:hover img {
+  transform: scale(1.15);
+}
+
+.hotspot-pulse-label {
+  background: rgba(10, 10, 8, 0.85);
+  color: var(--amber-bright);
+  border: 1px solid var(--amber);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.nabiz-ikon-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nabiz-ikon-wrap img { width: 100%; height: auto; }
+.nabiz-ikon-wrap.gizli { display: none; }
+.nabiz-ikon-etiket {
+  background: rgba(10, 10, 8, 0.85);
+  color: var(--amber-bright);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   KÖŞE İKONLARI (HARİTA & DEFTER)
+   ============================================================ */
+
+.corner-icons {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 12px;
+  z-index: 20;
+}
+
+.corner-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.corner-icon-btn {
+  width: 60px;
+  height: 60px;
+  background: rgba(20, 16, 10, 0.8);
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.corner-icon-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.corner-icon-label {
+  color: var(--amber-bright);
+  font-size: 0.75em;
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   MODAL, HARİTA VE DEFTER KATMANLARI
+   ============================================================ */
+
+.modal-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.modal-bg.active { display: flex; }
+
+.modal {
+  background: #14100a;
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 20px;
+  color: #e9e2cf;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal.wide { max-width: 90%; width: 90%; }
+
+.zoom-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.zoom-wrap img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.reader-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: transparent; border: none;
+  color: var(--amber-bright); font-size: 24px; cursor: pointer;
+}
+
+.reader-side-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.5); border: 1px solid var(--amber);
+  color: var(--amber-bright); font-size: 30px; cursor: pointer;
+  padding: 5px 12px; border-radius: 4px;
+}
+.reader-side-arrow.left { left: 10px; }
+.reader-side-arrow.right { right: 10px; }
+
+.reader-play-simple {
+  display: block; margin: 15px auto 0;
+  background: var(--amber); color: #000;
+  border: none; padding: 8px 16px; border-radius: 4px;
+  font-weight: bold; cursor: pointer;
+}
+
+/* Harita ve Defter Overlays */
+.map-overlay, .notebook-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none; justify-content: center; align-items: center;
+  z-index: 40;
+}
+.map-overlay.active, .notebook-overlay.active { display: flex; }
+
+.map-box, .notebook-box {
+  position: relative; max-width: 90%; max-height: 90%;
+}
+.map-box img, .notebook-box img {
+  max-width: 100%; max-height: 80vh; display: block;
+}
+
+.map-overlay-close, .notebook-overlay-close {
+  position: absolute; top: -30px; right: 0;
+  background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;
+}
+
+/* Not Defteri İçi */
+.notebook-img-wrap { position: relative; }
+.nb-page { position: absolute; top: 6%; bottom: 8%; width: 32%; }
+.nb-page.sol { left: 20%; }
+.nb-page.sag { left: 56%; }
+.nb-yazi {
+  width: 100%; height: 100%;
+  background: transparent; border: none; resize: none;
+  font-family: 'Caveat', cursive; font-size: 1.2em; color: #1a1a1a;
+  outline: none;
+}
+.nb-toolbar {
+  display: flex; gap: 10px; justify-content: center; margin-top: 10px;
+}
+.nb-btn {
+  background: #2a2218; border: 1px solid var(--amber);
+  color: var(--amber-bright); padding: 4px 10px; border-radius: 4px; cursor: pointer;
+}
+.nb-btn.active { background: var(--amber); color: #000; }
+
+/* Suçlama / Final Overlay */
+.suclama-overlay {
+  position: absolute; inset: 0;
+  background: #0a0806; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px; color: #fff;
+}
+.suclama-overlay.active { display: flex; }
+.suclama-baslik { color: var(--amber-bright); margin-bottom: 20px; }
+.suclama-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+  max-width: 800px; max-height: 70vh; overflow-y: auto;
+}
+.suclama-kart {
+  background: #1a140e; border: 1px solid var(--amber); border-radius: 6px;
+  padding: 10px; text-align: center; cursor: pointer;
+}
+.suclama-kart img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; }
+.suclama-isim { margin-top: 8px; color: var(--amber-bright); font-weight: bold; }
+.suclama-devam-btn {
+  margin-top: 20px; background: var(--amber); color: #000;
+  border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer;
+}
+
+/* Envanter & Oda Etiketi */
+.inventory {
+  position: absolute; bottom: 10px; left: 10px;
+  background: rgba(10, 8, 6, 0.8); border: 1px solid var(--amber);
+  border-radius: 4px; padding: 4px 8px; color: #888; font-size: 0.8em;
+  z-index: 15;
+}
+.room-label {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(10, 8, 6, 0.85); border: 1px solid var(--amber);
+  color: var(--amber-bright); padding: 4px 12px; border-radius: 4px;
+  font-weight: bold; z-index: 15;
 }

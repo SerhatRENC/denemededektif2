@@ -7,7 +7,6 @@ let currentRoom = null;
 let inventory = [];
 let currentDay = 1;
 let calibMode = false;
-let calibClicks = [];
 
 fetch('case.json')
   .then(r => r.json())
@@ -31,7 +30,7 @@ fetch('case.json')
     console.error(err);
   });
 
-/* ---------- Arka Plan Karartma Katmanı Kontrolü ---------- */
+/* ---------- Arka Plan Karartma Katmanı ---------- */
 function getStageDim() {
   const stage = document.getElementById('stage');
   let dimEl = document.getElementById('stageDim');
@@ -52,7 +51,7 @@ function renderRoom() {
 
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
-    getStageDim(); // Karartma katmanını hazırla
+    getStageDim();
 
     const kapali = room.closedOnDays && room.closedOnDays.includes(currentDay);
     stage.style.backgroundImage = `url(${kapali ? room.closedImage : room.background})`;
@@ -64,7 +63,6 @@ function renderRoom() {
       geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri dön">`;
       geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
       stage.appendChild(geri);
-      setTimeout(() => geri.classList.remove('ikon-bekliyor'), 2000);
 
       const tokmak = document.createElement('div');
       tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
@@ -74,7 +72,6 @@ function renderRoom() {
         showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
       };
       stage.appendChild(tokmak);
-      setTimeout(() => tokmak.classList.remove('ikon-bekliyor'), 2000);
 
       stage.classList.remove('fading');
       return;
@@ -105,7 +102,6 @@ function renderRoom() {
 
         wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
         stage.appendChild(wrap);
-        setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
         return;
       }
 
@@ -132,13 +128,21 @@ function handleHotspot(h) {
   if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
+function renderInventory() {
+  const invEl = document.getElementById('inventory');
+  if (!invEl) return;
+  if (!inventory.length) {
+    invEl.innerHTML = '<span class="inv-empty">envanter boş</span>';
+    return;
+  }
+  invEl.innerHTML = inventory.map(i => `<span class="inv-item">${i}</span>`).join(' ');
+}
+
 function openPhoto(src) {
   showModal(`
     <div class="zoom-wrap"><img class="reader-card-img" id="photoZoomImg" src="${src}" style="margin-bottom:14px;"></div>
-    <button class="ghost" onclick="closeModal()">Kapat</button>
+    <button class="reader-close" onclick="closeModal()">✕</button>
   `);
-  const el = document.getElementById('photoZoomImg');
-  if (el) zoomKur(el.parentElement, el);
 }
 
 function updateDayBadge() {
@@ -151,10 +155,9 @@ function confirmSleep() {
   showModal(`
     <h3>Uyumadan Önce</h3>
     <p>${sonGun
-      ? 'Bu son gece. Uyumadan önce köyde henüz bulmadığın kanıtlar olabilir mi bir kontrol et — uyuyunca artık bir suçlama yapman gerekecek.'
-      : 'Uyumak istediğine emin misin? Köyde henüz bulmadığın kanıtlar olabilir — şimdi uyursan onları kaçırmış olarak bir sonraki güne geçeceksin.'}</p>
-    <button onclick="closeModal(); ${sonGun ? 'finalSuclamayaBaslat();' : 'sleep();'}">Evet, Uyu</button>
-    <button class="ghost" onclick="closeModal()">Vazgeç</button>
+      ? 'Bu son gece. Uyumadan önce köyde henüz bulmadığın kanıtlar olabilir mi bir kontrol et.'
+      : 'Uyumak istediğine emin misin? Bir sonraki güne geçilecek.'}</p>
+    <button class="reader-play-simple" onclick="closeModal(); ${sonGun ? 'finalSuclamayaBaslat();' : 'sleep();'}">Evet, Uyu</button>
   `);
 }
 
@@ -206,14 +209,11 @@ function suphesecildi(isim) {
     const dosya = 'assets/sorgu/final_sorgu/mustafa_final_sorgu.png';
     suclamaGoster(`
       <div class="zoom-wrap" style="width:70vw;height:80vh;">
-        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı">
+        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı" onerror="this.src='assets/sorgu/final_sorgu/mustafa_final_sorgu.webp'">
       </div>
       <button class="suclama-devam-btn" onclick="oyunKazanildi()">Devam Et</button>
     `);
-    const itirafImg = document.getElementById('itirafZoomImg');
-    if (itirafImg) zoomKur(itirafImg.parentElement, itirafImg);
   } else {
-    // Github dosya isimlerinin esnek kontrolü (aylin_fnal_srogu.png vb.)
     let dosyaIsmi = `${normIsim}_final_sorgu.png`;
     if (normIsim === 'aylin') dosyaIsmi = 'aylin_fnal_srogu.png';
     if (normIsim === 'cabbar') dosyaIsmi = 'cabbar_final_srogu.png';
@@ -226,8 +226,6 @@ function suphesecildi(isim) {
       </div>
       <button class="suclama-devam-btn" onclick="oyunKaybedildi()">Devam Et</button>
     `);
-    const sorguImg = document.getElementById('sorguZoomImg');
-    if (sorguImg) zoomKur(sorguImg.parentElement, sorguImg);
   }
 }
 
@@ -261,7 +259,6 @@ function oyunuSifirla() {
 }
 
 let currentStatementIndex = 0;
-
 function openStatement(index) {
   stopStatementAudio();
   currentStatementIndex = index;
@@ -281,10 +278,6 @@ function openStatement(index) {
     <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
-  document.getElementById('modalBody').classList.add('reader');
-  document.getElementById('modalBg').classList.add('reader-mode');
-  const sImg = document.getElementById('statementZoomImg');
-  if (sImg) zoomKur(sImg.parentElement, sImg);
 }
 
 let statementAudio = null, statementPlaying = false;
@@ -310,15 +303,12 @@ function showModal(html, wide) {
   body.innerHTML = html;
   body.className = 'modal' + (wide ? ' wide' : '');
   const bg = document.getElementById('modalBg');
-  bg.classList.remove('reader-mode');
   bg.classList.add('active');
 }
 function closeModal() {
   stopStatementAudio();
   document.getElementById('modalBg').classList.remove('active');
-  document.getElementById('modalBg').classList.remove('reader-mode');
 }
-document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
 
 /* ---------- KARAKTER VE DİYALOG MEKANİZMASI ---------- */
 let characterAudio = null;
@@ -335,7 +325,6 @@ function renderCharacter() {
 
   const stage = document.getElementById('stage');
 
-  // 1. ODA İÇİ TIKLANABİLİR KATMAN (Masa/Ortam Katmanı)
   if (ch.clickableImage) {
     const clickOverlay = document.createElement('img');
     clickOverlay.id = 'roomCharOverlay';
@@ -346,7 +335,6 @@ function renderCharacter() {
     stage.appendChild(clickOverlay);
   }
 
-  // 2. DİYALOG KARAKTERİ (Sağa Kayacak Şeffaf Katman)
   const el = document.createElement('img');
   el.id = 'sceneCharacter';
   el.className = 'scene-character';
@@ -366,7 +354,6 @@ function toggleCharacterLine(ch) {
     dialogueActive = true;
     dialogIndex = 0;
 
-    // Arka planı karart, masadaki katmanı gizle, sağdaki karakteri süzdür
     if (dimEl) dimEl.classList.add('active');
     if (clickOverlay) clickOverlay.classList.add('hidden');
     if (charEl) charEl.classList.add('talking');
@@ -379,7 +366,6 @@ function toggleCharacterLine(ch) {
   } else {
     dialogIndex++;
     if (dialogIndex >= dialog.length) {
-      // Diyalog Bitti: Eski haline dön
       if (characterAudio) { characterAudio.pause(); characterAudio = null; }
       const sub = document.getElementById('sceneSubtitle');
       if (sub) sub.remove();
@@ -407,3 +393,9 @@ function gosterDialogSatiri(dialog) {
   const satir = dialog[dialogIndex];
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
+
+/* Harita ve Defter Aç/Kapa Fonksiyonları */
+function openMap() { document.getElementById('mapOverlay').classList.add('active'); }
+function closeMap() { document.getElementById('mapOverlay').classList.remove('active'); }
+function openNotebook() { document.getElementById('notebookOverlay').classList.add('active'); }
+function closeNotebook() { document.getElementById('notebookOverlay').classList.remove('active'); }
