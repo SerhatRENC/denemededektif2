@@ -175,29 +175,28 @@
 #stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.35em; }
 /* Kalın kutu YOK — sadece çok ince, yarı saydam bir zemin + yumuşak gölge (kontur değil) */
 #stageFrame .corner-icon-btn{
-  width:9.5cqw; height:9.5cqw; min-width:44px; min-height:44px; max-width:76px; max-height:76px;
+  width:19cqw; height:19cqw; min-width:88px; min-height:88px; max-width:152px; max-height:152px;
   background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:12px;
   padding:8%;
   box-shadow:0 4px 12px rgba(0,0,0,.5);
   transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
 }
-#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 5px rgba(0,0,0,.5)); }
+#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 5px rgba(0,0,0,.5)); transform:rotate(90deg); }
 #stageFrame .corner-icon-label{
-  font-family:var(--mono); font-size:clamp(12px,1.9cqw,16px); letter-spacing:.05em;
-  color:var(--amber-bright); background:rgba(10,10,8,.7); padding:2px 8px; border-radius:4px;
+  font-family:var(--mono); font-size:clamp(24px,3.8cqw,32px); letter-spacing:.05em;
+  color:var(--amber-bright); background:rgba(10,10,8,.7); padding:4px 14px; border-radius:5px;
 }
-/* Harita ikonu dikey (portre) çevrildi, not defterinin yanında aynı duruşta duruyor */
-#stageFrame .corner-icons button:first-child img{ transform:rotate(90deg); }
-#stageFrame .corner-icons button:last-child img{ transform:rotate(90deg); }
-#stageFrame .corner-icons button:first-child{ transform:rotate(-5deg); }
-#stageFrame .corner-icons button:last-child{ transform:rotate(4deg); }
-#stageFrame .corner-icons button:hover,
-#stageFrame .corner-icons button.tiklandi{
-  transform:scale(1.14) rotate(0deg);
+/* Harita hafif sola, defter hafif sağa yatık — kesin sınıflarla, konuma bağlı
+   :first-child/:last-child yerine (sarmalayıcı div'ler yüzünden güvenilmezdi) */
+#stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-5deg); }
+#stageFrame .corner-icon-item.defter .corner-icon-btn{ transform:rotate(4deg); }
+#stageFrame .corner-icon-btn:hover,
+#stageFrame .corner-icon-btn.tiklandi{
+  transform:scale(1.14) rotate(0deg) !important;
   background:rgba(28,24,16,.55); box-shadow:0 6px 18px rgba(0,0,0,.6);
 }
-#stageFrame .corner-icons button:first-child:hover img,
-#stageFrame .corner-icons button:first-child.tiklandi img{ transform:rotate(90deg); }
+#stageFrame .corner-icon-btn:hover img,
+#stageFrame .corner-icon-btn.tiklandi img{ transform:rotate(90deg); }
 
 /* Açılan harita/defter: küçülmüş+saydam başlayıp büyüyerek beliriyor */
 #stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
@@ -226,8 +225,7 @@
 /* ---------- GÜN SAYACI: takvim_gunN.png (kullanıcının kendi tasarımı) ---------- */
 #stageFrame .stage-day-tag{
   position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px;
-  width:clamp(42px,11cqw,78px); height:auto;   /* PNG'nin kendi en-boy oranı korunur */
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));
+  width:clamp(55px,14.3cqw,101px); height:auto;   /* PNG'nin kendi en-boy oranı korunur */
   z-index:15;
 }
 /* Görsel henüz yüklenmediyse (o güne ait PNG eksikse) kırık resim yerine sade bir rozet */
@@ -252,3 +250,35 @@
    aynı özgüllükte olmayan bir seçici yeterli değil, !important gerekiyor
    (stil JS'ten satır-içi geliyor, en yüksek özgüllüğe sadece böyle erişilir). */
 #stageFrame .modal.reader .zoom-wrap{ width:70cqi !important; height:45cqi !important; }
+
+/* ---------- MEKAN İSMİ / ENVANTER / HOTSPOT ETİKETLERİ: %60 büyütüldü ----------
+   (.room-label, .inv-empty, .hotspot-pulse-label style.css'in kendi kuralları;
+   engine.js/style.css değişmeden burada daha yüksek özgüllükle eziliyor.) */
+#stageFrame .room-label{ font-size:16.8px; padding:7px 13px; }
+#stageFrame .inv-empty{ font-size:16px; padding:6px 11px; }
+#stageFrame .hotspot-pulse-label{ font-size:16px; padding:3px 10px; }
+
+/* ============================================================
+   UYKU / UYANMA GEÇİŞLERİ
+   sleep-overlay style.css'te display:none/flex ile açılıp kapanıyordu
+   (display değeri animasyonlanamaz) — burada opaklığa çevrildi ki
+   yumuşak kararsın/aydınlansın. #stageFrame DIŞINDA (tam ekranı kaplıyor,
+   bilerek), o yüzden kapsamsız (yalnızca oyun.html'de var).
+   ============================================================ */
+.sleep-overlay{
+  display:flex !important; opacity:0; pointer-events:none;
+  transition:opacity .6s ease;
+}
+.sleep-overlay.active{ opacity:1; pointer-events:auto; }
+
+/* Uyanınca kısa bir "sabah ışığı" parlaması — oyun.html'deki wakeUp() sarmalayıcısı ekliyor */
+#stageFrame .sabah-parlama{
+  position:absolute; inset:0; z-index:300; pointer-events:none;
+  background:radial-gradient(circle, #fff8e8 0%, #e9dcc0 75%);
+  opacity:.95; transition:opacity 1.1s ease;
+}
+#stageFrame .sabah-parlama.aktif{ opacity:0; }
+@media (prefers-reduced-motion: reduce){
+  .sleep-overlay{ transition:none; }
+  #stageFrame .sabah-parlama{ transition:none; }
+}

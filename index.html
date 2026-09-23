@@ -335,7 +335,7 @@
   }
 </style>
 <!-- Öğretici kartları + tıklanabilirlik ipuçları (index.html'deki inline stillerden sonra yüklenir) -->
-<link rel="stylesheet" href="ogretici.css?v=8">
+<link rel="stylesheet" href="ogretici.css?v=9">
 </head>
 <body>
 <div class="donme-uyarisi">
@@ -535,7 +535,7 @@
 
 </div>
 
-<script src="ogretici.js?v=2"></script>
+<script src="ogretici.js?v=3"></script>
 <script>
 /* ============================================================
    ÖĞRETİCİ İÇERİĞİ — ilk kez gelinen ekranlarda bir kez çıkan bilgi kartları.
@@ -715,6 +715,7 @@ document.getElementById('btn-oyna').addEventListener('click', () => {
 /* 2. OFİS — telgrafın üstündeki el.png'ye tıklayınca mesaj sesi kesilir,
    mors ekranına geçilir */
 document.getElementById('btn-telgraf').addEventListener('click', () => {
+  calSes('al');
   const aud = document.getElementById('aud-mesaj');
   aud.pause();
   aud.currentTime = 0;
@@ -748,9 +749,10 @@ document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
 });
 
 /* 4. RAF & 5. DOSYA */
-document.getElementById('btn-dosya-incele').addEventListener('click', () => showScreen('scr-dosya'));
+document.getElementById('btn-dosya-incele').addEventListener('click', () => { calSes('al'); showScreen('scr-dosya'); });
 
 document.getElementById('btn-dosya-incele-ic').addEventListener('click', () => {
+  calSes('incele');
   document.getElementById('popup-overlay').classList.add('show');
 });
 
@@ -764,6 +766,7 @@ function ofisDonusIkonlari() {
 
 // Dosya popup'ındaki ÇARPI → doğrudan ofis_sehir.jpg
 document.getElementById('popup-close').addEventListener('click', () => {
+  calSes('geri');
   document.getElementById('popup-overlay').classList.remove('show');
   aliIhsanZoom.sifirla();
   showScreen('scr-ofis');
@@ -773,18 +776,21 @@ document.getElementById('popup-close').addEventListener('click', () => {
 // Ofisteki İNCELE → yine sislidere_dosya.jpg (çarpıyla çıkınca yine ofise döner).
 // Dosya ekranına ikinci gelişte büyüteç zaten görünür; popup'ı açmak istemezse çıkış için GERİ de belirir.
 document.getElementById('btn-ofis-incele').addEventListener('click', () => {
+  calSes('incele');
   showScreen('scr-dosya');
   setTimeout(() => document.getElementById('btn-dosya-geri').classList.remove('gizli'), IKON_BEKLEME_MS);
 });
 document.getElementById('btn-dosya-geri').addEventListener('click', () => {
+  calSes('geri');
   showScreen('scr-ofis');
   ofisDonusIkonlari();
 });
 // Kapıdaki ayak izi → at arabası
-document.getElementById('btn-kapi-ayak').addEventListener('click', () => showScreen('scr-araba'));
+document.getElementById('btn-kapi-ayak').addEventListener('click', () => { calSes('kapi_git'); showScreen('scr-araba'); });
 
 /* 6. AT ARABASI */
 document.getElementById('btn-bin').addEventListener('click', () => {
+  calSes('at_arabasi');   // burası "Git" etiketli olsa da kendi özel sesi var, kapi_git.mp3 ÇALINMIYOR
   const fadeLayer = document.getElementById('fade-layer');
   const fadeText = document.getElementById('fade-text');
   fadeLayer.classList.add('show');
@@ -817,6 +823,7 @@ document.getElementById('char-halit').addEventListener('click', () => {
 });
 
 document.getElementById('btn-ofise-git').addEventListener('click', () => {
+  calSes('kapi_git');
   showScreen('scr-dedektif');
   document.getElementById('char-polis').classList.add('show');
 });

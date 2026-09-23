@@ -155,3 +155,13 @@ const Ogretici = (function () {
 
   return { kur, goster, yeniden, iptal, kapat, isaretle, sifirla };
 })();
+
+/* ============================================================
+   SES YARDIMCISI — hem index.html hem oyun.html kullanıyor.
+   assets/ses/<ad>.mp3 dosyasını bir kez çalar. Her çağrıda yeni bir Audio
+   nesnesi oluşturuluyor ki art arda hızlı tıklamalarda sesler birbirini
+   kesmesin.
+   ============================================================ */
+function calSes(ad) {
+  try { new Audio('assets/ses/' + ad + '.mp3').play().catch(() => {}); } catch (e) { /* yoksay */ }
+}

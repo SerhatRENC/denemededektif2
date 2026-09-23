@@ -6,7 +6,7 @@
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
-<link rel="stylesheet" href="ogretici.css?v=8">
+<link rel="stylesheet" href="ogretici.css?v=9">
 </head>
 <body>
 
@@ -24,14 +24,14 @@
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
-        <div class="corner-icon-item">
-          <button class="corner-icon-btn" onclick="kosePop(this, openMap)" title="Harita">
+        <div class="corner-icon-item harita">
+          <button class="corner-icon-btn" onclick="kosePop(this, openMap, 'harita')" title="Harita">
             <img src="assets/harita.png" alt="Harita">
           </button>
           <div class="corner-icon-label">Harita</div>
         </div>
-        <div class="corner-icon-item">
-          <button class="corner-icon-btn" onclick="kosePop(this, openNotebook)" title="Not Defteri">
+        <div class="corner-icon-item defter">
+          <button class="corner-icon-btn" onclick="kosePop(this, openNotebook, 'kitap')" title="Not Defteri">
             <img src="assets/defter.png" alt="Not Defteri">
           </button>
           <div class="corner-icon-label">Defter</div>
@@ -131,7 +131,7 @@
   </div>
 
   <script src="engine.js?v=14"></script>
-  <script src="ogretici.js?v=2"></script>
+  <script src="ogretici.js?v=3"></script>
   <script src="yukleme.js?v=1"></script>
   <script>
     // Sorgu kağıdı okuyucusu: sol/sağ oklar artık ekranın değil, kağıdın (imgın
@@ -165,14 +165,15 @@
     // ------------------------------------------------------------------
     const IKON_BEKLEME_MS = 1000;       // simgelerin belirme süresi (ms)
     const ARKA_PLAN_YUKLEME = true;     // false yaparsan sıradaki odalar önceden indirilmez
-    const YURUME_SESI = 'assets/ses/yurume_sesi.mp3';
+    const YURUME_SESI = 'assets/ses/yuru.mp3';
 
     Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
 
     // Köşedeki harita/defter düğmesi: kısa bir "elden kalkma" animasyonu oynar,
     // asıl overlay (openMap/openNotebook) o kalkış tam bitmeden hafif önce açılır
     // ki büyüyerek beliren kart animasyonuyla üst üste binsin.
-    function kosePop(btn, ac) {
+    function kosePop(btn, ac, ses) {
+      if (ses) calSes(ses);
       btn.classList.add('tiklandi');
       setTimeout(() => btn.classList.remove('tiklandi'), 260);
       setTimeout(ac, 90);
@@ -192,6 +193,56 @@
     document.getElementById('dayBadge').addEventListener('load', function () {
       this.classList.remove('yuklenemedi');
     });
+
+    // ------------------------------------------------------------------
+    // SES SİSTEMİ — engine.js'e DOKUNMADAN, ilgili global fonksiyonlar sarmalanıyor
+    // ya da olay delegasyonu kullanılıyor. calSes() ogretici.js içinde tanımlı,
+    // assets/ses/<ad>.mp3 çalar.
+    // ------------------------------------------------------------------
+    const _handleHotspotOrijinal = handleHotspot;
+    handleHotspot = function (h) {
+      if (h.icon) {
+        if (h.icon.endsWith('tokmak.png')) calSes('kapi');
+        else if (h.icon.endsWith('geri.png')) calSes('geri');
+        else if (h.icon.endsWith('ayak.png') && h.label === 'Git') calSes('kapi_git');
+        else if (h.icon.endsWith('buyutec.png')) calSes('incele');
+      }
+      if (h.type === 'dosya') calSes('harita');   // masadaki sorgu kağıdını açma
+      _handleHotspotOrijinal(h);
+    };
+
+    // Haritada bir mekân noktasına (pin) tıklanınca — pinler openMap() her
+    // açılışta yeniden çiziliyor, o yüzden kalıcı üst kapsayıcıda delege ediliyor.
+    document.getElementById('mapHotspots').addEventListener('click', (e) => {
+      if (e.target.closest('.map-hotspot')) calSes('kapi');
+    });
+
+    // Sorgu kağıdı okuyucusunda sol/sağ ok (sayfa geçişi) tıklaması — #modalBg
+    // kalıcı, içeriği (dolayısıyla oklar) her openStatement()'ta yeniden çiziliyor.
+    document.getElementById('modalBg').addEventListener('click', (e) => {
+      if (e.target.closest('.reader-side-arrow')) calSes('sayfa');
+    });
+
+    // Uyuma: kararma zaten CSS geçişiyle (ogretici.css → .sleep-overlay) yumuşatıldı,
+    // burada sadece ses ekleniyor.
+    const _sleepOrijinal = sleep;
+    sleep = function () {
+      calSes('uyuma');
+      _sleepOrijinal();
+    };
+
+    // Uyanma: "aydınlıktan açılma" hissi için kısa bir beyaz/sıcak parlama katmanı
+    // eklenip söndürülüyor, ses çalınıyor.
+    const _wakeUpOrijinal = wakeUp;
+    wakeUp = function () {
+      calSes('sabah');
+      const parlak = document.createElement('div');
+      parlak.className = 'sabah-parlama';
+      document.getElementById('stageFrame').appendChild(parlak);
+      requestAnimationFrame(() => parlak.classList.add('aktif'));
+      _wakeUpOrijinal();
+      setTimeout(() => parlak.remove(), 1300);
+    };
 
     const _renderRoomOrijinal = renderRoom;
     let _odaJetonu = 0;          // arka arkaya hızlı geçişlerde eski isteği yok saymak için
