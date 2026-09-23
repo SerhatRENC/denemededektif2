@@ -41,6 +41,10 @@ function renderRoom() {
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
 
+    // Kapalı kapı kontrolü: case.json'da bu odaya closedOnDays/closedImage
+    // tanımlıysa ve bugün o günlerden biriyse, normal hotspot'lar yerine
+    // sadece geri dönme + "kapıyı çal" seçeneği olan kapalı bir görünüm
+    // gösterilir. O odaya atanmış karakter BİLEREK gösterilmez.
     const kapali = room.closedOnDays && room.closedOnDays.includes(currentDay);
     stage.style.backgroundImage = `url(${kapali ? room.closedImage : room.background})`;
 
@@ -48,7 +52,7 @@ function renderRoom() {
       const geri = document.createElement('div');
       geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
       geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '6%';
-      geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri dön">`;
+      geri.innerHTML = `<img src="assets/geri.png" alt="Geri dön">`;
       geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
       stage.appendChild(geri);
       setTimeout(() => geri.classList.remove('ikon-bekliyor'), 2000);
@@ -56,7 +60,7 @@ function renderRoom() {
       const tokmak = document.createElement('div');
       tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
       tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%';
-      tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
+      tokmak.innerHTML = `<img src="assets/tokmak.png" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
       tokmak.onclick = () => {
         showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
       };
@@ -68,9 +72,15 @@ function renderRoom() {
     }
 
     room.hotspots.forEach(h => {
-      if (h.requires && !inventory.includes(h.requires)) return;
-      if (h.activeDays && !h.activeDays.includes(currentDay)) return;
+      if (h.requires && !inventory.includes(h.requires)) return; // basit kilit: eşya yoksa hotspot gizli
+      if (h.activeDays && !h.activeDays.includes(currentDay)) return; // sadece belirli günlerde görünür
 
+      // YENİ: ikonu olan ama dikdörtgen (w/h) VERİLMEMİŞ hotspot'lar artık
+      // nabız atan, MERKEZ noktalı küçük bir ikon olarak çiziliyor
+      // (index.html'deki .nabiz-ikon ile birebir aynı mantık). x/y bu ikonun
+      // TAM ORTASI, iconWidth genişliği belirler (yoksa varsayılan %8).
+      // "label" verilirse ikonun altında küçük bir isim etiketi çıkar.
+      // Ekran/oda açılır açılmaz değil, 2 saniye sonra belirir.
       if (h.icon && !h.w && !h.h) {
         const wrap = document.createElement('div');
         wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
@@ -99,9 +109,10 @@ function renderRoom() {
         wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
         stage.appendChild(wrap);
         setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
-        return;
+        return; // eski dikdörtgen hotspot kutusu ÇİZİLMEZ
       }
 
+      // ESKİ: dikdörtgen hotspot (w/h var) — obje ikonlu (sorgu/defter gibi) ya da görünmez
       const el = document.createElement('div');
       el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
       el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
@@ -113,7 +124,7 @@ function renderRoom() {
       stage.appendChild(el);
     });
 
-    renderCharacter();
+    renderCharacter(); // oda değiştikçe, o odaya atanmış karakter varsa sağ tarafta belirir
 
     stage.classList.remove('fading');
   }, 180);
@@ -130,6 +141,7 @@ function handleHotspot(h) {
   if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
+/* ---------- salt fotoğraf gösterici (başlık/açıklama YOK, sadece görsel) ---------- */
 function openPhoto(src) {
   showModal(`
     <div class="zoom-wrap"><img class="reader-card-img" id="photoZoomImg" src="${src}" style="margin-bottom:14px;"
@@ -139,7 +151,7 @@ function openPhoto(src) {
   const el = document.getElementById('photoZoomImg');
   if (el) zoomKur(el.parentElement, el);
 }
-
+/* ---------- gün döngüsü ---------- */
 function updateDayBadge() {
   document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
 }
@@ -169,9 +181,18 @@ function sleep() {
 
 function wakeUp() {
   document.getElementById('sleepOverlay').classList.remove('active');
-  renderRoom();
+  renderRoom(); // gün değiştiği için bazı hotspot'lar görünür/gizli olabilir
 }
 
+/* ============================================================
+   SON GÜN — SUÇLAMA / OYUN SONU
+   Akış: şüpheli seç → (Mustafa değilse) {isim}_final_sorgu.png göster
+   → "Katili bulamadın." → Tekrar Başla (day 1'e sıfırlanıp index.html'e
+   döner). (Mustafa ise) mustafa_final_itiraf.png göster → "Bravo
+   dedektif, katili buldun!" → Emeği Geçenler → Tekrar Oyna (aynı şekilde
+   sıfırlanır). Şüpheli listesi CASE.notebook.suspects'ten geliyor (zaten
+   polis hariç 9 kişilik roster, ayrı bir liste tutmaya gerek yok).
+   ============================================================ */
 function dosyaAdiNormalle(str) {
   return str.toLocaleLowerCase('tr-TR')
     .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
@@ -199,23 +220,8 @@ function finalSuclamayaBaslat() {
 }
 
 function suphesecildi(isim) {
-  const finalDosyaMap = {
-    'ansel': 'ansel_final_sorgu.png',
-    'aylin': 'aylin_fnal_srogu.png',
-    'cabbar': 'cabbar_final_srogu.png',
-    'cevdet': 'cevdet_final_sorgu.png',
-    'halit': 'halit_final_sorgu.png',
-    'kamuran': 'kamuran_final_srogu.png',
-    'mustafa': 'mustafa_final_sorgu.png',
-    'nadire': 'nadire_final_sorgu.png',
-    'riza': 'riza_final_sorgu.png'
-  };
-
-  const key = dosyaAdiNormalle(isim);
-  const dosyaAdi = finalDosyaMap[key] || `${key}_final_sorgu.png`;
-  const dosya = `assets/sorgu/final_sorgu/${dosyaAdi}`;
-
   if (isim === 'Mustafa') {
+    const dosya = 'assets/mustafa_final_itiraf.png';
     suclamaGoster(`
       <div class="zoom-wrap" style="width:70vw;height:80vh;">
         <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı"
@@ -226,6 +232,7 @@ function suphesecildi(isim) {
     const itirafImg = document.getElementById('itirafZoomImg');
     if (itirafImg) zoomKur(itirafImg.parentElement, itirafImg);
   } else {
+    const dosya = `assets/${dosyaAdiNormalle(isim)}_final_sorgu.png`;
     suclamaGoster(`
       <div class="zoom-wrap" style="width:70vw;height:80vh;">
         <img class="suclama-gorsel" id="sorguZoomImg" src="${dosya}" alt="${isim} - Sorgu"
@@ -273,6 +280,9 @@ function oyunuSifirla() {
   window.location.href = 'index.html';
 }
 
+/* ---------- ifade zaptı okuyucu — çerçevesiz, tam ekran (index.html'deki
+   Ali İhsan popup'ıyla aynı görsel dil): sadece yan oklar + altta tek
+   basit "Sorguyu Oynat" butonu ---------- */
 let currentStatementIndex = 0;
 
 function openStatement(index) {
@@ -301,6 +311,7 @@ function openStatement(index) {
   if (sImg) zoomKur(sImg.parentElement, sImg);
 }
 
+// Modal açıkken ve bir ifade kartı gösterilirken klavye ok tuşlarıyla da gezinilebilir
 document.addEventListener('keydown', (e) => {
   if (!document.querySelector('.reader-card-img-wide')) return;
   if (e.key === 'ArrowRight' && currentStatementIndex < CASE.statements.length - 1) openStatement(currentStatementIndex + 1);
@@ -325,6 +336,7 @@ function stopStatementAudio() {
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }
 }
 
+/* ---------- inceleme (belge/fotoğraf) ---------- */
 function openExamine(itemId) {
   const item = CASE.items[itemId];
   const imgHtml = item.image
@@ -333,6 +345,7 @@ function openExamine(itemId) {
   let bodyHtml = `<h3>${item.title}</h3>${imgHtml}<p>${item.desc || ''}</p>`;
 
   if (item.lockedCode) {
+    // kilitli/kod gerektiren evrak
     bodyHtml += `
       <div class="locked-box">
         <input id="unlockInput" placeholder="kod gir..." maxlength="8">
@@ -365,7 +378,7 @@ function collect(collectId, image) {
     renderInventory(image);
   }
   closeModal();
-  renderRoom();
+  renderRoom(); // requires ile açılmış yeni hotspot olabilir
 }
 
 function renderInventory(lastImage) {
@@ -380,6 +393,7 @@ function renderInventory(lastImage) {
   });
 }
 
+/* ---------- TV / video ---------- */
 function openTV(deviceId) {
   const dev = CASE.devices[deviceId];
   showModal(`
@@ -392,6 +406,7 @@ function openTV(deviceId) {
   `);
 }
 
+/* ---------- teyp / ses kaydedici ---------- */
 let tapeAudio = null, tapeInterval = null, tapePlaying = false, tapeSeconds = 0;
 function openRecorder(deviceId) {
   const dev = CASE.devices[deviceId];
@@ -430,12 +445,13 @@ function toggleTape() {
   }
 }
 
+/* ---------- modal yardımcıları ---------- */
 function showModal(html, wide) {
   const body = document.getElementById('modalBody');
   body.innerHTML = html;
-  body.className = 'modal' + (wide ? ' wide' : '');
+  body.className = 'modal' + (wide ? ' wide' : ''); // önceki modal'dan kalan class'lar (ör. 'reader') burada temizleniyor
   const bg = document.getElementById('modalBg');
-  bg.classList.remove('reader-mode');
+  bg.classList.remove('reader-mode'); // her yeni modalda sıfırlanır, openStatement gerekirse tekrar ekler
   bg.classList.add('active');
 }
 function closeModal() {
@@ -447,6 +463,11 @@ function closeModal() {
 }
 document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
 
+/* ============================================================
+   KALİBRASYON MODU — koordinat bulmayı kolaylaştırır.
+   Aç, resme sırayla iki nokta tıkla (sol-üst köşe, sağ-alt köşe),
+   ekranda ve konsolda hazır JSON satırı çıkar, case.json'a yapıştır.
+   ============================================================ */
 const calibToggle = document.getElementById('calibToggle');
 const stageEl = document.getElementById('stage');
 const readout = document.getElementById('calibReadout');
@@ -490,6 +511,11 @@ stageEl.addEventListener('click', (e) => {
   }
 });
 
+/* ============================================================
+   HARİTA MEKANİĞİ
+   Konum verisi CASE.map içinden okunur (engine'e hardcode edilmedi),
+   yani başka bir vaka dosyası kendi haritasını tanımlayabilir.
+   ============================================================ */
 function openMap() {
   if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
   document.getElementById('mapImage').src = CASE.map.image;
@@ -508,6 +534,7 @@ function openMap() {
         closeMap();
         renderRoom();
       } else {
+        // hedef oda case.json'a henüz eklenmemiş — sessizce yok saymak yerine haber ver
         alert(`"${h.label}" henüz case.json'a eklenmedi.`);
       }
     };
@@ -520,9 +547,22 @@ function closeMap() {
   document.getElementById('mapOverlay').classList.remove('active');
 }
 
+/* ============================================================
+   NOT DEFTERİ MEKANİĞİ
+   Sol sayfa 2 sabit şüpheli satırı (fotoğraf+isim CASE.notebook.suspects'tan,
+   sayfa değişse de değişmez) + her satırın yanında serbest metin alanı.
+   Sağ sayfa tamamen serbest not alanı.
+   ÇİZİM tek bir katman (nbCanvasFull) — tüm çift sayfayı kaplar, "Çiz"
+   modunda fotoğrafların üstü dahil her yere serbestçe çizilebilir.
+   "Sil" modunda aynı katman destination-out ile gerçekten siliniyor
+   (tüm sayfayı değil, dokunulan yeri).
+   Her sayfa: { solUst, solAlt, sag: metin | pageDrawing: tek canvas dataURL }
+   localStorage: sd_notebook_v3_<caseLabel>  (v3: çizim tek katmana indirgendi
+   için eski v2 kayıtlarla çakışmasın diye anahtar adı değiştirildi)
+   ============================================================ */
 let notebookState = null;
-let notebookMod = 'yaz';
-let notebookRenk = '#1a1a1a';
+let notebookMod = 'yaz'; // 'yaz' | 'ciz' | 'sil'
+let notebookRenk = '#1a1a1a'; // varsayılan: koyu siyaha yakın
 
 function notebookKey() {
   return 'sd_notebook_v3_' + CASE.caseLabel;
@@ -547,8 +587,10 @@ function openNotebook() {
   const nbImg = document.getElementById('notebookImage');
   const nbFallback = document.getElementById('notebookImgFallback');
   const nbWrap = document.getElementById('notebookImgWrap');
-  const src = (CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
+  const src = (CASE.notebook && CASE.notebook.image) || 'assets/yazi.png';
 
+  // Sayfa (sol/sağ) konumları case.json'dan — CSS'teki değerler sadece
+  // case.json okunamazsa devreye giren varsayılan.
   const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
   const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
   const solEl = document.getElementById('nbPageSol');
@@ -566,6 +608,10 @@ function openNotebook() {
     nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
   };
   nbImg.onload = () => {
+    // ÖNEMLİ KÖK ÇÖZÜM: en-boy oranı artık case.json/CSS'e gömülü bir tahmin
+    // DEĞİL — dosyanın gerçek piksel boyutundan (naturalWidth/naturalHeight)
+    // otomatik okunuyor. Görseli ileride değiştirsen (farklı boyutta bir
+    // yazi.png koysan) bile hiçbir kod/CSS değişikliği gerekmez, otomatik uyar.
     if (nbImg.naturalWidth && nbImg.naturalHeight) {
       nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
     }
@@ -574,12 +620,13 @@ function openNotebook() {
   nbImg.src = src;
 
   document.getElementById('notebookOverlay').classList.add('active');
-  requestAnimationFrame(renderNotebookPage);
+  requestAnimationFrame(renderNotebookPage); // görsel önbellekten geliyorsa onload hiç tetiklenmeyebilir
 }
 function closeNotebook() {
   document.getElementById('notebookOverlay').classList.remove('active');
 }
 
+// Sol sayfadaki 2 satırın hangi metin/çizim anahtarını ve DOM id'lerini kullandığı
 const NB_SOL_SATIRLAR = [
   { taraf: 'solUst', yaziId: 'nbYaziSolUst', canvasId: 'nbCanvasSolUst', photoId: 'nbPhoto0', nameId: 'nbName0', notesId: 'nbNotesSolUst' },
   { taraf: 'solAlt', yaziId: 'nbYaziSolAlt', canvasId: 'nbCanvasSolAlt', photoId: 'nbPhoto1', nameId: 'nbName1', notesId: 'nbNotesSolAlt' }
@@ -590,6 +637,8 @@ function renderNotebookPage() {
   const p = notebookState.pages[notebookState.page];
   const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
 
+  // Yerleşim yüzdeleri case.json'dan geliyor — CSS'i değiştirmeden,
+  // doğrudan case.json → notebook → suspectLayout içinden ince ayar yapılabilir.
   const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
   const photoTop    = yerlesim.photoTop    || '8%';
   const photoLeft   = yerlesim.photoLeft   || '14%';
@@ -601,12 +650,21 @@ function renderNotebookPage() {
   const noteWidth   = yerlesim.noteWidth   || '46%';
   const noteHeight  = yerlesim.noteHeight  || '60%';
 
+  // --- SOL SAYFA: sabit fotoğraf+isim (case.json'dan) + serbest yazı/çizim (kayıtlı state'ten) ---
   NB_SOL_SATIRLAR.forEach((satir, i) => {
-    const suspect = suspects[notebookState.page * 2 + i];
+    const suspect = suspects[notebookState.page * 2 + i]; // her sayfada 2 kişi
     const photoEl = document.getElementById(satir.photoId);
     const nameEl = document.getElementById(satir.nameId);
     const notesEl = document.getElementById(satir.notesId);
 
+    // Konum/boyut her render'da case.json'dan yeniden uygulanıyor —
+    // fallback (görsel yok) kutusuna dönüşse bile aynı yerleşimi korur.
+    // ÖNEMLİ: not alanı artık TÜM satırı değil, isminin altına denk gelen
+    // sağ sütunu kaplıyor — fotoğrafın üstüne binmesi artık mümkün değil.
+    // ÖNEMLİ 2: fotoğraf artık YÜKSEKLİK ile boyutlanıyor (genişlik değil) —
+    // satırın yüksekliği her zaman kesin bilindiği için bu çok daha
+    // güvenilir; genişlik fotoğrafın kendi gerçek en-boy oranından
+    // (aspect-ratio) otomatik hesaplanıyor, asla satırdan taşmıyor.
     nameEl.style.top = nameTop;
     nameEl.style.left = nameLeft;
     notesEl.style.top = noteTop;
@@ -635,6 +693,7 @@ function renderNotebookPage() {
       };
       photoEl.src = suspect.image;
     } else {
+      // bu sayfada 2. kişi yoksa (9 şüpheli tek sayı, son sayfa yarım kalıyor)
       nameEl.textContent = '';
       photoEl.style.display = 'none';
     }
@@ -643,8 +702,10 @@ function renderNotebookPage() {
     yaziEl.value = p[satir.taraf] || '';
   });
 
+  // --- SAĞ SAYFA: değişmedi, tamamen serbest ---
   document.getElementById('nbYaziSag').value = p.sag || '';
 
+  // --- TEK BÜYÜK ÇİZİM KATMANI: tüm çift sayfayı kaplar ---
   canvasResizeVeCiz(document.getElementById('nbCanvasFull'), p.pageDrawing);
 
   document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
@@ -652,6 +713,7 @@ function renderNotebookPage() {
   document.getElementById('nbEdgeIleri').disabled = notebookState.page === total - 1;
 }
 
+// Bir canvas'ı konteynerine göre yeniden ölçekleyip, varsa kayıtlı çizimi geri yükler
 function canvasResizeVeCiz(canvas, dataURL) {
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
@@ -666,6 +728,9 @@ function canvasResizeVeCiz(canvas, dataURL) {
 }
 
 function notebookYaziKaydet(taraf, el) {
+  // İSTENEN DAVRANIŞ: alan dolunca içerik kaydırılıp devam ETMESİN —
+  // görünür alana sığmayan her yeni karakter geri alınır, kullanıcı
+  // görsel olarak "alan doldu, daha fazla yazamıyorum" hissini yaşar.
   while (el.scrollHeight > el.clientHeight + 1 && el.value.length > 0) {
     el.value = el.value.slice(0, -1);
   }
@@ -738,12 +803,24 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('mousedown', başla);
   canvas.addEventListener('mousemove', çiz);
   window.addEventListener('mouseup', bitir);
+  // preventDefault: mobilde çizerken tarayıcının aynı hareketi sayfa
+  // kaydırma olarak yorumlayıp ekranı titretmesini engeller (touch-action:none
+  // CSS'te de var, burada JS tarafında ek güvence).
   canvas.addEventListener('touchstart', (e) => { e.preventDefault(); başla(e); }, { passive: false });
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
 }
 nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
+/* ============================================================
+   ORTAMDAKİ KARAKTER MEKANİĞİ
+   Oda id'sine göre CASE.characters içinden okunur — hangi odada
+   hangi karakterin durduğu tamamen case.json'da tanımlı.
+   İlk tık: altyazı açılır, ses çalmaya başlar, KENDİLİĞİNDEN kapanmaz.
+   İkinci tık (karaktere tekrar tıklamak): konuşma biter, hem altyazı
+   hem karakter ekrandan kaybolur (ör. Rıza'yla konuşup bitirince
+   handa onun arkasındaki gazeteci odası kapısı ortaya çıkar).
+   ============================================================ */
 let characterAudio = null;
 let dialogueActive = false;
 let dialogIndex = 0;
@@ -754,7 +831,7 @@ function renderCharacter() {
   dialogIndex = 0;
 
   const ch = CASE.characters && CASE.characters[currentRoom];
-  if (!ch) return;
+  if (!ch) return; // bu odaya atanmış karakter yok
 
   const stage = document.getElementById('stage');
   const el = document.createElement('img');
@@ -763,6 +840,10 @@ function renderCharacter() {
   el.src = ch.image;
   el.alt = ch.name;
   el.title = ch.name;
+  // Farklı PNG'lerde şeffaf kenar boşluğu farklı olabildiği için ("ayaklar
+  // havada duruyormuş" hissi), her karakter case.json'dan bağımsız bir
+  // dikey ince ayar (yOffset) alabilir. Pozitif değer karakteri yukarı,
+  // negatif değer aşağı kaydırır (örn. "-3%" karakteri hafif indirir).
   el.style.bottom = ch.yOffset || '0%';
   el.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
   el.onerror = () => {
@@ -779,9 +860,13 @@ function renderCharacter() {
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage');
   const charEl = document.getElementById('sceneCharacter');
+  // Yeni: case.json'da "dialog": [{speaker, text}, ...] tanımlıysa çok satırlı,
+  // tıklayarak ilerleyen konuşma kullanılır. Tanımlı değilse eski tek satırlık
+  // "text" alanına (geriye dönük uyumluluk için) düşülür.
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
 
   if (!dialogueActive) {
+    // İLK TIK — konuşmayı başlat, ilk satırı göster
     dialogueActive = true;
     dialogIndex = 0;
     if (charEl) charEl.classList.add('talking');
@@ -791,6 +876,7 @@ function toggleCharacterLine(ch) {
     }
     gosterDialogSatiri(dialog);
   } else {
+    // SONRAKİ TIKLAR — bir sonraki satıra geç; son satırdaysa konuşmayı bitir
     dialogIndex++;
     if (dialogIndex >= dialog.length) {
       if (characterAudio) { characterAudio.pause(); characterAudio = null; }
@@ -818,6 +904,9 @@ function gosterDialogSatiri(dialog) {
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
+/* ============================================================
+   BELGE YAKINLAŞTIRMA (ZOOM/PAN)
+   ============================================================ */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;
@@ -829,6 +918,10 @@ function zoomKur(wrap, img) {
   function uzaklik(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
   function orta(t1, t2) { return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 }; }
 
+  // Tıklanan/dokunulan noktayı resmin kendi oranına göre yüzdeye çevirip
+  // transform-origin olarak ayarlar — böylece büyütme her zaman ortadan
+  // değil, işaret edilen noktadan başlar. getBoundingClientRect() mevcut
+  // ölçeği de içerdiği için oran (bölme) her zaman aynı sonucu verir.
   function origadaAyarla(clientX, clientY) {
     const rect = img.getBoundingClientRect();
     const oranX = ((clientX - rect.left) / rect.width) * 100;

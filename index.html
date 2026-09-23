@@ -305,6 +305,7 @@
   }
 </style>
 <link rel="stylesheet" href="ogretici.css?v=9">
+<!-- VFX & SFX Sistem Stili ve Scriptleri -->
 <link rel="stylesheet" href="vfx.css">
 <script src="vfx.js"></script>
 <script src="sfx.js"></script>
@@ -320,32 +321,32 @@
   <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
   <!-- 1. ANA EKRAN -->
-  <div class="screen active" id="scr-ana" style="background-image:url('assets/odalar/giris.webp')">
+  <div class="screen active" id="scr-ana" style="background-image:url('assets/giris.jpg')">
     <div class="hotspot" id="btn-oyna" style="left:3.0%;top:30.8%;width:19%;height:9%;"></div>
     <div class="hotspot" id="btn-hakkinda" style="left:3.4%;top:43.5%;width:19%;height:9%;"></div>
     <div class="hotspot" id="btn-nasil" style="left:3.4%;top:57.2%;width:19%;height:9%;"></div>
   </div>
 
   <!-- 2. OFİS / ŞEHİR -->
-  <div class="screen" id="scr-ofis" style="background-image:url('assets/odalar/ofis_sehir.webp')">
+  <div class="screen" id="scr-ofis" style="background-image:url('assets/ofis_sehir.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
-      <img src="assets/arayuz/el.webp" alt="Telgrafa Bas">
+      <img src="assets/el.png" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
     <div class="nabiz-ikon-wrap gizli" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
-      <img src="assets/arayuz/buyutec.webp" alt="İncele">
+      <img src="assets/buyutec.png" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
     <div class="nabiz-ikon-wrap gizli" id="btn-kapi-ayak" style="left:34.3%;top:47.1%;width:6%;">
-      <img src="assets/arayuz/ayak.webp" alt="Git">
+      <img src="assets/ayak.png" alt="Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
   </div>
 
   <!-- 3. MORS KAĞIDI -->
-  <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
+  <div class="screen" id="scr-mors" style="background-image:url('assets/mors_kagidi.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
-      <img src="assets/arayuz/kulak.webp" alt="Mesajı Dinle">
+      <img src="assets/kulak.png" alt="Mesajı Dinle">
       <div class="nabiz-ikon-etiket">Dinle</div>
     </div>
 
@@ -356,46 +357,46 @@
   </div>
 
   <!-- 4. RAF -->
-  <div class="screen" id="scr-raf" style="background-image:url('assets/odalar/raf.webp')">
+  <div class="screen" id="scr-raf" style="background-image:url('assets/raf.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
-      <img src="assets/arayuz/el.webp" alt="İncele">
+      <img src="assets/el.png" alt="İncele">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
   </div>
 
   <!-- 5. SİSLİDERE DOSYASI -->
-  <div class="screen" id="scr-dosya" style="background-image:url('assets/odalar/sislidere_dosya.webp')">
+  <div class="screen" id="scr-dosya" style="background-image:url('assets/sislidere_dosya.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele-ic" style="left:55%;top:45%;width:8%;">
-      <img src="assets/arayuz/buyutec.webp" alt="İncele">
+      <img src="assets/buyutec.png" alt="İncele">
       <div class="nabiz-ikon-etiket">İncele</div>
     </div>
     <div class="nabiz-ikon-wrap gizli" id="btn-dosya-geri" style="left:9%;top:57.5%;width:7.5%;">
-      <img src="assets/arayuz/geri.webp" alt="Geri">
+      <img src="assets/geri.png" alt="Geri">
       <div class="nabiz-ikon-etiket">Geri</div>
     </div>
   </div>
 
   <!-- 6. AT ARABASI -->
-  <div class="screen" id="scr-araba" style="background-image:url('assets/odalar/at_arabasi.webp')">
+  <div class="screen" id="scr-araba" style="background-image:url('assets/at_arabasi.jpg')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-bin" style="left:69.2%;top:67.7%;width:5%;">
-      <img src="assets/arayuz/ayak.webp" alt="Bin">
+      <img src="assets/ayak.png" alt="Bin">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
   </div>
 
   <!-- 7. KÖY GİRİŞİ -->
-  <div class="screen" id="scr-koy" style="background-image:url('assets/odalar/koy_giris.webp')">
-    <img class="character" id="char-halit" src="assets/karakterler/halit.webp" alt="Halit">
+  <div class="screen" id="scr-koy" style="background-image:url('assets/koy_giris.jpg')">
+    <img class="character" id="char-halit" src="assets/karakterler/halit.png" alt="Halit">
     <div class="subtitle" id="sub-halit"></div>
     <div class="nabiz-ikon-wrap gizli" id="btn-ofise-git" style="left:49.5%;top:62.8%;width:5%;">
-      <img src="assets/arayuz/ayak.webp" alt="Ofise Git">
+      <img src="assets/ayak.png" alt="Ofise Git">
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
   </div>
 
   <!-- 8. DEDEKTİF OFİSİ -->
-  <div class="screen" id="scr-dedektif" style="background-image:url('assets/odalar/dedektif_ofis.webp')">
-    <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis">
+  <div class="screen" id="scr-dedektif" style="background-image:url('assets/dedektif_ofis.jpg')">
+    <img class="character" id="char-polis" src="assets/karakterler/polis.png" alt="Polis">
     <div class="subtitle" id="sub-polis"></div>
   </div>
 
@@ -412,12 +413,12 @@
         <h3 class="hakkinda-alt-baslik">Simgeler</h3>
         <div class="hakkinda-metin"><p>Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir.</p></div>
         <div class="nasil-ikonlar">
-          <div class="nasil-madde"><img src="assets/arayuz/el.webp" alt=""><div><b>Bak</b> — nesneye dokun</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/buyutec.webp" alt=""><div><b>İncele</b> — belgeyi ya da nesneyi yakından gör</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/kulak.webp" alt=""><div><b>Dinle</b> — sesi çal</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/ayak.webp" alt=""><div><b>Git</b> — başka bir yere geç</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/geri.webp" alt=""><div><b>Geri</b> — bir önceki yere dön</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/uyku.webp" alt=""><div><b>Uyku</b> — bir sonraki güne geç</div></div>
+          <div class="nasil-madde"><img src="assets/el.png" alt=""><div><b>Bak</b> — nesneye dokun</div></div>
+          <div class="nasil-madde"><img src="assets/buyutec.png" alt=""><div><b>İncele</b> — belgeyi ya da nesneyi yakından gör</div></div>
+          <div class="nasil-madde"><img src="assets/kulak.png" alt=""><div><b>Dinle</b> — sesi çal</div></div>
+          <div class="nasil-madde"><img src="assets/ayak.png" alt=""><div><b>Git</b> — başka bir yere geç</div></div>
+          <div class="nasil-madde"><img src="assets/geri.png" alt=""><div><b>Geri</b> — bir önceki yere dön</div></div>
+          <div class="nasil-madde"><img src="assets/uyku.png" alt=""><div><b>Uyku</b> — bir sonraki güne geç</div></div>
         </div>
 
         <h3 class="hakkinda-alt-baslik">Sohbet</h3>
@@ -464,16 +465,16 @@
         <div class="hakkinda-blok">
           <div class="hakkinda-blok-baslik">🎙️ Seslendirme Kadrosu</div>
           <div class="credits-grid">
-            <div class="credit-item"><img src="assets/karakterler/anselm.webp" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/aylin.webp" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/cabbar.webp" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/cevdet.webp" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/halit.webp" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/kamuran.webp" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/mustafa.webp" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/nadire.webp" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/polis.webp" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/riza.webp" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/anselm.png" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/aylin.png" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cabbar.png" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/cevdet.png" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/halit.png" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/kamuran.png" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/mustafa.png" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/nadire.png" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/polis.png" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="credit-item"><img src="assets/karakterler/riza.png" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
           </div>
         </div>
 
@@ -486,7 +487,7 @@
   <div id="popup-overlay">
     <button id="popup-close">×</button>
     <div class="zoom-wrap">
-      <img id="popupImg" src="assets/arayuz/ali_ihsan.webp" alt="Ali İhsan">
+      <img id="popupImg" src="assets/ali_ihsan.png" alt="Ali İhsan">
     </div>
   </div>
 
@@ -509,10 +510,10 @@ const OGRETICI_ICERIK = {
       'Başlamak için telgrafın üzerindeki simgeye tıkla.'
     ],
     maddeler: [
-      { ikon: 'assets/arayuz/el.webp',      baslik: 'Bak',    metin: 'nesneye dokun' },
-      { ikon: 'assets/arayuz/buyutec.webp', baslik: 'İncele', metin: 'belgeyi yakından gör' },
-      { ikon: 'assets/arayuz/kulak.webp',   baslik: 'Dinle',  metin: 'sesi çal' },
-      { ikon: 'assets/arayuz/ayak.webp',    baslik: 'Git',    metin: 'başka yere geç' }
+      { ikon: 'assets/el.png',      baslik: 'Bak',    metin: 'nesneye dokun' },
+      { ikon: 'assets/buyutec.png', baslik: 'İncele', metin: 'belgeyi yakından gör' },
+      { ikon: 'assets/kulak.png',   baslik: 'Dinle',  metin: 'sesi çal' },
+      { ikon: 'assets/ayak.png',    baslik: 'Git',    metin: 'başka yere geç' }
     ],
     konum: 'ust-orta',
     gecikme: 1600
@@ -524,7 +525,7 @@ const OGRETICI_ICERIK = {
       'Mors alfabesini bilmiyorsan internetteki bir tabloya bakabilirsin.'
     ],
     maddeler: [
-      { ikon: 'assets/arayuz/kulak.webp', baslik: 'Dinle', metin: 'mesajı tekrar çalar' }
+      { ikon: 'assets/kulak.png', baslik: 'Dinle', metin: 'mesajı tekrar çalar' }
     ],
     vurgu: ['.mors-yazi-alani'],
     konum: 'ust-orta',
@@ -534,7 +535,7 @@ const OGRETICI_ICERIK = {
     baslik: 'İnsanlarla sohbet et',
     metin: 'Konuşmak için karakterin üzerine tıkla. Konuşmayı ilerletmek için karaktere tekrar tıkla.',
     demo: {
-      karakter: 'assets/karakterler/halit.webp',
+      karakter: 'assets/karakterler/halit.png',
       isim: 'Halit',
       satirlar: ['Buyrun dedektif bey.', 'Size bir şey göstermem lazım.']
     },
@@ -638,10 +639,16 @@ function showScreen(id) {
   Ogretici.iptal();
   if (OGRETICI_EKRANLAR[id]) Ogretici.goster(OGRETICI_EKRANLAR[id]);
 
+  // VFX ve SFX Tetikleyici
   if (typeof VFX !== 'undefined') VFX.load(id, scr);
   if (typeof SFX !== 'undefined') SFX.play(id);
 }
 
+(function () {
+  const t = new Image();
+  t.onerror = () => { document.getElementById('scr-ana').style.backgroundImage = "url('assets/ana_ekran.jpg')"; };
+  t.src = 'assets/giris.jpg';
+})();
 document.getElementById('btn-nasil').addEventListener('click', () => showScreen('scr-nasil'));
 document.getElementById('btn-nasil-geri').addEventListener('click', () => showScreen('scr-ana'));
 document.getElementById('btn-hakkinda').addEventListener('click', () => {
@@ -668,12 +675,9 @@ document.getElementById('btn-telgraf').addEventListener('click', () => {
 });
 
 function normalizeTR(str) {
-  return str.trim()
-    .replace(/i/gi, 'I').replace(/ı/gi, 'I')
-    .replace(/ş/gi, 'S').replace(/ğ/gi, 'G')
-    .replace(/ü/gi, 'U').replace(/ö/gi, 'O')
-    .replace(/ç/gi, 'C')
-    .toUpperCase();
+  return str.trim().toLocaleLowerCase('tr-TR')
+    .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
+    .replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').toUpperCase();
 }
 
 document.getElementById('btn-mors-tekrar').addEventListener('click', () => {
@@ -796,6 +800,31 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
 });
 
 const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));
+
+(function () {
+  const frame = document.getElementById('stage-frame');
+  let toast = null, zamanlayici = null;
+  frame.addEventListener('click', (e) => {
+    if (!e.altKey) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const r = frame.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+    const y = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+    const yazi = `left:${x}%;top:${y}%;`;
+    console.log('Koordinat →', yazi);
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.style.cssText = 'position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:9999;' +
+        'background:rgba(0,0,0,.85);color:#e3a94a;font:12px monospace;padding:6px 12px;border-radius:6px;pointer-events:none;';
+      frame.appendChild(toast);
+    }
+    toast.textContent = yazi;
+    toast.style.display = 'block';
+    clearTimeout(zamanlayici);
+    zamanlayici = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }, true);
+})();
 </script>
 </body>
 </html>
