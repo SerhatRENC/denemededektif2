@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
 <link rel="stylesheet" href="ogretici.css?v=9">
-<!-- VFX & SFX Sistem Stili ve Scriptleri -->
 <link rel="stylesheet" href="vfx.css">
 <script src="vfx.js"></script>
 <script src="sfx.js"></script>
@@ -20,20 +19,20 @@
     <div class="stage-frame" id="stageFrame">
       <div class="stage" id="stage"></div>
 
-      <img class="stage-day-tag" id="dayBadge" src="assets/takvim_gun1.png" alt="Gün 1">
+      <img class="stage-day-tag" id="dayBadge" src="assets/arayuz/takvim_gun1.webp" alt="Gün 1">
 
       <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
       <div class="corner-icons">
         <div class="corner-icon-item harita">
           <button class="corner-icon-btn" onclick="kosePop(this, openMap, 'harita')" title="Harita">
-            <img src="assets/harita.png" alt="Harita">
+            <img src="assets/arayuz/harita.webp" alt="Harita">
           </button>
           <div class="corner-icon-label">Harita</div>
         </div>
         <div class="corner-icon-item defter">
           <button class="corner-icon-btn" onclick="kosePop(this, openNotebook, 'kitap')" title="Not Defteri">
-            <img src="assets/defter.png" alt="Not Defteri">
+            <img src="assets/arayuz/defter.webp" alt="Not Defteri">
           </button>
           <div class="corner-icon-label">Defter</div>
         </div>
@@ -170,7 +169,7 @@
     const _updateDayBadgeOrijinal = updateDayBadge;
     updateDayBadge = function () {
       const rozet = document.getElementById('dayBadge');
-      rozet.src = 'assets/takvim_gun' + currentDay + '.png';
+      rozet.src = 'assets/arayuz/takvim_gun' + currentDay + '.webp';
       rozet.alt = 'Gün ' + currentDay;
     };
     document.getElementById('dayBadge').addEventListener('error', function () {
@@ -183,10 +182,10 @@
     const _handleHotspotOrijinal = handleHotspot;
     handleHotspot = function (h) {
       if (h.icon) {
-        if (h.icon.endsWith('tokmak.png')) calSes('kapi');
-        else if (h.icon.endsWith('geri.png')) calSes('geri');
-        else if (h.icon.endsWith('ayak.png') && h.label === 'Git') calSes('kapi_git');
-        else if (h.icon.endsWith('buyutec.png')) calSes('incele');
+        if (h.icon.endsWith('tokmak.webp')) calSes('kapi');
+        else if (h.icon.endsWith('geri.webp')) calSes('geri');
+        else if (h.icon.endsWith('ayak.webp') && h.label === 'Git') calSes('kapi_git');
+        else if (h.icon.endsWith('buyutec.webp')) calSes('incele');
       }
       if (h.type === 'dosya') calSes('harita');
       _handleHotspotOrijinal(h);
@@ -249,7 +248,6 @@
         });
       }, 220);
 
-      // VFX VE SFX TETİKLEYİCİSİ
       if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || document.getElementById('stage'));
       if (typeof SFX !== 'undefined') SFX.play(currentRoom);
 
