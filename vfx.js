@@ -1,5 +1,5 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v4 - Doğal Mikro Tozlar)
+   VFX ENGINE - Sislidere Köyü Davası (v5 - İnce Mikro Daire Tozlar)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
@@ -73,7 +73,7 @@ const VFX = (function () {
       stageElement.appendChild(fog);
     }
 
-    // 3. Mikro Toz Parçacıkları (Doğal & Dinamik)
+    // 3. Küçük Daire Toz Parçacıkları (Çok Küçük & Mikro)
     if (config.dust || config.sparks) {
       const canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
@@ -86,14 +86,13 @@ const VFX = (function () {
 
       const count = config.count || 45;
 
-      // HEDEF: Her odaya girişte tamamen farklı rastgele konumlar (Random Seed)
+      // Her odaya girişte tamamen farklı rastgele konumlar
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // İnce mikro boyutlar (0.6px - 1.4px)
-          w: config.sparks ? Math.random() * 1.5 + 0.8 : Math.random() * 1.2 + 0.6,
-          h: config.sparks ? Math.random() * 2.5 + 1.2 : Math.random() * 1.2 + 0.6,
+          // MİKRO DARE YARIÇAPI (0.4px - 1.2px)
+          radius: config.sparks ? Math.random() * 1.2 + 0.6 : Math.random() * 0.8 + 0.4,
           vx: (Math.random() - 0.5) * (config.sparks ? 0.8 : 0.25),
           vy: config.sparks ? -(Math.random() * 0.9 + 0.3) : (Math.random() - 0.5) * 0.18,
           alpha: Math.random() * 0.6 + 0.2,
@@ -109,12 +108,10 @@ const VFX = (function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         particles.forEach(p => {
-          // Doğal süzülme için hafif sinüs sallantısı (wobble)
           p.wobble += 0.02;
           p.x += p.vx + Math.sin(p.wobble) * 0.15;
           p.y += p.vy;
 
-          // Nefes alma / Solma efekti (Fade In / Fade Out)
           if (p.fadingIn) {
             p.alpha += p.fadeSpeed;
             if (p.alpha >= p.maxAlpha) p.fadingIn = false;
@@ -122,28 +119,26 @@ const VFX = (function () {
             p.alpha -= p.fadeSpeed;
             if (p.alpha <= 0.05) {
               p.fadingIn = true;
-              // Sönünce rastgele yeni bir noktada doğsun
               p.x = Math.random() * canvas.width;
               p.y = Math.random() * canvas.height;
             }
           }
 
-          // Ekran dışına çıkma kontrolü
           if (p.x < 0) p.x = canvas.width;
           if (p.x > canvas.width) p.x = 0;
           if (p.y < 0) p.y = canvas.height;
           if (p.y > canvas.height) p.y = 0;
 
-          // ÇİZİM: İnce mikro dikdörtgen/toz zerreleri
+          // ÇİZİM: Minik Daireler (arc)
           ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
           if (p.isSpark) {
             ctx.fillStyle = `rgba(255, 175, 50, ${p.alpha})`;
-            ctx.fillRect(p.x, p.y, p.w, p.h);
           } else {
-            // Işık huzmesinde parlayan doğal krem rengi mikro toz
             ctx.fillStyle = `rgba(235, 225, 205, ${p.alpha})`;
-            ctx.fillRect(p.x, p.y, p.w, p.h);
           }
+          ctx.fill();
         });
 
         animFrameId = requestAnimationFrame(render);
