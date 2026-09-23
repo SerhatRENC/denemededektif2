@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Yenilenmiş Motor)
+   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm)
    ============================================================ */
 
 let CASE = null;
@@ -7,6 +7,7 @@ let currentRoom = null;
 let inventory = [];
 let currentDay = 1;
 let calibMode = false;
+let dialogueActive = false;
 
 fetch('case.json')
   .then(r => r.json())
@@ -43,11 +44,15 @@ function getStageDim() {
   return dimEl;
 }
 
-/* ---------- Oda Çizimi ---------- */
+/* ---------- Oda Çizimi, Ses ve Efekt Yükleyici ---------- */
 function renderRoom() {
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
   stage.classList.add('fading');
+
+  // Ses ve VFX Efektlerini Tetikle
+  if (typeof SFX !== 'undefined' && SFX.play) SFX.play(currentRoom);
+  if (typeof VFX !== 'undefined' && VFX.load) VFX.load(currentRoom, stage);
 
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
@@ -177,6 +182,148 @@ function wakeUp() {
   renderRoom();
 }
 
+/* ---------- HARİTA SİSTEMİ ---------- */
+function openMap() {
+  if (!CASE || !CASE.map) return;
+  const mapImg = document.getElementById('mapImage');
+  const mapContainer = document.getElementById('mapHotspots');
+  if (mapImg) mapImg.src = CASE.map.image;
+
+  if (mapContainer) {
+    mapContainer.innerHTML = '';
+    (CASE.map.hotspots || []).forEach(h => {
+      const btn = document.createElement('div');
+      btn.className = 'map-hotspot-btn';
+      btn.style.position = 'absolute';
+      btn.style.left = h.x;
+      btn.style.top = h.y;
+      btn.style.transform = 'translate(-50%, -50%)';
+      btn.style.cursor = 'pointer';
+      btn.style.padding = '4px 8px';
+      btn.style.background = 'rgba(10,10,8,0.85)';
+      btn.style.border = '1px solid #c98a2c';
+      btn.style.color = '#e3a94a';
+      btn.style.borderRadius = '4px';
+      btn.style.fontSize = '0.8em';
+      btn.textContent = h.label;
+      btn.onclick = () => {
+        closeMap();
+        currentRoom = h.target;
+        renderRoom();
+      };
+      mapContainer.appendChild(btn);
+    });
+  }
+  document.getElementById('mapOverlay').classList.add('active');
+}
+
+function closeMap() {
+  document.getElementById('mapOverlay').classList.remove('active');
+}
+
+/* ---------- NOT DEFTERİ SİSTEMİ ---------- */
+let currentNotebookPage = 1;
+
+function openNotebook() {
+  if (!CASE || !CASE.notebook) return;
+  const nbImg = document.getElementById('notebookImage');
+  if (nbImg) nbImg.src = CASE.notebook.image;
+  renderNotebookPage();
+  document.getElementById('notebookOverlay').classList.add('active');
+}
+
+function closeNotebook() {
+  document.getElementById('notebookOverlay').classList.remove('active');
+}
+
+function renderNotebookPage() {
+  const totalPages = (CASE.notebook && CASE.notebook.totalPages) || 5;
+  const indicator = document.getElementById('nbSayfaGöstergesi');
+  if (indicator) indicator.textContent = `Sayfa ${currentNotebookPage} / ${totalPages}`;
+
+  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
+  const idx0 = (currentNotebookPage - 1) * 2;
+  const idx1 = idx0 + 1;
+
+  const s0 = suspects[idx0];
+  const photo0 = document.getElementById('nbPhoto0');
+  const name0 = document.getElementById('nbName0');
+  if (s0) {
+    if (photo0) { photo0.src = s0.image; photo0.style.display = 'block'; }
+    if (name0) name0.textContent = s0.name;
+  } else {
+    if (photo0) photo0.style.display = 'none';
+    if (name0) name0.textContent = '';
+  }
+
+  const s1 = suspects[idx1];
+  const photo1 = document.getElementById('nbPhoto1');
+  const name1 = document.getElementById('nbName1');
+  if (s1) {
+    if (photo1) { photo1.src = s1.image; photo1.style.display = 'block'; }
+    if (name1) name1.textContent = s1.name;
+  } else {
+    if (photo1) photo1.style.display = 'none';
+    if (name1) name1.textContent = '';
+  }
+
+  const savedNotes = JSON.parse(localStorage.getItem('sd_notebook_v3_' + CASE.caseLabel) || '{}');
+  const elSolUst = document.getElementById('nbYaziSolUst');
+  const elSolAlt = document.getElementById('nbYaziSolAlt');
+  const elSag = document.getElementById('nbYaziSag');
+
+  if (elSolUst) elSolUst.value = savedNotes[`p${currentNotebookPage}_solUst`] || '';
+  if (elSolAlt) elSolAlt.value = savedNotes[`p${currentNotebookPage}_solAlt`] || '';
+  if (elSag) elSag.value = savedNotes[`p${currentNotebookPage}_sag`] || '';
+}
+
+function notebookSayfaIleri() {
+  const totalPages = (CASE.notebook && CASE.notebook.totalPages) || 5;
+  if (currentNotebookPage < totalPages) {
+    currentNotebookPage++;
+    renderNotebookPage();
+  }
+}
+
+function notebookSayfaGeri() {
+  if (currentNotebookPage > 1) {
+    currentNotebookPage--;
+    renderNotebookPage();
+  }
+}
+
+function notebookYaziKaydet(alan, el) {
+  if (!CASE) return;
+  const savedNotes = JSON.parse(localStorage.getItem('sd_notebook_v3_' + CASE.caseLabel) || '{}');
+  savedNotes[`p${currentNotebookPage}_${alan}`] = el.value;
+  localStorage.setItem('sd_notebook_v3_' + CASE.caseLabel, JSON.stringify(savedNotes));
+}
+
+function notebookModAyarla(mod) {
+  ['nbModYaz', 'nbModCiz', 'nbModSil'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.remove('active');
+  });
+  if (mod === 'yaz') document.getElementById('nbModYaz')?.classList.add('active');
+  if (mod === 'ciz') document.getElementById('nbModCiz')?.classList.add('active');
+  if (mod === 'sil') document.getElementById('nbModSil')?.classList.add('active');
+}
+
+function notebookRenkSec(renk) {
+  document.querySelectorAll('.nb-renk-btn').forEach(b => b.classList.remove('aktif'));
+  if (renk === '#1a1a1a') document.getElementById('nbRenkSiyah')?.classList.add('aktif');
+  if (renk === '#8f2a1e') document.getElementById('nbRenkKirmizi')?.classList.add('aktif');
+}
+
+function kosePop(btn, callback) {
+  if (btn) {
+    btn.classList.add('tiklandi');
+    setTimeout(() => btn.classList.remove('tiklandi'), 200);
+  }
+  if (typeof callback === 'function') callback();
+}
+
+/* ---------- SUÇLAMA VE FİNAL SORGULARI ---------- */
 function dosyaAdiNormalle(str) {
   return str.toLocaleLowerCase('tr-TR')
     .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
@@ -258,6 +405,7 @@ function oyunuSifirla() {
   window.location.href = 'index.html';
 }
 
+/* ---------- SORGU DOSYALARI VE SESLER ---------- */
 let currentStatementIndex = 0;
 function openStatement(index) {
   stopStatementAudio();
@@ -310,9 +458,8 @@ function closeModal() {
   document.getElementById('modalBg').classList.remove('active');
 }
 
-/* ---------- KARAKTER VE DİYALOG MEKANİZMASI ---------- */
+/* ---------- KARAKTER DİYALOG SİSTEMİ ---------- */
 let characterAudio = null;
-let dialogueActive = false;
 let dialogIndex = 0;
 
 function renderCharacter() {
@@ -393,9 +540,3 @@ function gosterDialogSatiri(dialog) {
   const satir = dialog[dialogIndex];
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
-
-/* Harita ve Defter Aç/Kapa Fonksiyonları */
-function openMap() { document.getElementById('mapOverlay').classList.add('active'); }
-function closeMap() { document.getElementById('mapOverlay').classList.remove('active'); }
-function openNotebook() { document.getElementById('notebookOverlay').classList.add('active'); }
-function closeNotebook() { document.getElementById('notebookOverlay').classList.remove('active'); }
