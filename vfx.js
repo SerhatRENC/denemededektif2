@@ -1,141 +1,106 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v9 - Giriş Ekranı Işık & Toz Güncellendi)
+   VFX ENGINE - Sislidere Köyü Davası (v10 - Dinamik Ateş & 2x Toz)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
   let particles = [];
   let smokeParticles = [];
 
-  // HER BİR MEKANIN TAM HARİTALANMIŞ EFEKT KOORDİNATLARI
+  // HER BİR MEKANIN EFEKT KOORDİNATLARI (Toz Sayıları 2 Katına Çıkarıldı)
   const roomVFXConfig = {
-    // 1. Cadı / Büyücü Odası
     'cadi': {
-      dust: true, count: 110,
+      dust: true, count: 220,
       beam: { xMin: 0.35, xMax: 0.75, yMin: 0.25, yMax: 0.88 }
     },
-
-    // 2. Dedektif Ofisi (Ahşap Masa & Gaz Lambası)
     'ofis': {
-      dust: true, count: 110,
+      dust: true, count: 220,
       beam: { xMin: 0.02, xMax: 0.60, yMin: 0.05, yMax: 0.90 },
-      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.55)', size: '22cqw' }]
+      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }]
     },
-
-    // 3. Değirmenci İç Mekan
     'degirmenci': {
-      dust: true, count: 120,
+      dust: true, count: 240,
       beam: { xMin: 0.22, xMax: 0.98, yMin: 0.25, yMax: 0.85 }
     },
-
-    // 4. Demirci Atölyesi
     'demirci': {
-      sparks: true, count: 65,
+      sparks: true, count: 130,
       beam: { xMin: 0.60, xMax: 0.95, yMin: 0.10, yMax: 0.85 },
-      lights: [{ x: '58%', y: '42%', color: 'rgba(255, 90, 10, 0.7)', size: '32cqw' }]
+      lights: [{ x: '58%', y: '42%', color: 'rgba(255, 90, 10, 0.85)', size: '35cqw' }]
     },
-
-    // 5. Gazeteci Odası
     'gazeteci_oda': {
-      dust: true, count: 90,
+      dust: true, count: 180,
       beam: { xMin: 0.40, xMax: 0.65, yMin: 0.20, yMax: 0.70 },
-      lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.3)', size: '40cqw' }]
+      lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.45)', size: '45cqw' }]
     },
-
-    // 6. Giriş / Köy Meydanı Karşılama (Mor Lambalar ve Yeşil Toz Alanları Entegre Edildi)
     'scr-ana': {
-      dust: true, count: 120,
+      dust: true, count: 240,
       beam: { xMin: 0.25, xMax: 0.95, yMin: 0.25, yMax: 0.90 },
       lights: [
-        { x: '29.8%', y: '35.5%', color: 'rgba(255, 170, 50, 0.65)', size: '12cqw' }, // Sol sokak feneri
-        { x: '47.5%', y: '42.2%', color: 'rgba(255, 170, 50, 0.55)', size: '8cqw' },  // Orta sol arka fener
-        { x: '68.5%', y: '42.0%', color: 'rgba(255, 170, 50, 0.55)', size: '8cqw' },  // Orta sağ arka fener
-        { x: '87.5%', y: '28.8%', color: 'rgba(255, 180, 60, 0.75)', size: '16cqw' }  // Sağ büyük direk feneri
+        { x: '29.8%', y: '35.5%', color: 'rgba(255, 160, 40, 0.80)', size: '15cqw' },
+        { x: '47.5%', y: '42.2%', color: 'rgba(255, 160, 40, 0.70)', size: '10cqw' },
+        { x: '68.5%', y: '42.0%', color: 'rgba(255, 160, 40, 0.70)', size: '10cqw' },
+        { x: '87.5%', y: '28.8%', color: 'rgba(255, 170, 50, 0.90)', size: '18cqw' }
       ]
     },
-
-    // 7. Halit'in Evi İç Mekan
     'halit_ev': {
-      dust: true, count: 100,
+      dust: true, count: 200,
       beam: { xMin: 0.55, xMax: 0.98, yMin: 0.15, yMax: 0.90 }
     },
-
-    // 8. Han İç Mekan (Restoran / Yemek Alanı)
     'han': {
-      dust: true, count: 75,
+      dust: true, count: 150,
       beam: { xMin: 0.15, xMax: 0.72, yMin: 0.00, yMax: 0.25 },
       lights: [
-        { x: '5%', y: '28%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '21%', y: '33%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '31%', y: '35%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '42%', y: '33%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '68%', y: '34%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '65%', y: '44%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' },
-        { x: '98%', y: '84%', color: 'rgba(255, 140, 30, 0.6)', size: '14cqw' }
+        { x: '5%', y: '28%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '21%', y: '33%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '31%', y: '35%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '42%', y: '33%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '68%', y: '34%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '65%', y: '44%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
+        { x: '98%', y: '84%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' }
       ]
     },
-
-    // 9. Han Depo / Mahzen
     'han_depo': {
-      dust: true, count: 110,
+      dust: true, count: 220,
       beam: { xMin: 0.05, xMax: 0.70, yMin: 0.10, yMax: 0.85 }
     },
-
-    // 10. Kilise İç Mekan
     'kilise': {
-      dust: true, count: 120,
+      dust: true, count: 240,
       beam: { xMin: 0.02, xMax: 0.98, yMin: 0.15, yMax: 0.95 }
     },
-
-    // 11. Kilise Kapısı (Dış Mekan)
     'kilise_kapi': {
-      dust: true, count: 50,
+      dust: true, count: 100,
       beam: { xMin: 0.58, xMax: 0.88, yMin: 0.25, yMax: 0.88 }
     },
-
-    // 12. Köy Giriş Takı
     'scr-koy': {
-      dust: true, count: 60,
+      dust: true, count: 120,
       beam: { xMin: 0.35, xMax: 0.98, yMin: 0.55, yMax: 0.95 }
     },
-
-    // 13. Merkez Meydanı (Toz, Işık ve Doğru Baca Dumanı Koordinatı)
     'merkez': {
-      dust: true, count: 50,
+      dust: true, count: 100,
       beam: { xMin: 0.10, xMax: 0.90, yMin: 0.30, yMax: 0.85 },
       smoke: true,
       smokeSource: { xPct: 0.795, yPct: 0.315 },
-      lights: [{ x: '78%', y: '51%', color: 'rgba(255, 100, 20, 0.75)', size: '10cqw' }]
+      lights: [{ x: '78%', y: '51%', color: 'rgba(255, 100, 20, 0.85)', size: '12cqw' }]
     },
-
-    // 14. Mezarlık
     'mezarlik': {
-      dust: true, count: 80,
+      dust: true, count: 160,
       beam: { xMin: 0.18, xMax: 0.82, yMin: 0.35, yMax: 0.92 },
-      lights: [{ x: '27%', y: '78%', color: 'rgba(255, 150, 40, 0.6)', size: '12cqw' }]
+      lights: [{ x: '27%', y: '78%', color: 'rgba(255, 150, 40, 0.75)', size: '14cqw' }]
     },
-
-    // 15. Muhtar Odası
     'muhtar': {
-      dust: true, count: 100,
+      dust: true, count: 200,
       beam: { xMin: 0.01, xMax: 0.78, yMin: 0.02, yMax: 0.98 }
     },
-
-    // 16. Nadire'nin Evi
     'nadire_ev': {
-      dust: true, count: 100,
+      dust: true, count: 200,
       beam: { xMin: 0.22, xMax: 0.58, yMin: 0.30, yMax: 0.78 },
-      lights: [{ x: '22%', y: '52%', color: 'rgba(255, 160, 40, 0.6)', size: '18cqw' }]
+      lights: [{ x: '22%', y: '52%', color: 'rgba(255, 160, 40, 0.75)', size: '20cqw' }]
     },
-
-    // 17. Ofis / Şehir Dedektiflik Bürosu
     'scr-ofis': {
-      dust: true, count: 110,
+      dust: true, count: 220,
       beam: { xMin: 0.15, xMax: 0.82, yMin: 0.08, yMax: 0.85 }
     },
-
-    // 18. Şifahane
     'sifahane': {
-      dust: true, count: 100,
+      dust: true, count: 200,
       beam: { xMin: 0.05, xMax: 0.62, yMin: 0.08, yMax: 0.95 }
     }
   };
@@ -154,22 +119,28 @@ const VFX = (function () {
     let config = roomVFXConfig[roomId] || null;
     if (!config) return;
 
-    // A. YAVAŞ & SİNEMATİK PARILTI / LAMBALAR
+    // A. GERÇEKÇİ ATEŞ / FENER TİTREŞİM IŞIKLARI
     if (config.lights) {
-      config.lights.forEach(l => {
+      config.lights.forEach((l, idx) => {
         const light = document.createElement('div');
         light.className = 'vfx-flicker-light';
         light.style.left = l.x;
         light.style.top = l.y;
         light.style.width = l.size;
         light.style.height = l.size;
-        light.style.background = `radial-gradient(circle, ${l.color} 0%, transparent 70%)`;
-        light.style.animation = `vfxSlowFlicker ${3.5 + Math.random() * 2}s ease-in-out infinite alternate`;
+        light.style.background = `radial-gradient(circle, ${l.color} 0%, rgba(255,120,20,0.2) 45%, transparent 70%)`;
+        
+        // Rastgele süre ve gecikme ile doğallık sağlama
+        const duration = 1.2 + Math.random() * 1.5;
+        const delay = Math.random() * 2;
+        const animType = idx % 2 === 0 ? 'vfxFlameFlickerA' : 'vfxFlameFlickerB';
+        light.style.animation = `${animType} ${duration}s ease-in-out ${delay}s infinite alternate`;
+        
         stageElement.appendChild(light);
       });
     }
 
-    // B. CANVAS PARÇACIK MOTORU
+    // B. CANVAS PARÇACIK MOTORU (Eskiye Oranla Daha Hızlı Render)
     if (config.dust || config.sparks || config.smoke) {
       const canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
@@ -180,10 +151,10 @@ const VFX = (function () {
       canvas.height = rect.height || 450;
       const ctx = canvas.getContext('2d');
 
-      // 1. Toz & Kıvılcım Oluşturma
+      // Toz Parçacıkları
       if (config.dust || config.sparks) {
         const beam = config.beam || { xMin: 0.1, xMax: 0.9, yMin: 0.1, yMax: 0.9 };
-        const count = config.count || 90;
+        const count = config.count || 120;
 
         for (let i = 0; i < count; i++) {
           const minX = canvas.width * beam.xMin;
@@ -191,35 +162,34 @@ const VFX = (function () {
           const minY = canvas.height * beam.yMin;
           const maxY = canvas.height * beam.yMax;
 
-          const hue = 38 + Math.floor(Math.random() * 12);
-          const sat = 60 + Math.floor(Math.random() * 25);
-          const light = 70 + Math.floor(Math.random() * 15);
+          const hue = 38 + Math.floor(Math.random() * 14);
+          const sat = 65 + Math.floor(Math.random() * 25);
+          const light = 70 + Math.floor(Math.random() * 20);
 
           particles.push({
             x: minX + Math.random() * (maxX - minX),
             y: minY + Math.random() * (maxY - minY),
-            r: config.sparks ? Math.random() * 1.6 + 0.8 : Math.random() * 1.2 + 0.8,
-            vx: (Math.random() - 0.5) * (config.sparks ? 0.35 : 0.08),
-            vy: config.sparks ? -(Math.random() * 0.4 + 0.2) : (Math.random() - 0.5) * 0.06,
-            alpha: Math.random() * 0.35 + 0.15,
-            maxAlpha: Math.random() * 0.35 + 0.25,
-            fadeSpeed: Math.random() * 0.003 + 0.001,
+            r: config.sparks ? Math.random() * 1.8 + 0.8 : Math.random() * 1.4 + 0.6,
+            vx: (Math.random() - 0.5) * (config.sparks ? 0.35 : 0.09),
+            vy: config.sparks ? -(Math.random() * 0.4 + 0.2) : (Math.random() - 0.5) * 0.07,
+            alpha: Math.random() * 0.4 + 0.1,
+            maxAlpha: Math.random() * 0.4 + 0.3,
+            fadeSpeed: Math.random() * 0.004 + 0.001,
             fadingIn: Math.random() > 0.5,
             wobble: Math.random() * Math.PI * 2,
-            wobbleSpeed: Math.random() * 0.006 + 0.003,
+            wobbleSpeed: Math.random() * 0.008 + 0.003,
             color: config.sparks ? 'rgba(255, 150, 40,' : `hsl(${hue}, ${sat}%, ${light}%,`,
-            isSpark: !!config.sparks,
             bounds: { minX, maxX, minY, maxY }
           });
         }
       }
 
-      // 2. Baca Dumanı Parçacıkları (Dinamik Kaynak Koordinatlı)
+      // Duman Parçacıkları
       if (config.smoke) {
         const smokeX = config.smokeSource ? config.smokeSource.xPct : 0.81;
         const smokeY = config.smokeSource ? config.smokeSource.yPct : 0.32;
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 30; i++) {
           smokeParticles.push({
             x: canvas.width * smokeX + (Math.random() - 0.5) * 12,
             y: canvas.height * smokeY + Math.random() * 20,
@@ -234,11 +204,11 @@ const VFX = (function () {
         }
       }
 
-      // ANİMASYON DÖNGÜSÜ
+      // Animasyon Döngüsü
       function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // --- A. DUMAN RENDER ---
+        // Duman
         smokeParticles.forEach(s => {
           s.y += s.vy;
           s.x += s.vx;
@@ -258,10 +228,10 @@ const VFX = (function () {
           ctx.fill();
         });
 
-        // --- B. TOZ RENDER ---
+        // Toz Tanecikleri
         particles.forEach(p => {
           p.wobble += p.wobbleSpeed;
-          p.x += p.vx + Math.sin(p.wobble) * 0.08;
+          p.x += p.vx + Math.sin(p.wobble) * 0.1;
           p.y += p.vy;
 
           if (p.fadingIn) {
@@ -269,7 +239,7 @@ const VFX = (function () {
             if (p.alpha >= p.maxAlpha) p.fadingIn = false;
           } else {
             p.alpha -= p.fadeSpeed;
-            if (p.alpha <= 0.03) {
+            if (p.alpha <= 0.02) {
               p.fadingIn = true;
               p.x = p.bounds.minX + Math.random() * (p.bounds.maxX - p.bounds.minX);
               p.y = p.bounds.minY + Math.random() * (p.bounds.maxY - p.bounds.minY);
