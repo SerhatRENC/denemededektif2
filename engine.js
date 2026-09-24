@@ -254,7 +254,7 @@ function suphesecildi(isim) {
     'cevdet': 'cevdet_final_sorgu.png',
     'halit': 'halit_final_sorgu.png',
     'kamuran': 'kamuran_final_srogu.png',
-    'mustafa': 'mustafa_final_sorgu.png',
+    'mustafa': 'mustafa_final_srogu.png',
     'nadire': 'nadire_final_sorgu.png',
     'riza': 'riza_final_sorgu.png'
   };
@@ -874,6 +874,7 @@ function renderCharacter() {
   dialogueActive = false;
   characterAudio = null;
   dialogIndex = 0;
+  document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
 
   const ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
@@ -954,6 +955,7 @@ function toggleCharacterLine(ch) {
       characterAudio = new Audio(ch.audio);
       characterAudio.play().catch(() => {});
     }
+    document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
     gosterDialogSatiri(dialog);
   } else {
     dialogIndex++;
@@ -965,6 +967,7 @@ function toggleCharacterLine(ch) {
       if (c) c.remove();
       dialogueActive = false;
       if (stage) stage.classList.remove('dialog-active');
+      document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
       if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }

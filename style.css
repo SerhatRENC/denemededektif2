@@ -162,29 +162,23 @@ h1{display:none;}
    KONUŞMA / DİYALOG ANINDA HARİTA VE DEFTERİ KESİN GİZLEME
    ============================================================ */
 
-/* 1. İkonlara yumuşak kaybolma animasyonu */
 .corner-icons, 
-.corner-icon-btn, 
-#btn-harita, 
-#btn-defter {
+.corner-icon-btn {
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease !important;
 }
 
-/* 2. Ekranda Konuşma/Altyazı Belirdiği Veya Diyalog Aktif Olduğu An İkonları Yok Et */
-:has(.scene-subtitle) .corner-icons,
-:has(.scene-subtitle) .corner-icon-btn,
+/* Diyalog / Konuşma başladığında ikonları yok et */
+.corner-icons.dialog-gizli,
 .stage-frame:has(.scene-subtitle) .corner-icons,
+.stage-frame:has(.dialog-active) .corner-icons,
 body:has(.scene-subtitle) .corner-icons,
-.stage.dialog-active .corner-icons,
-.stage.dialog-active .corner-icon-btn,
-.dialog-active .corner-icons {
+body:has(.dialog-active) .corner-icons {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
   transform: translateY(12px) scale(0.85) !important;
 }
 
-/* 3. Mobil Ekranlar İçin Normal Boyut Küçültme */
 @media (max-width: 850px) {
   .corner-icon-btn {
     width: clamp(32px, 6.5cqw, 46px) !important;
