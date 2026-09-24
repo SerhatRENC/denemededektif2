@@ -10,6 +10,7 @@ let calibMode = false;
 let calibClicks = [];
 let currentSleepAudio = null;
 
+// case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
 fetch('case.json?v=' + Date.now())
   .then(r => {
     if (!r.ok) throw new Error("HTTP Hata Kodu: " + r.status);
@@ -17,15 +18,7 @@ fetch('case.json?v=' + Date.now())
   })
   .then(data => {
     CASE = data;
-    
-    const titleEl = document.getElementById('caseTitle');
-    if (titleEl) titleEl.textContent = CASE.title || '';
-
-    // EĞER index.html SAYFASINDAYSAK OYUNU BAŞLATMA (Sayfanın kendi scripti yonetir)
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || !document.getElementById('dayBadge')) {
-      return; 
-    }
-
+    document.getElementById('caseTitle').textContent = CASE.title || '';
     currentRoom = CASE.startRoom;
 
     const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
@@ -38,17 +31,24 @@ fetch('case.json?v=' + Date.now())
     renderRoom();
   })
   .catch(err => {
-    console.error("CASE.JSON YÜKLEME HATASI:", err);
+    console.error("CASE.JSON YÜKLEME HATASI DETAYI:", err);
+    document.getElementById('stage').innerHTML =
+      `<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">
+        case.json okunamadı veya ayrıştırılamadı.<br>
+        <strong>Hata detayı:</strong> ${err.message}<br><br>
+        Lütfen tarayıcı konsolunu (F12 -> Console) kontrol et.
+      </div>`;
   });
 
 /* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
-  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) return;
+  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
+    console.error("Oda bulunamadı:", currentRoom);
+    return;
+  }
 
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
-  if (!stage) return;
-
   stage.classList.add('fading');
   
   setTimeout(() => {
@@ -156,8 +156,7 @@ function openPhoto(src) {
 }
 
 function updateDayBadge() {
-  const badge = document.getElementById('dayBadge');
-  if (badge) badge.textContent = `GÜN ${currentDay}`;
+  document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
 }
 
 function confirmSleep() {
@@ -349,6 +348,7 @@ function toggleStatementAudio(src) {
     if (btn) btn.textContent = '▶ Sorguyu Oynat';
   }
 }
+
 function stopStatementAudio() {
   statementPlaying = false;
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }
@@ -399,7 +399,6 @@ function collect(collectId, image) {
 
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
-  if (!inv) return;
   if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
   inv.innerHTML = '';
   inventory.forEach(id => {
@@ -473,65 +472,56 @@ function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
   stopStatementAudio();
-  const bg = document.getElementById('modalBg');
-  if (bg) {
-    bg.classList.remove('active');
-    bg.classList.remove('reader-mode');
-  }
+  document.getElementById('modalBg').classList.remove('active');
+  document.getElementById('modalBg').classList.remove('reader-mode');
 }
-
-const bgEl = document.getElementById('modalBg');
-if (bgEl) {
-  bgEl.onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
-}
+document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
 
 const calibToggle = document.getElementById('calibToggle');
 const stageEl = document.getElementById('stage');
 const readout = document.getElementById('calibReadout');
 
-if (calibToggle && stageEl) {
-  calibToggle.onclick = () => {
-    calibMode = !calibMode;
+calibToggle.onclick = () => {
+  calibMode = !calibMode;
+  calibClicks = [];
+  calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
+  calibToggle.classList.toggle('on', calibMode);
+  stageEl.classList.toggle('calib-active', calibMode);
+  readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
+};
+
+stageEl.addEventListener('click', (e) => {
+  if (!calibMode) return;
+  const rect = stageEl.getBoundingClientRect();
+  const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+  const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+
+  const marker = document.createElement('div');
+  marker.className = 'calib-marker';
+  marker.style.left = xPct + '%';
+  marker.style.top = yPct + '%';
+  stageEl.appendChild(marker);
+
+  calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
+
+  if (calibClicks.length === 2) {
+    const [p1, p2] = calibClicks;
+    const x = Math.min(p1.x, p2.x).toFixed(1);
+    const y = Math.min(p1.y, p2.y).toFixed(1);
+    const w = Math.abs(p2.x - p1.x).toFixed(1);
+    const h = Math.abs(p2.y - p1.y).toFixed(1);
+    const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
+    readout.textContent = snippet;
+    console.log('Hotspot koordinatı:', snippet);
     calibClicks = [];
-    calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
-    calibToggle.classList.toggle('on', calibMode);
-    stageEl.classList.toggle('calib-active', calibMode);
-    readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
-  };
-
-  stageEl.addEventListener('click', (e) => {
-    if (!calibMode) return;
-    const rect = stageEl.getBoundingClientRect();
-    const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-    const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-
-    const marker = document.createElement('div');
-    marker.className = 'calib-marker';
-    marker.style.left = xPct + '%';
-    marker.style.top = yPct + '%';
-    stageEl.appendChild(marker);
-
-    calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
-
-    if (calibClicks.length === 2) {
-      const [p1, p2] = calibClicks;
-      const x = Math.min(p1.x, p2.x).toFixed(1);
-      const y = Math.min(p1.y, p2.y).toFixed(1);
-      const w = Math.abs(p2.x - p1.x).toFixed(1);
-      const h = Math.abs(p2.y - p1.y).toFixed(1);
-      const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
-      readout.textContent = snippet;
-      console.log('Hotspot koordinatı:', snippet);
-      calibClicks = [];
-      setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
-    } else {
-      readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
-    }
-  });
-}
+    setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
+  } else {
+    readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
+  }
+});
 
 function openMap() {
-  if (!CASE || !CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
+  if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
   document.getElementById('mapImage').src = CASE.map.image;
 
   const wrap = document.getElementById('mapHotspots');
@@ -558,8 +548,7 @@ function openMap() {
 }
 
 function closeMap() {
-  const mapOv = document.getElementById('mapOverlay');
-  if (mapOv) mapOv.classList.remove('active');
+  document.getElementById('mapOverlay').classList.remove('active');
 }
 
 let notebookState = null;
@@ -622,8 +611,7 @@ function openNotebook() {
 }
 
 function closeNotebook() {
-  const nbOv = document.getElementById('notebookOverlay');
-  if (nbOv) nbOv.classList.remove('active');
+  document.getElementById('notebookOverlay').classList.remove('active');
 }
 
 const NB_SOL_SATIRLAR = [
@@ -763,7 +751,6 @@ function notebookRenkSec(renk) {
 }
 
 function nbKalemKur(canvas, taraf) {
-  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let çiziyor = false;
 
@@ -802,9 +789,7 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
 }
-
-const cvsFull = document.getElementById('nbCanvasFull');
-if (cvsFull) nbKalemKur(cvsFull, 'pageDrawing');
+nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
 
 let characterAudio = null;
 let dialogueActive = false;
@@ -819,7 +804,6 @@ function renderCharacter() {
   if (!ch) return;
 
   const stage = document.getElementById('stage');
-  if (!stage) return;
 
   if (ch.clickableImage) {
     renderClickableCharacter(ch, stage);
