@@ -10,8 +10,12 @@ let calibMode = false;
 let calibClicks = [];
 let currentSleepAudio = null;
 
-fetch('case.json')
-  .then(r => r.json())
+// case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
+fetch('case.json?v=' + Date.now())
+  .then(r => {
+    if (!r.ok) throw new Error("HTTP Hata Kodu: " + r.status);
+    return r.json();
+  })
   .then(data => {
     CASE = data;
     document.getElementById('caseTitle').textContent = CASE.title || '';
@@ -27,16 +31,26 @@ fetch('case.json')
     renderRoom();
   })
   .catch(err => {
+    console.error("CASE.JSON YÜKLEME HATASI DETAYI:", err);
     document.getElementById('stage').innerHTML =
-      '<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">case.json okunamadı. Aynı klasörde olduğundan ve bir local server üzerinden açtığından emin ol.</div>';
-    console.error(err);
+      `<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">
+        case.json okunamadı veya ayrıştırılamadı.<br>
+        <strong>Hata detayı:</strong> ${err.message}<br><br>
+        Lütfen tarayıcı konsolunu (F12 -> Console) kontrol et.
+      </div>`;
   });
 
 /* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
+  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
+    console.error("Oda bulunamadı:", currentRoom);
+    return;
+  }
+
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
   stage.classList.add('fading');
+  
   setTimeout(() => {
     stage.innerHTML = `<div class="room-label">${room.label}</div>`;
 
@@ -66,51 +80,53 @@ function renderRoom() {
       return;
     }
 
-    room.hotspots.forEach(h => {
-      if (h.requires && !inventory.includes(h.requires)) return;
-      if (h.activeDays && !h.activeDays.includes(currentDay)) return;
+    if (room.hotspots) {
+      room.hotspots.forEach(h => {
+        if (h.requires && !inventory.includes(h.requires)) return;
+        if (h.activeDays && !h.activeDays.includes(currentDay)) return;
 
-      if (h.icon && !h.w && !h.h) {
-        const wrap = document.createElement('div');
-        wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
-        wrap.style.left = h.x;
-        wrap.style.top = h.y;
-        wrap.style.width = h.iconWidth || '8%';
+        if (h.icon && !h.w && !h.h) {
+          const wrap = document.createElement('div');
+          wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
+          wrap.style.left = h.x;
+          wrap.style.top = h.y;
+          wrap.style.width = h.iconWidth || '8%';
 
-        const img = document.createElement('img');
-        img.src = h.icon;
-        img.alt = h.hint || '';
-        img.onerror = () => {
-          const fallback = document.createElement('div');
-          fallback.className = 'hotspot-pulse-icon-missing';
-          fallback.textContent = `görsel yok:\n${h.icon}`;
-          img.replaceWith(fallback);
-        };
-        wrap.appendChild(img);
+          const img = document.createElement('img');
+          img.src = h.icon;
+          img.alt = h.hint || '';
+          img.onerror = () => {
+            const fallback = document.createElement('div');
+            fallback.className = 'hotspot-pulse-icon-missing';
+            fallback.textContent = `görsel yok:\n${h.icon}`;
+            img.replaceWith(fallback);
+          };
+          wrap.appendChild(img);
 
-        if (h.label) {
-          const lbl = document.createElement('div');
-          lbl.className = 'hotspot-pulse-label';
-          lbl.textContent = h.label;
-          wrap.appendChild(lbl);
+          if (h.label) {
+            const lbl = document.createElement('div');
+            lbl.className = 'hotspot-pulse-label';
+            lbl.textContent = h.label;
+            wrap.appendChild(lbl);
+          }
+
+          wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+          stage.appendChild(wrap);
+          setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
+          return;
         }
 
-        wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
-        stage.appendChild(wrap);
-        setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
-        return;
-      }
-
-      const el = document.createElement('div');
-      el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
-      el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
-      const iconHtml = h.icon
-        ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
-        : '';
-      el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-      el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
-      stage.appendChild(el);
-    });
+        const el = document.createElement('div');
+        el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
+        el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
+        const iconHtml = h.icon
+          ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
+          : '';
+        el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
+        el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+        stage.appendChild(el);
+      });
+    }
 
     renderCharacter();
 
@@ -332,6 +348,7 @@ function toggleStatementAudio(src) {
     if (btn) btn.textContent = '▶ Sorguyu Oynat';
   }
 }
+
 function stopStatementAudio() {
   statementPlaying = false;
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }

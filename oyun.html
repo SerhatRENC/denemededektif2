@@ -130,7 +130,7 @@
     </div>
   </div>
 
-  <script src="engine.js?v=14"></script>
+  <script src="engine.js?v=15"></script>
   <script src="ogretici.js?v=3"></script>
   <script src="yukleme.js?v=1"></script>
   <script>
@@ -157,10 +157,12 @@
     const ARKA_PLAN_YUKLEME = true;
     const YURUME_SESI = 'assets/ses/yuru.mp3';
 
-    Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
+    if (typeof Yukleme !== 'undefined') {
+      Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
+    }
 
     function kosePop(btn, ac, ses) {
-      if (ses) calSes(ses);
+      if (ses && typeof calSes === 'function') calSes(ses);
       btn.classList.add('tiklandi');
       setTimeout(() => btn.classList.remove('tiklandi'), 260);
       setTimeout(ac, 90);
@@ -181,22 +183,22 @@
 
     const _handleHotspotOrijinal = handleHotspot;
     handleHotspot = function (h) {
-      if (h.icon) {
+      if (h.icon && typeof calSes === 'function') {
         if (h.icon.endsWith('tokmak.webp')) calSes('kapi');
         else if (h.icon.endsWith('geri.webp')) calSes('geri');
         else if (h.icon.endsWith('ayak.webp') && h.label === 'Git') calSes('kapi_git');
         else if (h.icon.endsWith('buyutec.webp')) calSes('incele');
       }
-      if (h.type === 'dosya') calSes('harita');
+      if (h.type === 'dosya' && typeof calSes === 'function') calSes('harita');
       _handleHotspotOrijinal(h);
     };
 
     document.getElementById('mapHotspots').addEventListener('click', (e) => {
-      if (e.target.closest('.map-hotspot')) calSes('kapi');
+      if (e.target.closest('.map-hotspot') && typeof calSes === 'function') calSes('kapi');
     });
 
     document.getElementById('modalBg').addEventListener('click', (e) => {
-      if (e.target.closest('.reader-side-arrow')) calSes('sayfa');
+      if (e.target.closest('.reader-side-arrow') && typeof calSes === 'function') calSes('sayfa');
     });
 
     const _wakeUpOrijinal = wakeUp;
@@ -215,14 +217,16 @@
 
     function _odaCiz() {
       _renderRoomOrijinal();
-      Ogretici.kur({
-        sahne: document.getElementById('stageFrame'),
-        icerik: CASE.ogretici || {},
-        onek: CASE.caseLabel,
-        mevcut: () => currentRoom
-      });
-      Ogretici.iptal();
-      Ogretici.goster(currentRoom);
+      if (typeof Ogretici !== 'undefined') {
+        Ogretici.kur({
+          sahne: document.getElementById('stageFrame'),
+          icerik: (CASE && CASE.ogretici) || {},
+          onek: (CASE && CASE.caseLabel) || 'oyun',
+          mevcut: () => currentRoom
+        });
+        Ogretici.iptal();
+        Ogretici.goster(currentRoom);
+      }
 
       setTimeout(() => {
         document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
@@ -244,7 +248,7 @@
       if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || document.getElementById('stage'));
       if (typeof SFX !== 'undefined') SFX.play(currentRoom);
 
-      if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi) {
+      if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi && typeof Yukleme !== 'undefined') {
         _arkaPlanBasladi = true;
         Yukleme.arkaPlanda(_arkaPlanListesi());
       }
@@ -252,6 +256,7 @@
 
     function _arkaPlanListesi() {
       const liste = [];
+      if (!CASE || !CASE.rooms) return liste;
       const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
       const oncelik = ['masa', 'merkez'];
       const sirali = oncelik.concat(Object.keys(CASE.rooms).filter(k => !oncelik.includes(k)));
@@ -267,15 +272,25 @@
       return liste;
     }
 
+    // Yükleme modülünde takılmayı önleyen doğrudan renderRoom sarmalayıcısı
     renderRoom = function () {
       const jeton = ++_odaJetonu;
+      if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
+        _odaCiz();
+        return;
+      }
       const oda = CASE.rooms[currentRoom];
       const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
       const karakter = (!kapali && CASE.characters && CASE.characters[currentRoom]) ? CASE.characters[currentRoom].image : null;
-      Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
-        if (jeton !== _odaJetonu) return;
+      
+      if (typeof Yukleme !== 'undefined' && Yukleme.gecis) {
+        Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
+          if (jeton !== _odaJetonu) return;
+          _odaCiz();
+        });
+      } else {
         _odaCiz();
-      });
+      }
     };
 
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
