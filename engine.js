@@ -10,7 +10,6 @@ let calibMode = false;
 let calibClicks = [];
 let currentSleepAudio = null;
 
-// case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
 fetch('case.json?v=' + Date.now())
   .then(r => {
     if (!r.ok) throw new Error("HTTP Hata Kodu: " + r.status);
@@ -19,10 +18,12 @@ fetch('case.json?v=' + Date.now())
   .then(data => {
     CASE = data;
     
-    // GÜVENLİ KONTROL: caseTitle elemanı varsa yaz, yoksa (index.html gibi) hata verme
     const titleEl = document.getElementById('caseTitle');
-    if (titleEl) {
-      titleEl.textContent = CASE.title || '';
+    if (titleEl) titleEl.textContent = CASE.title || '';
+
+    // EĞER index.html SAYFASINDAYSAK OYUNU BAŞLATMA (Sayfanın kendi scripti yonetir)
+    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || !document.getElementById('dayBadge')) {
+      return; 
     }
 
     currentRoom = CASE.startRoom;
@@ -37,24 +38,12 @@ fetch('case.json?v=' + Date.now())
     renderRoom();
   })
   .catch(err => {
-    console.error("CASE.JSON YÜKLEME HATASI DETAYI:", err);
-    const stage = document.getElementById('stage');
-    if (stage) {
-      stage.innerHTML =
-        `<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">
-          case.json okunamadı veya ayrıştırılamadı.<br>
-          <strong>Hata detayı:</strong> ${err.message}<br><br>
-          Lütfen tarayıcı konsolunu (F12 -> Console) kontrol et.
-        </div>`;
-    }
+    console.error("CASE.JSON YÜKLEME HATASI:", err);
   });
 
 /* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
-  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
-    console.error("Oda bulunamadı:", currentRoom);
-    return;
-  }
+  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) return;
 
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
@@ -168,9 +157,7 @@ function openPhoto(src) {
 
 function updateDayBadge() {
   const badge = document.getElementById('dayBadge');
-  if (badge) {
-    badge.textContent = `GÜN ${currentDay}`;
-  }
+  if (badge) badge.textContent = `GÜN ${currentDay}`;
 }
 
 function confirmSleep() {
@@ -196,13 +183,9 @@ function sleep() {
   } catch (e) {}
 
   const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
-  const numEl = document.getElementById('sleepDayNum');
-  const txtEl = document.getElementById('sleepText');
-  if (numEl) numEl.textContent = `GÜN ${currentDay}`;
-  if (txtEl) txtEl.textContent = evt || 'Yeni bir gün başlıyor.';
-  
-  const sleepOv = document.getElementById('sleepOverlay');
-  if (sleepOv) sleepOv.classList.add('active');
+  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
+  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
+  document.getElementById('sleepOverlay').classList.add('active');
 }
 
 function wakeUp() {
@@ -214,8 +197,7 @@ function wakeUp() {
 
   if (typeof calSes === 'function') calSes('sabah');
 
-  const sleepOv = document.getElementById('sleepOverlay');
-  if (sleepOv) sleepOv.classList.remove('active');
+  document.getElementById('sleepOverlay').classList.remove('active');
   renderRoom();
 }
 
@@ -227,10 +209,8 @@ function dosyaAdiNormalle(str) {
 
 function suclamaGoster(html) {
   const ov = document.getElementById('suclamaOverlay');
-  if (ov) {
-    ov.innerHTML = html;
-    ov.classList.add('active');
-  }
+  ov.innerHTML = html;
+  ov.classList.add('active');
 }
 
 function finalSuclamayaBaslat() {
@@ -344,12 +324,8 @@ function openStatement(index) {
     <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
-  
-  const mBody = document.getElementById('modalBody');
-  const mBg = document.getElementById('modalBg');
-  if (mBody) mBody.classList.add('reader');
-  if (mBg) mBg.classList.add('reader-mode');
-
+  document.getElementById('modalBody').classList.add('reader');
+  document.getElementById('modalBg').classList.add('reader-mode');
   const sImg = document.getElementById('statementZoomImg');
   if (sImg) zoomKur(sImg.parentElement, sImg);
 }
@@ -373,7 +349,6 @@ function toggleStatementAudio(src) {
     if (btn) btn.textContent = '▶ Sorguyu Oynat';
   }
 }
-
 function stopStatementAudio() {
   statementPlaying = false;
   if (statementAudio) { statementAudio.pause(); statementAudio = null; }
@@ -381,8 +356,6 @@ function stopStatementAudio() {
 
 function openExamine(itemId) {
   const item = CASE.items[itemId];
-  if (!item) return;
-
   const imgHtml = item.image
     ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
     : `<div class="doc-fallback">görsel yok</div>`;
@@ -405,15 +378,12 @@ function openExamine(itemId) {
 
 function tryUnlock(itemId) {
   const item = CASE.items[itemId];
-  const inputEl = document.getElementById('unlockInput');
-  if (!inputEl) return;
-
-  const val = inputEl.value.trim();
+  const val = document.getElementById('unlockInput').value.trim();
   if (val === item.lockedCode) {
     showModal(`<h3>${item.title}</h3><p>${item.unlockedText || 'çözüldü.'}</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
   } else {
-    inputEl.style.borderColor = '#8f3a2e';
-    inputEl.placeholder = 'yanlış kod';
+    document.getElementById('unlockInput').style.borderColor = '#8f3a2e';
+    document.getElementById('unlockInput').placeholder = 'yanlış kod';
   }
 }
 
@@ -430,7 +400,6 @@ function collect(collectId, image) {
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
-
   if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
   inv.innerHTML = '';
   inventory.forEach(id => {
@@ -443,8 +412,6 @@ function renderInventory(lastImage) {
 
 function openTV(deviceId) {
   const dev = CASE.devices[deviceId];
-  if (!dev) return;
-
   showModal(`
     <h3>${dev.title}</h3>
     <video class="tv-screen" controls ${dev.autoplay ? 'autoplay' : ''}>
@@ -458,8 +425,6 @@ function openTV(deviceId) {
 let tapeAudio = null, tapeInterval = null, tapePlaying = false, tapeSeconds = 0;
 function openRecorder(deviceId) {
   const dev = CASE.devices[deviceId];
-  if (!dev) return;
-
   showModal(`
     <h3>${dev.title}</h3>
     <div class="recorder">
@@ -478,37 +443,30 @@ function toggleTape() {
   const btn = document.getElementById('playBtn');
   const reelL = document.getElementById('reelL'), reelR = document.getElementById('reelR');
   if (tapePlaying) {
-    if (tapeAudio) tapeAudio.play().catch(()=>{});
-    if (btn) { btn.textContent = '⏸'; btn.classList.add('active'); }
-    if (reelL) reelL.classList.add('spin'); 
-    if (reelR) reelR.classList.add('spin');
+    tapeAudio.play().catch(()=>{});
+    btn.textContent = '⏸'; btn.classList.add('active');
+    reelL.classList.add('spin'); reelR.classList.add('spin');
     tapeInterval = setInterval(() => {
       tapeSeconds++;
       const m = String(Math.floor(tapeSeconds/60)).padStart(2,'0');
       const s = String(tapeSeconds%60).padStart(2,'0');
-      const cnt = document.getElementById('counter');
-      if (cnt) cnt.textContent = `${m}:${s}`;
+      document.getElementById('counter').textContent = `${m}:${s}`;
     }, 1000);
   } else {
-    if (tapeAudio) tapeAudio.pause();
-    if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
-    if (reelL) reelL.classList.remove('spin'); 
-    if (reelR) reelR.classList.remove('spin');
+    tapeAudio.pause();
+    btn.textContent = '▶'; btn.classList.remove('active');
+    reelL.classList.remove('spin'); reelR.classList.remove('spin');
     clearInterval(tapeInterval);
   }
 }
 
 function showModal(html, wide) {
   const body = document.getElementById('modalBody');
+  body.innerHTML = html;
+  body.className = 'modal' + (wide ? ' wide' : '');
   const bg = document.getElementById('modalBg');
-  if (body) {
-    body.innerHTML = html;
-    body.className = 'modal' + (wide ? ' wide' : '');
-  }
-  if (bg) {
-    bg.classList.remove('reader-mode');
-    bg.classList.add('active');
-  }
+  bg.classList.remove('reader-mode');
+  bg.classList.add('active');
 }
 
 function closeModal() {
@@ -538,7 +496,7 @@ if (calibToggle && stageEl) {
     calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
     calibToggle.classList.toggle('on', calibMode);
     stageEl.classList.toggle('calib-active', calibMode);
-    if (readout) readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
+    readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
   };
 
   stageEl.addEventListener('click', (e) => {
@@ -562,45 +520,41 @@ if (calibToggle && stageEl) {
       const w = Math.abs(p2.x - p1.x).toFixed(1);
       const h = Math.abs(p2.y - p1.y).toFixed(1);
       const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
-      if (readout) readout.textContent = snippet;
+      readout.textContent = snippet;
       console.log('Hotspot koordinatı:', snippet);
       calibClicks = [];
       setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
     } else {
-      if (readout) readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
+      readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
     }
   });
 }
 
 function openMap() {
   if (!CASE || !CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
-  const mapImg = document.getElementById('mapImage');
-  if (mapImg) mapImg.src = CASE.map.image;
+  document.getElementById('mapImage').src = CASE.map.image;
 
   const wrap = document.getElementById('mapHotspots');
-  if (wrap) {
-    wrap.innerHTML = '';
-    CASE.map.hotspots.forEach(h => {
-      const dot = document.createElement('div');
-      dot.className = 'map-hotspot';
-      dot.style.left = h.x;
-      dot.style.top = h.y;
-      dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
-      dot.onclick = () => {
-        if (h.target && CASE.rooms[h.target]) {
-          currentRoom = h.target;
-          closeMap();
-          renderRoom();
-        } else {
-          alert(`"${h.label}" henüz case.json'a eklenmedi.`);
-        }
-      };
-      wrap.appendChild(dot);
-    });
-  }
+  wrap.innerHTML = '';
+  CASE.map.hotspots.forEach(h => {
+    const dot = document.createElement('div');
+    dot.className = 'map-hotspot';
+    dot.style.left = h.x;
+    dot.style.top = h.y;
+    dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
+    dot.onclick = () => {
+      if (h.target && CASE.rooms[h.target]) {
+        currentRoom = h.target;
+        closeMap();
+        renderRoom();
+      } else {
+        alert(`"${h.label}" henüz case.json'a eklenmedi.`);
+      }
+    };
+    wrap.appendChild(dot);
+  });
 
-  const mapOv = document.getElementById('mapOverlay');
-  if (mapOv) mapOv.classList.add('active');
+  document.getElementById('mapOverlay').classList.add('active');
 }
 
 function closeMap() {
@@ -613,12 +567,12 @@ let notebookMod = 'yaz';
 let notebookRenk = '#1a1a1a';
 
 function notebookKey() {
-  return 'sd_notebook_v3_' + ((CASE && CASE.caseLabel) || 'default');
+  return 'sd_notebook_v3_' + CASE.caseLabel;
 }
 
 function loadNotebook() {
   const saved = localStorage.getItem(notebookKey());
-  const total = (CASE && CASE.notebook && CASE.notebook.totalPages) || 5;
+  const total = (CASE.notebook && CASE.notebook.totalPages) || 5;
   notebookState = saved ? JSON.parse(saved) : {
     page: 0,
     pages: Array.from({ length: total }, () => ({
@@ -637,39 +591,33 @@ function openNotebook() {
   const nbImg = document.getElementById('notebookImage');
   const nbFallback = document.getElementById('notebookImgFallback');
   const nbWrap = document.getElementById('notebookImgWrap');
-  const src = (CASE && CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
+  const src = (CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
 
-  const pageSol = (CASE && CASE.notebook && CASE.notebook.pageSol) || {};
-  const pageSag = (CASE && CASE.notebook && CASE.notebook.pageSag) || {};
+  const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
+  const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
   const solEl = document.getElementById('nbPageSol');
   const sagEl = document.getElementById('nbPageSag');
+  ['top', 'bottom', 'left', 'width'].forEach(k => {
+    if (pageSol[k]) solEl.style[k] = pageSol[k];
+    if (pageSag[k]) sagEl.style[k] = pageSag[k];
+  });
 
-  if (solEl && sagEl) {
-    ['top', 'bottom', 'left', 'width'].forEach(k => {
-      if (pageSol[k]) solEl.style[k] = pageSol[k];
-      if (pageSag[k]) sagEl.style[k] = pageSag[k];
-    });
-  }
+  nbImg.style.display = '';
+  nbFallback.style.display = 'none';
+  nbImg.onerror = () => {
+    nbImg.style.display = 'none';
+    nbFallback.style.display = 'flex';
+    nbFallback.textContent = `görsel bulunamadı: ${src}`;
+  };
+  nbImg.onload = () => {
+    if (nbImg.naturalWidth && nbImg.naturalHeight) {
+      nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
+    }
+    renderNotebookPage();
+  };
+  nbImg.src = src;
 
-  if (nbImg && nbFallback && nbWrap) {
-    nbImg.style.display = '';
-    nbFallback.style.display = 'none';
-    nbImg.onerror = () => {
-      nbImg.style.display = 'none';
-      nbFallback.style.display = 'flex';
-      nbFallback.textContent = `görsel bulunamadı: ${src}`;
-    };
-    nbImg.onload = () => {
-      if (nbImg.naturalWidth && nbImg.naturalHeight) {
-        nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
-      }
-      renderNotebookPage();
-    };
-    nbImg.src = src;
-  }
-
-  const nbOv = document.getElementById('notebookOverlay');
-  if (nbOv) nbOv.classList.add('active');
+  document.getElementById('notebookOverlay').classList.add('active');
   requestAnimationFrame(renderNotebookPage);
 }
 
@@ -684,12 +632,11 @@ const NB_SOL_SATIRLAR = [
 ];
 
 function renderNotebookPage() {
-  if (!notebookState) return;
   const total = notebookState.pages.length;
   const p = notebookState.pages[notebookState.page];
-  const suspects = (CASE && CASE.notebook && CASE.notebook.suspects) || [];
+  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
 
-  const yerlesim = (CASE && CASE.notebook && CASE.notebook.suspectLayout) || {};
+  const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
   const photoTop    = yerlesim.photoTop    || '8%';
   const photoLeft   = yerlesim.photoLeft   || '14%';
   const photoHeight = yerlesim.photoHeight || '55%';
@@ -706,63 +653,54 @@ function renderNotebookPage() {
     const nameEl = document.getElementById(satir.nameId);
     const notesEl = document.getElementById(satir.notesId);
 
-    if (nameEl && notesEl && photoEl) {
-      nameEl.style.top = nameTop;
-      nameEl.style.left = nameLeft;
-      notesEl.style.top = noteTop;
-      notesEl.style.left = noteLeft;
-      notesEl.style.width = noteWidth;
-      notesEl.style.height = noteHeight;
-      if (photoEl.tagName === 'IMG') {
-        photoEl.style.top = photoTop;
-        photoEl.style.left = photoLeft;
-        photoEl.style.height = photoHeight;
-        photoEl.style.width = 'auto';
-      }
+    nameEl.style.top = nameTop;
+    nameEl.style.left = nameLeft;
+    notesEl.style.top = noteTop;
+    notesEl.style.left = noteLeft;
+    notesEl.style.width = noteWidth;
+    notesEl.style.height = noteHeight;
+    if (photoEl.tagName === 'IMG') {
+      photoEl.style.top = photoTop;
+      photoEl.style.left = photoLeft;
+      photoEl.style.height = photoHeight;
+      photoEl.style.width = 'auto';
+    }
 
-      if (suspect) {
-        nameEl.textContent = suspect.name;
-        photoEl.style.display = '';
-        const eskiFallback = document.getElementById(photoEl.id + '-fallback');
-        if (eskiFallback) eskiFallback.remove();
-        photoEl.onerror = () => {
-          photoEl.style.display = 'none';
-          const fallback = document.createElement('div');
-          fallback.className = 'nb-suspect-photo-missing';
-          fallback.id = photoEl.id + '-fallback';
-          fallback.style.top = photoTop;
-          fallback.style.left = photoLeft;
-          fallback.style.height = photoHeight;
-          fallback.textContent = `görsel yok:\n${suspect.image}`;
-          photoEl.insertAdjacentElement('afterend', fallback);
-        };
-        photoEl.src = suspect.image;
-      } else {
-        nameEl.textContent = '';
+    if (suspect) {
+      nameEl.textContent = suspect.name;
+      photoEl.style.display = '';
+      const eskiFallback = document.getElementById(photoEl.id + '-fallback');
+      if (eskiFallback) eskiFallback.remove();
+      photoEl.onerror = () => {
         photoEl.style.display = 'none';
-      }
+        const fallback = document.createElement('div');
+        fallback.className = 'nb-suspect-photo-missing';
+        fallback.id = photoEl.id + '-fallback';
+        fallback.style.top = photoTop;
+        fallback.style.left = photoLeft;
+        fallback.style.height = photoHeight;
+        fallback.textContent = `görsel yok:\n${suspect.image}`;
+        photoEl.insertAdjacentElement('afterend', fallback);
+      };
+      photoEl.src = suspect.image;
+    } else {
+      nameEl.textContent = '';
+      photoEl.style.display = 'none';
     }
     const yaziEl = document.getElementById(satir.yaziId);
-    if (yaziEl) yaziEl.value = p[satir.taraf] || '';
+    yaziEl.value = p[satir.taraf] || '';
   });
 
-  const sagYaziEl = document.getElementById('nbYaziSag');
-  if (sagYaziEl) sagYaziEl.value = p.sag || '';
+  document.getElementById('nbYaziSag').value = p.sag || '';
 
-  const nbCanvasFull = document.getElementById('nbCanvasFull');
-  if (nbCanvasFull) canvasResizeVeCiz(nbCanvasFull, p.pageDrawing);
+  canvasResizeVeCiz(document.getElementById('nbCanvasFull'), p.pageDrawing);
 
-  const sayfaGost = document.getElementById('nbSayfaGöstergesi');
-  if (sayfaGost) sayfaGost.textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
-  
-  const btnGeri = document.getElementById('nbEdgeGeri');
-  const btnIleri = document.getElementById('nbEdgeIleri');
-  if (btnGeri) btnGeri.disabled = notebookState.page === 0;
-  if (btnIleri) btnIleri.disabled = notebookState.page === total - 1;
+  document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
+  document.getElementById('nbEdgeGeri').disabled = notebookState.page === 0;
+  document.getElementById('nbEdgeIleri').disabled = notebookState.page === total - 1;
 }
 
 function canvasResizeVeCiz(canvas, dataURL) {
-  if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
@@ -811,25 +749,17 @@ function notebookTemizle() {
 
 function notebookModAyarla(mod) {
   notebookMod = mod;
-  const btnYaz = document.getElementById('nbModYaz');
-  const btnCiz = document.getElementById('nbModCiz');
-  const btnSil = document.getElementById('nbModSil');
-  const cvs = document.getElementById('nbCanvasFull');
-
-  if (btnYaz) btnYaz.classList.toggle('active', mod === 'yaz');
-  if (btnCiz) btnCiz.classList.toggle('active', mod === 'ciz');
-  if (btnSil) btnSil.classList.toggle('active', mod === 'sil');
-  if (cvs) cvs.classList.toggle('pasif', mod === 'yaz');
-
+  document.getElementById('nbModYaz').classList.toggle('active', mod === 'yaz');
+  document.getElementById('nbModCiz').classList.toggle('active', mod === 'ciz');
+  document.getElementById('nbModSil').classList.toggle('active', mod === 'sil');
+  document.getElementById('nbCanvasFull').classList.toggle('pasif', mod === 'yaz');
   document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
 
 function notebookRenkSec(renk) {
   notebookRenk = renk;
-  const bSiyah = document.getElementById('nbRenkSiyah');
-  const bKirmizi = document.getElementById('nbRenkKirmizi');
-  if (bSiyah) bSiyah.classList.toggle('aktif', renk === '#1a1a1a');
-  if (bKirmizi) bKirmizi.classList.toggle('aktif', renk === '#8f2a1e');
+  document.getElementById('nbRenkSiyah').classList.toggle('aktif', renk === '#1a1a1a');
+  document.getElementById('nbRenkKirmizi').classList.toggle('aktif', renk === '#8f2a1e');
 }
 
 function nbKalemKur(canvas, taraf) {
@@ -873,10 +803,8 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchend', bitir);
 }
 
-const fullCvs = document.getElementById('nbCanvasFull');
-if (fullCvs) {
-  nbKalemKur(fullCvs, 'pageDrawing');
-}
+const cvsFull = document.getElementById('nbCanvasFull');
+if (cvsFull) nbKalemKur(cvsFull, 'pageDrawing');
 
 let characterAudio = null;
 let dialogueActive = false;
@@ -887,7 +815,7 @@ function renderCharacter() {
   characterAudio = null;
   dialogIndex = 0;
 
-  const ch = CASE && CASE.characters && CASE.characters[currentRoom];
+  const ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
 
   const stage = document.getElementById('stage');
@@ -928,7 +856,7 @@ function startDialogueFromClickable(ch) {
   if (glow) glow.remove();
   if (hit) hit.remove();
   const stage = document.getElementById('stage');
-  if (stage) stage.classList.add('dialog-active');
+  stage.classList.add('dialog-active');
   renderSceneCharacter(ch, stage);
   toggleCharacterLine(ch);
 }
@@ -976,8 +904,8 @@ function toggleCharacterLine(ch) {
       const c = document.getElementById('sceneCharacter');
       if (c) c.remove();
       dialogueActive = false;
-      if (stage) stage.classList.remove('dialog-active');
-      if (ch.clickableImage && stage) renderClickableCharacter(ch, stage);
+      stage.classList.remove('dialog-active');
+      if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }
     gosterDialogSatiri(dialog);
@@ -986,8 +914,6 @@ function toggleCharacterLine(ch) {
 
 function gosterDialogSatiri(dialog) {
   const stage = document.getElementById('stage');
-  if (!stage) return;
-
   let sub = document.getElementById('sceneSubtitle');
   if (!sub) {
     sub = document.createElement('div');
@@ -998,7 +924,7 @@ function gosterDialogSatiri(dialog) {
   const satir = dialog[dialogIndex];
   
   const charEl = document.getElementById('sceneCharacter');
-  const ch = CASE && CASE.characters && CASE.characters[currentRoom];
+  const ch = CASE.characters && CASE.characters[currentRoom];
   
   if (charEl && ch) {
     if (satir.emotion) {
@@ -1015,8 +941,6 @@ function gosterDialogSatiri(dialog) {
 }
 
 function zoomKur(wrap, img) {
-  if (!wrap || !img) return;
-
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;
   let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
