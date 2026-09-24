@@ -41,7 +41,7 @@ const VFX = (function () {
       lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.3)', size: '40cqw' }]
     },
 
-    // 6. Giriş / Köy Meydanı Karşılama (Mor Lambalar ve Yeşil Toz Alanları Eklendi)
+    // 6. Giriş / Köy Meydanı Karşılama (Mor Lambalar ve Yeşil Toz Alanları Entegre Edildi)
     'scr-ana': {
       dust: true, count: 120,
       beam: { xMin: 0.25, xMax: 0.95, yMin: 0.25, yMax: 0.90 },

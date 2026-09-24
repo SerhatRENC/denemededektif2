@@ -327,8 +327,8 @@
   }
 </style>
 <link rel="stylesheet" href="ogretici.css?v=9">
-<link rel="stylesheet" href="vfx.css">
-<script src="vfx.js"></script>
+<link rel="stylesheet" href="vfx.css?v=10">
+<script src="vfx.js?v=10"></script>
 <script src="sfx.js"></script>
 </head>
 <body>
@@ -341,7 +341,7 @@
 
   <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
-  <!-- 1. ANA EKRAN (MAVİ ÇERÇEVEYE GÖRE GENİŞLETİLMİŞ AHSAP TABELA KOORDİNATLARI) -->
+  <!-- 1. ANA EKRAN (AHSAP TABELALAR İÇİN MAÇ KOORDİNATLARI) -->
   <div class="screen active" id="scr-ana" style="background-image:url('assets/odalar/giris.webp')">
     <div class="hotspot" id="btn-oyna" style="left: 3.5%; top: 26.5%; width: 18.5%; height: 13.0%;" title="Oyna"></div>
     <div class="hotspot" id="btn-hakkinda" style="left: 3.5%; top: 41.0%; width: 18.5%; height: 13.5%;" title="Hakkında"></div>
@@ -665,6 +665,14 @@ function showScreen(id) {
   if (typeof VFX !== 'undefined') VFX.load(id, scr);
   if (typeof SFX !== 'undefined') SFX.play(id);
 }
+
+// SAYFA AÇILDIĞINDA İLK GİRİŞ EKRANI EFEKTLERİNİ OTOMATİK YÜKLE
+window.addEventListener('DOMContentLoaded', () => {
+  const anaEkran = document.getElementById('scr-ana');
+  if (typeof VFX !== 'undefined' && anaEkran) {
+    VFX.load('scr-ana', anaEkran);
+  }
+});
 
 document.getElementById('btn-nasil').addEventListener('click', () => showScreen('scr-nasil'));
 document.getElementById('btn-nasil-geri').addEventListener('click', () => showScreen('scr-ana'));
