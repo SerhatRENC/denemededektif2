@@ -136,8 +136,8 @@
 /* ---------- GERİ DÜĞMESİ: koyu çerçeve ----------
    Harita / not defteri düğmeleriyle aynı koyu kaplama; geri ikonu daha belirgin olsun.
    Hem oyun.html (case.json'daki geri ikonları + kapalı kapı) hem index.html için geçerli. */
-.hotspot-pulse-wrap img[src$="geri.png"],
-.nabiz-ikon-wrap img[src$="geri.png"]{
+.hotspot-pulse-wrap img[src$="geri.webp"],
+.nabiz-ikon-wrap img[src$="geri.webp"]{
   box-sizing:border-box; padding:7%;
   background:#1c1d18; border:1px solid #3a3b30; border-radius:9px;
   box-shadow:0 3px 10px rgba(0,0,0,.6);
@@ -210,7 +210,7 @@
 /* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI (merkez) ----------
    İsimler zaten hotspot-pulse-label ile geliyor (aynı "hafif" görünüm); tokmak
    ikonuna hafif bir parıltı ekleniyor ki kapı olduğu belli olsun. */
-#stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{
+#stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(227,169,74,.55));
   animation:tokmakParilti 2.2s ease-in-out infinite;
 }
@@ -219,7 +219,7 @@
   50%{ filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 10px rgba(227,169,74,.75)); }
 }
 @media (prefers-reduced-motion: reduce){
-  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.png"]{ animation:none; }
+  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{ animation:none; }
 }
 
 /* ---------- GÜN SAYACI: takvim_gunN.png (kullanıcının kendi tasarımı) ---------- */

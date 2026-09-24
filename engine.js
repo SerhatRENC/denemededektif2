@@ -623,22 +623,24 @@ function renderNotebookPage() {
     if (suspect) {
       nameEl.textContent = suspect.name;
       photoEl.style.display = '';
+      const eskiFallback = document.getElementById(photoEl.id + '-fallback');
+      if (eskiFallback) eskiFallback.remove();
       photoEl.onerror = () => {
+        photoEl.style.display = 'none';
         const fallback = document.createElement('div');
         fallback.className = 'nb-suspect-photo-missing';
-        fallback.id = photoEl.id;
+        fallback.id = photoEl.id + '-fallback';
         fallback.style.top = photoTop;
         fallback.style.left = photoLeft;
         fallback.style.height = photoHeight;
         fallback.textContent = `görsel yok:\n${suspect.image}`;
-        photoEl.replaceWith(fallback);
+        photoEl.insertAdjacentElement('afterend', fallback);
       };
       photoEl.src = suspect.image;
     } else {
       nameEl.textContent = '';
       photoEl.style.display = 'none';
     }
-
     const yaziEl = document.getElementById(satir.yaziId);
     yaziEl.value = p[satir.taraf] || '';
   });

@@ -15,7 +15,7 @@ const VFX = (function () {
     },
 
     // 2. Dedektif Ofisi (Ahşap Masa & Gaz Lambası)
-    'dedektif': {
+    'ofis': {
       dust: true, count: 110,
       beam: { xMin: 0.02, xMax: 0.60, yMin: 0.05, yMax: 0.90 },
       lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.55)', size: '22cqw' }] // Kırmızı Halka
@@ -35,14 +35,14 @@ const VFX = (function () {
     },
 
     // 5. Gazeteci Odası
-    'gazeteci': {
+    'gazeteci_oda': {
       dust: true, count: 90,
       beam: { xMin: 0.40, xMax: 0.65, yMin: 0.20, yMax: 0.70 },
       lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.3)', size: '40cqw' }]
     },
 
     // 6. Giriş / Köy Meydanı Karşılama
-    'giris': {
+    'scr-ana': {
       lights: [
         { x: '31%', y: '36%', color: 'rgba(255, 150, 30, 0.6)', size: '12cqw' },
         { x: '86%', y: '28%', color: 'rgba(255, 150, 30, 0.6)', size: '12cqw' },
@@ -90,7 +90,7 @@ const VFX = (function () {
     },
 
     // 12. Köy Giriş Takı
-    'koy_giris': {
+    'scr-koy': {
       dust: true, count: 60,
       beam: { xMin: 0.35, xMax: 0.98, yMin: 0.55, yMax: 0.95 }
     },
@@ -122,7 +122,7 @@ const VFX = (function () {
     },
 
     // 17. Ofis / Şehir Dedektiflik Bürosu
-    'ofis_sehir': {
+    'scr-ofis': {
       dust: true, count: 110,
       beam: { xMin: 0.15, xMax: 0.82, yMin: 0.08, yMax: 0.85 }
     },
@@ -145,9 +145,7 @@ const VFX = (function () {
     cleanup();
     if (!stageElement || !roomId) return;
 
-    let configKey = Object.keys(roomVFXConfig).find(key => roomId.includes(key));
-    let config = configKey ? roomVFXConfig[configKey] : null;
-
+    let config = roomVFXConfig[roomId] || null;
     if (!config) return;
 
     // A. YAVAŞ & SİNEMATİK PARILTI / LAMBALAR (Kırmızı Halkalar)
