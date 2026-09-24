@@ -18,7 +18,11 @@ fetch('case.json?v=' + Date.now())
   })
   .then(data => {
     CASE = data;
-    document.getElementById('caseTitle').textContent = CASE.title || '';
+    
+    // caseTitle kontrolü eklendi (index.html üzerinde yoksa hata fırlatmayacak)
+    const titleEl = document.getElementById('caseTitle');
+    if (titleEl) titleEl.textContent = CASE.title || '';
+
     currentRoom = CASE.startRoom;
 
     const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
@@ -26,18 +30,25 @@ fetch('case.json?v=' + Date.now())
     currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
     inventory = savedInv ? JSON.parse(savedInv) : [];
 
-    updateDayBadge();
-    renderInventory();
+    const dayBadgeEl = document.getElementById('dayBadge');
+    if (dayBadgeEl) updateDayBadge();
+    
+    const invEl = document.getElementById('inventory');
+    if (invEl) renderInventory();
+
     renderRoom();
   })
   .catch(err => {
     console.error("CASE.JSON YÜKLEME HATASI DETAYI:", err);
-    document.getElementById('stage').innerHTML =
-      `<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">
-        case.json okunamadı veya ayrıştırılamadı.<br>
-        <strong>Hata detayı:</strong> ${err.message}<br><br>
-        Lütfen tarayıcı konsolunu (F12 -> Console) kontrol et.
-      </div>`;
+    const stage = document.getElementById('stage') || document.getElementById('gameStage');
+    if (stage) {
+      stage.innerHTML =
+        `<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">
+          case.json okunamadı veya ayrıştırılamadı.<br>
+          <strong>Hata detayı:</strong> ${err.message}<br><br>
+          Lütfen tarayıcı konsolunu (F12 -> Console) kontrol et.
+        </div>`;
+    }
   });
 
 /* ---------- ODA ÇİZİMİ ---------- */
@@ -48,7 +59,9 @@ function renderRoom() {
   }
 
   const room = CASE.rooms[currentRoom];
-  const stage = document.getElementById('stage');
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (!stage) return;
+
   stage.classList.add('fading');
   
   setTimeout(() => {
@@ -156,7 +169,8 @@ function openPhoto(src) {
 }
 
 function updateDayBadge() {
-  document.getElementById('dayBadge').textContent = `GÜN ${currentDay}`;
+  const el = document.getElementById('dayBadge');
+  if (el) el.textContent = `GÜN ${currentDay}`;
 }
 
 function confirmSleep() {
@@ -182,9 +196,12 @@ function sleep() {
   } catch (e) {}
 
   const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
-  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
-  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
-  document.getElementById('sleepOverlay').classList.add('active');
+  const dNum = document.getElementById('sleepDayNum');
+  if (dNum) dNum.textContent = `GÜN ${currentDay}`;
+  const sText = document.getElementById('sleepText');
+  if (sText) sText.textContent = evt || 'Yeni bir gün başlıyor.';
+  const sOv = document.getElementById('sleepOverlay');
+  if (sOv) sOv.classList.add('active');
 }
 
 function wakeUp() {
@@ -196,7 +213,8 @@ function wakeUp() {
 
   if (typeof calSes === 'function') calSes('sabah');
 
-  document.getElementById('sleepOverlay').classList.remove('active');
+  const sOv = document.getElementById('sleepOverlay');
+  if (sOv) sOv.classList.remove('active');
   renderRoom();
 }
 
@@ -208,8 +226,10 @@ function dosyaAdiNormalle(str) {
 
 function suclamaGoster(html) {
   const ov = document.getElementById('suclamaOverlay');
-  ov.innerHTML = html;
-  ov.classList.add('active');
+  if (ov) {
+    ov.innerHTML = html;
+    ov.classList.add('active');
+  }
 }
 
 function finalSuclamayaBaslat() {
@@ -323,8 +343,12 @@ function openStatement(index) {
     <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
     ${audioHtml}
   `, true);
-  document.getElementById('modalBody').classList.add('reader');
-  document.getElementById('modalBg').classList.add('reader-mode');
+  
+  const mBody = document.getElementById('modalBody');
+  if (mBody) mBody.classList.add('reader');
+  const mBg = document.getElementById('modalBg');
+  if (mBg) mBg.classList.add('reader-mode');
+  
   const sImg = document.getElementById('statementZoomImg');
   if (sImg) zoomKur(sImg.parentElement, sImg);
 }
@@ -382,8 +406,11 @@ function tryUnlock(itemId) {
   if (val === item.lockedCode) {
     showModal(`<h3>${item.title}</h3><p>${item.unlockedText || 'çözüldü.'}</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
   } else {
-    document.getElementById('unlockInput').style.borderColor = '#8f3a2e';
-    document.getElementById('unlockInput').placeholder = 'yanlış kod';
+    const unInp = document.getElementById('unlockInput');
+    if (unInp) {
+      unInp.style.borderColor = '#8f3a2e';
+      unInp.placeholder = 'yanlış kod';
+    }
   }
 }
 
@@ -399,6 +426,7 @@ function collect(collectId, image) {
 
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
+  if (!inv) return;
   if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
   inv.innerHTML = '';
   inventory.forEach(id => {
@@ -443,112 +471,132 @@ function toggleTape() {
   const reelL = document.getElementById('reelL'), reelR = document.getElementById('reelR');
   if (tapePlaying) {
     tapeAudio.play().catch(()=>{});
-    btn.textContent = '⏸'; btn.classList.add('active');
-    reelL.classList.add('spin'); reelR.classList.add('spin');
+    if (btn) { btn.textContent = '⏸'; btn.classList.add('active'); }
+    if (reelL) reelL.classList.add('spin'); 
+    if (reelR) reelR.classList.add('spin');
     tapeInterval = setInterval(() => {
       tapeSeconds++;
       const m = String(Math.floor(tapeSeconds/60)).padStart(2,'0');
       const s = String(tapeSeconds%60).padStart(2,'0');
-      document.getElementById('counter').textContent = `${m}:${s}`;
+      const cnt = document.getElementById('counter');
+      if (cnt) cnt.textContent = `${m}:${s}`;
     }, 1000);
   } else {
     tapeAudio.pause();
-    btn.textContent = '▶'; btn.classList.remove('active');
-    reelL.classList.remove('spin'); reelR.classList.remove('spin');
+    if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
+    if (reelL) reelL.classList.remove('spin'); 
+    if (reelR) reelR.classList.remove('spin');
     clearInterval(tapeInterval);
   }
 }
 
 function showModal(html, wide) {
   const body = document.getElementById('modalBody');
+  if (!body) return;
   body.innerHTML = html;
   body.className = 'modal' + (wide ? ' wide' : '');
   const bg = document.getElementById('modalBg');
-  bg.classList.remove('reader-mode');
-  bg.classList.add('active');
+  if (bg) {
+    bg.classList.remove('reader-mode');
+    bg.classList.add('active');
+  }
 }
 
 function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
   stopStatementAudio();
-  document.getElementById('modalBg').classList.remove('active');
-  document.getElementById('modalBg').classList.remove('reader-mode');
+  const bg = document.getElementById('modalBg');
+  if (bg) {
+    bg.classList.remove('active');
+    bg.classList.remove('reader-mode');
+  }
 }
-document.getElementById('modalBg').onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
+
+const bgEl = document.getElementById('modalBg');
+if (bgEl) {
+  bgEl.onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
+}
 
 const calibToggle = document.getElementById('calibToggle');
-const stageEl = document.getElementById('stage');
+const stageEl = document.getElementById('stage') || document.getElementById('gameStage');
 const readout = document.getElementById('calibReadout');
 
-calibToggle.onclick = () => {
-  calibMode = !calibMode;
-  calibClicks = [];
-  calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
-  calibToggle.classList.toggle('on', calibMode);
-  stageEl.classList.toggle('calib-active', calibMode);
-  readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
-};
-
-stageEl.addEventListener('click', (e) => {
-  if (!calibMode) return;
-  const rect = stageEl.getBoundingClientRect();
-  const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-  const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-
-  const marker = document.createElement('div');
-  marker.className = 'calib-marker';
-  marker.style.left = xPct + '%';
-  marker.style.top = yPct + '%';
-  stageEl.appendChild(marker);
-
-  calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
-
-  if (calibClicks.length === 2) {
-    const [p1, p2] = calibClicks;
-    const x = Math.min(p1.x, p2.x).toFixed(1);
-    const y = Math.min(p1.y, p2.y).toFixed(1);
-    const w = Math.abs(p2.x - p1.x).toFixed(1);
-    const h = Math.abs(p2.y - p1.y).toFixed(1);
-    const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
-    readout.textContent = snippet;
-    console.log('Hotspot koordinatı:', snippet);
+if (calibToggle && stageEl) {
+  calibToggle.onclick = () => {
+    calibMode = !calibMode;
     calibClicks = [];
-    setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
-  } else {
-    readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
-  }
-});
+    calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
+    calibToggle.classList.toggle('on', calibMode);
+    stageEl.classList.toggle('calib-active', calibMode);
+    if (readout) readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
+  };
+
+  stageEl.addEventListener('click', (e) => {
+    if (!calibMode) return;
+    const rect = stageEl.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+    const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+
+    const marker = document.createElement('div');
+    marker.className = 'calib-marker';
+    marker.style.left = xPct + '%';
+    marker.style.top = yPct + '%';
+    stageEl.appendChild(marker);
+
+    calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
+
+    if (calibClicks.length === 2) {
+      const [p1, p2] = calibClicks;
+      const x = Math.min(p1.x, p2.x).toFixed(1);
+      const y = Math.min(p1.y, p2.y).toFixed(1);
+      const w = Math.abs(p2.x - p1.x).toFixed(1);
+      const h = Math.abs(p2.y - p1.y).toFixed(1);
+      const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
+      if (readout) readout.textContent = snippet;
+      console.log('Hotspot koordinatı:', snippet);
+      calibClicks = [];
+      setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
+    } else {
+      if (readout) readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
+    }
+  });
+}
 
 function openMap() {
   if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
-  document.getElementById('mapImage').src = CASE.map.image;
+  const mapImg = document.getElementById('mapImage');
+  if (mapImg) mapImg.src = CASE.map.image;
 
   const wrap = document.getElementById('mapHotspots');
-  wrap.innerHTML = '';
-  CASE.map.hotspots.forEach(h => {
-    const dot = document.createElement('div');
-    dot.className = 'map-hotspot';
-    dot.style.left = h.x;
-    dot.style.top = h.y;
-    dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
-    dot.onclick = () => {
-      if (h.target && CASE.rooms[h.target]) {
-        currentRoom = h.target;
-        closeMap();
-        renderRoom();
-      } else {
-        alert(`"${h.label}" henüz case.json'a eklenmedi.`);
-      }
-    };
-    wrap.appendChild(dot);
-  });
+  if (wrap) {
+    wrap.innerHTML = '';
+    CASE.map.hotspots.forEach(h => {
+      const dot = document.createElement('div');
+      dot.className = 'map-hotspot';
+      dot.style.left = h.x;
+      dot.style.top = h.y;
+      dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
+      dot.onclick = () => {
+        if (h.target && CASE.rooms[h.target]) {
+          currentRoom = h.target;
+          closeMap();
+          renderRoom();
+        } else {
+          alert(`"${h.label}" henüz case.json'a eklenmedi.`);
+        }
+      };
+      wrap.appendChild(dot);
+    });
+  }
 
-  document.getElementById('mapOverlay').classList.add('active');
+  const mapOv = document.getElementById('mapOverlay');
+  if (mapOv) mapOv.classList.add('active');
 }
 
 function closeMap() {
-  document.getElementById('mapOverlay').classList.remove('active');
+  const mapOv = document.getElementById('mapOverlay');
+  if (mapOv) mapOv.classList.remove('active');
 }
 
 let notebookState = null;
@@ -586,32 +634,40 @@ function openNotebook() {
   const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
   const solEl = document.getElementById('nbPageSol');
   const sagEl = document.getElementById('nbPageSag');
-  ['top', 'bottom', 'left', 'width'].forEach(k => {
-    if (pageSol[k]) solEl.style[k] = pageSol[k];
-    if (pageSag[k]) sagEl.style[k] = pageSag[k];
-  });
+  if (solEl && sagEl) {
+    ['top', 'bottom', 'left', 'width'].forEach(k => {
+      if (pageSol[k]) solEl.style[k] = pageSol[k];
+      if (pageSag[k]) sagEl.style[k] = pageSag[k];
+    });
+  }
 
-  nbImg.style.display = '';
-  nbFallback.style.display = 'none';
-  nbImg.onerror = () => {
-    nbImg.style.display = 'none';
-    nbFallback.style.display = 'flex';
-    nbFallback.textContent = `görsel bulunamadı: ${src}`;
-  };
-  nbImg.onload = () => {
-    if (nbImg.naturalWidth && nbImg.naturalHeight) {
-      nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
-    }
-    renderNotebookPage();
-  };
-  nbImg.src = src;
+  if (nbImg) {
+    nbImg.style.display = '';
+    if (nbFallback) nbFallback.style.display = 'none';
+    nbImg.onerror = () => {
+      nbImg.style.display = 'none';
+      if (nbFallback) {
+        nbFallback.style.display = 'flex';
+        nbFallback.textContent = `görsel bulunamadı: ${src}`;
+      }
+    };
+    nbImg.onload = () => {
+      if (nbImg.naturalWidth && nbImg.naturalHeight && nbWrap) {
+        nbWrap.style.aspectRatio = `${nbImg.naturalWidth} / ${nbImg.naturalHeight}`;
+      }
+      renderNotebookPage();
+    };
+    nbImg.src = src;
+  }
 
-  document.getElementById('notebookOverlay').classList.add('active');
+  const nbOv = document.getElementById('notebookOverlay');
+  if (nbOv) nbOv.classList.add('active');
   requestAnimationFrame(renderNotebookPage);
 }
 
 function closeNotebook() {
-  document.getElementById('notebookOverlay').classList.remove('active');
+  const nbOv = document.getElementById('notebookOverlay');
+  if (nbOv) nbOv.classList.remove('active');
 }
 
 const NB_SOL_SATIRLAR = [
@@ -620,6 +676,7 @@ const NB_SOL_SATIRLAR = [
 ];
 
 function renderNotebookPage() {
+  if (!notebookState) return;
   const total = notebookState.pages.length;
   const p = notebookState.pages[notebookState.page];
   const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
@@ -641,54 +698,62 @@ function renderNotebookPage() {
     const nameEl = document.getElementById(satir.nameId);
     const notesEl = document.getElementById(satir.notesId);
 
-    nameEl.style.top = nameTop;
-    nameEl.style.left = nameLeft;
-    notesEl.style.top = noteTop;
-    notesEl.style.left = noteLeft;
-    notesEl.style.width = noteWidth;
-    notesEl.style.height = noteHeight;
-    if (photoEl.tagName === 'IMG') {
-      photoEl.style.top = photoTop;
-      photoEl.style.left = photoLeft;
-      photoEl.style.height = photoHeight;
-      photoEl.style.width = 'auto';
-    }
+    if (nameEl && notesEl && photoEl) {
+      nameEl.style.top = nameTop;
+      nameEl.style.left = nameLeft;
+      notesEl.style.top = noteTop;
+      notesEl.style.left = noteLeft;
+      notesEl.style.width = noteWidth;
+      notesEl.style.height = noteHeight;
+      if (photoEl.tagName === 'IMG') {
+        photoEl.style.top = photoTop;
+        photoEl.style.left = photoLeft;
+        photoEl.style.height = photoHeight;
+        photoEl.style.width = 'auto';
+      }
 
-    if (suspect) {
-      nameEl.textContent = suspect.name;
-      photoEl.style.display = '';
-      const eskiFallback = document.getElementById(photoEl.id + '-fallback');
-      if (eskiFallback) eskiFallback.remove();
-      photoEl.onerror = () => {
+      if (suspect) {
+        nameEl.textContent = suspect.name;
+        photoEl.style.display = '';
+        const eskiFallback = document.getElementById(photoEl.id + '-fallback');
+        if (eskiFallback) eskiFallback.remove();
+        photoEl.onerror = () => {
+          photoEl.style.display = 'none';
+          const fallback = document.createElement('div');
+          fallback.className = 'nb-suspect-photo-missing';
+          fallback.id = photoEl.id + '-fallback';
+          fallback.style.top = photoTop;
+          fallback.style.left = photoLeft;
+          fallback.style.height = photoHeight;
+          fallback.textContent = `görsel yok:\n${suspect.image}`;
+          photoEl.insertAdjacentElement('afterend', fallback);
+        };
+        photoEl.src = suspect.image;
+      } else {
+        nameEl.textContent = '';
         photoEl.style.display = 'none';
-        const fallback = document.createElement('div');
-        fallback.className = 'nb-suspect-photo-missing';
-        fallback.id = photoEl.id + '-fallback';
-        fallback.style.top = photoTop;
-        fallback.style.left = photoLeft;
-        fallback.style.height = photoHeight;
-        fallback.textContent = `görsel yok:\n${suspect.image}`;
-        photoEl.insertAdjacentElement('afterend', fallback);
-      };
-      photoEl.src = suspect.image;
-    } else {
-      nameEl.textContent = '';
-      photoEl.style.display = 'none';
+      }
     }
     const yaziEl = document.getElementById(satir.yaziId);
-    yaziEl.value = p[satir.taraf] || '';
+    if (yaziEl) yaziEl.value = p[satir.taraf] || '';
   });
 
-  document.getElementById('nbYaziSag').value = p.sag || '';
+  const yaziSag = document.getElementById('nbYaziSag');
+  if (yaziSag) yaziSag.value = p.sag || '';
 
-  canvasResizeVeCiz(document.getElementById('nbCanvasFull'), p.pageDrawing);
+  const cFull = document.getElementById('nbCanvasFull');
+  if (cFull) canvasResizeVeCiz(cFull, p.pageDrawing);
 
-  document.getElementById('nbSayfaGöstergesi').textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
-  document.getElementById('nbEdgeGeri').disabled = notebookState.page === 0;
-  document.getElementById('nbEdgeIleri').disabled = notebookState.page === total - 1;
+  const nbS = document.getElementById('nbSayfaGöstergesi');
+  if (nbS) nbS.textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
+  const egG = document.getElementById('nbEdgeGeri');
+  if (egG) egG.disabled = notebookState.page === 0;
+  const egI = document.getElementById('nbEdgeIleri');
+  if (egI) egI.disabled = notebookState.page === total - 1;
 }
 
 function canvasResizeVeCiz(canvas, dataURL) {
+  if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
@@ -737,20 +802,28 @@ function notebookTemizle() {
 
 function notebookModAyarla(mod) {
   notebookMod = mod;
-  document.getElementById('nbModYaz').classList.toggle('active', mod === 'yaz');
-  document.getElementById('nbModCiz').classList.toggle('active', mod === 'ciz');
-  document.getElementById('nbModSil').classList.toggle('active', mod === 'sil');
-  document.getElementById('nbCanvasFull').classList.toggle('pasif', mod === 'yaz');
+  const mYaz = document.getElementById('nbModYaz');
+  if (mYaz) mYaz.classList.toggle('active', mod === 'yaz');
+  const mCiz = document.getElementById('nbModCiz');
+  if (mCiz) mCiz.classList.toggle('active', mod === 'ciz');
+  const mSil = document.getElementById('nbModSil');
+  if (mSil) mSil.classList.toggle('active', mod === 'sil');
+  
+  const cFull = document.getElementById('nbCanvasFull');
+  if (cFull) cFull.classList.toggle('pasif', mod === 'yaz');
   document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
 
 function notebookRenkSec(renk) {
   notebookRenk = renk;
-  document.getElementById('nbRenkSiyah').classList.toggle('aktif', renk === '#1a1a1a');
-  document.getElementById('nbRenkKirmizi').classList.toggle('aktif', renk === '#8f2a1e');
+  const rSiy = document.getElementById('nbRenkSiyah');
+  if (rSiy) rSiy.classList.toggle('aktif', renk === '#1a1a1a');
+  const rKir = document.getElementById('nbRenkKirmizi');
+  if (rKir) rKir.classList.toggle('aktif', renk === '#8f2a1e');
 }
 
 function nbKalemKur(canvas, taraf) {
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let çiziyor = false;
 
@@ -789,7 +862,9 @@ function nbKalemKur(canvas, taraf) {
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
   canvas.addEventListener('touchend', bitir);
 }
-nbKalemKur(document.getElementById('nbCanvasFull'), 'pageDrawing');
+
+const cFullEl = document.getElementById('nbCanvasFull');
+if (cFullEl) nbKalemKur(cFullEl, 'pageDrawing');
 
 let characterAudio = null;
 let dialogueActive = false;
@@ -803,7 +878,8 @@ function renderCharacter() {
   const ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
 
-  const stage = document.getElementById('stage');
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (!stage) return;
 
   if (ch.clickableImage) {
     renderClickableCharacter(ch, stage);
@@ -839,8 +915,8 @@ function startDialogueFromClickable(ch) {
   const hit = document.getElementById('roomClickableHit');
   if (glow) glow.remove();
   if (hit) hit.remove();
-  const stage = document.getElementById('stage');
-  stage.classList.add('dialog-active');
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (stage) stage.classList.add('dialog-active');
   renderSceneCharacter(ch, stage);
   toggleCharacterLine(ch);
 }
@@ -866,7 +942,7 @@ function renderSceneCharacter(ch, stage) {
 }
 
 function toggleCharacterLine(ch) {
-  const stage = document.getElementById('stage');
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
   const charEl = document.getElementById('sceneCharacter');
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
 
@@ -888,7 +964,7 @@ function toggleCharacterLine(ch) {
       const c = document.getElementById('sceneCharacter');
       if (c) c.remove();
       dialogueActive = false;
-      stage.classList.remove('dialog-active');
+      if (stage) stage.classList.remove('dialog-active');
       if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }
@@ -897,7 +973,8 @@ function toggleCharacterLine(ch) {
 }
 
 function gosterDialogSatiri(dialog) {
-  const stage = document.getElementById('stage');
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (!stage) return;
   let sub = document.getElementById('sceneSubtitle');
   if (!sub) {
     sub = document.createElement('div');
