@@ -61,7 +61,6 @@ h1{display:none;}
   font-size:9px;font-family:var(--mono);padding:4px;pointer-events:none;
 }
 
-/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL ODA HOTSPOT BOYUTLARI */
 .hotspot-pulse-wrap{
   position:absolute;cursor:pointer;
   transform:translate(-50%,-50%);
@@ -127,7 +126,7 @@ h1{display:none;}
   .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(227,169,74,.6)); }
 }
 
-/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL DİYALOG ALTYAZISI */
+/* DİYALOG ALTYAZISI */
 .scene-subtitle{
   position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
   background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
@@ -140,7 +139,7 @@ h1{display:none;}
 .scene-subtitle-text{font-size:clamp(13px, 2cqw, 20px);color:var(--paper);font-family:var(--sans);line-height:1.5;}
 @keyframes subtitleGir{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL TAKVİM YAPRAĞI */
+/* TAKVİM YAPRAĞI */
 .stage-day-tag, #dayBadge, .day-badge, .takvim-box {
   position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
@@ -148,13 +147,14 @@ h1{display:none;}
   font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
 }
 
-/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL HARİTA & DEFTER İKONLARI */
+/* MASAÜSTÜ HARİTA & DEFTER İKONLARI */
 .corner-icons{
   position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;
+  align-items:flex-end;
 }
 .corner-icon-btn{
-  width:8cqw;height:8cqw;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
-  cursor:pointer;overflow:hidden;padding:6px;
+  width:5.5cqw;height:5.5cqw;border-radius:8px;background:#1c1d18;border:1px solid #3a3b30;
+  cursor:pointer;overflow:hidden;padding:5px;
   transition:border-color .15s ease, transform .15s ease, opacity .35s ease;
 }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
@@ -177,17 +177,23 @@ body:has(.dialog-active) .corner-icons {
 }
 
 /* ============================================================
-   SADECE MOBİL / DAR EKRANLAR İÇİN ÖZEL UYARLAMALAR (MAX-WIDTH: 850PX)
+   SADECE MOBİL LANDSCAPE & DAR EKRANLAR (MAX-WIDTH: 960PX VEYA MAX-HEIGHT: 550PX)
    ============================================================ */
-@media (max-width: 850px) {
+@media (max-width: 960px), (max-height: 550px) {
   /* 1. Harita ve Defter İkonları Mobilde Küçültüldü */
-  .corner-icon-btn {
-    width: clamp(28px, 4.8cqw, 38px) !important;
-    height: clamp(28px, 4.8cqw, 38px) !important;
-    padding: 3px !important;
+  .corner-icons {
+    bottom: 6px !important;
+    right: 6px !important;
+    gap: 5px !important;
   }
-  
-  /* 2. Konuşma Metni Mobilde Yukarı Alındı */
+  .corner-icon-btn {
+    width: clamp(24px, 3.8cqw, 34px) !important;
+    height: clamp(24px, 3.8cqw, 34px) !important;
+    padding: 2px !important;
+    border-radius: 6px !important;
+  }
+
+  /* 2. Konuşma Metni Mobilde İdeal Yükseklikte */
   .scene-subtitle {
     bottom: 12% !important;
     padding: 8px 12px !important;
@@ -197,22 +203,22 @@ body:has(.dialog-active) .corner-icons {
     line-height: 1.4 !important;
   }
 
-  /* 3. Takvim Yaprağı Sadece Mobilde Küçültüldü */
+  /* 3. Takvim Yaprağı Mobilde Küçültüldü */
   .stage-day-tag, #dayBadge, .day-badge, .takvim-box {
-    transform: scale(0.72) !important;
+    transform: scale(0.68) !important;
     transform-origin: top right !important;
   }
 
-  /* Oda içi ikonlar mobilde çok yer kaplamasın */
+  /* Oda içi ikonlar ve karakterler mobilde dengelendi */
   .hotspot-pulse-wrap {
-    max-width: 6cqw !important;
+    max-width: 5.5cqw !important;
   }
   .hotspot-pulse-label {
-    font-size: 8.5px !important;
+    font-size: 8px !important;
     padding: 1px 4px !important;
   }
   .scene-character {
-    max-width: 44% !important;
+    max-width: 42% !important;
   }
 }
 
