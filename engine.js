@@ -759,6 +759,48 @@ function renderCharacter() {
   if (!ch) return;
 
   const stage = document.getElementById('stage');
+
+  if (ch.clickableImage) {
+    renderClickableCharacter(ch, stage);
+  } else {
+    renderSceneCharacter(ch, stage);
+  }
+}
+
+function renderClickableCharacter(ch, stage) {
+  const glow = document.createElement('img');
+  glow.id = 'roomClickableGlow';
+  glow.className = 'room-clickable-glow';
+  glow.src = ch.clickableImage;
+  glow.alt = '';
+  glow.onerror = () => { glow.style.display = 'none'; };
+  stage.appendChild(glow);
+
+  const area = ch.clickableArea || { x: '40%', y: '28%', w: '22%', h: '58%' };
+  const hit = document.createElement('div');
+  hit.id = 'roomClickableHit';
+  hit.className = 'room-clickable-hit';
+  hit.style.left = area.x;
+  hit.style.top = area.y;
+  hit.style.width = area.w;
+  hit.style.height = area.h;
+  hit.title = ch.name;
+  hit.onclick = () => { if (!calibMode) startDialogueFromClickable(ch); };
+  stage.appendChild(hit);
+}
+
+function startDialogueFromClickable(ch) {
+  const glow = document.getElementById('roomClickableGlow');
+  const hit = document.getElementById('roomClickableHit');
+  if (glow) glow.remove();
+  if (hit) hit.remove();
+  const stage = document.getElementById('stage');
+  stage.classList.add('dialog-active');
+  renderSceneCharacter(ch, stage);
+  toggleCharacterLine(ch);
+}
+
+function renderSceneCharacter(ch, stage) {
   const el = document.createElement('img');
   el.id = 'sceneCharacter';
   el.className = 'scene-character';
@@ -801,6 +843,8 @@ function toggleCharacterLine(ch) {
       const c = document.getElementById('sceneCharacter');
       if (c) c.remove();
       dialogueActive = false;
+      stage.classList.remove('dialog-active');
+      if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }
     gosterDialogSatiri(dialog);

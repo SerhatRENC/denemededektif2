@@ -145,9 +145,10 @@
   },
 
   "characters": {
-    "kilise": { "name": "Peder Anselm", "image": "assets/karakterler/anselm.webp", "audio": "assets/karakterler/anselm.mp3", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "-15%" },
+        "kilise": { "name": "Peder Anselm", "image": "assets/karakterler/anselm.webp", "audio": "assets/karakterler/anselm.mp3", "clickableImage": "assets/tiklanabilir/ansel_tiklanabilir.webp", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "-15%" },
     "degirmenci": {
-      "name": "Değirmenci Mustafa", "image": "assets/karakterler/mustafa.webp", "audio": "assets/karakterler/mustafa.mp3", "yOffset": "-15%",
+      "degirmenci": {
+      "name": "Değirmenci Mustafa", "image": "assets/karakterler/mustafa.webp", "audio": "assets/karakterler/mustafa.mp3", "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Dedektif", "text": "Kolay gelsin, bir iki sualim olacak." },
         { "speaker": "Mustafa", "text": "Buyrun beyim." },
@@ -162,7 +163,7 @@
       ]
     },
     "muhtar": {
-      "name": "Muhtar Halit", "image": "assets/karakterler/halit.webp", "audio": "assets/karakterler/halit.mp3", "yOffset": "-15%",
+            "name": "Muhtar Halit", "image": "assets/karakterler/halit.webp", "audio": "assets/karakterler/halit.mp3", "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Halit", "text": "Buyrun dedektif bey. Çıkacağım birazdan, acil bir şey var mı?" },
         { "speaker": "Dedektif", "text": "Sizinle Ali İhsan bey hakkında konuşmam lazım." },
@@ -171,8 +172,8 @@
       ]
     },
     "sifahane": {
-      "name": "Doktor Kamuran", "image": "assets/karakterler/kamuran.webp", "audio": "assets/karakterler/kamuran.mp3", "yOffset": "-15%",
-      "dialog": [
+      "name": "Doktor Kamuran", "image": "assets/karakterler/kamuran.webp", "audio": "assets/karakterler/kamuran.mp3", "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp", "yOffset": "-15%",
+            "dialog": [
         { "speaker": "Kamuran", "text": "Buyrun, hoş geldiniz." },
         { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim." },
         { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü." },
@@ -193,7 +194,7 @@
       ]
     },
     "demirci": {
-      "name": "Demirci Cabbar", "image": "assets/karakterler/cabbar.webp", "audio": "assets/karakterler/cabbar.mp3", "yOffset": "-15%",
+      "name": "Demirci Cabbar", "image": "assets/karakterler/cabbar.webp", "audio": "assets/karakterler/cabbar.mp3", "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Dedektif", "text": "Kolay gelsin." },
         { "speaker": "Cabbar", "text": "Kolaysa başına gelsin." },
@@ -202,7 +203,7 @@
       ]
     },
     "halit_ev": {
-      "name": "Aylin", "image": "assets/karakterler/aylin.webp", "audio": "assets/karakterler/aylin.mp3", "yOffset": "-15%",
+      "name": "Aylin", "image": "assets/karakterler/aylin.webp", "audio": "assets/karakterler/aylin.mp3", "clickableImage": "assets/tiklanabilir/aylin_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Aylin", "text": "Buyrun beyim, babama mı baktınız? Kendisi muhtarlıkta, evde değil şu an." },
         { "speaker": "Dedektif", "text": "Ben seninle konuşmak için gelmiştim, Aylin." },
@@ -214,7 +215,7 @@
       ]
     },
     "nadire_ev": {
-      "name": "Nadire", "image": "assets/karakterler/nadire.webp", "audio": "assets/karakterler/nadire.mp3", "yOffset": "-15%",
+      "name": "Nadire", "image": "assets/karakterler/nadire.webp", "audio": "assets/karakterler/nadire.mp3", "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Nadire", "text": "Hoş geldiniz dedektif beyefendi oğlum. Halit bey mi yolladı sizi?" },
         { "speaker": "Dedektif", "text": "Hayır. Neden Halit beyin yolladığını düşündünüz?" },
@@ -230,7 +231,7 @@
       ]
     },
     "mezarlik": {
-      "name": "Cevdet", "image": "assets/karakterler/cevdet.webp", "audio": "assets/karakterler/cevdet.mp3", "yOffset": "-15%",
+      "name": "Cevdet", "image": "assets/karakterler/cevdet.webp", "audio": "assets/karakterler/cevdet.mp3", "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Dedektif", "text": "Sen Cevdet misin? Mezarlıkta ne yapıyorsun?" },
         { "speaker": "Cevdet", "text": "Melekler..." },
@@ -246,7 +247,7 @@
       ]
     },
     "han": {
-      "name": "Hancı Rıza", "image": "assets/karakterler/riza.webp", "audio": "assets/karakterler/riza.mp3", "yOffset": "-15%",
+      "name": "Hancı Rıza", "image": "assets/karakterler/riza.webp", "audio": "assets/karakterler/riza.mp3", "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Dedektif", "text": "Ali İhsan bey senin hanında ölü bulunmuş." },
         { "speaker": "Rıza", "text": "Evet beyim, çok efendi bir adamdı." },

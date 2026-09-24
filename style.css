@@ -103,6 +103,34 @@ h1{display:none;}
   color:var(--amber-bright);font-size:10px;font-family:var(--mono);text-align:center;
   padding:8px;white-space:pre-line;z-index:8;
 }
+.scene-character-missing{
+  position:absolute;right:2%;bottom:6%;width:26%;aspect-ratio:3/4;
+  border:1px dashed var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;
+  color:var(--amber-bright);font-size:10px;font-family:var(--mono);text-align:center;
+  padding:8px;white-space:pre-line;z-index:8;
+}
+
+.room-clickable-glow{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;pointer-events:none;z-index:5;
+  animation:roomClickableNabiz 2s ease-in-out infinite;
+}
+@keyframes roomClickableNabiz{
+  0%,100%{ filter:drop-shadow(0 0 6px rgba(227,169,74,.35)) drop-shadow(0 0 14px rgba(227,169,74,.15)); }
+  50%{ filter:drop-shadow(0 0 14px rgba(227,169,74,.9)) drop-shadow(0 0 30px rgba(227,169,74,.5)); }
+}
+.room-clickable-hit{
+  position:absolute;cursor:pointer;z-index:6;
+  border-radius:8px;transition:background .15s ease;
+}
+.room-clickable-hit:hover{ background:rgba(227,169,74,.08); }
+.stage.dialog-active::after{
+  content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:rgba(5,4,2,.55);transition:background .4s ease;
+}
+@media (prefers-reduced-motion: reduce){
+  .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(227,169,74,.6)); }
+}
 .scene-subtitle{
   position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
   background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
