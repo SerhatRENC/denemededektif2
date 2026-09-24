@@ -1,6 +1,5 @@
 /* ============================================================
-   ODA MOTORU — bu dosyayı değiştirmene gerek yok.
-   Tüm içerik case.json içinden okunuyor.
+   ODA MOTORU — Sislidere Köyü Davası
    ============================================================ */
 
 let CASE = null;
@@ -9,6 +8,7 @@ let inventory = [];
 let currentDay = 1;
 let calibMode = false;
 let calibClicks = [];
+let currentSleepAudio = null;
 
 fetch('case.json')
   .then(r => r.json())
@@ -17,7 +17,6 @@ fetch('case.json')
     document.getElementById('caseTitle').textContent = CASE.title || '';
     currentRoom = CASE.startRoom;
 
-    // localStorage'dan kaldığı yerden devam et
     const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
     const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
     currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
@@ -29,11 +28,11 @@ fetch('case.json')
   })
   .catch(err => {
     document.getElementById('stage').innerHTML =
-      '<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">case.json okunamadı. Aynı klasörde olduğundan ve bir local server üzerinden açtığından emin ol (dosyayı doğrudan çift tıklayarak açarsan fetch çalışmaz — VSCode "Live Server" eklentisi veya GitHub Pages kullan).</div>';
+      '<div style="padding:20px;color:#e07a5f;font-family:monospace;font-size:12px;">case.json okunamadı. Aynı klasörde olduğundan ve bir local server üzerinden açtığından emin ol.</div>';
     console.error(err);
   });
 
-/* ---------- oda çizimi ---------- */
+/* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage');
@@ -161,6 +160,11 @@ function sleep() {
   localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
   updateDayBadge();
 
+  try {
+    currentSleepAudio = new Audio('assets/ses/uyuma.mp3');
+    currentSleepAudio.play().catch(() => {});
+  } catch (e) {}
+
   const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
   document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
   document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
@@ -168,6 +172,14 @@ function sleep() {
 }
 
 function wakeUp() {
+  if (currentSleepAudio) {
+    currentSleepAudio.pause();
+    currentSleepAudio.currentTime = 0;
+    currentSleepAudio = null;
+  }
+
+  if (typeof calSes === 'function') calSes('sabah');
+
   document.getElementById('sleepOverlay').classList.remove('active');
   renderRoom();
 }
@@ -438,6 +450,7 @@ function showModal(html, wide) {
   bg.classList.remove('reader-mode');
   bg.classList.add('active');
 }
+
 function closeModal() {
   clearInterval(tapeInterval); tapePlaying = false; tapeSeconds = 0;
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
@@ -516,6 +529,7 @@ function openMap() {
 
   document.getElementById('mapOverlay').classList.add('active');
 }
+
 function closeMap() {
   document.getElementById('mapOverlay').classList.remove('active');
 }
@@ -538,11 +552,13 @@ function loadNotebook() {
     }))
   };
 }
+
 function saveNotebook() {
   localStorage.setItem(notebookKey(), JSON.stringify(notebookState));
 }
 
 function openNotebook() {
+  if (typeof calSes === 'function') calSes('kitap');
   if (!notebookState) loadNotebook();
   const nbImg = document.getElementById('notebookImage');
   const nbFallback = document.getElementById('notebookImgFallback');
@@ -563,7 +579,7 @@ function openNotebook() {
   nbImg.onerror = () => {
     nbImg.style.display = 'none';
     nbFallback.style.display = 'flex';
-    nbFallback.textContent = `görsel bulunamadı: ${src} — not defteri görseli tam olarak bu yolda olmalı`;
+    nbFallback.textContent = `görsel bulunamadı: ${src}`;
   };
   nbImg.onload = () => {
     if (nbImg.naturalWidth && nbImg.naturalHeight) {
@@ -576,6 +592,7 @@ function openNotebook() {
   document.getElementById('notebookOverlay').classList.add('active');
   requestAnimationFrame(renderNotebookPage);
 }
+
 function closeNotebook() {
   document.getElementById('notebookOverlay').classList.remove('active');
 }
@@ -676,10 +693,21 @@ function notebookYaziKaydet(taraf, el) {
 }
 
 function notebookSayfaGeri() {
-  if (notebookState.page > 0) { notebookState.page--; saveNotebook(); renderNotebookPage(); }
+  if (notebookState.page > 0) { 
+    if (typeof calSes === 'function') calSes('sayfa');
+    notebookState.page--; 
+    saveNotebook(); 
+    renderNotebookPage(); 
+  }
 }
+
 function notebookSayfaIleri() {
-  if (notebookState.page < notebookState.pages.length - 1) { notebookState.page++; saveNotebook(); renderNotebookPage(); }
+  if (notebookState.page < notebookState.pages.length - 1) { 
+    if (typeof calSes === 'function') calSes('sayfa');
+    notebookState.page++; 
+    saveNotebook(); 
+    renderNotebookPage(); 
+  }
 }
 
 function notebookTemizle() {
@@ -861,6 +889,21 @@ function gosterDialogSatiri(dialog) {
     stage.appendChild(sub);
   }
   const satir = dialog[dialogIndex];
+  
+  const charEl = document.getElementById('sceneCharacter');
+  const ch = CASE.characters && CASE.characters[currentRoom];
+  
+  if (charEl && ch) {
+    if (satir.emotion) {
+      const lastDot = ch.image.lastIndexOf('.');
+      const basePath = ch.image.substring(0, lastDot);
+      const ext = ch.image.substring(lastDot);
+      charEl.src = `${basePath}_${satir.emotion}${ext}`;
+    } else {
+      charEl.src = ch.image;
+    }
+  }
+
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 

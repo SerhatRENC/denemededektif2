@@ -199,15 +199,8 @@
       if (e.target.closest('.reader-side-arrow')) calSes('sayfa');
     });
 
-    const _sleepOrijinal = sleep;
-    sleep = function () {
-      calSes('uyuma');
-      _sleepOrijinal();
-    };
-
     const _wakeUpOrijinal = wakeUp;
     wakeUp = function () {
-      calSes('sabah');
       const parlak = document.createElement('div');
       parlak.className = 'sabah-parlama';
       document.getElementById('stageFrame').appendChild(parlak);
