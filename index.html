@@ -59,6 +59,11 @@
     position: absolute;
     cursor: pointer;
     background: rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+  .hotspot:hover {
+    background: rgba(227, 169, 74, 0.12);
   }
 
   .btn {
@@ -336,11 +341,11 @@
 
   <button class="tam-ekran-btn" id="tamEkranBtn" title="Tam Ekran">⛶</button>
 
-  <!-- 1. ANA EKRAN (YENİ KOORDİNATLAR) -->
+  <!-- 1. ANA EKRAN (MAVİ ÇERÇEVEYE GÖRE GENİŞLETİLMİŞ AHSAP TABELA KOORDİNATLARI) -->
   <div class="screen active" id="scr-ana" style="background-image:url('assets/odalar/giris.webp')">
-    <div class="hotspot" id="btn-oyna" style="left:4.8%; top:33.7%; width:17.2%; height:8.5%;"></div>
-    <div class="hotspot" id="btn-hakkinda" style="left:8.6%; top:42.2%; width:16.1%; height:11.0%;"></div>
-    <div class="hotspot" id="btn-nasil" style="left:8.3%; top:56.5%; width:16.4%; height:13.0%;"></div>
+    <div class="hotspot" id="btn-oyna" style="left: 3.5%; top: 26.5%; width: 18.5%; height: 13.0%;" title="Oyna"></div>
+    <div class="hotspot" id="btn-hakkinda" style="left: 3.5%; top: 41.0%; width: 18.5%; height: 13.5%;" title="Hakkında"></div>
+    <div class="hotspot" id="btn-nasil" style="left: 3.5%; top: 56.0%; width: 18.5%; height: 14.0%;" title="Nasıl Oynanır"></div>
   </div>
 
   <!-- 2. OFİS / ŞEHİR -->
@@ -410,10 +415,10 @@
     </div>
   </div>
 
-  <!-- 8. DEDEKTİF OFİSİ (POLİSİN YENİ MAVİ KOORDİNATI) -->
+  <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/odalar/dedektif_ofis.webp')">
     <img class="room-clickable-glow" id="polis-glow" src="assets/tiklanabilir/polis_tiklanabilir.webp" alt="">
-    <div class="room-clickable-hit" id="polis-hit" style="left:49.6%; top:28.4%; width:17.0%; height:38.2%;" title="Polis"></div>
+    <div class="room-clickable-hit" id="polis-hit" style="left:48.7%; top:27.8%; width:16.5%; height:39.6%;" title="Polis"></div>
     <img class="character" id="char-polis" src="assets/karakterler/polis.webp" alt="Polis">
     <div class="subtitle" id="sub-polis"></div>
   </div>

@@ -1,5 +1,5 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v8 - Tam Gün Işığı & Sinematik Toz)
+   VFX ENGINE - Sislidere Köyü Davası (v9 - Giriş Ekranı Işık & Toz Güncellendi)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
@@ -41,12 +41,15 @@ const VFX = (function () {
       lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.3)', size: '40cqw' }]
     },
 
-    // 6. Giriş / Köy Meydanı Karşılama
+    // 6. Giriş / Köy Meydanı Karşılama (Mor Lambalar ve Yeşil Toz Alanları Eklendi)
     'scr-ana': {
+      dust: true, count: 120,
+      beam: { xMin: 0.25, xMax: 0.95, yMin: 0.25, yMax: 0.90 },
       lights: [
-        { x: '31%', y: '36%', color: 'rgba(255, 150, 30, 0.6)', size: '12cqw' },
-        { x: '86%', y: '28%', color: 'rgba(255, 150, 30, 0.6)', size: '12cqw' },
-        { x: '94%', y: '43%', color: 'rgba(255, 150, 30, 0.5)', size: '10cqw' }
+        { x: '29.8%', y: '35.5%', color: 'rgba(255, 170, 50, 0.65)', size: '12cqw' }, // Sol sokak feneri
+        { x: '47.5%', y: '42.2%', color: 'rgba(255, 170, 50, 0.55)', size: '8cqw' },  // Orta sol arka fener
+        { x: '68.5%', y: '42.0%', color: 'rgba(255, 170, 50, 0.55)', size: '8cqw' },  // Orta sağ arka fener
+        { x: '87.5%', y: '28.8%', color: 'rgba(255, 180, 60, 0.75)', size: '16cqw' }  // Sağ büyük direk feneri
       ]
     },
 
@@ -195,7 +198,7 @@ const VFX = (function () {
           particles.push({
             x: minX + Math.random() * (maxX - minX),
             y: minY + Math.random() * (maxY - minY),
-            r: config.sparks ? Math.random() * 1.6 + 0.8 : Math.random() * 1.1 + 0.8,
+            r: config.sparks ? Math.random() * 1.6 + 0.8 : Math.random() * 1.2 + 0.8,
             vx: (Math.random() - 0.5) * (config.sparks ? 0.35 : 0.08),
             vy: config.sparks ? -(Math.random() * 0.4 + 0.2) : (Math.random() - 0.5) * 0.06,
             alpha: Math.random() * 0.35 + 0.15,
