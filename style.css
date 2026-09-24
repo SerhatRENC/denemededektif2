@@ -109,9 +109,10 @@ h1{display:none;}
   object-fit:cover;pointer-events:none;z-index:5;
   animation:roomClickableNabiz 2s ease-in-out infinite;
 }
+/* Optimize edilmiş hafif gölge animasyonu */
 @keyframes roomClickableNabiz{
-  0%,100%{ filter:drop-shadow(0 0 6px rgba(227,169,74,.35)) drop-shadow(0 0 14px rgba(227,169,74,.15)); }
-  50%{ filter:drop-shadow(0 0 14px rgba(227,169,74,.9)) drop-shadow(0 0 30px rgba(227,169,74,.5)); }
+  0%,100%{ opacity: 0.55; filter:drop-shadow(0 0 8px rgba(227,169,74,.4)); }
+  50%{ opacity: 1; filter:drop-shadow(0 0 16px rgba(227,169,74,.85)); }
 }
 .room-clickable-hit{
   position:absolute;cursor:pointer;z-index:6;
@@ -167,7 +168,6 @@ h1{display:none;}
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease !important;
 }
 
-/* Diyalog / Konuşma başladığında ikonları yok et */
 .corner-icons.dialog-gizli,
 .stage-frame:has(.scene-subtitle) .corner-icons,
 .stage-frame:has(.dialog-active) .corner-icons,

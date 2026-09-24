@@ -1,10 +1,14 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v12 - İnce Zarif Toz & Dengeli Yoğunluk)
+   VFX ENGINE - Sislidere Köyü Davası (v13 - Mobil Bellek Optimizasyonlu)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
   let particles = [];
   let smokeParticles = [];
+
+  // Mobil Cihaz Tespiti
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const particleDivider = isMobile ? 3 : 1; // Mobilde parçacık sayısını 3'e böler
 
   // HER BİR MEKANIN VFX KOORDİNATLARI & DENGELENMİŞ DUST SAYILARI
   const roomVFXConfig = {
@@ -168,7 +172,7 @@ const VFX = (function () {
 
       if (config.dust || config.sparks) {
         const beam = config.beam || { xMin: 0.1, xMax: 0.9, yMin: 0.1, yMax: 0.9 };
-        const count = config.count || 180;
+        const count = Math.floor((config.count || 180) / particleDivider);
 
         for (let i = 0; i < count; i++) {
           const minX = canvas.width * beam.xMin;
@@ -183,7 +187,6 @@ const VFX = (function () {
           particles.push({
             x: minX + Math.random() * (maxX - minX),
             y: minY + Math.random() * (maxY - minY),
-            // Yarıçap küçültüldü: Mikro, yumuşak toz tanecikleri
             r: config.sparks ? Math.random() * 1.5 + 0.6 : Math.random() * 0.9 + 0.5,
             vx: (Math.random() - 0.5) * (config.sparks ? 0.30 : 0.08),
             vy: config.sparks ? -(Math.random() * 0.35 + 0.15) : (Math.random() - 0.5) * 0.06,
@@ -202,8 +205,9 @@ const VFX = (function () {
       if (config.smoke) {
         const smokeX = config.smokeSource ? config.smokeSource.xPct : 0.81;
         const smokeY = config.smokeSource ? config.smokeSource.yPct : 0.32;
+        const smokeCount = Math.floor(25 / particleDivider);
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < smokeCount; i++) {
           smokeParticles.push({
             x: canvas.width * smokeX + (Math.random() - 0.5) * 12,
             y: canvas.height * smokeY + Math.random() * 20,

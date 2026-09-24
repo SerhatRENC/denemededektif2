@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası
+   ODA MOTORU — Sislidere Köyü Davası (Bellek Sızıntısı Düzeltildi)
    ============================================================ */
 
 let CASE = null;
@@ -19,7 +19,6 @@ fetch('case.json?v=' + Date.now())
   .then(data => {
     CASE = data;
     
-    // caseTitle kontrolü eklendi (index.html üzerinde yoksa hata fırlatmayacak)
     const titleEl = document.getElementById('caseTitle');
     if (titleEl) titleEl.textContent = CASE.title || '';
 
@@ -1004,6 +1003,7 @@ function gosterDialogSatiri(dialog) {
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
+/* RAM SIZINTISI TEMİZLENMİŞ VE YENİLENMİŞ ZOOM BİLEŞENİ */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;
@@ -1022,6 +1022,15 @@ function zoomKur(wrap, img) {
     img.style.transformOrigin = `${oranX}% ${oranY}%`;
   }
 
+  function fareTaşı(e) {
+    if (!fareBasili) return;
+    panX = startPanX + (e.clientX - fareX);
+    panY = startPanY + (e.clientY - fareY);
+    uygula();
+  }
+
+  function fareBırak() { fareBasili = false; }
+
   wrap.addEventListener('dblclick', (e) => {
     if (scale === 1) {
       origadaAyarla(e.clientX, e.clientY);
@@ -1031,6 +1040,7 @@ function zoomKur(wrap, img) {
     }
     uygula();
   });
+
   wrap.addEventListener('touchstart', (e) => {
     if (e.touches.length === 2) {
       startDist = uzaklik(e.touches[0], e.touches[1]);
@@ -1042,6 +1052,7 @@ function zoomKur(wrap, img) {
       startPanX = panX; startPanY = panY;
     }
   }, { passive: true });
+
   wrap.addEventListener('touchmove', (e) => {
     if (e.touches.length === 2) {
       scale = Math.min(4, Math.max(1, startScale * (uzaklik(e.touches[0], e.touches[1]) / startDist)));
@@ -1052,23 +1063,29 @@ function zoomKur(wrap, img) {
       uygula();
     }
   }, { passive: true });
+
   wrap.addEventListener('touchend', () => { sürükleniyor = false; });
+
   wrap.addEventListener('wheel', (e) => {
     e.preventDefault();
     if (scale === 1 && e.deltaY < 0) origadaAyarla(e.clientX, e.clientY);
     scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0015));
     sinirla(); uygula();
   }, { passive: false });
+
   wrap.addEventListener('mousedown', (e) => {
     if (scale <= 1) return;
     fareBasili = true; fareX = e.clientX; fareY = e.clientY; startPanX = panX; startPanY = panY;
   });
-  window.addEventListener('mousemove', (e) => {
-    if (!fareBasili) return;
-    panX = startPanX + (e.clientX - fareX); panY = startPanY + (e.clientY - fareY);
-    uygula();
-  });
-  window.addEventListener('mouseup', () => { fareBasili = false; });
 
-  return { sifirla: () => { scale = 1; panX = 0; panY = 0; img.style.transformOrigin = 'center center'; uygula(); } };
+  window.addEventListener('mousemove', fareTaşı);
+  window.addEventListener('mouseup', fareBırak);
+
+  return {
+    sifirla: () => {
+      scale = 1; panX = 0; panY = 0; img.style.transformOrigin = 'center center'; uygula();
+      window.removeEventListener('mousemove', fareTaşı);
+      window.removeEventListener('mouseup', fareBırak);
+    }
+  };
 }
