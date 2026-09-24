@@ -40,8 +40,8 @@
       "hotspots": [
         { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Dedektif Ofisine dön" },
         { "x": "47.6%", "y": "49.9%", "type": "navigate", "target": "han", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Han", "hint": "Hana git" },
-        { "x": "55.8%", "y": "46.4%", "type": "navigate", "target": "kilise", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Kilise", "hint": "Kiliseye git" },
-        { "x": "51.5%", "y": "45.9%", "type": "navigate", "target": "mezarlik", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Mezarlık", "hint": "Mezarlığa git" },
+        { "x": "55.8%", "y": "46.4%", "type": "navigate", "target": "kilise", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Kiliseye git" },
+        { "x": "51.5%", "y": "45.9%", "type": "navigate", "target": "mezarlik", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Mezarlığa git" },
         { "x": "92.2%", "y": "54.1%", "type": "navigate", "target": "cadi", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Cevdet'in Evi", "hint": "Cadının Evine git" },
         { "x": "32.0%", "y": "50.1%", "type": "navigate", "target": "muhtar", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Muhtarlık", "hint": "Muhtarlığa git" },
         { "x": "76.7%", "y": "50.6%", "type": "navigate", "target": "demirci", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Demirci", "hint": "Demirciye git" },
@@ -145,9 +145,8 @@
   },
 
   "characters": {
-        "kilise": { "name": "Peder Anselm", "image": "assets/karakterler/anselm.webp", "audio": "assets/karakterler/anselm.mp3", "clickableImage": "assets/tiklanabilir/ansel_tiklanabilir.webp", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "-15%" },
+    "kilise": { "name": "Peder Anselm", "image": "assets/karakterler/anselm.webp", "audio": "assets/karakterler/anselm.mp3", "clickableImage": "assets/tiklanabilir/ansel_tiklanabilir.webp", "text": "(BURAYA DİYALOG METNİ GELECEK)", "yOffset": "-15%" },
     "degirmenci": {
-      "degirmenci": {
       "name": "Değirmenci Mustafa", "image": "assets/karakterler/mustafa.webp", "audio": "assets/karakterler/mustafa.mp3", "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Dedektif", "text": "Kolay gelsin, bir iki sualim olacak." },
@@ -163,7 +162,7 @@
       ]
     },
     "muhtar": {
-            "name": "Muhtar Halit", "image": "assets/karakterler/halit.webp", "audio": "assets/karakterler/halit.mp3", "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp", "yOffset": "-15%",
+      "name": "Muhtar Halit", "image": "assets/karakterler/halit.webp", "audio": "assets/karakterler/halit.mp3", "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp", "yOffset": "-15%",
       "dialog": [
         { "speaker": "Halit", "text": "Buyrun dedektif bey. Çıkacağım birazdan, acil bir şey var mı?" },
         { "speaker": "Dedektif", "text": "Sizinle Ali İhsan bey hakkında konuşmam lazım." },
@@ -173,7 +172,7 @@
     },
     "sifahane": {
       "name": "Doktor Kamuran", "image": "assets/karakterler/kamuran.webp", "audio": "assets/karakterler/kamuran.mp3", "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp", "yOffset": "-15%",
-            "dialog": [
+      "dialog": [
         { "speaker": "Kamuran", "text": "Buyrun, hoş geldiniz." },
         { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim." },
         { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü." },
