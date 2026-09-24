@@ -170,7 +170,7 @@
       "name": "Polis Memuru",
       "image": "assets/karakterler/polis.webp",
       "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
-      "clickableArea": { "x": "58.5%", "y": "13.5%", "w": "17.4%", "h": "57.7%" },
+      "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
       "text": "Dedektif Bey, evraklar hazır."
     },
     "kilise": {
