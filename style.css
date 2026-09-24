@@ -61,6 +61,7 @@ h1{display:none;}
   font-size:9px;font-family:var(--mono);padding:4px;pointer-events:none;
 }
 
+/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL ODA HOTSPOT BOYUTLARI */
 .hotspot-pulse-wrap{
   position:absolute;cursor:pointer;
   transform:translate(-50%,-50%);
@@ -81,7 +82,7 @@ h1{display:none;}
 }
 @keyframes hotspotIkonNabiz{
   0%,100%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.1);}
+  50%{transform:translate(-50%,-50%) scale(1.08);}
 }
 .hotspot-pulse-icon-missing{
   border:1px dashed var(--amber);border-radius:6px;color:var(--amber-bright);
@@ -109,7 +110,6 @@ h1{display:none;}
   object-fit:cover;pointer-events:none;z-index:5;
   animation:roomClickableNabiz 2s ease-in-out infinite;
 }
-/* Optimize edilmiş hafif gölge animasyonu */
 @keyframes roomClickableNabiz{
   0%,100%{ opacity: 0.55; filter:drop-shadow(0 0 8px rgba(227,169,74,.4)); }
   50%{ opacity: 1; filter:drop-shadow(0 0 16px rgba(227,169,74,.85)); }
@@ -126,6 +126,8 @@ h1{display:none;}
 @media (prefers-reduced-motion: reduce){
   .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(227,169,74,.6)); }
 }
+
+/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL DİYALOG ALTYAZISI */
 .scene-subtitle{
   position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
   background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
@@ -137,17 +139,16 @@ h1{display:none;}
 }
 .scene-subtitle-text{font-size:clamp(13px, 2cqw, 20px);color:var(--paper);font-family:var(--sans);line-height:1.5;}
 @keyframes subtitleGir{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-@media (max-width:480px){
-  .scene-character{max-width:44%;}
-}
 
-.stage-day-tag{
+/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL TAKVİM YAPRAĞI */
+.stage-day-tag, #dayBadge, .day-badge, .takvim-box {
   position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
   padding:4px 12px;border-radius:4px;
   font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);
 }
 
+/* MASAÜSTÜ (WEB) İÇİN ORİJİNAL HARİTA & DEFTER İKONLARI */
 .corner-icons{
   position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:20;
 }
@@ -158,10 +159,6 @@ h1{display:none;}
 }
 .corner-icon-btn:hover{border-color:var(--amber);transform:translateY(-2px);}
 .corner-icon-btn img{width:100%;height:100%;object-fit:contain;display:block;}
-
-/* ============================================================
-   KONUŞMA / DİYALOG ANINDA HARİTA VE DEFTERİ KESİN GİZLEME
-   ============================================================ */
 
 .corner-icons, 
 .corner-icon-btn {
@@ -179,11 +176,43 @@ body:has(.dialog-active) .corner-icons {
   transform: translateY(12px) scale(0.85) !important;
 }
 
+/* ============================================================
+   SADECE MOBİL / DAR EKRANLAR İÇİN ÖZEL UYARLAMALAR (MAX-WIDTH: 850PX)
+   ============================================================ */
 @media (max-width: 850px) {
+  /* 1. Harita ve Defter İkonları Mobilde Küçültüldü */
   .corner-icon-btn {
-    width: clamp(32px, 6.5cqw, 46px) !important;
-    height: clamp(32px, 6.5cqw, 46px) !important;
-    padding: 4px !important;
+    width: clamp(28px, 4.8cqw, 38px) !important;
+    height: clamp(28px, 4.8cqw, 38px) !important;
+    padding: 3px !important;
+  }
+  
+  /* 2. Konuşma Metni Mobilde Yukarı Alındı */
+  .scene-subtitle {
+    bottom: 12% !important;
+    padding: 8px 12px !important;
+  }
+  .scene-subtitle-text {
+    font-size: clamp(11px, 1.7cqw, 16px) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* 3. Takvim Yaprağı Sadece Mobilde Küçültüldü */
+  .stage-day-tag, #dayBadge, .day-badge, .takvim-box {
+    transform: scale(0.72) !important;
+    transform-origin: top right !important;
+  }
+
+  /* Oda içi ikonlar mobilde çok yer kaplamasın */
+  .hotspot-pulse-wrap {
+    max-width: 6cqw !important;
+  }
+  .hotspot-pulse-label {
+    font-size: 8.5px !important;
+    padding: 1px 4px !important;
+  }
+  .scene-character {
+    max-width: 44% !important;
   }
 }
 
@@ -359,7 +388,7 @@ body:has(.dialog-active) .corner-icons {
 .notebook-img-fallback{
   width:100%;aspect-ratio:16/9;border-radius:6px;align-items:center;justify-content:center;
   background:repeating-linear-gradient(45deg,#20211a,#20211a 10px,#1a1b15 10px,#1a1b15 20px);
-  color:#c98a2c;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
+  color:#c9cabd;font-size:13px;font-family:var(--mono);text-align:center;padding:20px;
 }
 
 .nb-yazi{
@@ -484,11 +513,6 @@ body:has(.dialog-active) .corner-icons {
 .suclama-credits{color:#c9cabd;font-family:var(--sans);font-size:14px;line-height:1.8;margin-bottom:6px;}
 .suclama-gorsel{ width:100%;height:100%;object-fit:contain;display:block;border-radius:4px;background:transparent; }
 
-/* ============================================================
-   VFX & ATMOSFER KATMANLARI - Sislidere Köyü Davası (v3 - Entegre)
-   ============================================================ */
-
-/* 1. Canvas Katmanı (Toz, Un, Kıvılcım Parçacıkları) */
 .vfx-canvas {
   position: absolute;
   inset: 0;
@@ -498,7 +522,6 @@ body:has(.dialog-active) .corner-icons {
   z-index: 4;
 }
 
-/* 2. Dinamik Işık / Gaz Lambası Titremesi */
 .vfx-flicker-light {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -515,7 +538,6 @@ body:has(.dialog-active) .corner-icons {
   100% { opacity: 0.68; transform: translate(-50%, -50%) scale(1.00); }
 }
 
-/* 3. Hareketli Sis Katmanı (Merkez Meydan) */
 .vfx-fog-overlay {
   position: absolute;
   inset: 0;
