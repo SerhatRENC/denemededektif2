@@ -13,6 +13,12 @@
     "7": "Son gün. Artık bir karar vermen gerekiyor."
   },
 
+  "mainMenuButtons": {
+    "oyna": { "x": "8.5%", "y": "26.6%", "w": "16.0%", "h": "12.1%" },
+    "hakkinda": { "x": "8.5%", "y": "41.5%", "w": "16.2%", "h": "11.6%" },
+    "nasilOynanir": { "x": "8.5%", "y": "56.7%", "w": "16.0%", "h": "12.3%" }
+  },
+
   "rooms": {
     "scr-ofis": {
       "label": "Şehir Dedektiflik Bürosu",
