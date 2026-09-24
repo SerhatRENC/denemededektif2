@@ -1,113 +1,126 @@
 /* ============================================================
-   VFX ENGINE - Sislidere Köyü Davası (v10 - Dinamik Ateş & 2x Toz)
+   VFX ENGINE - Sislidere Köyü Davası (v11 - Yoğun Toz & Yavaş Doğal Işık)
    ============================================================ */
 const VFX = (function () {
   let animFrameId = null;
   let particles = [];
   let smokeParticles = [];
 
-  // HER BİR MEKANIN EFEKT KOORDİNATLARI (Toz Sayıları 2 Katına Çıkarıldı)
+  // OYUNDAKİ TÜM MEKANLARIN VFX KOORDİNATLARI & DUST SAYILARI
   const roomVFXConfig = {
     'cadi': {
-      dust: true, count: 220,
-      beam: { xMin: 0.35, xMax: 0.75, yMin: 0.25, yMax: 0.88 }
+      dust: true, count: 320,
+      beam: { xMin: 0.20, xMax: 0.85, yMin: 0.15, yMax: 0.90 },
+      lights: [{ x: '50%', y: '45%', color: 'rgba(255, 150, 40, 0.85)', size: '28cqw' }]
     },
     'ofis': {
-      dust: true, count: 220,
-      beam: { xMin: 0.02, xMax: 0.60, yMin: 0.05, yMax: 0.90 },
-      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.75)', size: '24cqw' }]
+      dust: true, count: 350,
+      beam: { xMin: 0.02, xMax: 0.95, yMin: 0.05, yMax: 0.95 },
+      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.85)', size: '30cqw' }]
+    },
+    'scr-dedektif': { // Dedektif Ofisi / Polis Ekranı
+      dust: true, count: 350,
+      beam: { xMin: 0.02, xMax: 0.95, yMin: 0.05, yMax: 0.95 },
+      lights: [{ x: '29%', y: '52%', color: 'rgba(255, 170, 50, 0.85)', size: '30cqw' }]
     },
     'degirmenci': {
-      dust: true, count: 240,
-      beam: { xMin: 0.22, xMax: 0.98, yMin: 0.25, yMax: 0.85 }
+      dust: true, count: 380,
+      beam: { xMin: 0.15, xMax: 0.98, yMin: 0.15, yMax: 0.90 }
     },
     'demirci': {
-      sparks: true, count: 130,
-      beam: { xMin: 0.60, xMax: 0.95, yMin: 0.10, yMax: 0.85 },
-      lights: [{ x: '58%', y: '42%', color: 'rgba(255, 90, 10, 0.85)', size: '35cqw' }]
+      sparks: true, count: 180,
+      beam: { xMin: 0.50, xMax: 0.95, yMin: 0.10, yMax: 0.85 },
+      lights: [{ x: '58%', y: '42%', color: 'rgba(255, 90, 10, 0.90)', size: '38cqw' }]
     },
     'gazeteci_oda': {
-      dust: true, count: 180,
-      beam: { xMin: 0.40, xMax: 0.65, yMin: 0.20, yMax: 0.70 },
-      lights: [{ x: '50%', y: '0%', color: 'rgba(255, 200, 120, 0.45)', size: '45cqw' }]
+      dust: true, count: 300,
+      beam: { xMin: 0.20, xMax: 0.80, yMin: 0.15, yMax: 0.85 },
+      lights: [{ x: '50%', y: '10%', color: 'rgba(255, 200, 120, 0.60)', size: '48cqw' }]
     },
-    'scr-ana': {
-      dust: true, count: 240,
-      beam: { xMin: 0.25, xMax: 0.95, yMin: 0.25, yMax: 0.90 },
+    'scr-ana': { // Giriş Ekranı
+      dust: true, count: 400,
+      beam: { xMin: 0.10, xMax: 0.95, yMin: 0.15, yMax: 0.95 },
       lights: [
-        { x: '29.8%', y: '35.5%', color: 'rgba(255, 160, 40, 0.80)', size: '15cqw' },
-        { x: '47.5%', y: '42.2%', color: 'rgba(255, 160, 40, 0.70)', size: '10cqw' },
-        { x: '68.5%', y: '42.0%', color: 'rgba(255, 160, 40, 0.70)', size: '10cqw' },
-        { x: '87.5%', y: '28.8%', color: 'rgba(255, 170, 50, 0.90)', size: '18cqw' }
+        { x: '29.8%', y: '35.5%', color: 'rgba(255, 160, 40, 0.85)', size: '18cqw' },
+        { x: '47.5%', y: '42.2%', color: 'rgba(255, 160, 40, 0.75)', size: '13cqw' },
+        { x: '68.5%', y: '42.0%', color: 'rgba(255, 160, 40, 0.75)', size: '13cqw' },
+        { x: '87.5%', y: '28.8%', color: 'rgba(255, 170, 50, 0.95)', size: '22cqw' }
       ]
     },
     'halit_ev': {
-      dust: true, count: 200,
-      beam: { xMin: 0.55, xMax: 0.98, yMin: 0.15, yMax: 0.90 }
+      dust: true, count: 320,
+      beam: { xMin: 0.40, xMax: 0.98, yMin: 0.15, yMax: 0.90 },
+      lights: [{ x: '65%', y: '40%', color: 'rgba(255, 150, 40, 0.80)', size: '25cqw' }]
     },
     'han': {
-      dust: true, count: 150,
-      beam: { xMin: 0.15, xMax: 0.72, yMin: 0.00, yMax: 0.25 },
+      dust: true, count: 300,
+      beam: { xMin: 0.05, xMax: 0.95, yMin: 0.00, yMax: 0.90 },
       lights: [
-        { x: '5%', y: '28%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '21%', y: '33%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '31%', y: '35%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '42%', y: '33%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '68%', y: '34%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '65%', y: '44%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' },
-        { x: '98%', y: '84%', color: 'rgba(255, 140, 30, 0.75)', size: '15cqw' }
+        { x: '5%', y: '28%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '21%', y: '33%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '31%', y: '35%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '42%', y: '33%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '68%', y: '34%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '65%', y: '44%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' },
+        { x: '98%', y: '84%', color: 'rgba(255, 140, 30, 0.80)', size: '18cqw' }
       ]
     },
     'han_depo': {
-      dust: true, count: 220,
-      beam: { xMin: 0.05, xMax: 0.70, yMin: 0.10, yMax: 0.85 }
+      dust: true, count: 350,
+      beam: { xMin: 0.05, xMax: 0.80, yMin: 0.10, yMax: 0.88 }
     },
     'kilise': {
-      dust: true, count: 240,
-      beam: { xMin: 0.02, xMax: 0.98, yMin: 0.15, yMax: 0.95 }
+      dust: true, count: 400,
+      beam: { xMin: 0.02, xMax: 0.98, yMin: 0.10, yMax: 0.95 },
+      lights: [{ x: '50%', y: '30%', color: 'rgba(255, 170, 50, 0.85)', size: '32cqw' }]
     },
     'kilise_kapi': {
-      dust: true, count: 100,
-      beam: { xMin: 0.58, xMax: 0.88, yMin: 0.25, yMax: 0.88 }
+      dust: true, count: 200,
+      beam: { xMin: 0.40, xMax: 0.90, yMin: 0.20, yMax: 0.90 }
     },
     'scr-koy': {
-      dust: true, count: 120,
-      beam: { xMin: 0.35, xMax: 0.98, yMin: 0.55, yMax: 0.95 }
+      dust: true, count: 250,
+      beam: { xMin: 0.20, xMax: 0.98, yMin: 0.40, yMax: 0.95 }
     },
     'merkez': {
-      dust: true, count: 100,
-      beam: { xMin: 0.10, xMax: 0.90, yMin: 0.30, yMax: 0.85 },
+      dust: true, count: 250,
+      beam: { xMin: 0.05, xMax: 0.95, yMin: 0.20, yMax: 0.90 },
       smoke: true,
       smokeSource: { xPct: 0.795, yPct: 0.315 },
-      lights: [{ x: '78%', y: '51%', color: 'rgba(255, 100, 20, 0.85)', size: '12cqw' }]
+      lights: [{ x: '78%', y: '51%', color: 'rgba(255, 100, 20, 0.90)', size: '16cqw' }]
     },
     'mezarlik': {
-      dust: true, count: 160,
-      beam: { xMin: 0.18, xMax: 0.82, yMin: 0.35, yMax: 0.92 },
-      lights: [{ x: '27%', y: '78%', color: 'rgba(255, 150, 40, 0.75)', size: '14cqw' }]
+      dust: true, count: 280,
+      beam: { xMin: 0.10, xMax: 0.90, yMin: 0.25, yMax: 0.95 },
+      lights: [{ x: '27%', y: '78%', color: 'rgba(255, 150, 40, 0.85)', size: '18cqw' }]
     },
     'muhtar': {
-      dust: true, count: 200,
-      beam: { xMin: 0.01, xMax: 0.78, yMin: 0.02, yMax: 0.98 }
+      dust: true, count: 320,
+      beam: { xMin: 0.01, xMax: 0.85, yMin: 0.02, yMax: 0.98 },
+      lights: [{ x: '45%', y: '35%', color: 'rgba(255, 160, 40, 0.80)', size: '25cqw' }]
     },
     'nadire_ev': {
-      dust: true, count: 200,
-      beam: { xMin: 0.22, xMax: 0.58, yMin: 0.30, yMax: 0.78 },
-      lights: [{ x: '22%', y: '52%', color: 'rgba(255, 160, 40, 0.75)', size: '20cqw' }]
+      dust: true, count: 320,
+      beam: { xMin: 0.15, xMax: 0.75, yMin: 0.20, yMax: 0.85 },
+      lights: [{ x: '22%', y: '52%', color: 'rgba(255, 160, 40, 0.85)', size: '24cqw' }]
     },
     'scr-ofis': {
-      dust: true, count: 220,
-      beam: { xMin: 0.15, xMax: 0.82, yMin: 0.08, yMax: 0.85 }
+      dust: true, count: 350,
+      beam: { xMin: 0.05, xMax: 0.90, yMin: 0.05, yMax: 0.90 }
     },
     'sifahane': {
-      dust: true, count: 200,
-      beam: { xMin: 0.05, xMax: 0.62, yMin: 0.08, yMax: 0.95 }
+      dust: true, count: 320,
+      beam: { xMin: 0.05, xMax: 0.75, yMin: 0.05, yMax: 0.95 },
+      lights: [{ x: '35%', y: '40%', color: 'rgba(255, 160, 40, 0.80)', size: '22cqw' }]
     }
   };
 
   function cleanup() {
     if (animFrameId) cancelAnimationFrame(animFrameId);
-    document.querySelectorAll('.vfx-canvas, .vfx-flicker-light').forEach(el => el.remove());
+    document.querySelectorAll('.vfx-canvas, .vfx-flicker-light').forEach(el => {
+      el.classList.remove('vfx-show');
+      setTimeout(() => el.remove(), 600); // Kararma bitince sil
+    });
     particles = [];
     smokeParticles = [];
   }
@@ -119,7 +132,8 @@ const VFX = (function () {
     let config = roomVFXConfig[roomId] || null;
     if (!config) return;
 
-    // A. GERÇEKÇİ ATEŞ / FENER TİTREŞİM IŞIKLARI
+    // A. YAVAŞ & DOĞAL ATEŞ IŞIKLARI
+    const createdLights = [];
     if (config.lights) {
       config.lights.forEach((l, idx) => {
         const light = document.createElement('div');
@@ -128,21 +142,23 @@ const VFX = (function () {
         light.style.top = l.y;
         light.style.width = l.size;
         light.style.height = l.size;
-        light.style.background = `radial-gradient(circle, ${l.color} 0%, rgba(255,120,20,0.2) 45%, transparent 70%)`;
+        light.style.background = `radial-gradient(circle, ${l.color} 0%, rgba(255,120,20,0.25) 50%, transparent 75%)`;
         
-        // Rastgele süre ve gecikme ile doğallık sağlama
-        const duration = 1.2 + Math.random() * 1.5;
-        const delay = Math.random() * 2;
+        // Yavaşlatılmış yumuşak animasyon
+        const duration = 4.5 + Math.random() * 2.5;
+        const delay = Math.random() * 3;
         const animType = idx % 2 === 0 ? 'vfxFlameFlickerA' : 'vfxFlameFlickerB';
         light.style.animation = `${animType} ${duration}s ease-in-out ${delay}s infinite alternate`;
         
         stageElement.appendChild(light);
+        createdLights.push(light);
       });
     }
 
-    // B. CANVAS PARÇACIK MOTORU (Eskiye Oranla Daha Hızlı Render)
+    // B. CANVAS PARÇACIK MOTORU (YOĞUN VE İRİ TOZLAR)
+    let canvas = null;
     if (config.dust || config.sparks || config.smoke) {
-      const canvas = document.createElement('canvas');
+      canvas = document.createElement('canvas');
       canvas.className = 'vfx-canvas';
       stageElement.appendChild(canvas);
 
@@ -151,10 +167,9 @@ const VFX = (function () {
       canvas.height = rect.height || 450;
       const ctx = canvas.getContext('2d');
 
-      // Toz Parçacıkları
       if (config.dust || config.sparks) {
         const beam = config.beam || { xMin: 0.1, xMax: 0.9, yMin: 0.1, yMax: 0.9 };
-        const count = config.count || 120;
+        const count = config.count || 250;
 
         for (let i = 0; i < count; i++) {
           const minX = canvas.width * beam.xMin;
@@ -162,19 +177,19 @@ const VFX = (function () {
           const minY = canvas.height * beam.yMin;
           const maxY = canvas.height * beam.yMax;
 
-          const hue = 38 + Math.floor(Math.random() * 14);
-          const sat = 65 + Math.floor(Math.random() * 25);
-          const light = 70 + Math.floor(Math.random() * 20);
+          const hue = 36 + Math.floor(Math.random() * 16);
+          const sat = 70 + Math.floor(Math.random() * 25);
+          const light = 72 + Math.floor(Math.random() * 20);
 
           particles.push({
             x: minX + Math.random() * (maxX - minX),
             y: minY + Math.random() * (maxY - minY),
-            r: config.sparks ? Math.random() * 1.8 + 0.8 : Math.random() * 1.4 + 0.6,
-            vx: (Math.random() - 0.5) * (config.sparks ? 0.35 : 0.09),
-            vy: config.sparks ? -(Math.random() * 0.4 + 0.2) : (Math.random() - 0.5) * 0.07,
-            alpha: Math.random() * 0.4 + 0.1,
-            maxAlpha: Math.random() * 0.4 + 0.3,
-            fadeSpeed: Math.random() * 0.004 + 0.001,
+            r: config.sparks ? Math.random() * 2.2 + 0.8 : Math.random() * 2.0 + 0.8, // Belirgin boyut
+            vx: (Math.random() - 0.5) * (config.sparks ? 0.35 : 0.10),
+            vy: config.sparks ? -(Math.random() * 0.4 + 0.2) : (Math.random() - 0.5) * 0.08,
+            alpha: Math.random() * 0.45 + 0.20, // Daha yüksek görünürlük
+            maxAlpha: Math.random() * 0.50 + 0.35,
+            fadeSpeed: Math.random() * 0.003 + 0.001,
             fadingIn: Math.random() > 0.5,
             wobble: Math.random() * Math.PI * 2,
             wobbleSpeed: Math.random() * 0.008 + 0.003,
@@ -184,12 +199,11 @@ const VFX = (function () {
         }
       }
 
-      // Duman Parçacıkları
       if (config.smoke) {
         const smokeX = config.smokeSource ? config.smokeSource.xPct : 0.81;
         const smokeY = config.smokeSource ? config.smokeSource.yPct : 0.32;
 
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 35; i++) {
           smokeParticles.push({
             x: canvas.width * smokeX + (Math.random() - 0.5) * 12,
             y: canvas.height * smokeY + Math.random() * 20,
@@ -204,7 +218,6 @@ const VFX = (function () {
         }
       }
 
-      // Animasyon Döngüsü
       function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -231,7 +244,7 @@ const VFX = (function () {
         // Toz Tanecikleri
         particles.forEach(p => {
           p.wobble += p.wobbleSpeed;
-          p.x += p.vx + Math.sin(p.wobble) * 0.1;
+          p.x += p.vx + Math.sin(p.wobble) * 0.12;
           p.y += p.vy;
 
           if (p.fadingIn) {
@@ -239,7 +252,7 @@ const VFX = (function () {
             if (p.alpha >= p.maxAlpha) p.fadingIn = false;
           } else {
             p.alpha -= p.fadeSpeed;
-            if (p.alpha <= 0.02) {
+            if (p.alpha <= 0.03) {
               p.fadingIn = true;
               p.x = p.bounds.minX + Math.random() * (p.bounds.maxX - p.bounds.minX);
               p.y = p.bounds.minY + Math.random() * (p.bounds.maxY - p.bounds.minY);
@@ -262,6 +275,12 @@ const VFX = (function () {
 
       render();
     }
+
+    // SAHNE AÇILIRKEN YUMUŞAKÇA FADE-IN YAPTIRMA
+    setTimeout(() => {
+      if (canvas) canvas.classList.add('vfx-show');
+      createdLights.forEach(l => l.classList.add('vfx-show'));
+    }, 50);
   }
 
   return { load: initRoomVFX, clear: cleanup };
