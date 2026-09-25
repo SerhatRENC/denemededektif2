@@ -2,13 +2,26 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sisledere">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json?v=3">
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=3">
 <title>Sislidere Köyü Davası</title>
+
+<!-- Service Worker Kaydı -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker Aktif:', reg.scope))
+        .catch(err => console.error('Service Worker Kayıt Hatası:', err));
+    });
+  }
+</script>
+
 <style>
 .zoom-wrap{ overflow:hidden; touch-action:none; cursor:zoom-in; }
 .zoom-wrap img{ transform-origin:center center; will-change:transform; }
