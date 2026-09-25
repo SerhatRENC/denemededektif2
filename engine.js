@@ -766,7 +766,7 @@ function canvasResizeVeCiz(canvas, dataURL) {
 }
 
 function notebookYaziKaydet(taraf, el) {
-  while (el.scrollHeight > el.clientHeight + 1 && el.value.length > 0) {
+  while (el.scrollHeight > el.clientHeight + 8 && el.value.length > 0) {
     el.value = el.value.slice(0, -1);
   }
   notebookState.pages[notebookState.page][taraf] = el.value;
