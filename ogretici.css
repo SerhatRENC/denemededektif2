@@ -114,17 +114,13 @@
   50%{ box-shadow:0 0 0 3px rgba(227,169,74,1), 0 0 16px 6px rgba(227,169,74,.5); }
 }
 
-/* ---------- KARAKTER PARILTISI (oyun.html: tıklanabilir karakterler) ----------
-   Renkli, çok hafif bir hale + yavaş bir nabız. Konuşma başlayınca (.talking)
-   engine'in kendi sabit parlaması devralır, nabız durur.
-   Üç drop-shadow her iki karede de aynı sayıda: tarayıcı böylece yumuşak geçiş yapar. */
+/* ---------- KARAKTER PARILTISI ---------- */
 @keyframes ogrKarakterNabiz{
   0%,100%{ filter:drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 10px 25px rgba(0,0,0,.6)); }
   50%{     filter:drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 10px 25px rgba(0,0,0,.6)); }
 }
 .scene-character:not(.talking){ animation:ogrKarakterNabiz 2s ease-in-out infinite; }
 
-/* Hareket azaltma tercihi olan cihazlar için animasyonlar kapanır */
 @media (prefers-reduced-motion: reduce){
   .scene-character:not(.talking){
     animation:none;
@@ -133,9 +129,7 @@
   .ogr-ikon, .ogr-vurgu, .ogr-demo-el{ animation:none; }
 }
 
-/* ---------- GERİ DÜĞMESİ: koyu çerçeve ----------
-   Harita / not defteri düğmeleriyle aynı koyu kaplama; geri ikonu daha belirgin olsun.
-   Hem oyun.html (case.json'daki geri ikonları + kapalı kapı) hem index.html için geçerli. */
+/* ---------- GERİ DÜĞMESİ ---------- */
 .hotspot-pulse-wrap img[src$="geri.webp"],
 .nabiz-ikon-wrap img[src$="geri.webp"]{
   box-sizing:border-box; padding:7%;
@@ -143,7 +137,7 @@
   box-shadow:0 3px 10px rgba(0,0,0,.6);
 }
 
-/* ---------- "(Mekana yürünüyor...)" KATMANI (yukleme.js) ---------- */
+/* ---------- "(Mekana yürünüyor...)" KATMANI ---------- */
 .yuk-katman{
   position:absolute; inset:0; z-index:250; background:#050403;
   display:flex; align-items:center; justify-content:center;
@@ -158,8 +152,7 @@
 @media (prefers-reduced-motion: reduce){ .yuk-metin{ animation:none; } }
 
 /* ============================================================
-   OYUN.HTML'E ÖZEL GÖRSEL DÜZELTMELER (#stageFrame ile kapsamlı,
-   index.html'in kendi #stage-frame'ini etkilemez)
+   OYUN.HTML'E ÖZEL GÖRSEL DÜZELTMELER
    ============================================================ */
 
 /* ---------- TAM EKRAN düğmesi ---------- */
@@ -167,21 +160,28 @@
   top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
 }
 
-/* ---------- KÖŞE İKONLARI: HARİTA VE DEFTER BUTONLARI İLE YAZILARI KÜÇÜLTÜLDÜ ---------- */
-#stageFrame .corner-icons{ bottom:8px; right:8px; gap:6px; align-items:flex-end; }
-#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+/* ---------- KÖŞE İKONLARI: TAM ORANLI VAKUM ÖLÇEKLENDİRME ---------- */
+#stageFrame .corner-icons{ bottom:1.2cqw; right:1.2cqw; gap:.8cqw; align-items:flex-end; }
+#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.3cqw; }
 
 #stageFrame .corner-icon-btn{
-  width:8.5cqw; height:8.5cqw; min-width:40px; min-height:40px; max-width:68px; max-height:68px;
-  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:8px;
+  width:5.5cqw !important; 
+  height:5.5cqw !important; 
+  min-width:0 !important; 
+  min-height:0 !important; 
+  max-width:none !important; 
+  max-height:none !important;
+  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:.8cqw;
   padding:6%;
   box-shadow:0 3px 8px rgba(0,0,0,.5);
   transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
 }
 #stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); transform:rotate(90deg); }
 #stageFrame .corner-icon-label{
-  font-family:var(--mono); font-size:clamp(10px,1.4cqw,14px); letter-spacing:.03em;
-  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:2px 7px; border-radius:4px;
+  font-family:var(--mono); 
+  font-size:1.1cqw !important; 
+  letter-spacing:.03em;
+  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:.2cqw .7cqw; border-radius:.4cqw;
 }
 
 #stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-4deg); }
@@ -203,7 +203,7 @@
   opacity:1; transform:scale(1);
 }
 
-/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI (merkez) ---------- */
+/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI ---------- */
 #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(227,169,74,.55));
   animation:tokmakParilti 2.2s ease-in-out infinite;
