@@ -126,7 +126,7 @@ h1{display:none;}
   .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(227,169,74,.6)); }
 }
 
-/* DİYALOG ALTYAZISI */
+/* MASAÜSTÜ (WEB) ALTYAZI */
 .scene-subtitle{
   position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
   background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
@@ -139,7 +139,7 @@ h1{display:none;}
 .scene-subtitle-text{font-size:clamp(13px, 2cqw, 20px);color:var(--paper);font-family:var(--sans);line-height:1.5;}
 @keyframes subtitleGir{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-/* TAKVİM YAPRAĞI */
+/* MASAÜSTÜ (WEB) TAKVİM YAPRAĞI */
 .stage-day-tag, #dayBadge, .day-badge, .takvim-box {
   position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:15;
   background:rgba(10,10,8,.7);border:1px solid var(--amber);color:var(--amber-bright);
@@ -177,48 +177,49 @@ body:has(.dialog-active) .corner-icons {
 }
 
 /* ============================================================
-   SADECE MOBİL LANDSCAPE & DAR EKRANLAR (MAX-WIDTH: 960PX VEYA MAX-HEIGHT: 550PX)
+   TELEFON VEYA MOBİL CİHAZ TESPİTİ (EKRAN YÜKSEKLİĞİ <= 580PX)
    ============================================================ */
-@media (max-width: 960px), (max-height: 550px) {
-  /* 1. Harita ve Defter İkonları Mobilde Küçültüldü */
+@media (max-height: 580px) {
+  /* 1. Sağ alt köşe Harita ve Defter Butonları Mobilde Küçültüldü */
   .corner-icons {
     bottom: 6px !important;
     right: 6px !important;
-    gap: 5px !important;
+    gap: 4px !important;
   }
   .corner-icon-btn {
-    width: clamp(24px, 3.8cqw, 34px) !important;
-    height: clamp(24px, 3.8cqw, 34px) !important;
+    width: clamp(20px, 3.2cqw, 28px) !important;
+    height: clamp(20px, 3.2cqw, 28px) !important;
     padding: 2px !important;
-    border-radius: 6px !important;
+    border-radius: 5px !important;
   }
 
-  /* 2. Konuşma Metni Mobilde İdeal Yükseklikte */
+  /* 2. Oda İçindeki Tıklanabilir Hotspot İkonları (Harita, Defter, Git vb.) Mobilde Küçültüldü */
+  .hotspot-pulse-wrap {
+    transform: translate(-50%, -50%) scale(0.62) !important;
+  }
+  .hotspot-pulse-label {
+    font-size: 7.5px !important;
+    padding: 1px 3px !important;
+  }
+
+  /* 3. Konuşma Metni Yüksekliği */
   .scene-subtitle {
-    bottom: 12% !important;
-    padding: 8px 12px !important;
+    bottom: 11% !important;
+    padding: 6px 10px !important;
   }
   .scene-subtitle-text {
-    font-size: clamp(11px, 1.7cqw, 16px) !important;
-    line-height: 1.4 !important;
+    font-size: clamp(10px, 1.5cqw, 15px) !important;
+    line-height: 1.35 !important;
   }
 
-  /* 3. Takvim Yaprağı Mobilde Küçültüldü */
+  /* 4. Takvim Yaprağı */
   .stage-day-tag, #dayBadge, .day-badge, .takvim-box {
-    transform: scale(0.68) !important;
+    transform: scale(0.60) !important;
     transform-origin: top right !important;
   }
 
-  /* Oda içi ikonlar ve karakterler mobilde dengelendi */
-  .hotspot-pulse-wrap {
-    max-width: 5.5cqw !important;
-  }
-  .hotspot-pulse-label {
-    font-size: 8px !important;
-    padding: 1px 4px !important;
-  }
   .scene-character {
-    max-width: 42% !important;
+    max-width: 40% !important;
   }
 }
 
@@ -513,8 +514,7 @@ body:has(.dialog-active) .corner-icons {
 }
 .suclama-devam-btn{
   background:var(--amber);border:none;padding:12px 28px;border-radius:6px;
-  color:#171712;font-weight:700;font-size:13px;letter-spacing:.05em;
-  text-transform:uppercase;cursor:pointer;margin-top:10px;
+  color:#171712;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;margin-top:10px;
 }
 .suclama-credits{color:#c9cabd;font-family:var(--sans);font-size:14px;line-height:1.8;margin-bottom:6px;}
 .suclama-gorsel{ width:100%;height:100%;object-fit:contain;display:block;border-radius:4px;background:transparent; }
