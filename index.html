@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sisledere">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json?v=3">
-<link rel="apple-touch-icon" href="assets/icon-192.png?v=3">
+<link rel="manifest" href="manifest.json?v=4">
+<link rel="apple-touch-icon" href="assets/icon-192.png?v=4">
 <title>Sislidere Köyü Davası</title>
 
 <!-- Service Worker Kaydı -->
@@ -37,6 +37,43 @@
     background: #0a0806;
     font-family: 'Georgia', 'Times New Roman', serif;
     overflow: hidden;
+  }
+
+  /* PRELOADER KATMANI */
+  #preloader {
+    position: fixed; inset: 0; z-index: 10000;
+    background: #0a0806; color: var(--parchment);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; transition: opacity 0.6s ease;
+  }
+  #preloader.gizli { opacity: 0; pointer-events: none; }
+  .pre-bar-wrap {
+    width: 80%; max-width: 320px; height: 12px;
+    background: #1c150c; border: 1px solid var(--accent);
+    border-radius: 6px; overflow: hidden; margin-top: 15px;
+  }
+  .pre-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.2s ease; }
+  .pre-text { font-size: 14px; margin-top: 10px; color: #a89379; }
+
+  /* İNDİRME / REHBER MODALI */
+  #pwa-guide-modal {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.85); display: none;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #pwa-guide-modal.aktif { display: flex; }
+  .pwa-guide-box {
+    background: var(--parchment); color: var(--ink);
+    padding: 20px; border-radius: 10px; max-width: 340px; text-align: center;
+    position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  }
+  .pwa-guide-box h3 { color: var(--accent); margin-bottom: 10px; }
+  .pwa-guide-box p { font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
+  .pwa-guide-box .ok-down { font-size: 28px; animation: okZip 1s infinite alternate; }
+  @keyframes okZip { from { transform: translateY(0); } to { transform: translateY(6px); } }
+  .pwa-close-btn {
+    margin-top: 10px; padding: 6px 16px; background: var(--accent);
+    color: var(--parchment); border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
   }
 
   #stage-frame {
@@ -77,6 +114,20 @@
   }
   .hotspot:hover {
     background: rgba(227, 169, 74, 0.12);
+  }
+
+  /* MENÜDEKİ YÜKLE BUTONU */
+  .pwa-install-btn-wrap {
+    position: absolute; left: 3.5%; top: 71.5%; width: 18.5%; height: 13.0%;
+    display: none; z-index: 12;
+  }
+  .pwa-install-btn-wrap.show { display: block; }
+  .pwa-install-btn {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #2c5e3b, #1a3a24);
+    color: var(--parchment); border: 2px solid #0f2416;
+    border-radius: 6px; font-family: inherit; font-size: clamp(12px, 1.4cqw, 16px);
+    font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #0a170e;
   }
 
   .btn {
@@ -179,9 +230,8 @@
     pointer-events: auto;
     animation: karakterNabiz 2s ease-in-out infinite;
   }
- .character.talking {
-    animation: none;
-  }
+  .character.talking { animation: none; }
+
   .room-clickable-glow{
     position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;pointer-events:none;z-index:2;
@@ -199,7 +249,8 @@
   .screen.dialog-active::after{
     content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
     background:rgba(5,4,2,.55);transition:background .4s ease;
-  }  @keyframes karakterNabiz {
+  }
+  @keyframes karakterNabiz {
     0%,100% { filter: drop-shadow(0 0 2px rgba(227,169,74,.28)) drop-shadow(0 0 6px rgba(227,169,74,.10)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
     50%      { filter: drop-shadow(0 0 4px rgba(227,169,74,.65)) drop-shadow(0 0 12px rgba(227,169,74,.32)) drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
   }
@@ -229,35 +280,25 @@
     z-index: 50;
   }
   #popup-overlay.show { opacity: 1; pointer-events: auto; }
-  #popup-overlay .zoom-wrap {
-    width: 60cqi; height: 39.4cqi;
-  }
-  #popup-overlay img {
-    display: block;
-    width: 100%; height: 100%;
-    object-fit: contain;
-  }
+  #popup-overlay .zoom-wrap { width: 60cqi; height: 39.4cqi; }
+  #popup-overlay img { display: block; width: 100%; height: 100%; object-fit: contain; }
   #popup-close {
     position: absolute; top: 8%; right: 12%;
     width: 2.5em; height: 2.5em; border-radius: 50%;
     background: var(--parchment-dark); color: var(--parchment);
-    border: 2px solid var(--parchment);
-    font-size: 24px; font-weight: bold; cursor: pointer;
+    border: 2px solid var(--parchment); font-size: 24px; font-weight: bold; cursor: pointer;
   }
 
   #fade-layer {
     position: absolute; inset: 0;
     background: #000; opacity: 0; pointer-events: none;
     transition: opacity 1.5s ease;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 60;
+    display: flex; align-items: center; justify-content: center; z-index: 60;
   }
   #fade-layer.show { opacity: 1; pointer-events: auto; }
   #fade-text {
-    color: var(--parchment);
-    font-style: italic;
-    font-size: clamp(22px, 3.1cqw, 36px);
-    opacity: 0; transition: opacity 0.8s ease;
+    color: var(--parchment); font-style: italic;
+    font-size: clamp(22px, 3.1cqw, 36px); opacity: 0; transition: opacity 0.8s ease;
   }
   #fade-text.show { opacity: 1; }
 
@@ -273,24 +314,18 @@
 
   .hakkinda-scroll{
     position:absolute; inset:0; overflow-y:auto;
-    background:var(--parchment-dark);
-    padding:4% 5%;
+    background:var(--parchment-dark); padding:4% 5%;
   }
   .hakkinda-panel{
-    position:relative;
-    max-width:700px; margin:0 auto;
-    background:var(--parchment);
-    color:var(--ink);
-    border-radius:10px;
-    padding:28px 24px 40px;
-    box-shadow:0 10px 40px rgba(0,0,0,.5);
+    position:relative; max-width:700px; margin:0 auto;
+    background:var(--parchment); color:var(--ink);
+    border-radius:10px; padding:28px 24px 40px; box-shadow:0 10px 40px rgba(0,0,0,.5);
   }
   .hakkinda-geri{
     position:sticky; top:0; float:right;
     background:var(--accent); color:var(--parchment);
     border:none; border-radius:6px; padding:8px 14px;
-    font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer;
-    margin-bottom:10px;
+    font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; margin-bottom:10px;
   }
   .hakkinda-baslik{ font-size:clamp(24px,3.6cqw,36px); margin-bottom:14px; clear:both; }
   .hakkinda-alt-baslik{ font-size:clamp(18px,2.4cqw,23px); margin:22px 0 10px; color:var(--accent); }
@@ -299,8 +334,7 @@
   .hakkinda-blok{ margin-top:6px; }
   .hakkinda-blok-baslik{ font-weight:bold; font-size:16px; margin-bottom:6px; }
   .credits-grid{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
-    gap:14px; margin-top:8px;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:14px; margin-top:8px;
   }
   .credit-item{ text-align:center; font-size:13px; }
   .credit-item img{
@@ -309,13 +343,10 @@
   }
   .credit-name{ font-weight:bold; }
   .credit-voice{ color:#5a4530; font-size:12px; }
-  @media (max-width:600px){
-    .credits-grid{ grid-template-columns:repeat(3,1fr); }
-  }
+  @media (max-width:600px){ .credits-grid{ grid-template-columns:repeat(3,1fr); } }
 
   .nasil-ikonlar{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-    gap:10px 18px; margin:8px 0 6px;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px 18px; margin:8px 0 6px;
   }
   .nasil-madde{ display:flex; align-items:center; gap:10px; font-size:clamp(16px,1.7cqw,19px); line-height:1.4; }
   .nasil-madde img{
@@ -324,8 +355,7 @@
   }
 
   .donme-uyarisi{
-    display:none;
-    position:fixed;inset:0;z-index:9999;
+    display:none; position:fixed;inset:0;z-index:9999;
     background:#0a0806;color:var(--parchment);
     flex-direction:column;align-items:center;justify-content:center;
     text-align:center;padding:24px;font-family:inherit;
@@ -345,10 +375,29 @@
 <script src="sfx.js"></script>
 </head>
 <body>
-<div class="donme-uyarisi">
-    <div class="ikon">📱</div>
-    <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
+
+<!-- PRELOADER KATMANI (%0 - %100) -->
+<div id="preloader">
+  <div style="font-size:20px; font-weight:bold;">Sisledere Davası Hazırlanıyor</div>
+  <div class="pre-bar-wrap"><div class="pre-bar" id="preBar"></div></div>
+  <div class="pre-text" id="preText">%0 - Çevrimdışı dosyalar indiriliyor...</div>
+</div>
+
+<!-- iOS SAFARI YÖNLENDİRME MODALI -->
+<div id="pwa-guide-modal">
+  <div class="pwa-guide-box">
+    <h3>Uygulamayı Yükle</h3>
+    <p>Oyunu internetsiz oynamak için Safari menüsünden <b>Paylaş</b> simgesine dokunun ve <b>"Ana Ekrana Ekle"</b> seçeneğini seçin.</p>
+    <div class="ok-down">⬇️</div>
+    <br>
+    <button class="pwa-close-btn" onclick="document.getElementById('pwa-guide-modal').classList.remove('aktif')">Anladım</button>
   </div>
+</div>
+
+<div class="donme-uyarisi">
+  <div class="ikon">📱</div>
+  <p>Daha iyi bir deneyim için lütfen telefonunuzu yatay çevirin.</p>
+</div>
 
 <div id="stage-frame">
 
@@ -359,6 +408,11 @@
     <div class="hotspot" id="btn-oyna" style="left: 3.5%; top: 26.5%; width: 18.5%; height: 13.0%;" title="Oyna"></div>
     <div class="hotspot" id="btn-hakkinda" style="left: 3.5%; top: 41.0%; width: 18.5%; height: 13.5%;" title="Hakkında"></div>
     <div class="hotspot" id="btn-nasil" style="left: 3.5%; top: 56.0%; width: 18.5%; height: 14.0%;" title="Nasıl Oynanır"></div>
+    
+    <!-- AKILLI YÜKLEME BUTONU -->
+    <div class="pwa-install-btn-wrap show" id="pwaInstallWrap">
+      <button class="pwa-install-btn" id="pwaInstallBtn">📲 Uygulamayı Yükle</button>
+    </div>
   </div>
 
   <!-- 2. OFİS / ŞEHİR -->
@@ -428,7 +482,7 @@
     </div>
   </div>
 
-  <!-- 8. DEDEKTİF OFİSİ (POLİS EKRANI - ARTIK TOZLU VE IŞIKLI) -->
+  <!-- 8. DEDEKTİF OFİSİ -->
   <div class="screen" id="scr-dedektif" style="background-image:url('assets/odalar/dedektif_ofis.webp')">
     <img class="room-clickable-glow" id="polis-glow" src="assets/tiklanabilir/polis_tiklanabilir.webp" alt="">
     <div class="room-clickable-hit" id="polis-hit" style="left:48.7%; top:27.8%; width:16.5%; height:39.6%;" title="Polis"></div>
@@ -538,6 +592,81 @@
 
 <script src="ogretici.js?v=3"></script>
 <script>
+/* ---------- PRELOADER YÜKLEME ÇUBUĞU SCRIPT'İ ---------- */
+const DOSYA_LISTESI = [
+  'style.css', 'ogretici.css', 'engine.js', 'case.json',
+  'assets/arayuz/harita.webp', 'assets/arayuz/defter.webp', 'assets/arayuz/tokmak.webp',
+  'assets/arayuz/buyutec.webp', 'assets/arayuz/el.webp', 'assets/arayuz/ayak.webp',
+  'assets/arayuz/geri.webp', 'assets/arayuz/kulak.webp', 'assets/arayuz/uyku.webp',
+  'assets/odalar/giris.webp', 'assets/odalar/ofis_sehir.webp', 'assets/odalar/mors_kagidi.webp',
+  'assets/odalar/raf.webp', 'assets/odalar/sislidere_dosya.webp', 'assets/odalar/at_arabasi.webp',
+  'assets/odalar/koy_giris.webp', 'assets/odalar/dedektif_ofis.webp'
+];
+
+let indirilen = 0;
+function tumunuIndir() {
+  if (DOSYA_LISTESI.length === 0) { bitirPreloader(); return; }
+  DOSYA_LISTESI.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.onload = img.onerror = () => {
+      indirilen++;
+      const yuzde = Math.floor((indirilen / DOSYA_LISTESI.length) * 100);
+      document.getElementById('preBar').style.width = yuzde + '%';
+      document.getElementById('preText').textContent = `%${yuzde} - Dosyalar telefon hafızasına yükleniyor...`;
+      if (indirilen >= DOSYA_LISTESI.length) setTimeout(bitirPreloader, 300);
+    };
+  });
+}
+
+function bitirPreloader() {
+  const pre = document.getElementById('preloader');
+  if (pre) {
+    pre.classList.add('gizli');
+    setTimeout(() => pre.remove(), 600);
+  }
+}
+window.addEventListener('load', tumunuIndir);
+
+/* ---------- AKILLI "UYGULAMAYI YÜKLE" BUTONU SCRIPT'İ ---------- */
+let deferredPrompt;
+const installWrap = document.getElementById('pwaInstallWrap');
+const installBtn = document.getElementById('pwaInstallBtn');
+
+// Zaten uygulama olarak açılmışsa yükle butonunu tamamen gizle
+if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+  if (installWrap) installWrap.style.display = 'none';
+}
+
+// Android (Chrome) Yükleme İsteyi Yakalama
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installWrap) installWrap.classList.add('show');
+});
+
+// Butona Basıldığında Tetiklenen Mantık
+installBtn.addEventListener('click', () => {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (deferredPrompt) {
+    // Android / Chrome: Resmi Yükleme Penceresini Aç
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        installWrap.style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  } else if (isIOS) {
+    // iOS / Safari: Alt Kısımdaki Paylaş Menüsü Rehberini Aç
+    document.getElementById('pwa-guide-modal').classList.add('aktif');
+  } else {
+    // Diğer Durumlar (Masaüstü veya Desteklemeyen Cihazlar)
+    alert('Uygulamayı eklemek için tarayıcı menünüzden "Ana Ekrana Ekle" seçeneğini kullanabilirsiniz.');
+  }
+});
+
 const OGRETICI_ICERIK = {
   ofis_sehir: {
     baslik: 'Nasıl oynanır?',
@@ -679,7 +808,6 @@ function showScreen(id) {
   if (typeof SFX !== 'undefined') SFX.play(id);
 }
 
-// SAYFA AÇILDIĞINDA İLK GİRİŞ EKRANI EFEKTLERİNİ OTOMATİK YÜKLE
 window.addEventListener('DOMContentLoaded', () => {
   const anaEkran = document.getElementById('scr-ana');
   if (typeof VFX !== 'undefined' && anaEkran) {
