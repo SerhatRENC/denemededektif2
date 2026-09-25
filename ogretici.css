@@ -160,18 +160,18 @@
   top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
 }
 
-/* ---------- KÖŞE İKONLARI: TAM ORANLI VAKUM ÖLÇEKLENDİRME ---------- */
-#stageFrame .corner-icons{ bottom:1.2cqw; right:1.2cqw; gap:.8cqw; align-items:flex-end; }
-#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.3cqw; }
+/* ---------- KÖŞE İKONLARI: %30 BÜYÜTÜLMÜŞ VAKUM ÖLÇEKLENDİRME ---------- */
+#stageFrame .corner-icons{ bottom:1.4cqw; right:1.4cqw; gap:1cqw; align-items:flex-end; }
+#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.4cqw; }
 
 #stageFrame .corner-icon-btn{
-  width:5.5cqw !important; 
-  height:5.5cqw !important; 
+  width:7.2cqw !important; 
+  height:7.2cqw !important; 
   min-width:0 !important; 
   min-height:0 !important; 
   max-width:none !important; 
   max-height:none !important;
-  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:.8cqw;
+  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:.9cqw;
   padding:6%;
   box-shadow:0 3px 8px rgba(0,0,0,.5);
   transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
@@ -179,9 +179,9 @@
 #stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); transform:rotate(90deg); }
 #stageFrame .corner-icon-label{
   font-family:var(--mono); 
-  font-size:1.1cqw !important; 
+  font-size:1.4cqw !important; 
   letter-spacing:.03em;
-  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:.2cqw .7cqw; border-radius:.4cqw;
+  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:.25cqw .8cqw; border-radius:.4cqw;
 }
 
 #stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-4deg); }

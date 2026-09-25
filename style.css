@@ -154,11 +154,11 @@ h1{display:none;}
 
 /* MASAÜSTÜ HARİTA & DEFTER İKONLARI */
 .corner-icons{
-  position:absolute;bottom:1.2cqw;right:1.2cqw;display:flex;gap:.8cqw;z-index:20;
+  position:absolute;bottom:1.4cqw;right:1.4cqw;display:flex;gap:1cqw;z-index:20;
   align-items:flex-end;
 }
 .corner-icon-btn{
-  width:5.5cqw;height:5.5cqw;border-radius:8px;background:#1c1d18;border:1px solid #3a3b30;
+  width:7.2cqw;height:7.2cqw;border-radius:8px;background:#1c1d18;border:1px solid #3a3b30;
   cursor:pointer;overflow:hidden;padding:5px;
   transition:border-color .15s ease, transform .15s ease, opacity .35s ease;
 }
@@ -526,7 +526,7 @@ body:has(.dialog-active) .corner-icons {
   100% { transform: translateX(4%) scale(1.08); opacity: 0.70; }
 }
 
-/* MOBİL ÖZELLEŞTİRMELERİ (Sadece sahne dışı taşmaları düzenler) */
+/* MOBİL ÖZELLEŞTİRMELERİ */
 @media (max-height: 580px) {
   :root {
     --pulse-scale: 0.65;
