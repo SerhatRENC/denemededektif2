@@ -162,43 +162,39 @@
    index.html'in kendi #stage-frame'ini etkilemez)
    ============================================================ */
 
-/* ---------- TAM EKRAN düğmesi: sol üstteki mekan etiketiyle çakışıyordu.
-   Kullanılmayan sol-alt köşeye (kalibrasyon çubuğunun eski yeri) taşındı. */
+/* ---------- TAM EKRAN düğmesi ---------- */
 #stageFrame .tam-ekran-btn{
-  /* mekan adı etiketinin (.room-label, üstte solda) hemen altına iner ki üst üste binmesin */
   top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
 }
 
-/* ---------- KÖŞE İKONLARI: kare kutu yerine, elde tutulan iki kağıt parçası hissi ----------
-   Harita hafif sola, not defteri hafif sağa yatık; üst üste biner, hover'da doğrulup büyür. */
-#stageFrame .corner-icons{ bottom:12px; right:12px; gap:3%; align-items:flex-end; }
-#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.35em; }
-/* Kalın kutu YOK — sadece çok ince, yarı saydam bir zemin + yumuşak gölge (kontur değil) */
+/* ---------- KÖŞE İKONLARI: HARİTA VE DEFTER BUTONLARI İLE YAZILARI KÜÇÜLTÜLDÜ ---------- */
+#stageFrame .corner-icons{ bottom:8px; right:8px; gap:6px; align-items:flex-end; }
+#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+
 #stageFrame .corner-icon-btn{
-  width:19cqw; height:19cqw; min-width:88px; min-height:88px; max-width:152px; max-height:152px;
-  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:12px;
-  padding:8%;
-  box-shadow:0 4px 12px rgba(0,0,0,.5);
+  width:8.5cqw; height:8.5cqw; min-width:40px; min-height:40px; max-width:68px; max-height:68px;
+  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:8px;
+  padding:6%;
+  box-shadow:0 3px 8px rgba(0,0,0,.5);
   transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
 }
-#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 5px rgba(0,0,0,.5)); transform:rotate(90deg); }
+#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); transform:rotate(90deg); }
 #stageFrame .corner-icon-label{
-  font-family:var(--mono); font-size:clamp(24px,3.8cqw,32px); letter-spacing:.05em;
-  color:var(--amber-bright); background:rgba(10,10,8,.7); padding:4px 14px; border-radius:5px;
+  font-family:var(--mono); font-size:clamp(10px,1.4cqw,14px); letter-spacing:.03em;
+  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:2px 7px; border-radius:4px;
 }
-/* Harita hafif sola, defter hafif sağa yatık — kesin sınıflarla, konuma bağlı
-   :first-child/:last-child yerine (sarmalayıcı div'ler yüzünden güvenilmezdi) */
-#stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-5deg); }
-#stageFrame .corner-icon-item.defter .corner-icon-btn{ transform:rotate(4deg); }
+
+#stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-4deg); }
+#stageFrame .corner-icon-item.defter .corner-icon-btn{ transform:rotate(3deg); }
 #stageFrame .corner-icon-btn:hover,
 #stageFrame .corner-icon-btn.tiklandi{
-  transform:scale(1.14) rotate(0deg) !important;
-  background:rgba(28,24,16,.55); box-shadow:0 6px 18px rgba(0,0,0,.6);
+  transform:scale(1.12) rotate(0deg) !important;
+  background:rgba(28,24,16,.55); box-shadow:0 4px 12px rgba(0,0,0,.6);
 }
 #stageFrame .corner-icon-btn:hover img,
 #stageFrame .corner-icon-btn.tiklandi img{ transform:rotate(90deg); }
 
-/* Açılan harita/defter: küçülmüş+saydam başlayıp büyüyerek beliriyor */
+/* Açılan harita/defter katmanları */
 #stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
 #stageFrame .map-box, #stageFrame .notebook-box{
   opacity:0; transform:scale(.88); transition:opacity .28s ease, transform .32s cubic-bezier(.22,1,.36,1);
@@ -207,9 +203,7 @@
   opacity:1; transform:scale(1);
 }
 
-/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI (merkez) ----------
-   İsimler zaten hotspot-pulse-label ile geliyor (aynı "hafif" görünüm); tokmak
-   ikonuna hafif bir parıltı ekleniyor ki kapı olduğu belli olsun. */
+/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI (merkez) ---------- */
 #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(227,169,74,.55));
   animation:tokmakParilti 2.2s ease-in-out infinite;
@@ -222,20 +216,19 @@
   #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{ animation:none; }
 }
 
-/* ---------- GÜN SAYACI: takvim_gunN.png (kullanıcının kendi tasarımı) ---------- */
+/* ---------- GÜN SAYACI ---------- */
 #stageFrame .stage-day-tag{
   position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px;
-  width:clamp(55px,14.3cqw,101px); height:auto;   /* PNG'nin kendi en-boy oranı korunur */
+  width:clamp(55px,14.3cqw,101px); height:auto;
   z-index:15;
 }
-/* Görsel henüz yüklenmediyse (o güne ait PNG eksikse) kırık resim yerine sade bir rozet */
 #stageFrame .stage-day-tag.yuklenemedi{
   aspect-ratio:5/6; background:#1c1d18; border:1px solid var(--amber); border-radius:6px;
   display:flex; align-items:center; justify-content:center;
   color:var(--amber-bright); font-family:var(--mono); font-size:clamp(13px,2.1cqw,18px);
 }
 
-/* ---------- SORGU KAĞIDI OKUYUCUSU: ok/çarpı ikonları büyütüldü ---------- */
+/* ---------- SORGU KAĞIDI OKUYUCUSU ---------- */
 #stageFrame .reader-close{
   width:clamp(34px,5.4cqw,48px); height:clamp(34px,5.4cqw,48px);
   font-size:clamp(20px,3.2cqw,34px);
@@ -245,33 +238,20 @@
   width:clamp(40px,6.8cqw,60px); height:clamp(40px,6.8cqw,60px);
   font-size:clamp(26px,4.6cqw,52px);
 }
-/* 70vw/80vh yerine çerçevenin kendi genişliğine göre eşdeğeri (80vh ≈ %45 çerçeve
-   genişliği, 16:9 sabit oran üzerinden hesaplandı) — inline stili ezmek için
-   aynı özgüllükte olmayan bir seçici yeterli değil, !important gerekiyor
-   (stil JS'ten satır-içi geliyor, en yüksek özgüllüğe sadece böyle erişilir). */
 #stageFrame .modal.reader .zoom-wrap{ width:70cqi !important; height:45cqi !important; }
 
-/* ---------- MEKAN İSMİ / ENVANTER / HOTSPOT ETİKETLERİ: %60 büyütüldü ----------
-   (.room-label, .inv-empty, .hotspot-pulse-label style.css'in kendi kuralları;
-   engine.js/style.css değişmeden burada daha yüksek özgüllükle eziliyor.) */
+/* ---------- MEKAN İSMİ / ENVANTER / HOTSPOT ETİKETLERİ ---------- */
 #stageFrame .room-label{ font-size:16.8px; padding:7px 13px; }
 #stageFrame .inv-empty{ font-size:16px; padding:6px 11px; }
 #stageFrame .hotspot-pulse-label{ font-size:16px; padding:3px 10px; }
 
-/* ============================================================
-   UYKU / UYANMA GEÇİŞLERİ
-   sleep-overlay style.css'te display:none/flex ile açılıp kapanıyordu
-   (display değeri animasyonlanamaz) — burada opaklığa çevrildi ki
-   yumuşak kararsın/aydınlansın. #stageFrame DIŞINDA (tam ekranı kaplıyor,
-   bilerek), o yüzden kapsamsız (yalnızca oyun.html'de var).
-   ============================================================ */
+/* ---------- UYKU / UYANMA GEÇİŞLERİ ---------- */
 .sleep-overlay{
   display:flex !important; opacity:0; pointer-events:none;
   transition:opacity .6s ease;
 }
 .sleep-overlay.active{ opacity:1; pointer-events:auto; }
 
-/* Uyanınca kısa bir "sabah ışığı" parlaması — oyun.html'deki wakeUp() sarmalayıcısı ekliyor */
 #stageFrame .sabah-parlama{
   position:absolute; inset:0; z-index:300; pointer-events:none;
   background:radial-gradient(circle, #fff8e8 0%, #e9dcc0 75%);
