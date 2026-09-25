@@ -254,7 +254,7 @@ function suphesecildi(isim) {
     'halit': 'halit_final_sorgu.png',
     'kamuran': 'kamuran_final_srogu.png',
     'mustafa': 'mustafa_final_srogu.png',
-    'nadire': 'nadire_final_sorgu.png',
+    'nadire': 'nadire_final_srogu.png',
     'riza': 'riza_final_sorgu.png'
   };
 

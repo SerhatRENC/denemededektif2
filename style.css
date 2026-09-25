@@ -538,11 +538,25 @@ body:has(.dialog-active) .corner-icons {
     right: 6px !important;
     gap: 4px !important;
   }
+
+  /* HARİTA VE DEFTER İKONLARI ESNEK MOBİL BOYUTLANDIRMASI */
+  #stageFrame .corner-icon-btn,
   .corner-icon-btn {
-    width: clamp(20px, 3.2cqw, 28px) !important;
-    height: clamp(20px, 3.2cqw, 28px) !important;
-    padding: 2px !important;
+    width: clamp(26px, 5cqw, 36px) !important;
+    height: clamp(26px, 5cqw, 36px) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    padding: 3px !important;
     border-radius: 5px !important;
+  }
+
+  /* HARİTA VE DEFTER YAZILARI MOBİL KÜÇÜLTMESİ */
+  #stageFrame .corner-icon-label,
+  .corner-icon-label {
+    font-size: clamp(8px, 1.1cqw, 11px) !important;
+    padding: 1px 5px !important;
   }
 
   .scene-subtitle {
