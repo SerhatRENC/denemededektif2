@@ -69,9 +69,16 @@
       "label": "Han", "background": "assets/odalar/han.webp",
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
-        { "x": "77%", "y": "50%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya çık" },
+        { "x": "77%", "y": "50%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
         { "x": "47%", "y": "55%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
         { "x": "62%", "y": "55%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" }
+      ]
+    },
+    "han_kapi": {
+      "label": "Gazetecinin Odası Kapısı",
+      "background": "assets/odalar/han_kapi.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" }
       ]
     },
     "han_mutfak": {
@@ -178,6 +185,16 @@
       "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
       "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
       "text": "Dedektif Bey, evraklar hazır."
+    },
+    "han_kapi": {
+      "name": "Hancı Rıza",
+      "image": "assets/karakterler/riza.webp",
+      "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
+      "clickableArea": { "x": "45.0%", "y": "30.0%", "w": "20.0%", "h": "60.0%" },
+      "yOffset": "-15%",
+      "dialog": [
+        { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
+      ]
     },
     "kilise": {
       "name": "Peder Anselm",
