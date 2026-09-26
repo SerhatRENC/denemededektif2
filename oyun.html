@@ -200,50 +200,73 @@
 
     const _handleHotspotOrijinal = handleHotspot;
     handleHotspot = function (h) {
-      // Gazeteci kapısındaki tokmak tıklandığında
+      // Gazeteci kapısındaki tokmak (Kapıyı Aç) tıklandığında
       if (h.type === 'kapida_konus') {
-        if (typeof calSes === 'function') calSes('kapi');
+        // 1. Özel kilit sesini çal
+        const kilitAudio = new Audio('assets/ses/kilit.mp3');
+        kilitAudio.play().catch(() => {});
 
-        // 1. Karakter resmini sağda oluştur
+        // 2. Karakter görselini sağda oluştur
         let charImg = document.getElementById('tempKapiChar');
         if (!charImg) {
           charImg = document.createElement('img');
           charImg.id = 'tempKapiChar';
-          charImg.className = 'scene-character talking';
           charImg.style.position = 'absolute';
           charImg.style.right = '5%';
           charImg.style.bottom = '-15%';
           charImg.style.height = '85%';
-          charImg.style.zIndex = '10';
+          charImg.style.zIndex = '100';
+          charImg.style.cursor = 'pointer';
           document.getElementById('stageFrame').appendChild(charImg);
         }
         charImg.src = h.characterImage || 'assets/karakterler/riza.webp';
         charImg.style.display = 'block';
 
-        // 2. Diyaloğu başlat
-        if (typeof startDialog === 'function' && h.dialog) {
-          startDialog(h.dialog, () => {
-            if (charImg) charImg.remove();
-          });
-        } else if (typeof showSubtitle === 'function') {
-          let dIndex = 0;
-          function sonrakiDiyalog(e) {
-            if (e) e.stopPropagation();
-            if (h.dialog && dIndex < h.dialog.length) {
-              const satir = h.dialog[dIndex];
-              showSubtitle(satir.speaker, satir.text);
-              dIndex++;
-            } else {
-              if (typeof hideSubtitle === 'function') hideSubtitle();
-              if (charImg) charImg.remove();
-              document.getElementById('stageFrame').removeEventListener('click', sonrakiDiyalog);
-            }
-          }
-          setTimeout(() => {
-            sonrakiDiyalog();
-            document.getElementById('stageFrame').addEventListener('click', sonrakiDiyalog);
-          }, 100);
+        // 3. Özel Diyalog Kutusu Oluştur
+        let subBox = document.getElementById('kapiSubtitleBox');
+        if (!subBox) {
+          subBox = document.createElement('div');
+          subBox.id = 'kapiSubtitleBox';
+          subBox.style.position = 'absolute';
+          subBox.style.left = '5%';
+          subBox.style.right = '32%';
+          subBox.style.bottom = '6%';
+          subBox.style.background = 'rgba(20, 14, 8, 0.95)';
+          subBox.style.color = '#e9dcc0';
+          subBox.style.padding = '1.2em 1.5em';
+          subBox.style.borderRadius = '8px';
+          subBox.style.borderLeft = '5px solid #8a5a2b';
+          subBox.style.fontSize = 'clamp(16px, 1.9cqw, 22px)';
+          subBox.style.zIndex = '101';
+          subBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.8)';
+          subBox.style.cursor = 'pointer';
+          document.getElementById('stageFrame').appendChild(subBox);
         }
+
+        let dIndex = 0;
+        const dialogList = h.dialog || [];
+
+        function adimAt(e) {
+          if (e) e.stopPropagation();
+          if (dIndex < dialogList.length) {
+            const item = dialogList[dIndex];
+            subBox.innerHTML = `<strong>${item.speaker}:</strong> ${item.text}`;
+            subBox.style.display = 'block';
+            dIndex++;
+          } else {
+            // Sohbet bitince elemanları kaldır
+            if (subBox) subBox.remove();
+            if (charImg) charImg.remove();
+            document.getElementById('stageFrame').removeEventListener('click', adimAt);
+          }
+        }
+
+        adimAt();
+
+        setTimeout(() => {
+          document.getElementById('stageFrame').addEventListener('click', adimAt);
+        }, 100);
+
         return;
       }
 

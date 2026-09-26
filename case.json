@@ -84,8 +84,8 @@
           "type": "kapida_konus",
           "icon": "assets/arayuz/tokmak.webp",
           "iconWidth": "4.6%",
-          "label": "Çal",
-          "hint": "Kapıyı çal",
+          "label": "Kapıyı Aç",
+          "hint": "Kapıyı aç",
           "characterImage": "assets/karakterler/riza.webp",
           "dialog": [
             { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
@@ -312,7 +312,7 @@
         { "speaker": "Nadire", "text": "Evet, Halit'in tepesinin tasını attırmıştı o gazeteci." },
         { "speaker": "Nadire", "text": "Kızı Aylin'le konuşmak istemiş, o da müsaade etmemiş." },
         { "speaker": "Nadire", "text": "Burası küçük yer, laf söz olur — günahsız yavrunun ne suçu var, gencecik kız." },
-        { "speaker": "Dedektif", "text": "Başka bir şey yok mugdu?" },
+        { "speaker": "Dedektif", "text": "Başka bir şey yok muydu?" },
         { "speaker": "Nadire", "text": "Benim bildiğim bu kadar." }
       ]
     },
