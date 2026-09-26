@@ -109,15 +109,30 @@ h1{display:none;}
   padding:8px;white-space:pre-line;z-index:8;
 }
 
+/* --- TIKLANABİLİR KARAKTERLER — SICAK SARI AURA EFEKTİ --- */
 .room-clickable-glow{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;pointer-events:none;z-index:5;
-  animation:roomClickableNabiz 2s ease-in-out infinite;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8)) 
+          drop-shadow(0 0 18px rgba(255, 170, 0, 0.5));
+  animation: warmYellowAura 2.8s ease-in-out infinite alternate;
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
-@keyframes roomClickableNabiz{
-  0%,100%{ opacity: 0.55; filter:drop-shadow(0 0 8px rgba(227,169,74,.4)); }
-  50%{ opacity: 1; filter:drop-shadow(0 0 16px rgba(227,169,74,.85)); }
+
+@keyframes warmYellowAura{
+  0% {
+    opacity: 0.88;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7)) 
+            drop-shadow(0 0 12px rgba(255, 160, 0, 0.4));
+  }
+  100% {
+    opacity: 1.0;
+    filter: drop-shadow(0 0 12px rgba(255, 230, 80, 0.95)) 
+            drop-shadow(0 0 25px rgba(255, 180, 0, 0.7));
+  }
 }
+
 .room-clickable-hit{
   position:absolute;cursor:pointer;z-index:6;
   border-radius:8px;transition:background .15s ease;
@@ -128,7 +143,7 @@ h1{display:none;}
   background:rgba(5,4,2,.55);transition:background .4s ease;
 }
 @media (prefers-reduced-motion: reduce){
-  .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(227,169,74,.6)); }
+  .room-clickable-glow{ animation:none; filter:drop-shadow(0 0 10px rgba(255,169,74,.8)); }
 }
 
 /* MASAÜSTÜ ALTYAZI */
@@ -561,54 +576,4 @@ body:has(.dialog-active) .corner-icons {
 
   .map-scroll { padding: 2% !important; }
   .map-hotspot-label { font-size: 9px !important; padding: 2px 6px !important; }
-}
-
-/* --- YENİ EKLENEN 2. GÜN STİLLERİ --- */
-
-/* Anahtar Kazanma / Eşya Pop-up Katmanı */
-.item-acquire-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(5, 4, 3, 0.88);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.item-acquire-card {
-  text-align: center;
-  color: var(--paper);
-  font-family: var(--mono);
-}
-
-.item-acquire-img {
-  width: clamp(100px, 18cqw, 200px);
-  height: auto;
-  filter: drop-shadow(0 0 20px rgba(227, 169, 74, 0.4));
-  margin-bottom: 12px;
-}
-
-.item-acquire-title {
-  font-size: clamp(14px, 2cqw, 20px);
-  color: var(--amber-bright);
-  letter-spacing: 0.05em;
-  margin-bottom: 16px;
-}
-
-.btn-acquire {
-  background: var(--amber) !important;
-  color: #171712 !important;
-  border: none !important;
-  padding: 8px 24px !important;
-  font-weight: bold !important;
-  font-size: 14px !important;
-  border-radius: 6px !important;
-  cursor: pointer !important;
-}
-
-/* Gazeteci Odasına Sahne Kararma Geçişi */
-.fade-out-scene {
-  opacity: 0;
-  transition: opacity 1.2s ease-in-out;
 }
