@@ -69,9 +69,9 @@
       "label": "Han", "background": "assets/odalar/han.webp",
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
-        { "x": "77%", "y": "50%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
-        { "x": "47%", "y": "55%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
-        { "x": "62%", "y": "55%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" }
+        { "x": "81.0%", "y": "16.7%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
+        { "x": "55.7%", "y": "40.4%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
+        { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" }
       ]
     },
     "han_kapi": {
