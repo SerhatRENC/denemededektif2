@@ -146,7 +146,10 @@ function renderRoom() {
             wrap.appendChild(lbl);
           }
 
-          wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+          wrap.onclick = (e) => { 
+            if (e) e.stopPropagation();
+            if (!calibMode && !dialogueActive) handleHotspot(h); 
+          };
           stage.appendChild(wrap);
           setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
           return;
@@ -159,7 +162,10 @@ function renderRoom() {
           ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
           : '';
         el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-        el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+        el.onclick = (e) => { 
+          if (e) e.stopPropagation();
+          if (!calibMode && !dialogueActive) handleHotspot(h); 
+        };
         stage.appendChild(el);
       });
     }
@@ -200,6 +206,12 @@ function handleHotspot(h) {
   if (h.type === 'kapida_konus') {
     if (currentDay === 2 && day2State === 'HAN_UNLOCKED') {
       if (typeof calSes === 'function') calSes('kilit_ac');
+      
+      // Kapı açıldığında anahtarı envanterden kaldır
+      inventory = inventory.filter(item => item !== 'anahtar');
+      localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+      renderInventory();
+      
       gecGazeteciOdasi();
       return;
     } else {
@@ -233,6 +245,7 @@ function showCustomSubtitle(text) {
 }
 
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
+  dialogueActive = true;
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   stage.classList.add('dialog-active');
   document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
@@ -267,6 +280,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
       stage.classList.remove('dialog-active');
       document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
       stage.removeEventListener('click', sonrakiSatir);
+      dialogueActive = false;
       if (onCompleteCallback) onCompleteCallback();
     }
   }
@@ -280,9 +294,18 @@ function showAnahtarAcquisitionModal() {
     <div style="text-align:center; padding:8px 0;">
       <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="max-width:130px; width:45%; height:auto; display:block; margin:0 auto 14px; filter:drop-shadow(0 6px 16px rgba(0,0,0,0.8));">
       <h3 style="margin-bottom:16px; color:var(--amber-bright);">Oda Anahtarı Alındı</h3>
-      <button onclick="if(typeof calSes==='function') calSes('take'); setDay2State('HAN_UNLOCKED'); closeModal(); renderRoom();">AL</button>
+      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();">AL</button>
     </div>
   `);
+}
+
+function collectKey() {
+  if (!inventory.includes('anahtar')) {
+    inventory.push('anahtar');
+    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+    renderInventory();
+  }
+  setDay2State('HAN_UNLOCKED');
 }
 
 function gecGazeteciOdasi() {
@@ -364,7 +387,16 @@ function renderInventory(lastImage) {
   inventory.forEach(id => {
     const el = document.createElement('div');
     el.className = 'inv-item';
-    el.textContent = '📄';
+    if (id === 'anahtar') {
+      el.style.backgroundImage = "url('assets/tiklanabilir/anahtar.webp')";
+      el.style.backgroundSize = "contain";
+      el.style.backgroundRepeat = "no-repeat";
+      el.style.backgroundPosition = "center";
+      el.textContent = '';
+      el.title = 'Gazetecinin Oda Anahtarı';
+    } else {
+      el.textContent = '📄';
+    }
     inv.appendChild(el);
   });
 }
@@ -905,7 +937,10 @@ function renderClickableCharacter(ch, stage) {
   hit.style.width = area.w;
   hit.style.height = area.h;
   hit.title = ch.name;
-  hit.onclick = () => { if (!calibMode) startDialogueFromClickable(ch); };
+  hit.onclick = (e) => { 
+    if (e) e.stopPropagation();
+    if (!calibMode && !dialogueActive) startDialogueFromClickable(ch); 
+  };
   stage.appendChild(hit);
 }
 
@@ -928,7 +963,10 @@ function renderSceneCharacter(ch, stage) {
   el.alt = ch.name;
   el.title = ch.name;
   el.style.bottom = ch.yOffset || '0%';
-  el.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
+  el.onclick = (e) => { 
+    if (e) e.stopPropagation();
+    if (!calibMode) toggleCharacterLine(ch); 
+  };
   el.onerror = () => {
     const fallback = document.createElement('div');
     fallback.id = 'sceneCharacter';
