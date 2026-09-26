@@ -63,7 +63,6 @@ function renderRoom() {
     return;
   }
 
-  // Her oda çiziminde envanteri de canlı tut
   renderInventory();
 
   const room = CASE.rooms[currentRoom];
@@ -101,10 +100,8 @@ function renderRoom() {
       return;
     }
 
-    // --- KATMAN 1: İLK OLARAK RIZA VEYA ODA KARAKTERİNİ ÇİZ ---
     renderCharacter();
 
-    // --- KATMAN 2: ARDINDAN BAKIRCILAR KATMANINI VE HOTSPOT'LARI ÇİZ ---
     if (room.hotspots) {
       room.hotspots.forEach(h => {
         if (h.requires && !inventory.includes(h.requires)) return;
@@ -177,7 +174,6 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
-  // --- 2. GÜN NAVİGASYON KISITLAMALARI ---
   if (currentDay === 2) {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
@@ -206,12 +202,10 @@ function handleHotspot(h) {
     return;
   }
 
-  // --- GAZETECİ ODASI KAPISI VE KİLİT KONTROLÜ ---
   if (h.type === 'kapida_konus' || h.target === 'gazeteci_oda') {
     if (day2State === 'HAN_UNLOCKED' || inventory.includes('anahtar')) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
-      // Kapı açıldığında anahtarı envanterden kaldır
       inventory = inventory.filter(item => item !== 'anahtar');
       const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
       localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
@@ -298,13 +292,13 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* --- BÜYÜTÜLMÜŞ ANAHTAR ALMA MODALI --- */
+/* --- 3 KAT BÜYÜTÜLMÜŞ ANAHTAR ALMA MODALI --- */
 function showAnahtarAcquisitionModal() {
   showModal(`
-    <div style="text-align:center; padding:15px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-      <h2 style="margin:0 0 12px 0; color:var(--amber-bright); font-size: clamp(18px, 2.6cqw, 30px); letter-spacing: 0.05em; text-transform: uppercase;">Oda Anahtarı Alındı</h2>
-      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="width:70%; max-width:280px; height:auto; display:block; margin:10px auto 25px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.9));">
-      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();" style="width:80%; max-width:260px; padding:14px 28px !important; font-size: clamp(14px, 2cqw, 22px) !important; letter-spacing:0.1em !important; border-radius:8px !important; box-shadow: 0 4px 15px rgba(201,138,44,0.4);">
+    <div style="text-align:center; padding:25px 15px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+      <h2 style="margin:0 0 15px 0; color:var(--amber-bright); font-size: clamp(24px, 3.8cqw, 42px); letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">Oda Anahtarı Alındı</h2>
+      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="width:90%; max-width:580px; height:auto; display:block; margin:15px auto 30px; filter:drop-shadow(0 15px 35px rgba(0,0,0,0.95)) drop-shadow(0 0 20px rgba(227,169,74,0.3)); transform: scale(1.15);">
+      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();" style="width:90%; max-width:480px; padding:20px 40px !important; font-size: clamp(18px, 2.8cqw, 32px) !important; letter-spacing:0.12em !important; border-radius:12px !important; box-shadow: 0 6px 25px rgba(201,138,44,0.6); transform: scale(1.05);">
         ENVANTERE AL
       </button>
     </div>
@@ -393,6 +387,7 @@ function wakeUp() {
   renderRoom();
 }
 
+/* --- YARI YARIYA KÜÇÜLTÜLMÜŞ İKON VE METİNLİ ENVANTER --- */
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
@@ -405,11 +400,14 @@ function renderInventory(lastImage) {
     const el = document.createElement('div');
     el.className = 'inv-item';
     if (id === 'anahtar') {
-      el.style.backgroundImage = "url('assets/tiklanabilir/anahtar.webp')";
-      el.style.backgroundSize = "contain";
-      el.style.backgroundRepeat = "no-repeat";
-      el.style.backgroundPosition = "center";
-      el.textContent = '';
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: 45%; height: auto; object-fit: contain;">
+        <span style="font-size: 0.8cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600;">Anahtar</span>
+      `;
       el.title = 'Gazetecinin Oda Anahtarı';
     } else {
       el.textContent = '📄';
