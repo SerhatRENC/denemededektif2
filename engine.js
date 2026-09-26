@@ -174,6 +174,37 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
+  // --- GAZETECİ ODASI KAPISI VE KİLİT KONTROLÜ (EN ÜST SIRA) ---
+  const isGazeteciKapi = h.type === 'kapida_konus' || 
+                         h.type === 'gazeteci_odasi_gecis' || 
+                         h.target === 'gazeteci_oda' || 
+                         h.target === 'gazeteci_odasi';
+
+  if (isGazeteciKapi) {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || localStorage.getItem('sd_day2_state') === 'HAN_UNLOCKED';
+
+    if (hasKey) {
+      if (typeof calSes === 'function') calSes('kilit_ac');
+      
+      // Anahtarı envanterden temizle
+      inventory = inventory.filter(item => item !== 'anahtar');
+      const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+      localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
+      setDay2State('HAN_UNLOCKED');
+      renderInventory();
+      
+      // Odaya sorunsuz geçiş yap
+      const targetRoom = (CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi';
+      gecGazeteciOdasi(targetRoom);
+      return;
+    } else {
+      if (typeof calSes === 'function') calSes('kilit');
+      showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+      return;
+    }
+  }
+
+  // --- 2. GÜN NAVİGASYON KISITLAMALARI ---
   if (currentDay === 2) {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
@@ -195,33 +226,6 @@ function handleHotspot(h) {
   if (h.type === 'dialogue_bakirci2') {
     startOzelDialog(CASE.day2_dialogs.bakirci2, 'assets/karakterler/bakirci2.webp');
     return;
-  }
-  if (h.type === 'gazeteci_odasi_gecis') {
-    currentRoom = 'han_kapi';
-    renderRoom();
-    return;
-  }
-
-  if (h.type === 'kapida_konus' || h.target === 'gazeteci_oda') {
-    if (day2State === 'HAN_UNLOCKED' || inventory.includes('anahtar')) {
-      if (typeof calSes === 'function') calSes('kilit_ac');
-      
-      inventory = inventory.filter(item => item !== 'anahtar');
-      const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
-      localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
-      renderInventory();
-      
-      gecGazeteciOdasi();
-      return;
-    } else {
-      if (typeof calSes === 'function') calSes('kilit');
-      if (h.dialog) {
-        startOzelDialog(h.dialog, h.characterImage);
-      } else {
-        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
-      }
-      return;
-    }
   }
 
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
@@ -315,15 +319,16 @@ function collectKey() {
   renderInventory();
 }
 
-function gecGazeteciOdasi() {
+function gecGazeteciOdasi(targetRoom) {
+  const roomName = targetRoom || ((CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi');
   const stageFrame = document.getElementById('stageFrame') || document.getElementById('stage-frame');
-  stageFrame.classList.add('fade-out-scene');
+  if (stageFrame) stageFrame.classList.add('fade-out-scene');
 
   setTimeout(() => {
-    currentRoom = 'gazeteci_oda';
+    currentRoom = roomName;
     renderRoom();
-    stageFrame.classList.remove('fade-out-scene');
-  }, 1200);
+    if (stageFrame) stageFrame.classList.remove('fade-out-scene');
+  }, 1000);
 }
 
 function openPhoto(src) {
@@ -387,7 +392,7 @@ function wakeUp() {
   renderRoom();
 }
 
-/* --- YARI YARIYA KÜÇÜLTÜLMÜŞ İKON VE METİNLİ ENVANTER --- */
+/* --- ORANLANMIŞ VE YARI SAYDAM KUTUCUKLU ENVANTER --- */
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
@@ -405,8 +410,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: 45%; height: auto; object-fit: contain;">
-        <span style="font-size: 0.8cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600;">Anahtar</span>
+        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: 50%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.75cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
       `;
       el.title = 'Gazetecinin Oda Anahtarı';
     } else {

@@ -101,7 +101,13 @@ h1{display:none;}
   filter:drop-shadow(0 10px 25px rgba(0,0,0,.6));
 }
 .scene-character:hover{transform:translateY(-4px) scale(1.02);}
-.scene-character.talking{filter:drop-shadow(0 10px 25px rgba(227,169,74,.55));}
+.scene-character.talking{
+  z-index: 11 !important;
+  filter:drop-shadow(0 10px 25px rgba(227,169,74,.55));
+}
+#tempDay2Char {
+  z-index: 11 !important;
+}
 .scene-character-missing{
   position:absolute;right:2%;bottom:6%;width:26%;aspect-ratio:3/4;
   border:1px dashed var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;
@@ -138,8 +144,10 @@ h1{display:none;}
   border-radius:8px;transition:background .15s ease;
 }
 .room-clickable-hit:hover{ background:rgba(227,169,74,.08); }
+
+/* DIALOG AKTİFKEN ARKA PLANDAKİ HER ŞEYİN TIKLANMASINI ENGELLEYEN KATMAN */
 .stage.dialog-active::after{
-  content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+  content:'';position:absolute;inset:0;z-index:10;pointer-events:auto;cursor:pointer;
   background:rgba(5,4,2,.55);transition:background .4s ease;
 }
 @media (prefers-reduced-motion: reduce){
@@ -148,7 +156,7 @@ h1{display:none;}
 
 /* MASAÜSTÜ ALTYAZI */
 .scene-subtitle{
-  position:absolute;left:5%;right:5%;bottom:4%;z-index:9;
+  position:absolute;left:5%;right:5%;bottom:4%;z-index:12;
   background:rgba(10,10,8,.87);border:1px solid var(--amber);border-radius:8px;
   padding:10px 16px;animation:subtitleGir .2s ease;
 }
@@ -244,11 +252,25 @@ body:has(.dialog-active) .corner-icons {
   background:rgba(10,10,8,.7);padding:4px 8px;border-radius:4px;
 }
 
-.inventory{position:absolute;bottom:10px;left:10px;z-index:20;display:flex;gap:1.2cqw;max-width:50%;flex-wrap:wrap;}
-.inv-item{width:8cqw;height:8cqw;border-radius:9px;background:#1c1d18;border:1px solid #3a3b30;
-  display:flex;align-items:center;justify-content:center;font-size:3cqw;cursor:pointer;color:var(--amber-bright);
-  background-size:cover;background-position:center;}
+/* --- ORANLANMIŞ VE YARI SAYDAM ENVANTER KUTUSU --- */
+.inventory{position:absolute;bottom:12px;left:12px;z-index:20;display:flex;gap:1cqw;max-width:50%;flex-wrap:wrap;}
+.inv-item{
+  width:5cqw; height:5cqw; border-radius:8px;
+  background: rgba(28, 29, 24, 0.45);
+  border: 1px solid rgba(227, 169, 74, 0.35);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--amber-bright);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.inv-item:hover{
+  background: rgba(28, 29, 24, 0.7);
+  border-color: var(--amber);
+  transform: translateY(-2px);
+}
 .inv-empty{font-size:10px;color:var(--paper-dim);align-self:center;letter-spacing:.05em;background:rgba(10,10,8,.6);padding:4px 8px;border-radius:6px;}
+
 .modal-bg{position:absolute;inset:0;background:rgba(6,6,5,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:5%;border-radius:10px;}
 .modal-bg.active{display:flex;}
 .modal{background:#17170f;border:1px solid #3a3b30;border-radius:10px;max-width:440px;width:100%;padding:16px;font-family:var(--sans);max-height:92%;overflow-y:auto;}
