@@ -562,3 +562,53 @@ body:has(.dialog-active) .corner-icons {
   .map-scroll { padding: 2% !important; }
   .map-hotspot-label { font-size: 9px !important; padding: 2px 6px !important; }
 }
+
+/* --- YENİ EKLENEN 2. GÜN STİLLERİ --- */
+
+/* Anahtar Kazanma / Eşya Pop-up Katmanı */
+.item-acquire-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 4, 3, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.item-acquire-card {
+  text-align: center;
+  color: var(--paper);
+  font-family: var(--mono);
+}
+
+.item-acquire-img {
+  width: clamp(100px, 18cqw, 200px);
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(227, 169, 74, 0.4));
+  margin-bottom: 12px;
+}
+
+.item-acquire-title {
+  font-size: clamp(14px, 2cqw, 20px);
+  color: var(--amber-bright);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.btn-acquire {
+  background: var(--amber) !important;
+  color: #171712 !important;
+  border: none !important;
+  padding: 8px 24px !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+}
+
+/* Gazeteci Odasına Sahne Kararma Geçişi */
+.fade-out-scene {
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}

@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Bellek Sızıntısı Düzeltildi)
+   ODA MOTORU — Sislidere Köyü Davası (Ses Güncellemeli)
    ============================================================ */
 
 let CASE = null;
@@ -9,6 +9,14 @@ let currentDay = 1;
 let calibMode = false;
 let calibClicks = [];
 let currentSleepAudio = null;
+
+// --- 2. GÜN DURUM YÖNETİMİ ---
+let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR'; // GO_MUHTAR -> GO_HAN -> HAN_UNLOCKED
+
+function setDay2State(newState) {
+  day2State = newState;
+  localStorage.setItem('sd_day2_state', newState);
+}
 
 // case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
 fetch('case.json?v=' + Date.now())
@@ -147,6 +155,38 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
+  // --- 2. GÜN NAVİGASYON KISITLAMALARI ---
+  if (currentDay === 2) {
+    if (day2State === 'GO_MUHTAR' && h.target && h.target !== 'muhtar' && h.target !== 'ofis' && h.target !== 'masa') {
+      showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
+      return;
+    }
+    if (day2State === 'GO_HAN' && h.target && h.target !== 'han' && h.target !== 'han_mutfak' && h.target !== 'han_depo') {
+      showCustomSubtitle("Dedektif: Önce hana gidip gazetecinin kaldığı odayı incelesem iyi olacak.");
+      return;
+    }
+  }
+
+  // Özel 2. Gün Hotspot Türleri
+  if (h.type === 'dialogue_bakirci1') {
+    startOzelDialog(CASE.day2_dialogs.bakirci1, 'assets/karakterler/bakirci1.webp');
+    return;
+  }
+  if (h.type === 'dialogue_bakirci2') {
+    startOzelDialog(CASE.day2_dialogs.bakirci2, 'assets/karakterler/bakirci2.webp');
+    return;
+  }
+  if (h.type === 'gazeteci_odasi_gecis') {
+    if (day2State !== 'HAN_UNLOCKED') {
+      if (typeof calSes === 'function') calSes('kilit');
+      showCustomSubtitle("Dedektif: Kapı kilitli. Önce Hancı Rıza'dan anahtarı almalıyım.");
+      return;
+    }
+    if (typeof calSes === 'function') calSes('kilit_ac');
+    gecGazeteciOdasi();
+    return;
+  }
+
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
   if (h.type === 'examine')  { openExamine(h.target); return; }
   if (h.type === 'photo')    { openPhoto(h.image); return; }
@@ -155,6 +195,91 @@ function handleHotspot(h) {
   if (h.type === 'dosya')    { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep')    { confirmSleep(); return; }
+}
+
+function showCustomSubtitle(text) {
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  let sub = document.getElementById('sceneSubtitle');
+  if (!sub) {
+    sub = document.createElement('div');
+    sub.id = 'sceneSubtitle';
+    sub.className = 'scene-subtitle';
+    stage.appendChild(sub);
+  }
+  sub.innerHTML = `<div class="scene-subtitle-text">${text}</div>`;
+  setTimeout(() => { if (sub) sub.remove(); }, 3500);
+}
+
+function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  stage.classList.add('dialog-active');
+  
+  let charImg = document.getElementById('tempDay2Char');
+  if (!charImg) {
+    charImg = document.createElement('img');
+    charImg.id = 'tempDay2Char';
+    charImg.className = 'scene-character talking';
+    stage.appendChild(charImg);
+  }
+  charImg.src = charImgPath;
+
+  let index = 0;
+  function sonrakiSatir(e) {
+    if (e) e.stopPropagation();
+    if (index < dialogList.length) {
+      const item = dialogList[index];
+      let sub = document.getElementById('sceneSubtitle');
+      if (!sub) {
+        sub = document.createElement('div');
+        sub.id = 'sceneSubtitle';
+        sub.className = 'scene-subtitle';
+        stage.appendChild(sub);
+      }
+      sub.innerHTML = `<div class="scene-subtitle-name">${item.speaker}</div><div class="scene-subtitle-text">${item.text}</div>`;
+      index++;
+    } else {
+      if (charImg) charImg.remove();
+      const sub = document.getElementById('sceneSubtitle');
+      if (sub) sub.remove();
+      stage.classList.remove('dialog-active');
+      stage.removeEventListener('click', sonrakiSatir);
+      if (onCompleteCallback) onCompleteCallback();
+    }
+  }
+  
+  sonrakiSatir();
+  setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
+}
+
+function showAnahtarAcquisitionModal() {
+  const overlay = document.createElement('div');
+  overlay.id = 'itemAcquireOverlay';
+  overlay.className = 'item-acquire-overlay';
+  overlay.innerHTML = `
+    <div class="item-acquire-card">
+      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" class="item-acquire-img">
+      <div class="item-acquire-title">Oda Anahtarı Alındı</div>
+      <button id="btnAcquireTake" class="btn-acquire">AL</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  document.getElementById('btnAcquireTake').onclick = () => {
+    if (typeof calSes === 'function') calSes('take');
+    overlay.remove();
+    setDay2State('HAN_UNLOCKED');
+  };
+}
+
+function gecGazeteciOdasi() {
+  const stageFrame = document.getElementById('stageFrame') || document.getElementById('stage-frame');
+  stageFrame.classList.add('fade-out-scene');
+
+  setTimeout(() => {
+    currentRoom = 'gazeteci_oda';
+    renderRoom();
+    stageFrame.classList.remove('fade-out-scene');
+  }, 1200);
 }
 
 function openPhoto(src) {
@@ -249,7 +374,7 @@ function suphesecildi(isim) {
   const finalDosyaMap = {
     'ansel': 'ansel_final_sorgu.png',
     'aylin': 'aylin_fnal_srogu.png',
-    'cabbar': 'cabbar_final_srogu.png',
+    'cabbar': 'cabbar_final_sorgu.png',
     'cevdet': 'cevdet_final_sorgu.png',
     'halit': 'halit_final_sorgu.png',
     'kamuran': 'kamuran_final_srogu.png',
@@ -317,6 +442,7 @@ function oyunuSifirla() {
   localStorage.removeItem('sd_day_' + CASE.caseLabel);
   localStorage.removeItem('sd_inv_' + CASE.caseLabel);
   localStorage.removeItem('sd_notebook_v3_' + CASE.caseLabel);
+  localStorage.removeItem('sd_day2_state');
   window.location.href = 'index.html';
 }
 
@@ -942,6 +1068,22 @@ function renderSceneCharacter(ch, stage) {
 }
 
 function toggleCharacterLine(ch) {
+  // --- 2. GÜN MUHTARLIK VE HAN ÖZEL KANCALARI ---
+  if (currentDay === 2 && currentRoom === 'muhtar' && day2State === 'GO_MUHTAR') {
+    startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+      setDay2State('GO_HAN');
+      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
+    });
+    return;
+  }
+
+  if (currentDay === 2 && currentRoom === 'han' && day2State === 'GO_HAN') {
+    startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+      showAnahtarAcquisitionModal();
+    });
+    return;
+  }
+
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   const charEl = document.getElementById('sceneCharacter');
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
@@ -1003,7 +1145,6 @@ function gosterDialogSatiri(dialog) {
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
-/* RAM SIZINTISI TEMİZLENMİŞ VE YENİLENMİŞ ZOOM BİLEŞENİ */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;

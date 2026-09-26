@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v3';
+const CACHE_NAME = 'sisledere-v5';
 
 // İlk açılışta çevrimdışı kullanım için indirilecek tüm dosyalar
 const PRECACHE_ASSETS = [
@@ -43,6 +43,9 @@ const PRECACHE_ASSETS = [
   'assets/ses/mesaj.mp3',
   'assets/ses/mors_kodu.mp3',
   'assets/ses/yuru.mp3',
+  'assets/ses/kilit.mp3',
+  'assets/ses/kilit_ac.mp3',
+  'assets/ses/take.mp3',
 
   // --- GİRİŞ & İNDEX ODALARI ---
   'assets/odalar/giris.webp',
@@ -52,7 +55,15 @@ const PRECACHE_ASSETS = [
   'assets/odalar/sislidere_dosya.webp',
   'assets/odalar/at_arabasi.webp',
   'assets/odalar/koy_giris.webp',
-  'assets/odalar/dedektif_ofis.webp'
+  'assets/odalar/dedektif_ofis.webp',
+  'assets/odalar/gazeteci_oda.webp',
+
+  // --- 2. GÜN YENİ VARLIKLARI ---
+  'assets/tiklanabilir/anahtar.webp',
+  'assets/tiklanabilir/bakirci1.webp',
+  'assets/tiklanabilir/bakirci2.webp',
+  'assets/karakterler/bakirci1.webp',
+  'assets/karakterler/bakirci2.webp'
 ];
 
 self.addEventListener('install', (event) => {
