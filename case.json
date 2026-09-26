@@ -73,8 +73,8 @@
         { "x": "81.0%", "y": "16.7%", "type": "gazeteci_odasi_gecis", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin odasına çık" },
         { "x": "55.7%", "y": "40.4%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
         { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" },
-        { "x": "35.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci1", "icon": "assets/tiklanabilir/bakirci1_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Ahmet ile konuş" },
-        { "x": "68.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci2", "icon": "assets/tiklanabilir/bakirci2_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Hüseyin ile konuş" }
+        { "x": "35.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci1", "overlayImage": "assets/tiklanabilir/bakirci1_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Ahmet ile konuş" },
+        { "x": "68.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci2", "overlayImage": "assets/tiklanabilir/bakirci2_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Hüseyin ile konuş" }
       ]
     },
 

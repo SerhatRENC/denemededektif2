@@ -104,6 +104,21 @@ function renderRoom() {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
 
+        // --- TAM EKRAN OTURAN KATMAN GÖRSELİ (ÖRN: BAKIRCILAR) ---
+        if (h.overlayImage) {
+          const ovImg = document.createElement('img');
+          ovImg.className = 'room-clickable-glow';
+          ovImg.src = h.overlayImage;
+          ovImg.style.position = 'absolute';
+          ovImg.style.left = '0';
+          ovImg.style.top = '0';
+          ovImg.style.width = '100%';
+          ovImg.style.height = '100%';
+          ovImg.style.pointerEvents = 'none';
+          stage.appendChild(ovImg);
+        }
+
+        // --- DAİRESEL PULSE İKONLARI (BÜYÜTEÇ, AYAK VB.) ---
         if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
           wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
@@ -135,6 +150,7 @@ function renderRoom() {
           return;
         }
 
+        // --- TIKLANABİLİR ŞEFFAF ALAN (HITBOX) ---
         const el = document.createElement('div');
         el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
         el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
