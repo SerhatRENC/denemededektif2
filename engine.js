@@ -99,12 +99,15 @@ function renderRoom() {
       return;
     }
 
+    // --- KATMAN 1: İLK OLARAK RIZA VEYA ODA KARAKTERİNİ ÇİZ ---
+    renderCharacter();
+
+    // --- KATMAN 2: ARDINDAN BAKIRCILAR KATMANINI VE HOTSPOT'LARI ÇİZ ---
     if (room.hotspots) {
       room.hotspots.forEach(h => {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
 
-        // --- TAM EKRAN OTURAN KATMAN GÖRSELİ (ÖRN: BAKIRCILAR) ---
         if (h.overlayImage) {
           const ovImg = document.createElement('img');
           ovImg.className = 'room-clickable-glow';
@@ -118,7 +121,6 @@ function renderRoom() {
           stage.appendChild(ovImg);
         }
 
-        // --- DAİRESEL PULSE İKONLARI (BÜYÜTEÇ, AYAK VB.) ---
         if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
           wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
@@ -150,7 +152,6 @@ function renderRoom() {
           return;
         }
 
-        // --- TIKLANABİLİR ŞEFFAF ALAN (HITBOX) ---
         const el = document.createElement('div');
         el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
         el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
@@ -162,8 +163,6 @@ function renderRoom() {
         stage.appendChild(el);
       });
     }
-
-    renderCharacter();
 
     stage.classList.remove('fading');
   }, 180);
@@ -889,7 +888,7 @@ function renderCharacter() {
   ch = JSON.parse(JSON.stringify(ch));
   if (currentDay === 2 && currentRoom === 'han') {
     ch.clickableImage = 'assets/tiklanabilir/riza2_tiklanabilir.webp';
-    ch.clickableArea = { "x": "38.0%", "y": "28.0%", "w": "24.0%", "h": "60.0%" };
+    ch.clickableArea = { "x": "51.1%", "y": "27.6%", "w": "11.0%", "h": "20.5%" };
   }
 
   if (ch.clickableImage) {
