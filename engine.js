@@ -276,24 +276,13 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
 }
 
 function showAnahtarAcquisitionModal() {
-  const overlay = document.createElement('div');
-  overlay.id = 'itemAcquireOverlay';
-  overlay.className = 'item-acquire-overlay';
-  overlay.innerHTML = `
-    <div class="item-acquire-card">
-      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" class="item-acquire-img">
-      <div class="item-acquire-title">Oda Anahtarı Alındı</div>
-      <button id="btnAcquireTake" class="btn-acquire">AL</button>
+  showModal(`
+    <div style="text-align:center; padding:8px 0;">
+      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="max-width:130px; width:45%; height:auto; display:block; margin:0 auto 14px; filter:drop-shadow(0 6px 16px rgba(0,0,0,0.8));">
+      <h3 style="margin-bottom:16px; color:var(--amber-bright);">Oda Anahtarı Alındı</h3>
+      <button onclick="if(typeof calSes==='function') calSes('take'); setDay2State('HAN_UNLOCKED'); closeModal(); renderRoom();">AL</button>
     </div>
-  `;
-  document.body.appendChild(overlay);
-
-  document.getElementById('btnAcquireTake').onclick = () => {
-    if (typeof calSes === 'function') calSes('take');
-    overlay.remove();
-    setDay2State('HAN_UNLOCKED');
-    renderRoom();
-  };
+  `);
 }
 
 function gecGazeteciOdasi() {
