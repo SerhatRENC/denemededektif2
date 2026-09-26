@@ -78,7 +78,19 @@
       "label": "Gazetecinin Odası Kapısı",
       "background": "assets/odalar/han_kapi.webp",
       "hotspots": [
-        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" }
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
+        {
+          "x": "50.0%", "y": "45.0%",
+          "type": "kapida_konus",
+          "icon": "assets/arayuz/tokmak.webp",
+          "iconWidth": "4.6%",
+          "label": "Çal",
+          "hint": "Kapıyı çal",
+          "characterImage": "assets/karakterler/riza.webp",
+          "dialog": [
+            { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
+          ]
+        }
       ]
     },
     "han_mutfak": {
@@ -185,16 +197,6 @@
       "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
       "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
       "text": "Dedektif Bey, evraklar hazır."
-    },
-    "han_kapi": {
-      "name": "Hancı Rıza",
-      "image": "assets/karakterler/riza.webp",
-      "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
-      "clickableArea": { "x": "45.0%", "y": "30.0%", "w": "20.0%", "h": "60.0%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
-      ]
     },
     "kilise": {
       "name": "Peder Anselm",
@@ -310,7 +312,7 @@
         { "speaker": "Nadire", "text": "Evet, Halit'in tepesinin tasını attırmıştı o gazeteci." },
         { "speaker": "Nadire", "text": "Kızı Aylin'le konuşmak istemiş, o da müsaade etmemiş." },
         { "speaker": "Nadire", "text": "Burası küçük yer, laf söz olur — günahsız yavrunun ne suçu var, gencecik kız." },
-        { "speaker": "Dedektif", "text": "Başka bir şey yok muydu?" },
+        { "speaker": "Dedektif", "text": "Başka bir şey yok mugdu?" },
         { "speaker": "Nadire", "text": "Benim bildiğim bu kadar." }
       ]
     },
