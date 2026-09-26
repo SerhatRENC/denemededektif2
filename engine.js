@@ -178,11 +178,6 @@ function handleHotspot(h) {
     return;
   }
   if (h.type === 'gazeteci_odasi_gecis') {
-    if (currentDay === 2 && day2State === 'HAN_UNLOCKED') {
-      if (typeof calSes === 'function') calSes('kilit_ac');
-      gecGazeteciOdasi();
-      return;
-    }
     currentRoom = 'han_kapi';
     renderRoom();
     return;
@@ -192,9 +187,11 @@ function handleHotspot(h) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       gecGazeteciOdasi();
       return;
+    } else {
+      if (typeof calSes === 'function') calSes('kilit');
+      startOzelDialog(h.dialog, h.characterImage);
+      return;
     }
-    startOzelDialog(h.dialog, h.characterImage);
-    return;
   }
 
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
@@ -941,37 +938,33 @@ function renderSceneCharacter(ch, stage) {
 
 function toggleCharacterLine(ch) {
   if (currentDay === 2 && currentRoom === 'muhtar') {
-    if (day2State === 'GO_MUHTAR') {
-      document.getElementById('sceneCharacter')?.remove();
-      document.getElementById('roomClickableGlow')?.remove();
-      document.getElementById('roomClickableHit')?.remove();
+    document.getElementById('sceneCharacter')?.remove();
+    document.getElementById('roomClickableGlow')?.remove();
+    document.getElementById('roomClickableHit')?.remove();
 
-      startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+    startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+      if (day2State === 'GO_MUHTAR') {
         setDay2State('GO_HAN');
-        renderRoom();
-        showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
-      });
-      return;
-    } else {
-      showCustomSubtitle("Halit: Hancı Rıza'ya selamımı söyle, açsın kapıyı.");
-      return;
-    }
+      }
+      renderRoom();
+      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
+    });
+    return;
   }
 
   if (currentDay === 2 && currentRoom === 'han') {
-    if (day2State === 'GO_HAN') {
-      document.getElementById('sceneCharacter')?.remove();
-      document.getElementById('roomClickableGlow')?.remove();
-      document.getElementById('roomClickableHit')?.remove();
+    document.getElementById('sceneCharacter')?.remove();
+    document.getElementById('roomClickableGlow')?.remove();
+    document.getElementById('roomClickableHit')?.remove();
 
-      startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+    startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+      if (day2State === 'GO_HAN') {
         showAnahtarAcquisitionModal();
-      });
-      return;
-    } else if (day2State === 'HAN_UNLOCKED') {
-      showCustomSubtitle("Rıza: Odanın anahtarını verdim beyim, yukarı çıkabilirsiniz.");
-      return;
-    }
+      } else {
+        renderRoom();
+      }
+    });
+    return;
   }
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
