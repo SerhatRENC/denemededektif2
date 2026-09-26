@@ -31,17 +31,16 @@ fetch('case.json?v=' + Date.now())
 
     currentRoom = CASE.startRoom;
 
-    const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
-    const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
+    const caseKey = CASE.caseLabel || 'sisledere';
+    const savedDay = localStorage.getItem('sd_day_' + caseKey);
+    const savedInv = localStorage.getItem('sd_inv_' + caseKey);
     currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
     inventory = savedInv ? JSON.parse(savedInv) : [];
 
     const dayBadgeEl = document.getElementById('dayBadge');
     if (dayBadgeEl) updateDayBadge();
     
-    const invEl = document.getElementById('inventory');
-    if (invEl) renderInventory();
-
+    renderInventory();
     renderRoom();
   })
   .catch(err => {
@@ -63,6 +62,9 @@ function renderRoom() {
     console.error("Oda bulunamadı:", currentRoom);
     return;
   }
+
+  // Her oda çiziminde envanteri de canlı tut
+  renderInventory();
 
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
@@ -203,20 +205,27 @@ function handleHotspot(h) {
     renderRoom();
     return;
   }
-  if (h.type === 'kapida_konus') {
-    if (currentDay === 2 && day2State === 'HAN_UNLOCKED') {
+
+  // --- GAZETECİ ODASI KAPISI VE KİLİT KONTROLÜ ---
+  if (h.type === 'kapida_konus' || h.target === 'gazeteci_oda') {
+    if (day2State === 'HAN_UNLOCKED' || inventory.includes('anahtar')) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
       // Kapı açıldığında anahtarı envanterden kaldır
       inventory = inventory.filter(item => item !== 'anahtar');
-      localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+      const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+      localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
       renderInventory();
       
       gecGazeteciOdasi();
       return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
-      startOzelDialog(h.dialog, h.characterImage);
+      if (h.dialog) {
+        startOzelDialog(h.dialog, h.characterImage);
+      } else {
+        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+      }
       return;
     }
   }
@@ -289,23 +298,27 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
+/* --- BÜYÜTÜLMÜŞ ANAHTAR ALMA MODALI --- */
 function showAnahtarAcquisitionModal() {
   showModal(`
-    <div style="text-align:center; padding:8px 0;">
-      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="max-width:130px; width:45%; height:auto; display:block; margin:0 auto 14px; filter:drop-shadow(0 6px 16px rgba(0,0,0,0.8));">
-      <h3 style="margin-bottom:16px; color:var(--amber-bright);">Oda Anahtarı Alındı</h3>
-      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();">AL</button>
+    <div style="text-align:center; padding:15px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+      <h2 style="margin:0 0 12px 0; color:var(--amber-bright); font-size: clamp(18px, 2.6cqw, 30px); letter-spacing: 0.05em; text-transform: uppercase;">Oda Anahtarı Alındı</h2>
+      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="width:70%; max-width:280px; height:auto; display:block; margin:10px auto 25px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.9));">
+      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();" style="width:80%; max-width:260px; padding:14px 28px !important; font-size: clamp(14px, 2cqw, 22px) !important; letter-spacing:0.1em !important; border-radius:8px !important; box-shadow: 0 4px 15px rgba(201,138,44,0.4);">
+        ENVANTERE AL
+      </button>
     </div>
-  `);
+  `, true);
 }
 
 function collectKey() {
   if (!inventory.includes('anahtar')) {
     inventory.push('anahtar');
-    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
-    renderInventory();
+    const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+    localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
   }
   setDay2State('HAN_UNLOCKED');
+  renderInventory();
 }
 
 function gecGazeteciOdasi() {
@@ -348,7 +361,8 @@ function confirmSleep() {
 
 function sleep() {
   currentDay++;
-  localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
+  const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+  localStorage.setItem('sd_day_' + caseKey, currentDay);
   updateDayBadge();
 
   try {
@@ -382,7 +396,10 @@ function wakeUp() {
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
-  if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
+  if (!inventory || inventory.length === 0) { 
+    inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; 
+    return; 
+  }
   inv.innerHTML = '';
   inventory.forEach(id => {
     const el = document.createElement('div');
@@ -491,7 +508,8 @@ function tryUnlock(itemId) {
 function collect(collectId, image) {
   if (!inventory.includes(collectId)) {
     inventory.push(collectId);
-    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+    const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+    localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
     renderInventory(image);
   }
   closeModal();
@@ -628,7 +646,8 @@ let notebookMod = 'yaz';
 let notebookRenk = '#1a1a1a';
 
 function notebookKey() {
-  return 'sd_notebook_v3_' + CASE.caseLabel;
+  const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+  return 'sd_notebook_v3_' + caseKey;
 }
 
 function loadNotebook() {
