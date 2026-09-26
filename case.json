@@ -73,8 +73,8 @@
         { "x": "81.0%", "y": "16.7%", "type": "gazeteci_odasi_gecis", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin odasına çık" },
         { "x": "55.7%", "y": "40.4%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
         { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" },
-        { "x": "35.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci1", "hint": "Bakırcı Ahmet ile konuş" },
-        { "x": "68.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci2", "hint": "Bakırcı Hüseyin ile konuş" }
+        { "x": "35.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci1", "icon": "assets/tiklanabilir/bakirci1.webp", "activeDays": [2], "hint": "Bakırcı Ahmet ile konuş" },
+        { "x": "68.0%", "y": "50.0%", "w": "12.0%", "h": "30.0%", "type": "dialogue_bakirci2", "icon": "assets/tiklanabilir/bakirci2.webp", "activeDays": [2], "hint": "Bakırcı Hüseyin ile konuş" }
       ]
     },
 
@@ -224,41 +224,6 @@
   },
 
   "characters": {
-    "scr-ofis": {
-      "name": "Polis Memuru",
-      "image": "assets/karakterler/polis.webp",
-      "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
-      "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
-      "text": "Dedektif Bey, evraklar hazır."
-    },
-    "kilise": {
-      "name": "Peder Anselm",
-      "image": "assets/karakterler/anselm.webp",
-      "clickableImage": "assets/tiklanabilir/ansel_tiklanabilir.webp",
-      "clickableArea": { "x": "15.7%", "y": "30.2%", "w": "15.7%", "h": "35.2%" },
-      "text": "(BURAYA DİYALOG METNİ GELECEK)",
-      "yOffset": "-15%"
-    },
-    "degirmenci": {
-      "name": "Değirmenci Mustafa",
-      "image": "assets/karakterler/mustafa.webp",
-      "audio": "assets/karakterler/mustafa.mp3",
-      "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp",
-      "clickableArea": { "x": "17.3%", "y": "22.0%", "w": "25.3%", "h": "77.0%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Dedektif", "text": "Kolay gelsin, bir iki sualim olacak." },
-        { "speaker": "Mustafa", "text": "Buyrun beyim." },
-        { "speaker": "Dedektif", "text": "Gazeteciyi ne kadar tanırdınız?" },
-        { "speaker": "Mustafa", "text": "Değil gazeteciyi, köylüyü bile tanımam ben. Sadece 5 yıldır bu köydeyim." },
-        { "speaker": "Dedektif", "text": "Öyle mi, nereden geldiniz?" },
-        { "speaker": "Mustafa", "text": "Bakırcılar köyünden geldim. Bizim oralar sulaktır, herkes değirmenci olunca ben de buraya geldim iş için." },
-        { "speaker": "Dedektif", "text": "25 gündür adam buradaymış, hiç mi konuşmadınız?" },
-        { "speaker": "Mustafa", "text": "Konuştum elbet, birkaç soru sormuştu bana." },
-        { "speaker": "Mustafa", "text": "Ama araştırdığı konunun 18 yıllık mazisi var, ben o zamanlar burada bile değildim." },
-        { "speaker": "Dedektif", "text": "Tamam, yine de söylemek istediğin bir şey olursa ben buralardayım." }
-      ]
-    },
     "muhtar": {
       "name": "Muhtar Halit",
       "image": "assets/karakterler/halit.webp",
@@ -270,103 +235,6 @@
         { "speaker": "Dedektif", "text": "Sizinle Ali İhsan bey hakkında konuşmam lazım." },
         { "speaker": "Halit", "text": "Ben de onun ölüm belgelerini merkeze götüreceğim şimdi." },
         { "speaker": "Halit", "text": "Sen en iyisi mi yarın uğra, bana konuşalım — şimdi gitmem gerek." }
-      ]
-    },
-    "sifahane": {
-      "name": "Doktor Kamuran",
-      "image": "assets/karakterler/kamuran.webp",
-      "audio": "assets/karakterler/kamuran.mp3",
-      "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
-      "clickableArea": { "x": "25.1%", "y": "25.8%", "w": "13.5%", "h": "68.2%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Kamuran", "text": "Buyrun, hoş geldiniz." },
-        { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim." },
-        { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü." },
-        { "speaker": "Kamuran", "text": "Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım." },
-        { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydu Ali İhsan beyle?" },
-        { "speaker": "Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana." },
-        { "speaker": "Kamuran", "text": "Ben mektepli olduğum için tıbbi bitkiler hakkında bilgiliyimdir." },
-        { "speaker": "Kamuran", "text": "Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş." },
-        { "speaker": "Dedektif", "text": "Üzerlik nedir?" },
-        { "speaker": "Kamuran", "text": "Normalde sonumun için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar." },
-        { "speaker": "Dedektif", "text": "Cadı mı? Zaten İhsan bey bunu araştırmaya gelmişti, değil mi?" },
-        { "speaker": "Kamuran", "text": "Evet evet. Bu köyde öyle bir inanış var." },
-        { "speaker": "Kamuran", "text": "Benden önceki ebe zamanında bebek ölümleri çok fazlaymış, bu cahil insanlar da kadını kovmuş mu, ne yapmışsa artık — kadın yok olmuş diyorlar." },
-        { "speaker": "Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit beylerin laneti kaldırmış da bebeği olmuş." },
-        { "speaker": "Kamuran", "text": "İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten." },
-        { "speaker": "Dedektif", "text": "Yani Halit'in bebeği doğunca mı kalkmış lanet?" },
-        { "speaker": "Kamuran", "text": "Öyle der bu insanlar. Şimdi izninizle işime devam etmem gerek." }
-      ]
-    },
-    "demirci": {
-      "name": "Demirci Cabbar",
-      "image": "assets/karakterler/cabbar.webp",
-      "audio": "assets/karakterler/cabbar.mp3",
-      "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp",
-      "clickableArea": { "x": "56.1%", "y": "18.5%", "w": "18.0%", "h": "79.2%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Dedektif", "text": "Kolay gelsin." },
-        { "speaker": "Cabbar", "text": "Kolaysa başına gelsin." },
-        { "speaker": "Dedektif", "text": "Yavaş ol demirci bey, gazeteciyle ilgili bir iki şey soracaktım." },
-        { "speaker": "Cabbar", "text": "İşim başımdan aşkın, başka zaman gel." }
-      ]
-    },
-    "halit_ev": {
-      "name": "Aylin",
-      "image": "assets/karakterler/aylin.webp",
-      "clickableImage": "assets/tiklanabilir/aylin_tiklanabilir.webp",
-      "clickableArea": { "x": "49.6%", "y": "36.6%", "w": "21.8%", "h": "46.7%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Aylin", "text": "Buyrun beyim, babama mı baktınız? Kendisi muhtarlıkta, evde değil şu an." },
-        { "speaker": "Dedektif", "text": "Ben seninle konuşmak için gelmiştim, Aylin." },
-        { "speaker": "Aylin", "text": "Benimle mi? Neden..." },
-        { "speaker": "Dedektif", "text": "Gazeteciyle neden konuşturmadı baban seni?" },
-        { "speaker": "Aylin", "text": "Erkeklerle konuşmamı sevmez o, laf söz olur." },
-        { "speaker": "Dedektif", "text": "Gazeteciyi tanıyor muydun?" },
-        { "speaker": "Aylin", "text": "Beyim, siz önce babamla konuşun, öylesi daha uygun olur." }
-      ]
-    },
-    "nadire_ev": {
-      "name": "Nadire",
-      "image": "assets/karakterler/nadire.webp",
-      "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp",
-      "clickableArea": { "x": "45.2%", "y": "34.8%", "w": "14.0%", "h": "49.9%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Nadire", "text": "Hoş geldiniz dedektif beyefendi oğlum. Halit bey mi yolladı sizi?" },
-        { "speaker": "Dedektif", "text": "Hayır. Neden Halit beyin yolladığını düşündünüz?" },
-        { "speaker": "Nadire", "text": "Ne bileyim, belki benden haber almak istemiştir. (kızarır)" },
-        { "speaker": "Dedektif", "text": "Halit beyle aranızda bir şey mi var?" },
-        { "speaker": "Nadire", "text": "Yok be, öyle sorayım dedim." },
-        { "speaker": "Dedektif", "text": "Neyse, ben sana Halit beyle gazeteci arasındaki kavgayı sormaya gelmiştim." },
-        { "speaker": "Nadire", "text": "Evet, Halit'in tepesinin tasını attırmıştı o gazeteci." },
-        { "speaker": "Nadire", "text": "Kızı Aylin'le konuşmak istemiş, o da müsaade etmemiş." },
-        { "speaker": "Nadire", "text": "Burası küçük yer, laf söz olur — günahsız yavrunun ne suçu var, gencecik kız." },
-        { "speaker": "Dedektif", "text": "Başka bir şey yok muydu?" },
-        { "speaker": "Nadire", "text": "Benim bildiğim bu kadar." }
-      ]
-    },
-    "mezarlik": {
-      "name": "Cevdet",
-      "image": "assets/karakterler/cevdet.webp",
-      "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp",
-      "clickableArea": { "x": "20.9%", "y": "16.5%", "w": "20.9%", "h": "82.6%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Dedektif", "text": "Sen Cevdet misin? Mezarlıkta ne yapıyorsun?" },
-        { "speaker": "Cevdet", "text": "Melekler..." },
-        { "speaker": "Dedektif", "text": "Melekler mi?" },
-        { "speaker": "Cevdet", "text": "Evet evet evet evet, melekler... Şefika'yı tanıyorlar ama söylemiyorlar bana. Onları bekliyorum, ağacı süslüyorum." },
-        { "speaker": "Cevdet", "text": "Şefika'm sever kurdeleleri. (ağaca ip bağlar)" },
-        { "speaker": "Dedektif", "text": "İyi de onlar kurdele değil ki, ip." },
-        { "speaker": "Cevdet", "text": "(güler)" },
-        { "speaker": "Dedektif", "text": "Şefika kim, Cevdet?" },
-        { "speaker": "Cevdet", "text": "Karım o, benim karım... Aldılar onu benden." },
-        { "speaker": "Dedektif", "text": "Kim aldı, Cevdet?" },
-        { "speaker": "Cevdet", "text": "Konuşamam, konuşamam, konuşamam, konuşamam, konuşamam... (uzaklaşır)" }
       ]
     },
     "han": {
@@ -392,22 +260,6 @@
 
   "items": {},
   "devices": {},
-
-  "ogretici": {
-    "ofis": {
-      "baslik": "Soruşturma araçların",
-      "metin": "Sağ alttaki simgelere tıklayarak araçlarını açabilirsin.",
-      "maddeler": [
-        { "ikon": "assets/arayuz/harita.webp", "baslik": "Harita", "metin": "köyde gitmek istediğin yeri seç, oraya hemen git" },
-        { "ikon": "assets/arayuz/defter.webp", "baslik": "Not defteri", "metin": "ipuçlarını yaz, şüphelilerin yanına not al, çizim yap" },
-        { "ikon": "assets/arayuz/uyku.webp", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadan önce ipuçlarını topladığından emin ol" }
-      ],
-      "vurgu": [".corner-icon-btn"],
-      "konum": "ust-orta",
-      "gecikme": 1200
-    }
-  },
-
   "statements": [
     { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/sorgu/ansel_sorgu.webp",   "audio": "assets/ifadeler/anselm.mp3" },
     { "id": "mustafa", "name": "Değirmenci Mustafa", "cardImage": "assets/sorgu/mustafa_sorgu.webp", "audio": "assets/ifadeler/kerem.mp3" },

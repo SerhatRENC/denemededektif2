@@ -1,6 +1,5 @@
-const CACHE_NAME = 'sisledere-v5';
+const CACHE_NAME = 'sisledere-v6';
 
-// İlk açılışta çevrimdışı kullanım için indirilecek tüm dosyalar
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -47,7 +46,7 @@ const PRECACHE_ASSETS = [
   'assets/ses/kilit_ac.mp3',
   'assets/ses/take.mp3',
 
-  // --- GİRİŞ & İNDEX ODALARI ---
+  // --- GİRİŞ & ODALAR ---
   'assets/odalar/giris.webp',
   'assets/odalar/ofis_sehir.webp',
   'assets/odalar/mors_kagidi.webp',
@@ -62,6 +61,7 @@ const PRECACHE_ASSETS = [
   'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1.webp',
   'assets/tiklanabilir/bakirci2.webp',
+  'assets/tiklanabilir/riza2_tiklanabilir.webp',
   'assets/karakterler/bakirci1.webp',
   'assets/karakterler/bakirci2.webp'
 ];
@@ -99,9 +99,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {
-        console.log('Çevrimdışı moddasınız ve dosya önbellekte yok:', event.request.url);
-      });
+      }).catch(() => {});
     })
   );
 });
