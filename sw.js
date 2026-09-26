@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v6';
+const CACHE_NAME = 'sisledere-v7';
 
 const PRECACHE_ASSETS = [
   './',
@@ -57,7 +57,7 @@ const PRECACHE_ASSETS = [
   'assets/odalar/dedektif_ofis.webp',
   'assets/odalar/gazeteci_oda.webp',
 
-  // --- 2. GÜN YENİ VARLIKLARI ---
+  // --- 2. GÜN VARLIKLARI ---
   'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1.webp',
   'assets/tiklanabilir/bakirci2.webp',
@@ -88,6 +88,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // Chrome eklentileri (chrome-extension://) gibi protokolleri filtrele
+  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
