@@ -174,15 +174,20 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
-  // --- 1. SADECE KAPININ YANINA (HAN_KAPI) GİTME HAREKETİ ---
-  if (h.type === 'gazeteci_odasi_gecis') {
+  // --- 1. SADECE KAPININ ÖNÜNE (HAN_KAPI) GİTME HAREKETİ ---
+  if (h.type === 'gazeteci_odasi_gecis' || (currentRoom === 'han' && (h.target === 'han_kapi' || h.target === 'gazeteci_oda' || h.target === 'gazeteci_odasi'))) {
     currentRoom = 'han_kapi';
     renderRoom();
     return;
   }
 
-  // --- 2. KAPI ÖNÜNDEYKEN (HAN_KAPI) KAPIYI AÇMA / DİYALOG ETKİLEŞİMİ ---
-  if (h.type === 'kapida_konus') {
+  // --- 2. HAN_KAPI ODASINDAYKEN KAPIMA TIKLAMA / ETKİLEŞİMİ ---
+  const isGazeteciKapiHotspot = h.type === 'kapida_konus' || 
+                                h.target === 'gazeteci_oda' || 
+                                h.target === 'gazeteci_odasi' ||
+                                (currentRoom === 'han_kapi' && h.target !== 'han' && h.target !== 'merkez');
+
+  if (isGazeteciKapiHotspot) {
     const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
 
     if (hasKey) {
@@ -195,14 +200,16 @@ function handleHotspot(h) {
       setDay2State('HAN_UNLOCKED');
       renderInventory();
       
-      // Gazeteci odasına geçiş
+      // Odaya geçiş yap
       const targetRoom = (CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi';
       gecGazeteciOdasi(targetRoom);
       return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
       if (h.dialog) {
-        startOzelDialog(h.dialog, h.characterImage);
+        startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
+      } else if (CASE.day2_dialogs && CASE.day2_dialogs.hanci_riza) {
+        startOzelDialog(CASE.day2_dialogs.hanci_riza, 'assets/karakterler/riza.webp');
       } else {
         showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
       }
