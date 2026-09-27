@@ -71,8 +71,8 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
         { "x": "81.0%", "y": "16.7%", "type": "gazeteci_odasi_gecis", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
-        { "x": "55.7%", "y": "40.4%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
-        { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" },
+        { "x": "44.7%", "y": "41.5%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
+        { "x": "14.9%", "y": "36.9%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" },
         { "x": "20.7%", "y": "38.9%", "w": "20.4%", "h": "61.0%", "type": "dialogue_bakirci1", "overlayImage": "assets/tiklanabilir/bakirci1_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Ahmet ile konuş" },
         { "x": "63.1%", "y": "39.9%", "w": "13.2%", "h": "57.2%", "type": "dialogue_bakirci2", "overlayImage": "assets/tiklanabilir/bakirci2_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Hüseyin ile konuş" }
       ]
@@ -84,19 +84,19 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         {
-          "x": "28.0%", "y": "62.0%",
+          "x": "23.9%", "y": "84.7%",
           "type": "navigate", "target": "gazeteci_oda_canta",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Çanta", "hint": "Çantaya yaklaş"
         },
         {
-          "x": "52.0%", "y": "55.0%",
+          "x": "46.7%", "y": "63.3%",
           "type": "navigate", "target": "gazeteci_oda_masa",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Masa", "hint": "Masaya yaklaş"
         },
         {
-          "x": "75.0%", "y": "70.0%",
+          "x": "58.7%", "y": "78.7%",
           "type": "navigate", "target": "gazeteci_oda_cop",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş"
