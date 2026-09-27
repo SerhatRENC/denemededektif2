@@ -214,7 +214,6 @@
       "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Nadire'nin Evine git" } ]
     },
-
     "halit_ev": {
       "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
@@ -234,13 +233,22 @@
       "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
       "clickableArea": { "x": "40%", "y": "28%", "w": "22%", "h": "58%" }
     },
-    "sifahane": {
-      "name": "Doktor Kamuran",
-      "image": "assets/karakterler/kamuran.webp",
-      "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
-      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+    "halit_ev": {
+      "name": "Aylin",
+      "image": "assets/karakterler/aylin.webp",
+      "clickableImage": "assets/tiklanabilir/aylin_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "22%", "h": "60%" },
       "dialog": [
-        { "speaker": "Kamuran", "text": "Hoş geldiniz dedektif bey. Otopsi raporunu soruyorsanız Muhtar Halit Bey'e teslim etmiştim." }
+        { "speaker": "Aylin", "text": "Babam Muhtar Halit henüz eve dönmedi dedektif..." }
+      ]
+    },
+    "mezarlik": {
+      "name": "Cevdet",
+      "image": "assets/karakterler/cevdet.webp",
+      "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp",
+      "clickableArea": { "x": "42%", "y": "28%", "w": "20%", "h": "55%" },
+      "dialog": [
+        { "speaker": "Cevdet", "text": "Beni rahat bırakın dedektif, mezarlıkta yalnız kalmak istiyorum." }
       ]
     },
     "cadi": {
@@ -252,11 +260,20 @@
         { "speaker": "Cevdet", "text": "Beni rahat bırakın dedektif, benim bir suçum yok." }
       ]
     },
+    "sifahane": {
+      "name": "Doktor Kamuran",
+      "image": "assets/karakterler/kamuran.webp",
+      "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "22%", "w": "22%", "h": "62%" },
+      "dialog": [
+        { "speaker": "Kamuran", "text": "Hoş geldiniz dedektif bey. Otopsi raporunu soruyorsanız Muhtar Halit Bey'e teslim etmiştim." }
+      ]
+    },
     "kilise": {
       "name": "Peder Anselm",
       "image": "assets/karakterler/anselm.webp",
       "clickableImage": "assets/tiklanabilir/anselm_tiklanabilir.webp",
-      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "clickableArea": { "x": "38%", "y": "20%", "w": "24%", "h": "65%" },
       "dialog": [
         { "speaker": "Anselm", "text": "Dualarım sizinle dedektif bey." }
       ]
@@ -265,7 +282,7 @@
       "name": "Demirci Cabbar",
       "image": "assets/karakterler/cabbar.webp",
       "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp",
-      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "clickableArea": { "x": "36%", "y": "24%", "w": "25%", "h": "60%" },
       "dialog": [
         { "speaker": "Cabbar", "text": "Ocağın başındayım dedektif, işim başımdan aşkın." }
       ]
@@ -274,7 +291,7 @@
       "name": "Değirmenci Mustafa",
       "image": "assets/karakterler/mustafa.webp",
       "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp",
-      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "clickableArea": { "x": "38%", "y": "25%", "w": "22%", "h": "60%" },
       "dialog": [
         { "speaker": "Mustafa", "text": "Un çuvallarını taşıyorum beyim." }
       ]
@@ -283,7 +300,7 @@
       "name": "Nadire",
       "image": "assets/karakterler/nadire.webp",
       "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp",
-      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "clickableArea": { "x": "38%", "y": "25%", "w": "22%", "h": "60%" },
       "dialog": [
         { "speaker": "Nadire", "text": "Köyde garip şeyler oluyor dedektif..." }
       ]

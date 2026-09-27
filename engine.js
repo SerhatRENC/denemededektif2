@@ -963,7 +963,16 @@ function renderCharacter() {
   dialogIndex = 0;
   document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
 
-  let ch = CASE.characters && CASE.characters[currentRoom];
+  let targetRoom = currentRoom;
+
+  // --- CEVDET DİNAMİK KONUMU (İlk 2 gün Mezarlıkta, 3. günden itibaren Cadı Evinde) ---
+  if (currentDay <= 2) {
+    if (currentRoom === 'cadi') return; // İlk 2 gün Cadı evinde kimse yok
+  } else {
+    if (currentRoom === 'mezarlik') return; // 2. günden sonra Mezarlıkta kimse yok
+  }
+
+  let ch = CASE.characters && CASE.characters[targetRoom];
   if (!ch) return;
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
