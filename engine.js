@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Bellek Sızıntısı Düzeltildi)
+   ODA MOTORU — Sislidere Köyü Davası (Tam Entegre Sürüm)
    ============================================================ */
 
 let CASE = null;
@@ -9,6 +9,14 @@ let currentDay = 1;
 let calibMode = false;
 let calibClicks = [];
 let currentSleepAudio = null;
+
+// --- 2. GÜN DURUM YÖNETİMİ ---
+let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
+
+function setDay2State(newState) {
+  day2State = newState;
+  localStorage.setItem('sd_day2_state', newState);
+}
 
 // case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
 fetch('case.json?v=' + Date.now())
@@ -32,9 +40,7 @@ fetch('case.json?v=' + Date.now())
     const dayBadgeEl = document.getElementById('dayBadge');
     if (dayBadgeEl) updateDayBadge();
     
-    const invEl = document.getElementById('inventory');
-    if (invEl) renderInventory();
-
+    renderInventory();
     renderRoom();
   })
   .catch(err => {
@@ -56,6 +62,8 @@ function renderRoom() {
     console.error("Oda bulunamadı:", currentRoom);
     return;
   }
+
+  renderInventory();
 
   const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
@@ -92,10 +100,26 @@ function renderRoom() {
       return;
     }
 
+    renderCharacter();
+
     if (room.hotspots) {
       room.hotspots.forEach(h => {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
+        if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
+
+        if (h.overlayImage) {
+          const ovImg = document.createElement('img');
+          ovImg.className = 'room-clickable-glow';
+          ovImg.src = h.overlayImage;
+          ovImg.style.position = 'absolute';
+          ovImg.style.left = '0';
+          ovImg.style.top = '0';
+          ovImg.style.width = '100%';
+          ovImg.style.height = '100%';
+          ovImg.style.pointerEvents = 'none';
+          stage.appendChild(ovImg);
+        }
 
         if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
@@ -122,7 +146,10 @@ function renderRoom() {
             wrap.appendChild(lbl);
           }
 
-          wrap.onclick = () => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+          wrap.onclick = (e) => { 
+            if (e) e.stopPropagation();
+            if (!calibMode && !dialogueActive) handleHotspot(h); 
+          };
           stage.appendChild(wrap);
           setTimeout(() => wrap.classList.remove('ikon-bekliyor'), 2000);
           return;
@@ -135,18 +162,82 @@ function renderRoom() {
           ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
           : '';
         el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-        el.onclick = (e) => { if (!calibMode && !dialogueActive) handleHotspot(h); };
+        el.onclick = (e) => { 
+          if (e) e.stopPropagation();
+          if (!calibMode && !dialogueActive) handleHotspot(h); 
+        };
         stage.appendChild(el);
       });
     }
-
-    renderCharacter();
 
     stage.classList.remove('fading');
   }, 180);
 }
 
 function handleHotspot(h) {
+  if (h.type === 'gazeteci_odasi_gecis' || (currentRoom === 'han' && (h.target === 'han_kapi' || h.target === 'gazeteci_oda' || h.target === 'gazeteci_odasi'))) {
+    currentRoom = 'han_kapi';
+    renderRoom();
+    return;
+  }
+
+  if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac' || (currentRoom === 'han_kapi' && h.type !== 'navigate')) {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
+
+    if (hasKey) {
+      if (typeof calSes === 'function') calSes('kilit_ac');
+      
+      inventory = inventory.filter(item => item !== 'anahtar');
+      localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+      setDay2State('HAN_UNLOCKED');
+      renderInventory();
+      
+      currentRoom = 'gazeteci_oda';
+      renderRoom();
+      return;
+    } else {
+      if (typeof calSes === 'function') calSes('kilit');
+      if (h.dialog) {
+        startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
+      } else {
+        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+      }
+      return;
+    }
+  }
+
+  if (currentDay === 2) {
+    if (day2State === 'GO_MUHTAR') {
+      if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
+        return;
+      }
+    } else if (day2State === 'GO_HAN') {
+      if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+        return;
+      }
+    } else if (day2State === 'HAN_UNLOCKED') {
+      const allowedRoomsInHan = [
+        'han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 
+        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
+      ];
+      if (h.target && !allowedRoomsInHan.includes(h.target)) {
+        showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+        return;
+      }
+    }
+  }
+
+  if (h.type === 'dialogue_bakirci1') {
+    startOzelDialog(CASE.day2_dialogs.bakirci1, 'assets/karakterler/bakirci1.webp');
+    return;
+  }
+  if (h.type === 'dialogue_bakirci2') {
+    startOzelDialog(CASE.day2_dialogs.bakirci2, 'assets/karakterler/bakirci2.webp');
+    return;
+  }
+
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
   if (h.type === 'examine')  { openExamine(h.target); return; }
   if (h.type === 'photo')    { openPhoto(h.image); return; }
@@ -155,6 +246,85 @@ function handleHotspot(h) {
   if (h.type === 'dosya')    { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep')    { confirmSleep(); return; }
+}
+
+function showCustomSubtitle(text) {
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  let sub = document.getElementById('sceneSubtitle');
+  if (!sub) {
+    sub = document.createElement('div');
+    sub.id = 'sceneSubtitle';
+    sub.className = 'scene-subtitle';
+    stage.appendChild(sub);
+  }
+  sub.innerHTML = `<div class="scene-subtitle-text">${text}</div>`;
+  setTimeout(() => { if (sub) sub.remove(); }, 3500);
+}
+
+function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
+  dialogueActive = true;
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  stage.classList.add('dialog-active');
+  document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
+  
+  let charImg = document.getElementById('tempDay2Char');
+  if (!charImg) {
+    charImg = document.createElement('img');
+    charImg.id = 'tempDay2Char';
+    charImg.className = 'scene-character talking';
+    stage.appendChild(charImg);
+  }
+  charImg.src = charImgPath;
+
+  let index = 0;
+  function sonrakiSatir(e) {
+    if (e) e.stopPropagation();
+    if (index < dialogList.length) {
+      const item = dialogList[index];
+      let sub = document.getElementById('sceneSubtitle');
+      if (!sub) {
+        sub = document.createElement('div');
+        sub.id = 'sceneSubtitle';
+        sub.className = 'scene-subtitle';
+        stage.appendChild(sub);
+      }
+      sub.innerHTML = `<div class="scene-subtitle-name">${item.speaker}</div><div class="scene-subtitle-text">${item.text}</div>`;
+      index++;
+    } else {
+      if (charImg) charImg.remove();
+      const sub = document.getElementById('sceneSubtitle');
+      if (sub) sub.remove();
+      stage.classList.remove('dialog-active');
+      document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
+      stage.removeEventListener('click', sonrakiSatir);
+      dialogueActive = false;
+      if (onCompleteCallback) onCompleteCallback();
+    }
+  }
+  
+  sonrakiSatir();
+  setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
+}
+
+function showAnahtarAcquisitionModal() {
+  showModal(`
+    <div style="text-align:center; padding:25px 15px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+      <h2 style="margin:0 0 15px 0; color:var(--amber-bright); font-size: clamp(24px, 3.8cqw, 42px); letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">Oda Anahtarı Alındı</h2>
+      <img src="assets/tiklanabilir/anahtar.webp" alt="Oda Anahtarı" style="width:90%; max-width:580px; height:auto; display:block; margin:15px auto 30px; filter:drop-shadow(0 15px 35px rgba(0,0,0,0.95)) drop-shadow(0 0 20px rgba(227,169,74,0.3)); transform: scale(1.15);">
+      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();" style="width:90%; max-width:480px; padding:20px 40px !important; font-size: clamp(18px, 2.8cqw, 32px) !important; letter-spacing:0.12em !important; border-radius:12px !important; box-shadow: 0 6px 25px rgba(201,138,44,0.6); transform: scale(1.05);">
+        ENVANTERE AL
+      </button>
+    </div>
+  `, true);
+}
+
+function collectKey() {
+  if (!inventory.includes('anahtar')) {
+    inventory.push('anahtar');
+  }
+  localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+  setDay2State('HAN_UNLOCKED');
+  renderInventory();
 }
 
 function openPhoto(src) {
@@ -217,110 +387,53 @@ function wakeUp() {
   renderRoom();
 }
 
-function dosyaAdiNormalle(str) {
-  return str.toLocaleLowerCase('tr-TR')
-    .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g')
-    .replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
-}
-
-function suclamaGoster(html) {
-  const ov = document.getElementById('suclamaOverlay');
-  if (ov) {
-    ov.innerHTML = html;
-    ov.classList.add('active');
+function renderInventory(lastImage) {
+  const inv = document.getElementById('inventory');
+  if (!inv) return;
+  if (!inventory || inventory.length === 0) { 
+    inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; 
+    return; 
   }
+  inv.innerHTML = '';
+  inventory.forEach(id => {
+    const el = document.createElement('div');
+    el.className = 'inv-item';
+    if (id === 'anahtar') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: 50%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.75cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
+      `;
+      el.title = 'Gazetecinin Oda Anahtarı';
+    } else if (id === 'polaroid') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
+      `;
+      el.title = 'Polaroid Fotoğraf';
+    } else if (id === 'gazeteci_dosyasi') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
+      `;
+      el.title = 'Gazeteci Dosyası';
+    } else {
+      el.textContent = '📄';
+    }
+    inv.appendChild(el);
+  });
 }
-
-function finalSuclamayaBaslat() {
-  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
-  const kartlar = suspects.map(s => `
-    <div class="suclama-kart" onclick="suphesecildi('${s.name}')">
-      <img src="${s.image}" alt="${s.name}">
-      <div class="suclama-isim">${s.name}</div>
-    </div>
-  `).join('');
-  suclamaGoster(`
-    <h2 class="suclama-baslik">Katil Kim?</h2>
-    <div class="suclama-grid">${kartlar}</div>
-  `);
-}
-
-function suphesecildi(isim) {
-  const finalDosyaMap = {
-    'ansel': 'ansel_final_sorgu.png',
-    'aylin': 'aylin_fnal_srogu.png',
-    'cabbar': 'cabbar_final_srogu.png',
-    'cevdet': 'cevdet_final_sorgu.png',
-    'halit': 'halit_final_sorgu.png',
-    'kamuran': 'kamuran_final_srogu.png',
-    'mustafa': 'mustafa_final_srogu.png',
-    'nadire': 'nadire_final_sorgu.png',
-    'riza': 'riza_final_sorgu.png'
-  };
-
-  const key = dosyaAdiNormalle(isim);
-  const dosyaAdi = finalDosyaMap[key] || `${key}_final_sorgu.png`;
-  const dosya = `assets/sorgu/final_sorgu/${dosyaAdi}`;
-
-  if (isim === 'Mustafa') {
-    suclamaGoster(`
-      <div class="zoom-wrap" style="width:70vw;height:80vh;">
-        <img class="suclama-gorsel" id="itirafZoomImg" src="${dosya}" alt="Mustafa'nın İtirafı"
-             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
-      </div>
-      <button class="suclama-devam-btn" onclick="oyunKazanildi()">Devam Et</button>
-    `);
-    const itirafImg = document.getElementById('itirafZoomImg');
-    if (itirafImg) zoomKur(itirafImg.parentElement, itirafImg);
-  } else {
-    suclamaGoster(`
-      <div class="zoom-wrap" style="width:70vw;height:80vh;">
-        <img class="suclama-gorsel" id="sorguZoomImg" src="${dosya}" alt="${isim} - Sorgu"
-             onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${dosya}</div>'">
-      </div>
-      <button class="suclama-devam-btn" onclick="oyunKaybedildi()">Devam Et</button>
-    `);
-    const sorguImg = document.getElementById('sorguZoomImg');
-    if (sorguImg) zoomKur(sorguImg.parentElement, sorguImg);
-  }
-}
-
-function oyunKaybedildi() {
-  suclamaGoster(`
-    <p class="suclama-sonuc">Katili bulamadın.</p>
-    <button class="suclama-devam-btn" onclick="oyunuSifirla()">Tekrar Başla</button>
-  `);
-}
-
-function oyunKazanildi() {
-  suclamaGoster(`
-    <p class="suclama-sonuc">Bravo dedektif, katili buldun!</p>
-    <button class="suclama-devam-btn" onclick="emegiGecenlerGoster()">Devam Et</button>
-  `);
-}
-
-function emegiGecenlerGoster() {
-  suclamaGoster(`
-    <h2 class="suclama-baslik">Emeği Geçenler</h2>
-    <p class="suclama-credits">✍️ Hikaye &amp; Senaryo — RENC, Aylin Kılınçarslan</p>
-    <button class="suclama-devam-btn" onclick="finalEkranGoster()">Devam Et</button>
-  `);
-}
-
-function finalEkranGoster() {
-  suclamaGoster(`
-    <button class="suclama-devam-btn" onclick="oyunuSifirla()">Tekrar Oyna</button>
-  `);
-}
-
-function oyunuSifirla() {
-  localStorage.removeItem('sd_day_' + CASE.caseLabel);
-  localStorage.removeItem('sd_inv_' + CASE.caseLabel);
-  localStorage.removeItem('sd_notebook_v3_' + CASE.caseLabel);
-  window.location.href = 'index.html';
-}
-
-let currentStatementIndex = 0;
 
 function openStatement(index) {
   stopStatementAudio();
@@ -352,13 +465,9 @@ function openStatement(index) {
   if (sImg) zoomKur(sImg.parentElement, sImg);
 }
 
-document.addEventListener('keydown', (e) => {
-  if (!document.querySelector('.reader-card-img-wide')) return;
-  if (e.key === 'ArrowRight' && currentStatementIndex < CASE.statements.length - 1) openStatement(currentStatementIndex + 1);
-  if (e.key === 'ArrowLeft' && currentStatementIndex > 0) openStatement(currentStatementIndex - 1);
-});
-
 let statementAudio = null, statementPlaying = false;
+let currentStatementIndex = 0;
+
 function toggleStatementAudio(src) {
   if (!statementAudio) statementAudio = new Audio(src);
   statementPlaying = !statementPlaying;
@@ -379,23 +488,41 @@ function stopStatementAudio() {
 
 function openExamine(itemId) {
   const item = CASE.items[itemId];
-  const imgHtml = item.image
-    ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
-    : `<div class="doc-fallback">görsel yok</div>`;
-  let bodyHtml = `<h3>${item.title}</h3>${imgHtml}<p>${item.desc || ''}</p>`;
-
-  if (item.lockedCode) {
-    bodyHtml += `
-      <div class="locked-box">
-        <input id="unlockInput" placeholder="kod gir..." maxlength="8">
-        <button onclick="tryUnlock('${itemId}')">Çöz</button>
-      </div>`;
-  } else if (item.collectId) {
-    bodyHtml += `<button onclick="collect('${item.collectId}','${item.image || ''}')">Envantere Al</button>`;
+  if (!item) {
+    console.error("Bulunamayan item ID:", itemId);
+    return;
   }
-  bodyHtml += `<button class="ghost" onclick="closeModal()">Kapat</button>`;
 
-  showModal(bodyHtml);
+  const isCollected = item.collectId && inventory.includes(item.collectId);
+
+  const imgHtml = item.image
+    ? `<div class="zoom-wrap" style="display:flex; justify-content:center; align-items:center; margin:15px 0;">
+         <img class="doc-img" id="examineZoomImg" src="${item.image}" style="max-height:55vh; max-width:80vw; object-fit:contain; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.8));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'">
+       </div>`
+    : `<div class="doc-fallback">görsel yok</div>`;
+
+  let bodyHtml = `
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <h3 style="text-align:center; margin-bottom:10px;">${item.title}</h3>
+    ${imgHtml}
+  `;
+
+  if (item.desc) {
+    bodyHtml += `<p style="text-align:center; font-size:14px; color:#c9cabd; margin-bottom:15px;">${item.desc}</p>`;
+  }
+
+  if (item.collectId && !isCollected) {
+    bodyHtml += `
+      <div style="text-align:center;">
+        <button onclick="if(typeof calSes==='function') calSes('take'); collect('${item.collectId}','${item.image || ''}')" style="padding:12px 30px; font-size:18px; letter-spacing:0.05em;">
+          Envantere Al
+        </button>
+      </div>`;
+  } else {
+    bodyHtml += `<div style="text-align:center;"><button class="ghost" onclick="closeModal()">Kapat</button></div>`;
+  }
+
+  showModal(bodyHtml, true);
   if (item.image) { const el = document.getElementById('examineZoomImg'); if (el) zoomKur(el.parentElement, el); }
 }
 
@@ -421,19 +548,6 @@ function collect(collectId, image) {
   }
   closeModal();
   renderRoom();
-}
-
-function renderInventory(lastImage) {
-  const inv = document.getElementById('inventory');
-  if (!inv) return;
-  if (inventory.length === 0) { inv.innerHTML = '<span class="inv-empty">envanter boş</span>'; return; }
-  inv.innerHTML = '';
-  inventory.forEach(id => {
-    const el = document.createElement('div');
-    el.className = 'inv-item';
-    el.textContent = '📄';
-    inv.appendChild(el);
-  });
 }
 
 function openTV(deviceId) {
@@ -512,58 +626,8 @@ function closeModal() {
   }
 }
 
-const bgEl = document.getElementById('modalBg');
-if (bgEl) {
-  bgEl.onclick = (e) => { if (e.target.id === 'modalBg') closeModal(); };
-}
-
-const calibToggle = document.getElementById('calibToggle');
-const stageEl = document.getElementById('stage') || document.getElementById('gameStage');
-const readout = document.getElementById('calibReadout');
-
-if (calibToggle && stageEl) {
-  calibToggle.onclick = () => {
-    calibMode = !calibMode;
-    calibClicks = [];
-    calibToggle.textContent = `🎯 Kalibrasyon Modu: ${calibMode ? 'Açık' : 'Kapalı'}`;
-    calibToggle.classList.toggle('on', calibMode);
-    stageEl.classList.toggle('calib-active', calibMode);
-    if (readout) readout.textContent = calibMode ? 'Sol-üst köşeye tıkla, sonra sağ-alt köşeye tıkla.' : '';
-  };
-
-  stageEl.addEventListener('click', (e) => {
-    if (!calibMode) return;
-    const rect = stageEl.getBoundingClientRect();
-    const xPct = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-    const yPct = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-
-    const marker = document.createElement('div');
-    marker.className = 'calib-marker';
-    marker.style.left = xPct + '%';
-    marker.style.top = yPct + '%';
-    stageEl.appendChild(marker);
-
-    calibClicks.push({ x: parseFloat(xPct), y: parseFloat(yPct) });
-
-    if (calibClicks.length === 2) {
-      const [p1, p2] = calibClicks;
-      const x = Math.min(p1.x, p2.x).toFixed(1);
-      const y = Math.min(p1.y, p2.y).toFixed(1);
-      const w = Math.abs(p2.x - p1.x).toFixed(1);
-      const h = Math.abs(p2.y - p1.y).toFixed(1);
-      const snippet = `{ "x": "${x}%", "y": "${y}%", "w": "${w}%", "h": "${h}%", "type": "examine", "target": "...", "hint": "..." }`;
-      if (readout) readout.textContent = snippet;
-      console.log('Hotspot koordinatı:', snippet);
-      calibClicks = [];
-      setTimeout(() => { document.querySelectorAll('.calib-marker').forEach(m => m.remove()); }, 1500);
-    } else {
-      if (readout) readout.textContent = `İlk nokta: x:${xPct}% y:${yPct}%  — şimdi karşı köşeye tıkla`;
-    }
-  });
-}
-
 function openMap() {
-  if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil (case.json → "map").'); return; }
+  if (!CASE.map) { alert('Bu vaka dosyasında harita tanımlı değil.'); return; }
   const mapImg = document.getElementById('mapImage');
   if (mapImg) mapImg.src = CASE.map.image;
 
@@ -577,12 +641,30 @@ function openMap() {
       dot.style.top = h.y;
       dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
       dot.onclick = () => {
+        if (currentDay === 2) {
+          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
+            return;
+          }
+          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+            return;
+          }
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+            return;
+          }
+        }
+
         if (h.target && CASE.rooms[h.target]) {
           currentRoom = h.target;
           closeMap();
           renderRoom();
         } else {
-          alert(`"${h.label}" henüz case.json'a eklenmedi.`);
+          alert(`"${h.label}" henüz eklenmedi.`);
         }
       };
       wrap.appendChild(dot);
@@ -875,11 +957,17 @@ function renderCharacter() {
   dialogIndex = 0;
   document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
 
-  const ch = CASE.characters && CASE.characters[currentRoom];
+  let ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
+
+  ch = JSON.parse(JSON.stringify(ch));
+  if (currentDay === 2 && currentRoom === 'han') {
+    ch.clickableImage = 'assets/tiklanabilir/riza2_tiklanabilir.webp';
+    ch.clickableArea = { "x": "51.1%", "y": "27.6%", "w": "11.0%", "h": "20.5%" };
+  }
 
   if (ch.clickableImage) {
     renderClickableCharacter(ch, stage);
@@ -906,7 +994,10 @@ function renderClickableCharacter(ch, stage) {
   hit.style.width = area.w;
   hit.style.height = area.h;
   hit.title = ch.name;
-  hit.onclick = () => { if (!calibMode) startDialogueFromClickable(ch); };
+  hit.onclick = (e) => { 
+    if (e) e.stopPropagation();
+    if (!calibMode && !dialogueActive) startDialogueFromClickable(ch); 
+  };
   stage.appendChild(hit);
 }
 
@@ -929,7 +1020,10 @@ function renderSceneCharacter(ch, stage) {
   el.alt = ch.name;
   el.title = ch.name;
   el.style.bottom = ch.yOffset || '0%';
-  el.onclick = () => { if (!calibMode) toggleCharacterLine(ch); };
+  el.onclick = (e) => { 
+    if (e) e.stopPropagation();
+    if (!calibMode) toggleCharacterLine(ch); 
+  };
   el.onerror = () => {
     const fallback = document.createElement('div');
     fallback.id = 'sceneCharacter';
@@ -942,6 +1036,36 @@ function renderSceneCharacter(ch, stage) {
 }
 
 function toggleCharacterLine(ch) {
+  if (currentDay === 2 && currentRoom === 'muhtar') {
+    document.getElementById('sceneCharacter')?.remove();
+    document.getElementById('roomClickableGlow')?.remove();
+    document.getElementById('roomClickableHit')?.remove();
+
+    startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+      if (day2State === 'GO_MUHTAR') {
+        setDay2State('GO_HAN');
+      }
+      renderRoom();
+      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
+    });
+    return;
+  }
+
+  if (currentDay === 2 && currentRoom === 'han') {
+    document.getElementById('sceneCharacter')?.remove();
+    document.getElementById('roomClickableGlow')?.remove();
+    document.getElementById('roomClickableHit')?.remove();
+
+    startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+      if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED') {
+        showAnahtarAcquisitionModal();
+      } else {
+        renderRoom();
+      }
+    });
+    return;
+  }
+
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   const charEl = document.getElementById('sceneCharacter');
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
@@ -1003,7 +1127,6 @@ function gosterDialogSatiri(dialog) {
   sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
 }
 
-/* RAM SIZINTISI TEMİZLENMİŞ VE YENİLENMİŞ ZOOM BİLEŞENİ */
 function zoomKur(wrap, img) {
   let scale = 1, panX = 0, panY = 0;
   let startDist = 0, startScale = 1;

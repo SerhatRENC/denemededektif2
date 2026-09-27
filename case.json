@@ -5,7 +5,7 @@
   "startDay": 1,
 
   "sleepEvents": {
-    "2": "İkinci gün başlıyor. Köyü daha yakından tanıma vakti.",
+    "2": "İkinci gün başladı. Önce Muhtarla görüşüp otopsi raporunu almalı, ardından gazetecinin odasını incelemelisin.",
     "3": "Üçüncü gün. Köyü daha yakından tanıma vakti.",
     "4": "Sabah bir haber geldi: Nadire ölü bulunmuş...",
     "5": "Beşinci gün. Yan ipuçlarını toplama vakti.",
@@ -66,14 +66,96 @@
     },
 
     "han": {
-      "label": "Han", "background": "assets/odalar/han.webp",
+      "label": "Han", 
+      "background": "assets/odalar/han.webp",
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
-        { "x": "81.0%", "y": "16.7%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
+        { "x": "81.0%", "y": "16.7%", "type": "gazeteci_odasi_gecis", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Gazetecinin Odası", "hint": "Gazetecinin kaldığı odaya git" },
         { "x": "55.7%", "y": "40.4%", "type": "navigate", "target": "han_mutfak", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Mutfak", "hint": "Mutfağa geç" },
-        { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" }
+        { "x": "23.2%", "y": "45.2%", "type": "navigate", "target": "han_depo", "icon": "assets/arayuz/ayak.webp", "iconWidth": "4%", "label": "Depo", "hint": "Depoya geç" },
+        { "x": "20.7%", "y": "38.9%", "w": "20.4%", "h": "61.0%", "type": "dialogue_bakirci1", "overlayImage": "assets/tiklanabilir/bakirci1_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Ahmet ile konuş" },
+        { "x": "63.1%", "y": "39.9%", "w": "13.2%", "h": "57.2%", "type": "dialogue_bakirci2", "overlayImage": "assets/tiklanabilir/bakirci2_tiklanabilir.webp", "activeDays": [2], "hint": "Bakırcı Hüseyin ile konuş" }
       ]
     },
+
+    "gazeteci_oda": {
+      "label": "Gazetecinin Odası",
+      "background": "assets/odalar/gazeteci_oda.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
+        {
+          "x": "28.0%", "y": "62.0%",
+          "type": "navigate", "target": "gazeteci_oda_canta",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Çanta", "hint": "Çantaya yaklaş"
+        },
+        {
+          "x": "52.0%", "y": "55.0%",
+          "type": "navigate", "target": "gazeteci_oda_masa",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Masa", "hint": "Masaya yaklaş"
+        },
+        {
+          "x": "75.0%", "y": "70.0%",
+          "type": "navigate", "target": "gazeteci_oda_cop",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş"
+        }
+      ]
+    },
+
+    "gazeteci_oda_cop": {
+      "label": "Çöp Kutusu",
+      "background": "assets/odalar/gazeteci_odasi_cöp.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" }
+      ]
+    },
+
+    "gazeteci_oda_canta": {
+      "label": "Gazetecinin Çantası",
+      "background": "assets/odalar/gazeteci_oda_canta.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
+        {
+          "x": "46.0%", "y": "45.0%",
+          "type": "navigate", "target": "gazeteci_oda_sifre_giris",
+          "icon": "assets/arayuz/sifre.webp", "iconWidth": "8%",
+          "label": "Şifre Gir", "hint": "Şifre mekanizmasını aç"
+        }
+      ]
+    },
+
+    "gazeteci_oda_sifre_giris": {
+      "label": "Çanta Şifre Mekanizması",
+      "background": "assets/odalar/gazeteci_oda_sifre_giris.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Çantaya dön" }
+      ]
+    },
+
+    "gazeteci_oda_masa": {
+      "label": "Gazetecinin Masası",
+      "background": "assets/odalar/gazeteci_oda_masa_bos.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
+        {
+          "x": "25.0%", "y": "35.0%", "w": "25.0%", "h": "40.0%",
+          "type": "examine", "target": "kamera_item",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
+          "hideIfCollected": "polaroid",
+          "hint": "Kamerayı İncele"
+        },
+        {
+          "x": "55.0%", "y": "35.0%", "w": "30.0%", "h": "40.0%",
+          "type": "examine", "target": "kagit_item",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
+          "hideIfCollected": "gazeteci_dosyasi",
+          "hint": "Kağıtları İncele"
+        }
+      ]
+    },
+
     "han_kapi": {
       "label": "Gazetecinin Odası Kapısı",
       "background": "assets/odalar/han_kapi.webp",
@@ -81,7 +163,7 @@
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         {
           "x": "50.0%", "y": "45.0%",
-          "type": "kapida_konus",
+          "type": "gazeteci_kapi_ac",
           "icon": "assets/arayuz/tokmak.webp",
           "iconWidth": "4.6%",
           "label": "Kapıyı Aç",
@@ -99,10 +181,6 @@
     },
     "han_depo": {
       "label": "Han Deposu", "background": "assets/odalar/han_depo.webp",
-      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" } ]
-    },
-    "gazeteci_oda": {
-      "label": "Gazetecinin Odası", "background": "assets/odalar/gazeteci_oda.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" } ]
     },
     "kilise": {
@@ -141,53 +219,6 @@
       "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     }
-  },
-
-  "map": {
-    "image": "assets/arayuz/harita.webp",
-    "hotspots": [
-      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": "halit_ev" },
-      { "x": "17%", "y": "51%", "label": "Ofis",       "target": "ofis" },
-      { "x": "35%", "y": "32%", "label": "Cevdet Ev",  "target": "cadi" },
-      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": "nadire_ev" },
-      { "x": "48%", "y": "38%", "label": "Muhtarlık",  "target": "muhtar" },
-      { "x": "58%", "y": "36%", "label": "Kilise",     "target": "kilise" },
-      { "x": "72%", "y": "42%", "label": "Mezarlık",   "target": "mezarlik" },
-      { "x": "47%", "y": "51%", "label": "Merkez",     "target": "merkez" },
-      { "x": "52%", "y": "64%", "label": "Şifahane",   "target": "sifahane" },
-      { "x": "70%", "y": "61%", "label": "Değirmenci", "target": "degirmenci" },
-      { "x": "40%", "y": "78%", "label": "Han",        "target": "han" },
-      { "x": "83%", "y": "81%", "label": "Demirci",    "target": "demirci" }
-    ]
-  },
-
-  "notebook": {
-    "image": "assets/arayuz/yazi.webp",
-    "totalPages": 5,
-    "pageSol": { "top": "6%", "bottom": "8%", "left": "22%", "width": "30%" },
-    "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
-    "suspectLayout": {
-      "photoTop": "8%",
-      "photoLeft": "14%",
-      "photoHeight": "55%",
-      "nameTop": "16%",
-      "nameLeft": "52%",
-      "noteTop": "32%",
-      "noteLeft": "52%",
-      "noteWidth": "46%",
-      "noteHeight": "60%"
-    },
-    "suspects": [
-      { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem2.webp" },
-      { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.webp" },
-      { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.webp" },
-      { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.webp" },
-      { "name": "Halit", "image": "assets/karakalem/halit_karakalem.webp" },
-      { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.webp" },
-      { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.webp" },
-      { "name": "Nadire", "image": "assets/karakterler/nadire.webp" },
-      { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.webp" }
-    ]
   },
 
   "characters": {
@@ -357,7 +388,94 @@
     }
   },
 
-  "items": {},
+  "day2_dialogs": {
+    "muhtar_halit": [
+      { "speaker": "Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım." },
+      { "speaker": "Dedektif", "text": "Önemli değil. Otopsi raporu sizdeymiş Kamuran Hanım söyledi. Bir de dün hancı odaya girmeme izin vermedi orayı incelemem lazım." },
+      { "speaker": "Halit", "text": "He tamam siz gidin Rıza'ya benden selam söyleyin açar kapıyı. Odadaki eşyalara kimse dokunmasın diye kilitli kalsın demiştim. Otopsi raporunun da kopyasını yollatırım senin ofisine." }
+    ],
+    "hanci_riza": [
+      { "speaker": "Rıza", "text": "Beyim bakırcılar geldiler, onlar arada bir gelirler böyle işler çok yoğun olur bugünlerde yarın detaylıca konuşalım istersen şimdi doluyum." },
+      { "speaker": "Dedektif", "text": "Tamam Rıza Bey. Yalnız benim odayı görmem lazım Halit Bey selamını iletti." },
+      { "speaker": "Rıza", "text": "Tabii buyrun odanın anahtarı." }
+    ],
+    "bakirci1": [
+      { "speaker": "Bakırcı Ahmet", "text": "Cinayet ha? Çetrefilli işler bunlar... Allah kolaylık versin." },
+      { "speaker": "Dedektif", "text": "Sağ olun. Sizler sık gelir misiniz buraya?" },
+      { "speaker": "Bakırcı Ahmet", "text": "Beyim biz zaten bu köyden değiliz. Bakırcıyız biz kimi ticaret yaparız kimi hoş sohbete geliriz sadece. Bir şey bilmeyiz yani." }
+    ],
+    "bakirci2": [
+      { "speaker": "Dedektif", "text": "Afiyet olsun." },
+      { "speaker": "Bakırcı Hüseyin", "text": "Buyrun beraber olsun." },
+      { "speaker": "Dedektif", "text": "Sağ olun. Hangi köydensiniz?" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Bakırcılar efendim. İş için dolaşınca uğrayıp bir iki kadeh yuvarlayalım dedik. Biraz dinlenip köyümüze gideceğiz." },
+      { "speaker": "Dedektif", "text": "Geldiğiniz zamanlarda gazeteciye hiç rastladınız mı?" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Sima olarak gördük ama hiç sohbetimiz olmadı." },
+      { "speaker": "Dedektif", "text": "Anladım." }
+    ]
+  },
+
+  "items": {
+    "kamera_item": {
+      "title": "Polaroid Fotoğraf",
+      "image": "assets/arayuz/poloroid.webp",
+      "collectId": "polaroid",
+      "desc": "Gazetecinin masasındaki polaroid fotoğraf."
+    },
+    "kagit_item": {
+      "title": "Gazeteci Dosyası",
+      "image": "assets/arayuz/gazeteci_dosya.webp",
+      "collectId": "gazeteci_dosyasi",
+      "desc": "Gazetecinin masasındaki gizli dosya ve notlar."
+    }
+  },
+
+  "map": {
+    "image": "assets/arayuz/harita.webp",
+    "hotspots": [
+      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": "halit_ev" },
+      { "x": "17%", "y": "51%", "label": "Ofis",       "target": "ofis" },
+      { "x": "35%", "y": "32%", "label": "Cevdet Ev",  "target": "cadi" },
+      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": "nadire_ev" },
+      { "x": "48%", "y": "38%", "label": "Muhtarlık",  "target": "muhtar" },
+      { "x": "58%", "y": "36%", "label": "Kilise",     "target": "kilise" },
+      { "x": "72%", "y": "42%", "label": "Mezarlık",   "target": "mezarlik" },
+      { "x": "47%", "y": "51%", "label": "Merkez",     "target": "merkez" },
+      { "x": "52%", "y": "64%", "label": "Şifahane",   "target": "sifahane" },
+      { "x": "70%", "y": "61%", "label": "Değirmenci", "target": "degirmenci" },
+      { "x": "40%", "y": "78%", "label": "Han",        "target": "han" },
+      { "x": "83%", "y": "81%", "label": "Demirci",    "target": "demirci" }
+    ]
+  },
+
+  "notebook": {
+    "image": "assets/arayuz/yazi.webp",
+    "totalPages": 5,
+    "pageSol": { "top": "6%", "bottom": "8%", "left": "22%", "width": "30%" },
+    "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
+    "suspectLayout": {
+      "photoTop": "8%",
+      "photoLeft": "14%",
+      "photoHeight": "55%",
+      "nameTop": "16%",
+      "nameLeft": "52%",
+      "noteTop": "32%",
+      "noteLeft": "52%",
+      "noteWidth": "46%",
+      "noteHeight": "60%"
+    },
+    "suspects": [
+      { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem2.webp" },
+      { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.webp" },
+      { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.webp" },
+      { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.webp" },
+      { "name": "Halit", "image": "assets/karakalem/halit_karakalem.webp" },
+      { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.webp" },
+      { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.webp" },
+      { "name": "Nadire", "image": "assets/karakterler/nadire.webp" },
+      { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.webp" }
+    ]
+  },
 
   "devices": {},
 
@@ -368,7 +486,7 @@
       "maddeler": [
         { "ikon": "assets/arayuz/harita.webp", "baslik": "Harita", "metin": "köyde gitmek istediğin yeri seç, oraya hemen git" },
         { "ikon": "assets/arayuz/defter.webp", "baslik": "Not defteri", "metin": "ipuçlarını yaz, şüphelilerin yanına not al, çizim yap" },
-        { "ikon": "assets/arayuz/uyku.webp", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadan önce ipuçlarını topladığından emin ol" }
+        { "ikon": "assets/arayuz/uyku.webp", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadon önce ipuçlarını topladığından emin ol" }
       ],
       "vurgu": [".corner-icon-btn"],
       "konum": "ust-orta",
