@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v19';
+const CACHE_NAME = 'sisledere-v10';
 
 const PRECACHE_ASSETS = [
   './',
@@ -22,9 +22,6 @@ const PRECACHE_ASSETS = [
   'assets/arayuz/defter.webp',
   'assets/arayuz/tokmak.webp',
   'assets/arayuz/buyutec.webp',
-  'assets/arayuz/sifre.webp',
-  'assets/arayuz/gazeteci_dosya.webp',
-  'assets/arayuz/poloroid.webp',
   'assets/arayuz/el.webp',
   'assets/arayuz/ayak.webp',
   'assets/arayuz/geri.webp',
@@ -59,40 +56,14 @@ const PRECACHE_ASSETS = [
   'assets/odalar/koy_giris.webp',
   'assets/odalar/dedektif_ofis.webp',
   'assets/odalar/gazeteci_oda.webp',
-  'assets/odalar/gazeteci_odasi_cöp.webp',
-  'assets/odalar/gazeteci_oda_canta.webp',
-  'assets/odalar/gazeteci_oda_sifre_giris.webp',
-  'assets/odalar/gazeteci_oda_masa_bos.webp',
 
-  // --- KARAKTER PORTRELERİ ---
-  'assets/karakterler/halit.webp',
-  'assets/karakterler/riza.webp',
-  'assets/karakterler/aylin.webp',
-  'assets/karakterler/kamuran.webp',
-  'assets/karakterler/cevdet.webp',
-  'assets/karakterler/anselm.webp',
-  'assets/karakterler/cabbar.webp',
-  'assets/karakterler/mustafa.webp',
-  'assets/karakterler/nadire.webp',
-  'assets/karakterler/bakirci1.webp',
-  'assets/karakterler/bakirci2.webp',
-
-  // --- TIKLANABİLİR ODA İÇİ KARAKTERLER ---
-  'assets/tiklanabilir/halit_tiklanabilir.webp',
-  'assets/tiklanabilir/riza_tiklanabilir.webp',
-  'assets/tiklanabilir/riza2_tiklanabilir.webp',
-  'assets/tiklanabilir/aylin_tiklanabilir.webp',
-  'assets/tiklanabilir/kamuran_tiklanabilir.webp',
-  'assets/tiklanabilir/cevdet_tiklanabilir.webp',
-  'assets/tiklanabilir/anselm_tiklanabilir.webp',
-  'assets/tiklanabilir/cabbar_tiklanabilir.webp',
-  'assets/tiklanabilir/mustafa_tiklanabilir.webp',
-  'assets/tiklanabilir/nadire_tiklanabilir.webp',
+  // --- 2. GÜN VARLIKLARI ---
+  'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1_tiklanabilir.webp',
   'assets/tiklanabilir/bakirci2_tiklanabilir.webp',
-  'assets/tiklanabilir/anahtar.webp',
-  'assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp',
-  'assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp'
+  'assets/tiklanabilir/riza2_tiklanabilir.webp',
+  'assets/karakterler/bakirci1.webp',
+  'assets/karakterler/bakirci2.webp'
 ];
 
 self.addEventListener('install', (event) => {
