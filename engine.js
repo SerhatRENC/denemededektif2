@@ -215,9 +215,16 @@ function handleHotspot(h) {
         showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
         return;
       }
-    } else if (day2State === 'GO_HAN' || day2State === 'HAN_UNLOCKED') {
-      // Han veya gazeteci odası aşamasındayken Han dışına / Köy Merkezine çıkış engellendi
-      if (h.target && ['merkez', 'ofis', 'halit_ev', 'nadire_ev', 'cadi', 'muhtar', 'demirci', 'degirmenci', 'sifahane', 'kilise', 'mezarlik'].includes(h.target)) {
+    } else if (day2State === 'GO_HAN') {
+      // Sadece muhtar, merkez, han ve han_kapi serbest. OFİS VE DİĞER EVLER YASAK.
+      if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+        return;
+      }
+    } else if (day2State === 'HAN_UNLOCKED') {
+      // Hana girildi veya anahtar alındı. Sadece Han içi serbest (han, han_kapi, gazeteci_oda, han_mutfak, han_depo).
+      // Dışarıya (merkez veya harita) çıkış kesinlikle yasak.
+      if (h.target && !['han', 'han_kapi', 'gazeteci_oda', 'han_mutfak', 'han_depo'].includes(h.target)) {
         showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
         return;
       }
@@ -611,7 +618,12 @@ function openMap() {
             showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
             return;
           }
-          if ((day2State === 'GO_HAN' || day2State === 'HAN_UNLOCKED') && !['han', 'han_kapi', 'gazeteci_oda'].includes(h.target)) {
+          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+            return;
+          }
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
             return;
