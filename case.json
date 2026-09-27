@@ -82,7 +82,76 @@
       "label": "Gazetecinin Odası",
       "background": "assets/odalar/gazeteci_oda.webp",
       "hotspots": [
-        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Kapıya dön" }
+        {
+          "x": "28.0%", "y": "62.0%",
+          "type": "navigate", "target": "gazeteci_oda_canta",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Çanta", "hint": "Çantaya yaklaş"
+        },
+        {
+          "x": "52.0%", "y": "55.0%",
+          "type": "navigate", "target": "gazeteci_oda_masa",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Masa", "hint": "Masaya yaklaş"
+        },
+        {
+          "x": "75.0%", "y": "70.0%",
+          "type": "navigate", "target": "gazeteci_oda_cop",
+          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
+          "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş"
+        }
+      ]
+    },
+
+    "gazeteci_oda_cop": {
+      "label": "Çöp Kutusu",
+      "background": "assets/odalar/gazeteci_odasi_cöp.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" }
+      ]
+    },
+
+    "gazeteci_oda_canta": {
+      "label": "Gazetecinin Çantası",
+      "background": "assets/odalar/gazeteci_oda_canta.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
+        {
+          "x": "46.0%", "y": "45.0%",
+          "type": "navigate", "target": "gazeteci_oda_sifre_giris",
+          "icon": "assets/arayuz/sifre.webp", "iconWidth": "8%",
+          "label": "Şifre Gir", "hint": "Şifre mekanizmasını aç"
+        }
+      ]
+    },
+
+    "gazeteci_oda_sifre_giris": {
+      "label": "Çanta Şifre Mekanizması",
+      "background": "assets/odalar/gazeteci_oda_sifre_giris.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Çantaya dön" }
+      ]
+    },
+
+    "gazeteci_oda_masa": {
+      "label": "Gazetecinin Masası",
+      "background": "assets/odalar/gazeteci_oda_masa_bos.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
+        {
+          "x": "25.0%", "y": "35.0%", "w": "25.0%", "h": "40.0%",
+          "type": "examine", "target": "kamera_item",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
+          "hideIfCollected": "polaroid",
+          "hint": "Kamerayı İncele"
+        },
+        {
+          "x": "55.0%", "y": "35.0%", "w": "30.0%", "h": "40.0%",
+          "type": "examine", "target": "kagit_item",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
+          "hideIfCollected": "gazeteci_dosyasi",
+          "hint": "Kağıtları İncele"
+        }
       ]
     },
 
@@ -145,9 +214,79 @@
       "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Nadire'nin Evine git" } ]
     },
+
     "halit_ev": {
       "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
+    }
+  },
+
+  "characters": {
+    "muhtar": {
+      "name": "Muhtar Halit",
+      "image": "assets/karakterler/halit.webp",
+      "clickableImage": "assets/tiklanabilir/halit_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" }
+    },
+    "han": {
+      "name": "Hancı Rıza",
+      "image": "assets/karakterler/riza.webp",
+      "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
+      "clickableArea": { "x": "40%", "y": "28%", "w": "22%", "h": "58%" }
+    },
+    "sifahane": {
+      "name": "Doktor Kamuran",
+      "image": "assets/karakterler/kamuran.webp",
+      "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Kamuran", "text": "Hoş geldiniz dedektif bey. Otopsi raporunu soruyorsanız Muhtar Halit Bey'e teslim etmiştim." }
+      ]
+    },
+    "cadi": {
+      "name": "Cevdet",
+      "image": "assets/karakterler/cevdet.webp",
+      "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Cevdet", "text": "Beni rahat bırakın dedektif, benim bir suçum yok." }
+      ]
+    },
+    "kilise": {
+      "name": "Peder Anselm",
+      "image": "assets/karakterler/anselm.webp",
+      "clickableImage": "assets/tiklanabilir/anselm_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Anselm", "text": "Dualarım sizinle dedektif bey." }
+      ]
+    },
+    "demirci": {
+      "name": "Demirci Cabbar",
+      "image": "assets/karakterler/cabbar.webp",
+      "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Cabbar", "text": "Ocağın başındayım dedektif, işim başımdan aşkın." }
+      ]
+    },
+    "degirmenci": {
+      "name": "Değirmenci Mustafa",
+      "image": "assets/karakterler/mustafa.webp",
+      "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Mustafa", "text": "Un çuvallarını taşıyorum beyim." }
+      ]
+    },
+    "nadire_ev": {
+      "name": "Nadire",
+      "image": "assets/karakterler/nadire.webp",
+      "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
+      "dialog": [
+        { "speaker": "Nadire", "text": "Köyde garip şeyler oluyor dedektif..." }
+      ]
     }
   },
 
@@ -225,42 +364,20 @@
     ]
   },
 
-  "characters": {
-    "muhtar": {
-      "name": "Muhtar Halit",
-      "image": "assets/karakterler/halit.webp",
-      "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp",
-      "clickableArea": { "x": "50.9%", "y": "29.9%", "w": "29.0%", "h": "61.6%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Halit", "text": "Buyrun dedektif bey. Çıkacağım birazdan, acil bir şey var mı?" },
-        { "speaker": "Dedektif", "text": "Sizinle Ali İhsan bey hakkında konuşmam lazım." },
-        { "speaker": "Halit", "text": "Ben de onun ölüm belgelerini merkeze götüreceğim şimdi." },
-        { "speaker": "Halit", "text": "Sen en iyisi mi yarın uğra, bana konuşalım — şimdi gitmem gerek." }
-      ]
+  "items": {
+    "kamera_item": {
+      "title": "Polaroid Fotoğraf",
+      "image": "assets/arayuz/poloroid.webp",
+      "collectId": "polaroid",
+      "desc": "Gazetecinin masasındaki polaroid fotoğraf."
     },
-    "han": {
-      "name": "Hancı Rıza",
-      "image": "assets/karakterler/riza.webp",
-      "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
-      "clickableArea": { "x": "60.3%", "y": "39.3%", "w": "18.9%", "h": "56.9%" },
-      "yOffset": "-15%",
-      "dialog": [
-        { "speaker": "Dedektif", "text": "Ali İhsan bey senin hanında ölü bulunmuş." },
-        { "speaker": "Rıza", "text": "Evet beyim, çok efendi bir adamdı." },
-        { "speaker": "Rıza", "text": "Hatta 25 gündür burada olmasına rağmen bana bile yardım etmişliği vardır." },
-        { "speaker": "Rıza", "text": "Valla üzülmedim desem yalan olur." },
-        { "speaker": "Dedektif", "text": "Anlaşamadığı birisi var mıydı?" },
-        { "speaker": "Rıza", "text": "Valla dediğim gibi efendi bir adamdı, kimseyle ters düştüğünü görmedim..." },
-        { "speaker": "Rıza", "text": "Gerçi... Kart Nadire geçen anlatmıştı, bizim muhtarla bir iki takışmışlar." },
-        { "speaker": "Rıza", "text": "Kızıyla konuşmasını mı istememiş, ne öyle bir şey varmış." },
-        { "speaker": "Dedektif", "text": "Neden istememiş, biliyor musun?" },
-        { "speaker": "Rıza", "text": "Valla ben bilmiyorum, Nadire'ye sorun isterseniz." }
-      ]
+    "kagit_item": {
+      "title": "Gazeteci Dosyası",
+      "image": "assets/arayuz/gazeteci_dosya.webp",
+      "collectId": "gazeteci_dosyasi",
+      "desc": "Gazetecinin masasındaki gizli dosya ve notlar."
     }
   },
-
-  "items": {},
   "devices": {},
   "statements": [
     { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/sorgu/ansel_sorgu.webp",   "audio": "assets/ifadeler/anselm.mp3" },
