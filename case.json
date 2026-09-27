@@ -220,6 +220,59 @@
     }
   },
 
+  "characters": {
+    "muhtar": {
+      "name": "Muhtar Halit",
+      "image": "assets/karakterler/halit.webp"
+    },
+    "han": {
+      "name": "Hancı Rıza",
+      "image": "assets/karakterler/riza.webp"
+    },
+    "sifahane": {
+      "name": "Doktor Kamuran",
+      "image": "assets/karakterler/kamuran.webp",
+      "dialog": [
+        { "speaker": "Kamuran", "text": "Hoş geldiniz dedektif bey. Otopsi raporunu soruyorsanız Muhtar Halit Bey'e teslim etmiştim." }
+      ]
+    },
+    "cadi": {
+      "name": "Cevdet",
+      "image": "assets/karakterler/cevdet.webp",
+      "dialog": [
+        { "speaker": "Cevdet", "text": "Beni rahat bırakın dedektif, benim bir suçum yok." }
+      ]
+    },
+    "kilise": {
+      "name": "Peder Anselm",
+      "image": "assets/karakterler/anselm.webp",
+      "dialog": [
+        { "speaker": "Anselm", "text": "Dualarım sizinle dedektif bey." }
+      ]
+    },
+    "demirci": {
+      "name": "Demirci Cabbar",
+      "image": "assets/karakterler/cabbar.webp",
+      "dialog": [
+        { "speaker": "Cabbar", "text": "Ocağın başındayım dedektif, işim başımdan aşkın." }
+      ]
+    },
+    "degirmenci": {
+      "name": "Değirmenci Mustafa",
+      "image": "assets/karakterler/mustafa.webp",
+      "dialog": [
+        { "speaker": "Mustafa", "text": "Un çuvallarını taşıyorum beyim." }
+      ]
+    },
+    "nadire_ev": {
+      "name": "Nadire",
+      "image": "assets/karakterler/nadire.webp",
+      "dialog": [
+        { "speaker": "Nadire", "text": "Köyde garip şeyler oluyor dedektif..." }
+      ]
+    }
+  },
+
   "day2_dialogs": {
     "muhtar_halit": [
       { "speaker": "Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım." },

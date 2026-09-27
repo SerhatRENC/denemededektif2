@@ -107,7 +107,6 @@ function renderRoom() {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
         
-        // Eğer öge daha önce toplandıysa parlama efektini ve tıklama hotspot'unu gizle
         if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
 
         if (h.overlayImage) {
@@ -177,14 +176,12 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
-  // --- 1. SADECE KAPININ ÖNÜNE (HAN_KAPI) GİTME HAREKETİ ---
   if (h.type === 'gazeteci_odasi_gecis' || (currentRoom === 'han' && (h.target === 'han_kapi' || h.target === 'gazeteci_oda' || h.target === 'gazeteci_odasi'))) {
     currentRoom = 'han_kapi';
     renderRoom();
     return;
   }
 
-  // --- 2. GAZETECİ KAPISINI AÇMA KONTROLÜ (HAN_KAPI) ---
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac' || (currentRoom === 'han_kapi' && h.type !== 'navigate')) {
     const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
 
@@ -211,7 +208,6 @@ function handleHotspot(h) {
     }
   }
 
-  // --- 2. GÜN NAVİGASYON KISITLAMALARI ---
   if (currentDay === 2) {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {

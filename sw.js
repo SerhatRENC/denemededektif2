@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v16';
+const CACHE_NAME = 'sisledere-v17';
 
 const PRECACHE_ASSETS = [
   './',
@@ -64,15 +64,25 @@ const PRECACHE_ASSETS = [
   'assets/odalar/gazeteci_oda_sifre_giris.webp',
   'assets/odalar/gazeteci_oda_masa_bos.webp',
 
+  // --- KARAKTERLER ---
+  'assets/karakterler/halit.webp',
+  'assets/karakterler/riza.webp',
+  'assets/karakterler/kamuran.webp',
+  'assets/karakterler/cevdet.webp',
+  'assets/karakterler/anselm.webp',
+  'assets/karakterler/cabbar.webp',
+  'assets/karakterler/mustafa.webp',
+  'assets/karakterler/nadire.webp',
+  'assets/karakterler/bakirci1.webp',
+  'assets/karakterler/bakirci2.webp',
+
   // --- 2. GÜN VARLIKLARI ---
   'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1_tiklanabilir.webp',
   'assets/tiklanabilir/bakirci2_tiklanabilir.webp',
   'assets/tiklanabilir/riza2_tiklanabilir.webp',
   'assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp',
-  'assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp',
-  'assets/karakterler/bakirci1.webp',
-  'assets/karakterler/bakirci2.webp'
+  'assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp'
 ];
 
 self.addEventListener('install', (event) => {
