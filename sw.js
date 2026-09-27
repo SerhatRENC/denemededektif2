@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v10';
+const CACHE_NAME = 'sisledere-v11';
 
 const PRECACHE_ASSETS = [
   './',

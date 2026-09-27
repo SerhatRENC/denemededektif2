@@ -81,7 +81,9 @@
     "gazeteci_oda": {
       "label": "Gazetecinin Odası",
       "background": "assets/odalar/gazeteci_oda.webp",
-      "hotspots": []
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Kapıya dön" }
+      ]
     },
 
     "han_kapi": {
