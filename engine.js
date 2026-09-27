@@ -182,25 +182,21 @@ function handleHotspot(h) {
   }
 
   // --- 2. HAN_KAPI ODASINDAYKEN KAPIMA TIKLAMA / ETKİLEŞİMİ ---
-  const isGazeteciKapiHotspot = h.type === 'kapida_konus' || 
-                                h.target === 'gazeteci_oda' || 
-                                h.target === 'gazeteci_odasi' ||
-                                (currentRoom === 'han_kapi' && h.target !== 'han' && h.target !== 'merkez');
+  const isDoorInHanKapi = currentRoom === 'han_kapi' && h.target !== 'han' && h.target !== 'merkez';
+  const isGazeteciKapiType = h.type === 'kapida_konus' || h.target === 'gazeteci_oda' || h.target === 'gazeteci_odasi';
 
-  if (isGazeteciKapiHotspot) {
-    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
+  if (isDoorInHanKapi || isGazeteciKapiType) {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || localStorage.getItem('sd_day2_state') === 'HAN_UNLOCKED';
 
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
-      // Anahtarı envanterden temizle
       inventory = inventory.filter(item => item !== 'anahtar');
       const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
       localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
       setDay2State('HAN_UNLOCKED');
       renderInventory();
       
-      // Odaya geçiş yap
       const targetRoom = (CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi';
       gecGazeteciOdasi(targetRoom);
       return;
@@ -324,9 +320,9 @@ function showAnahtarAcquisitionModal() {
 function collectKey() {
   if (!inventory.includes('anahtar')) {
     inventory.push('anahtar');
-    const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
-    localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
   }
+  const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+  localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
   setDay2State('HAN_UNLOCKED');
   renderInventory();
 }
@@ -1040,6 +1036,29 @@ function toggleCharacterLine(ch) {
       }
     });
     return;
+  }
+
+  // --- HAN KAPISI ODASINDA KARAKTERE/KAPI KATMANINA TIKLANDIĞINDA ANAHTAR KONTROLÜ ---
+  if (currentRoom === 'han_kapi') {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || localStorage.getItem('sd_day2_state') === 'HAN_UNLOCKED';
+
+    if (hasKey) {
+      document.getElementById('sceneCharacter')?.remove();
+      document.getElementById('roomClickableGlow')?.remove();
+      document.getElementById('roomClickableHit')?.remove();
+
+      if (typeof calSes === 'function') calSes('kilit_ac');
+      
+      inventory = inventory.filter(item => item !== 'anahtar');
+      const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
+      localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
+      setDay2State('HAN_UNLOCKED');
+      renderInventory();
+      
+      const targetRoom = (CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi';
+      gecGazeteciOdasi(targetRoom);
+      return;
+    }
   }
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
