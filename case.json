@@ -93,7 +93,7 @@
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         {
           "x": "50.0%", "y": "45.0%",
-          "type": "kapida_konus",
+          "type": "gazeteci_kapi_ac",
           "icon": "assets/arayuz/tokmak.webp",
           "iconWidth": "4.6%",
           "label": "Kapıyı Aç",
@@ -139,7 +139,7 @@
     },
     "sifahane": {
       "label": "Şifahane", "background": "assets/odalar/sifahane.webp",
-      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
+      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Şifahaneye git" } ]
     },
     "nadire_ev": {
       "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",

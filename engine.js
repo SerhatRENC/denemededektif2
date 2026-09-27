@@ -11,7 +11,7 @@ let calibClicks = [];
 let currentSleepAudio = null;
 
 // --- 2. GÜN DURUM YÖNETİMİ ---
-let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR'; // GO_MUHTAR -> GO_HAN -> HAN_UNLOCKED
+let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
 
 function setDay2State(newState) {
   day2State = newState;
@@ -181,29 +181,21 @@ function handleHotspot(h) {
     return;
   }
 
-  // --- 2. HAN_KAPI ODASINDAYKEN KAPIMA TIKLAMA / ETKİLEŞİMİ ---
-  const isDoorInHanKapi = currentRoom === 'han_kapi' && h.target !== 'han' && h.target !== 'merkez';
-
-  if (isDoorInHanKapi) {
-    const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
-    const savedInv = JSON.parse(localStorage.getItem('sd_inv_' + caseKey) || '[]');
-    
-    // Anahtar kontrolü: Envanter değişkeni, localStorage veya gün durumu
-    const hasKey = inventory.includes('anahtar') || 
-                   savedInv.includes('anahtar') || 
-                   day2State === 'HAN_UNLOCKED' || 
-                   localStorage.getItem('sd_day2_state') === 'HAN_UNLOCKED';
+  // --- 2. GAZETECİ KAPISINI AÇMA KONTROLÜ (HAN_KAPI) ---
+  if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac' || (currentRoom === 'han_kapi' && h.type !== 'navigate')) {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
 
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
-      // Envanterden temizle ve kaydet
+      // Anahtarı sil ve odayı açılmış olarak işaretle
       inventory = inventory.filter(item => item !== 'anahtar');
+      const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
       localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
       setDay2State('HAN_UNLOCKED');
       renderInventory();
       
-      // Gazeteci odasına doğrudan yumuşak geçiş
+      // Gazeteci odasına geç
       currentRoom = 'gazeteci_oda';
       renderRoom();
       return;
@@ -211,8 +203,6 @@ function handleHotspot(h) {
       if (typeof calSes === 'function') calSes('kilit');
       if (h.dialog) {
         startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
-      } else if (CASE.day2_dialogs && CASE.day2_dialogs.hanci_riza) {
-        startOzelDialog(CASE.day2_dialogs.hanci_riza, 'assets/karakterler/riza.webp');
       } else {
         showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
       }
@@ -1024,7 +1014,8 @@ function toggleCharacterLine(ch) {
     document.getElementById('roomClickableHit')?.remove();
 
     startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
-      if (day2State === 'GO_HAN') {
+      // GARANTİ DÜZELTME: Rıza anahtarı verdiğini söyler söylemez envanterde yoksa pencereyi aç ve anahtarı ver!
+      if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED') {
         showAnahtarAcquisitionModal();
       } else {
         renderRoom();
