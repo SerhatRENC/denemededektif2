@@ -82,24 +82,7 @@
       "label": "Gazetecinin Odası",
       "background": "assets/odalar/gazeteci_oda.webp",
       "hotspots": [
-        {
-          "x": "28.0%", "y": "62.0%",
-          "type": "examine", "target": "canta",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Çanta", "hint": "Çantayı incele"
-        },
-        {
-          "x": "52.0%", "y": "55.0%",
-          "type": "examine", "target": "gazeteci_masa",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Masa", "hint": "Masayı incele"
-        },
-        {
-          "x": "75.0%", "y": "70.0%",
-          "type": "examine", "target": "cop_kutusu",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Çöp Kutusu", "hint": "Çöp kutusunu incele"
-        }
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han_kapi", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Kapıya dön" }
       ]
     },
 
@@ -277,20 +260,7 @@
     }
   },
 
-  "items": {
-    "canta": {
-      "title": "Sırt Çantası",
-      "desc": "Gazetecinin sırt çantası. Kilitli bir gözü var."
-    },
-    "gazeteci_masa": {
-      "title": "Çalışma Masası",
-      "desc": "Masa üzerinde dağınık notlar ve gazeteci ekipmanları duruyor."
-    },
-    "cop_kutusu": {
-      "title": "Çöp Kutusu",
-      "desc": "İçinde buruşturulup atılmış kağıt parçaları var."
-    }
-  },
+  "items": {},
   "devices": {},
   "statements": [
     { "id": "anselm", "name": "Peder Anselm",      "cardImage": "assets/sorgu/ansel_sorgu.webp",   "audio": "assets/ifadeler/anselm.mp3" },

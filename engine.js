@@ -188,12 +188,14 @@ function handleHotspot(h) {
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
+      // Anahtarı sil ve odayı açılmış olarak işaretle
       inventory = inventory.filter(item => item !== 'anahtar');
       const caseKey = (CASE && CASE.caseLabel) ? CASE.caseLabel : 'sisledere';
       localStorage.setItem('sd_inv_' + caseKey, JSON.stringify(inventory));
       setDay2State('HAN_UNLOCKED');
       renderInventory();
       
+      // Gazeteci odasına geç
       currentRoom = 'gazeteci_oda';
       renderRoom();
       return;
@@ -216,16 +218,8 @@ function handleHotspot(h) {
         return;
       }
     } else if (day2State === 'GO_HAN') {
-      // Sadece muhtar, merkez, han ve han_kapi serbest. OFİS VE DİĞER EVLER YASAK.
-      if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
-        return;
-      }
-    } else if (day2State === 'HAN_UNLOCKED') {
-      // Hana girildi veya anahtar alındı. Sadece Han içi serbest (han, han_kapi, gazeteci_oda, han_mutfak, han_depo).
-      // Dışarıya (merkez veya harita) çıkış kesinlikle yasak.
-      if (h.target && !['han', 'han_kapi', 'gazeteci_oda', 'han_mutfak', 'han_depo'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+      if (h.target && !['han', 'han_mutfak', 'han_depo', 'han_kapi', 'merkez', 'ofis', 'masa'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Önce hana gidip gazetecinin kaldığı odayı incelesem iyi olacak.");
         return;
       }
     }
@@ -472,10 +466,6 @@ function stopStatementAudio() {
 
 function openExamine(itemId) {
   const item = CASE.items[itemId];
-  if (!item) {
-    console.error("Bulunamayan item ID:", itemId);
-    return;
-  }
   const imgHtml = item.image
     ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
     : `<div class="doc-fallback">görsel yok</div>`;
@@ -618,14 +608,9 @@ function openMap() {
             showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
             return;
           }
-          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+          if (day2State === 'GO_HAN' && !['han', 'merkez', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
-            return;
-          }
-          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda'].includes(h.target)) {
-            closeMap();
-            showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+            showCustomSubtitle("Dedektif: Önce hana gidip gazetecinin kaldığı odayı incelesem iyi olacak.");
             return;
           }
         }
@@ -1029,6 +1014,7 @@ function toggleCharacterLine(ch) {
     document.getElementById('roomClickableHit')?.remove();
 
     startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+      // GARANTİ DÜZELTME: Rıza anahtarı verdiğini söyler söylemez envanterde yoksa pencereyi aç ve anahtarı ver!
       if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED') {
         showAnahtarAcquisitionModal();
       } else {
