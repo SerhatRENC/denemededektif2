@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Tam Entegre Sürüm)
+   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Düzeltilmiş)
    ============================================================ */
 
 let CASE = null;
@@ -206,7 +206,8 @@ function handleHotspot(h) {
     }
   }
 
-  if (currentDay === 2) {
+  // --- 2. GÜN GEZİNTİ KISITLAMALARI (SADECE ODA GEÇİŞLERİ İÇİN KONTROL EDİLİR) ---
+  if (currentDay === 2 && h.type === 'navigate') {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
         showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");

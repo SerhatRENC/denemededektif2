@@ -175,46 +175,57 @@
         }
       ]
     },
+
     "han_mutfak": {
       "label": "Han Mutfağı", "background": "assets/odalar/han_mutfak.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" } ]
     },
+
     "han_depo": {
       "label": "Han Deposu", "background": "assets/odalar/han_depo.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" } ]
     },
+
     "kilise": {
       "label": "Kilise", "background": "assets/odalar/kilise.webp", "closedOnDays": [1], "closedImage": "assets/odalar/kilise_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "mezarlik": {
       "label": "Mezarlık", "background": "assets/odalar/mezarlik.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "cadi": {
       "label": "Cadının Evi", "background": "assets/odalar/cadi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "muhtar": {
       "label": "Muhtarlık", "background": "assets/odalar/muhtar.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "demirci": {
       "label": "Demirci", "background": "assets/odalar/demirci.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "degirmenci": {
       "label": "Değirmenci", "background": "assets/odalar/degirmenci.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "sifahane": {
       "label": "Şifahane", "background": "assets/odalar/sifahane.webp",
-      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
+      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Şifahaneye git" } ]
     },
+
     "nadire_ev": {
       "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
+
     "halit_ev": {
       "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
@@ -486,7 +497,7 @@
       "maddeler": [
         { "ikon": "assets/arayuz/harita.webp", "baslik": "Harita", "metin": "köyde gitmek istediğin yeri seç, oraya hemen git" },
         { "ikon": "assets/arayuz/defter.webp", "baslik": "Not defteri", "metin": "ipuçlarını yaz, şüphelilerin yanına not al, çizim yap" },
-        { "ikon": "assets/arayuz/uyku.webp", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadon önce ipuçlarını topladığından emin ol" }
+        { "ikon": "assets/arayuz/uyku.webp", "baslik": "Uyku", "metin": "bir sonraki güne geçer; uyumadan önce ipuçlarını topladığından emin ol" }
       ],
       "vurgu": [".corner-icon-btn"],
       "konum": "ust-orta",
