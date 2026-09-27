@@ -1,5 +1,6 @@
-const CACHE_NAME = 'sisledere-v7';
+const CACHE_NAME = 'sisledere-v5';
 
+// İlk açılışta çevrimdışı kullanım için indirilecek tüm dosyalar
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -46,7 +47,7 @@ const PRECACHE_ASSETS = [
   'assets/ses/kilit_ac.mp3',
   'assets/ses/take.mp3',
 
-  // --- GİRİŞ & ODALAR ---
+  // --- GİRİŞ & İNDEX ODALARI ---
   'assets/odalar/giris.webp',
   'assets/odalar/ofis_sehir.webp',
   'assets/odalar/mors_kagidi.webp',
@@ -57,11 +58,10 @@ const PRECACHE_ASSETS = [
   'assets/odalar/dedektif_ofis.webp',
   'assets/odalar/gazeteci_oda.webp',
 
-  // --- 2. GÜN VARLIKLARI ---
+  // --- 2. GÜN YENİ VARLIKLARI ---
   'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1.webp',
   'assets/tiklanabilir/bakirci2.webp',
-  'assets/tiklanabilir/riza2_tiklanabilir.webp',
   'assets/karakterler/bakirci1.webp',
   'assets/karakterler/bakirci2.webp'
 ];
@@ -89,11 +89,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Chrome eklentileri (chrome-extension://) gibi protokolleri filtrele
-  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
-    return;
-  }
-
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
@@ -104,7 +99,9 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {});
+      }).catch(() => {
+        console.log('Çevrimdışı moddasınız ve dosya önbellekte yok:', event.request.url);
+      });
     })
   );
 });
