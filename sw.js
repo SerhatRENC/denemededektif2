@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v17';
+const CACHE_NAME = 'sisledere-v18';
 
 const PRECACHE_ASSETS = [
   './',
@@ -64,7 +64,7 @@ const PRECACHE_ASSETS = [
   'assets/odalar/gazeteci_oda_sifre_giris.webp',
   'assets/odalar/gazeteci_oda_masa_bos.webp',
 
-  // --- KARAKTERLER ---
+  // --- KARAKTER PORTRELERİ ---
   'assets/karakterler/halit.webp',
   'assets/karakterler/riza.webp',
   'assets/karakterler/kamuran.webp',
@@ -76,11 +76,19 @@ const PRECACHE_ASSETS = [
   'assets/karakterler/bakirci1.webp',
   'assets/karakterler/bakirci2.webp',
 
-  // --- 2. GÜN VARLIKLARI ---
-  'assets/tiklanabilir/anahtar.webp',
+  // --- TIKLANABİLİR ODA İÇİ KARAKTERLER ---
+  'assets/tiklanabilir/halit_tiklanabilir.webp',
+  'assets/tiklanabilir/riza_tiklanabilir.webp',
+  'assets/tiklanabilir/riza2_tiklanabilir.webp',
+  'assets/tiklanabilir/kamuran_tiklanabilir.webp',
+  'assets/tiklanabilir/cevdet_tiklanabilir.webp',
+  'assets/tiklanabilir/anselm_tiklanabilir.webp',
+  'assets/tiklanabilir/cabbar_tiklanabilir.webp',
+  'assets/tiklanabilir/mustafa_tiklanabilir.webp',
+  'assets/tiklanabilir/nadire_tiklanabilir.webp',
   'assets/tiklanabilir/bakirci1_tiklanabilir.webp',
   'assets/tiklanabilir/bakirci2_tiklanabilir.webp',
-  'assets/tiklanabilir/riza2_tiklanabilir.webp',
+  'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp',
   'assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp'
 ];

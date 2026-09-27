@@ -214,6 +214,7 @@
       "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Nadire'nin Evine git" } ]
     },
+
     "halit_ev": {
       "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
@@ -223,15 +224,21 @@
   "characters": {
     "muhtar": {
       "name": "Muhtar Halit",
-      "image": "assets/karakterler/halit.webp"
+      "image": "assets/karakterler/halit.webp",
+      "clickableImage": "assets/tiklanabilir/halit_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" }
     },
     "han": {
       "name": "Hancı Rıza",
-      "image": "assets/karakterler/riza.webp"
+      "image": "assets/karakterler/riza.webp",
+      "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
+      "clickableArea": { "x": "40%", "y": "28%", "w": "22%", "h": "58%" }
     },
     "sifahane": {
       "name": "Doktor Kamuran",
       "image": "assets/karakterler/kamuran.webp",
+      "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Kamuran", "text": "Hoş geldiniz dedektif bey. Otopsi raporunu soruyorsanız Muhtar Halit Bey'e teslim etmiştim." }
       ]
@@ -239,6 +246,8 @@
     "cadi": {
       "name": "Cevdet",
       "image": "assets/karakterler/cevdet.webp",
+      "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Cevdet", "text": "Beni rahat bırakın dedektif, benim bir suçum yok." }
       ]
@@ -246,6 +255,8 @@
     "kilise": {
       "name": "Peder Anselm",
       "image": "assets/karakterler/anselm.webp",
+      "clickableImage": "assets/tiklanabilir/anselm_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Anselm", "text": "Dualarım sizinle dedektif bey." }
       ]
@@ -253,6 +264,8 @@
     "demirci": {
       "name": "Demirci Cabbar",
       "image": "assets/karakterler/cabbar.webp",
+      "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Cabbar", "text": "Ocağın başındayım dedektif, işim başımdan aşkın." }
       ]
@@ -260,6 +273,8 @@
     "degirmenci": {
       "name": "Değirmenci Mustafa",
       "image": "assets/karakterler/mustafa.webp",
+      "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Mustafa", "text": "Un çuvallarını taşıyorum beyim." }
       ]
@@ -267,6 +282,8 @@
     "nadire_ev": {
       "name": "Nadire",
       "image": "assets/karakterler/nadire.webp",
+      "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp",
+      "clickableArea": { "x": "38%", "y": "25%", "w": "24%", "h": "60%" },
       "dialog": [
         { "speaker": "Nadire", "text": "Köyde garip şeyler oluyor dedektif..." }
       ]
