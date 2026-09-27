@@ -104,21 +104,6 @@ function renderRoom() {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
 
-        // --- TAM EKRAN OTURAN KATMAN GÖRSELİ (ÖRN: BAKIRCILAR) ---
-        if (h.overlayImage) {
-          const ovImg = document.createElement('img');
-          ovImg.className = 'room-clickable-glow';
-          ovImg.src = h.overlayImage;
-          ovImg.style.position = 'absolute';
-          ovImg.style.left = '0';
-          ovImg.style.top = '0';
-          ovImg.style.width = '100%';
-          ovImg.style.height = '100%';
-          ovImg.style.pointerEvents = 'none';
-          stage.appendChild(ovImg);
-        }
-
-        // --- DAİRESEL PULSE İKONLARI (BÜYÜTEÇ, AYAK VB.) ---
         if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
           wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
@@ -150,7 +135,6 @@ function renderRoom() {
           return;
         }
 
-        // --- TIKLANABİLİR ŞEFFAF ALAN (HITBOX) ---
         const el = document.createElement('div');
         el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
         el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
@@ -194,6 +178,11 @@ function handleHotspot(h) {
     return;
   }
   if (h.type === 'gazeteci_odasi_gecis') {
+    if (currentDay === 2 && day2State === 'HAN_UNLOCKED') {
+      if (typeof calSes === 'function') calSes('kilit_ac');
+      gecGazeteciOdasi();
+      return;
+    }
     currentRoom = 'han_kapi';
     renderRoom();
     return;
@@ -203,11 +192,9 @@ function handleHotspot(h) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       gecGazeteciOdasi();
       return;
-    } else {
-      if (typeof calSes === 'function') calSes('kilit');
-      startOzelDialog(h.dialog, h.characterImage);
-      return;
     }
+    startOzelDialog(h.dialog, h.characterImage);
+    return;
   }
 
   if (h.type === 'navigate') { currentRoom = h.target; renderRoom(); return; }
@@ -954,33 +941,37 @@ function renderSceneCharacter(ch, stage) {
 
 function toggleCharacterLine(ch) {
   if (currentDay === 2 && currentRoom === 'muhtar') {
-    document.getElementById('sceneCharacter')?.remove();
-    document.getElementById('roomClickableGlow')?.remove();
-    document.getElementById('roomClickableHit')?.remove();
+    if (day2State === 'GO_MUHTAR') {
+      document.getElementById('sceneCharacter')?.remove();
+      document.getElementById('roomClickableGlow')?.remove();
+      document.getElementById('roomClickableHit')?.remove();
 
-    startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
-      if (day2State === 'GO_MUHTAR') {
+      startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
         setDay2State('GO_HAN');
-      }
-      renderRoom();
-      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
-    });
-    return;
+        renderRoom();
+        showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
+      });
+      return;
+    } else {
+      showCustomSubtitle("Halit: Hancı Rıza'ya selamımı söyle, açsın kapıyı.");
+      return;
+    }
   }
 
   if (currentDay === 2 && currentRoom === 'han') {
-    document.getElementById('sceneCharacter')?.remove();
-    document.getElementById('roomClickableGlow')?.remove();
-    document.getElementById('roomClickableHit')?.remove();
+    if (day2State === 'GO_HAN') {
+      document.getElementById('sceneCharacter')?.remove();
+      document.getElementById('roomClickableGlow')?.remove();
+      document.getElementById('roomClickableHit')?.remove();
 
-    startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
-      if (day2State === 'GO_HAN') {
+      startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
         showAnahtarAcquisitionModal();
-      } else {
-        renderRoom();
-      }
-    });
-    return;
+      });
+      return;
+    } else if (day2State === 'HAN_UNLOCKED') {
+      showCustomSubtitle("Rıza: Odanın anahtarını verdim beyim, yukarı çıkabilirsiniz.");
+      return;
+    }
   }
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
