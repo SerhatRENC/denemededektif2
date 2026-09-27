@@ -174,14 +174,16 @@ function renderRoom() {
 }
 
 function handleHotspot(h) {
-  // --- GAZETECİ ODASI KAPISI VE KİLİT KONTROLÜ (EN ÜST SIRA) ---
-  const isGazeteciKapi = h.type === 'kapida_konus' || 
-                         h.type === 'gazeteci_odasi_gecis' || 
-                         h.target === 'gazeteci_oda' || 
-                         h.target === 'gazeteci_odasi';
+  // --- 1. SADECE KAPININ YANINA (HAN_KAPI) GİTME HAREKETİ ---
+  if (h.type === 'gazeteci_odasi_gecis') {
+    currentRoom = 'han_kapi';
+    renderRoom();
+    return;
+  }
 
-  if (isGazeteciKapi) {
-    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || localStorage.getItem('sd_day2_state') === 'HAN_UNLOCKED';
+  // --- 2. KAPI ÖNÜNDEYKEN (HAN_KAPI) KAPIYI AÇMA / DİYALOG ETKİLEŞİMİ ---
+  if (h.type === 'kapida_konus') {
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
 
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
@@ -193,13 +195,17 @@ function handleHotspot(h) {
       setDay2State('HAN_UNLOCKED');
       renderInventory();
       
-      // Odaya sorunsuz geçiş yap
+      // Gazeteci odasına geçiş
       const targetRoom = (CASE && CASE.rooms && CASE.rooms['gazeteci_oda']) ? 'gazeteci_oda' : 'gazeteci_odasi';
       gecGazeteciOdasi(targetRoom);
       return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
-      showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+      if (h.dialog) {
+        startOzelDialog(h.dialog, h.characterImage);
+      } else {
+        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+      }
       return;
     }
   }
@@ -296,7 +302,6 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* --- 3 KAT BÜYÜTÜLMÜŞ ANAHTAR ALMA MODALI --- */
 function showAnahtarAcquisitionModal() {
   showModal(`
     <div style="text-align:center; padding:25px 15px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -392,7 +397,6 @@ function wakeUp() {
   renderRoom();
 }
 
-/* --- ORANLANMIŞ VE YARI SAYDAM KUTUCUKLU ENVANTER --- */
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
