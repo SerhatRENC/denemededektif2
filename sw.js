@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sisledere-v15';
+const CACHE_NAME = 'sisledere-v16';
 
 const PRECACHE_ASSETS = [
   './',
@@ -22,6 +22,9 @@ const PRECACHE_ASSETS = [
   'assets/arayuz/defter.webp',
   'assets/arayuz/tokmak.webp',
   'assets/arayuz/buyutec.webp',
+  'assets/arayuz/sifre.webp',
+  'assets/arayuz/gazeteci_dosya.webp',
+  'assets/arayuz/poloroid.webp',
   'assets/arayuz/el.webp',
   'assets/arayuz/ayak.webp',
   'assets/arayuz/geri.webp',
@@ -56,12 +59,18 @@ const PRECACHE_ASSETS = [
   'assets/odalar/koy_giris.webp',
   'assets/odalar/dedektif_ofis.webp',
   'assets/odalar/gazeteci_oda.webp',
+  'assets/odalar/gazeteci_odasi_cöp.webp',
+  'assets/odalar/gazeteci_oda_canta.webp',
+  'assets/odalar/gazeteci_oda_sifre_giris.webp',
+  'assets/odalar/gazeteci_oda_masa_bos.webp',
 
   // --- 2. GÜN VARLIKLARI ---
   'assets/tiklanabilir/anahtar.webp',
   'assets/tiklanabilir/bakirci1_tiklanabilir.webp',
   'assets/tiklanabilir/bakirci2_tiklanabilir.webp',
   'assets/tiklanabilir/riza2_tiklanabilir.webp',
+  'assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp',
+  'assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp',
   'assets/karakterler/bakirci1.webp',
   'assets/karakterler/bakirci2.webp'
 ];

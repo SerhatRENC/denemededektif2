@@ -106,6 +106,9 @@ function renderRoom() {
       room.hotspots.forEach(h => {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
+        
+        // Eğer öge daha önce toplandıysa parlama efektini ve tıklama hotspot'unu gizle
+        if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
 
         if (h.overlayImage) {
           const ovImg = document.createElement('img');
@@ -216,15 +219,16 @@ function handleHotspot(h) {
         return;
       }
     } else if (day2State === 'GO_HAN') {
-      // Sadece muhtar, merkez, han ve han_kapi serbest. OFİS VE DİĞER EVLER YASAK.
       if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
         showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
         return;
       }
     } else if (day2State === 'HAN_UNLOCKED') {
-      // Hana girildi veya anahtar alındı. Sadece Han içi serbest (han, han_kapi, gazeteci_oda, han_mutfak, han_depo).
-      // Dışarıya (merkez veya harita) çıkış kesinlikle yasak.
-      if (h.target && !['han', 'han_kapi', 'gazeteci_oda', 'han_mutfak', 'han_depo'].includes(h.target)) {
+      const allowedRoomsInHan = [
+        'han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 
+        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
+      ];
+      if (h.target && !allowedRoomsInHan.includes(h.target)) {
         showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
         return;
       }
@@ -412,6 +416,26 @@ function renderInventory(lastImage) {
         <span style="font-size: 0.75cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
       `;
       el.title = 'Gazetecinin Oda Anahtarı';
+    } else if (id === 'polaroid') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
+      `;
+      el.title = 'Polaroid Fotoğraf';
+    } else if (id === 'gazeteci_dosyasi') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
+      `;
+      el.title = 'Gazeteci Dosyası';
     } else {
       el.textContent = '📄';
     }
@@ -476,23 +500,37 @@ function openExamine(itemId) {
     console.error("Bulunamayan item ID:", itemId);
     return;
   }
+
+  const isCollected = item.collectId && inventory.includes(item.collectId);
+
   const imgHtml = item.image
-    ? `<div class="zoom-wrap"><img class="doc-img" id="examineZoomImg" src="${item.image}" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'"></div>`
+    ? `<div class="zoom-wrap" style="display:flex; justify-content:center; align-items:center; margin:15px 0;">
+         <img class="doc-img" id="examineZoomImg" src="${item.image}" style="max-height:55vh; max-width:80vw; object-fit:contain; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.8));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${item.image}</div>'">
+       </div>`
     : `<div class="doc-fallback">görsel yok</div>`;
-  let bodyHtml = `<h3>${item.title}</h3>${imgHtml}<p>${item.desc || ''}</p>`;
 
-  if (item.lockedCode) {
-    bodyHtml += `
-      <div class="locked-box">
-        <input id="unlockInput" placeholder="kod gir..." maxlength="8">
-        <button onclick="tryUnlock('${itemId}')">Çöz</button>
-      </div>`;
-  } else if (item.collectId) {
-    bodyHtml += `<button onclick="collect('${item.collectId}','${item.image || ''}')">Envantere Al</button>`;
+  let bodyHtml = `
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <h3 style="text-align:center; margin-bottom:10px;">${item.title}</h3>
+    ${imgHtml}
+  `;
+
+  if (item.desc) {
+    bodyHtml += `<p style="text-align:center; font-size:14px; color:#c9cabd; margin-bottom:15px;">${item.desc}</p>`;
   }
-  bodyHtml += `<button class="ghost" onclick="closeModal()">Kapat</button>`;
 
-  showModal(bodyHtml);
+  if (item.collectId && !isCollected) {
+    bodyHtml += `
+      <div style="text-align:center;">
+        <button onclick="if(typeof calSes==='function') calSes('take'); collect('${item.collectId}','${item.image || ''}')" style="padding:12px 30px; font-size:18px; letter-spacing:0.05em;">
+          Envantere Al
+        </button>
+      </div>`;
+  } else {
+    bodyHtml += `<div style="text-align:center;"><button class="ghost" onclick="closeModal()">Kapat</button></div>`;
+  }
+
+  showModal(bodyHtml, true);
   if (item.image) { const el = document.getElementById('examineZoomImg'); if (el) zoomKur(el.parentElement, el); }
 }
 
@@ -623,7 +661,7 @@ function openMap() {
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
             return;
           }
-          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda'].includes(h.target)) {
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
             return;
