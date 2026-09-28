@@ -269,14 +269,26 @@ function renderSifreMinigame(stage) {
     stage.appendChild(btn);
   });
 
-  // 4. İlerle Butonu
+  // 4. İlerle Butonu (5. Sayının Yanına Yerleştirildi & MORS Stiline Eşitlendi)
   const ilerleBtn = document.createElement('button');
   ilerleBtn.className = 'btn show';
   ilerleBtn.textContent = 'İlerle';
   ilerleBtn.style.position = 'absolute';
-  ilerleBtn.style.right = '6%';
-  ilerleBtn.style.bottom = '8%';
+  ilerleBtn.style.left = '67.5%';
+  ilerleBtn.style.top = '57.2%';
+  ilerleBtn.style.transform = 'translateY(-50%)';
   ilerleBtn.style.zIndex = '12';
+  ilerleBtn.style.padding = '0.6em 1.6em';
+  ilerleBtn.style.background = 'linear-gradient(180deg, #6b4423, #4a2f18)';
+  ilerleBtn.style.color = '#e9dcc0';
+  ilerleBtn.style.border = '2px solid #2c1c0e';
+  ilerleBtn.style.borderRadius = '6px';
+  ilerleBtn.style.fontFamily = 'inherit';
+  ilerleBtn.style.fontSize = 'clamp(15px, 1.8cqw, 20px)';
+  ilerleBtn.style.fontWeight = 'bold';
+  ilerleBtn.style.cursor = 'pointer';
+  ilerleBtn.style.boxShadow = '0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6)';
+
   ilerleBtn.onclick = (e) => {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
@@ -377,8 +389,9 @@ function handleHotspot(h) {
   if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
-function showCustomSubtitle(text) {
-  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+function showCustomSubtitle(text, clickToDismiss = false) {
+  const stage = document.getElementById('stage') || document.getElementById('stageFrame') || document.getElementById('gameStage');
+  if (!stage) return;
   let sub = document.getElementById('sceneSubtitle');
   if (!sub) {
     sub = document.createElement('div');
@@ -386,8 +399,16 @@ function showCustomSubtitle(text) {
     sub.className = 'scene-subtitle';
     stage.appendChild(sub);
   }
-  sub.innerHTML = `<div class="scene-subtitle-text">${text}</div>`;
-  setTimeout(() => { if (sub) sub.remove(); }, 3500);
+  sub.style.cursor = clickToDismiss ? 'pointer' : 'default';
+  sub.innerHTML = `<div class="scene-subtitle-text">${text} ${clickToDismiss ? '<span style="font-size:0.75em; opacity:0.8; margin-left:10px;">(Devam etmek için tıkla)</span>' : ''}</div>`;
+  
+  let timer = setTimeout(() => { if (sub) sub.remove(); }, 5000);
+  
+  sub.onclick = (e) => {
+    e.stopPropagation();
+    clearTimeout(timer);
+    if (sub) sub.remove();
+  };
 }
 
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
@@ -468,12 +489,22 @@ function openPhoto(src) {
 
 /* DEVASE ÇERÇEVESİZ TAM EKRAN DOSYA GÖRÜNÜMÜ */
 function openBigPaperModal(src) {
-  showModal(`
-    <button class="reader-close" style="position:fixed; top:25px; right:25px; z-index:10001; font-size:36px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9);" onclick="closeModal()">✕</button>
-    <div class="zoom-wrap" style="width:94vw; height:92vh; display:flex; justify-content:center; align-items:center;">
-      <img id="photoZoomImg" src="${src}" style="max-width:100%; max-height:100%; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode modal-dark-bg';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; align-items:center; justify-content:center;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.92);">
+      <img id="photoZoomImg" src="${src}" style="max-width:92vw; max-height:92vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
     </div>
-  `, true);
+  `;
+
   const el = document.getElementById('photoZoomImg');
   if (el) zoomKur(el.parentElement, el);
 }
@@ -687,7 +718,9 @@ function collect(collectId, image) {
   renderRoom();
 
   if (collectId === 'polaroid') {
-    showCustomSubtitle("Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem...");
+    setTimeout(() => {
+      showCustomSubtitle("Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem...", true);
+    }, 250);
   }
 }
 
@@ -761,6 +794,12 @@ function closeModal() {
   if (tapeAudio) { tapeAudio.pause(); tapeAudio = null; }
   stopStatementAudio();
   const bg = document.getElementById('modalBg');
+  const body = document.getElementById('modalBody');
+  
+  if (body) {
+    body.className = 'modal';
+    body.style.cssText = "";
+  }
   if (bg) {
     bg.classList.remove('active');
     bg.classList.remove('reader-mode');
