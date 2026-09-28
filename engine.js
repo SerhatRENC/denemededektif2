@@ -494,6 +494,11 @@ function openExamine(itemId) {
     return;
   }
 
+  // Polaroid / Kamera tıklandığında altyazıyı tetikle
+  if (itemId === 'kamera_item') {
+    showCustomSubtitle("Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem...");
+  }
+
   const isCollected = item.collectId && inventory.includes(item.collectId);
 
   const imgHtml = item.image

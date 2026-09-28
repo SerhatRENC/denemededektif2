@@ -84,19 +84,19 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         {
-          "x": "23.9%", "y": "84.7%",
+          "x": "23.0%", "y": "82.3%",
           "type": "navigate", "target": "gazeteci_oda_canta",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Çanta", "hint": "Çantaya yaklaş"
         },
         {
-          "x": "46.7%", "y": "63.3%",
+          "x": "64.7%", "y": "79.2%",
           "type": "navigate", "target": "gazeteci_oda_masa",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Masa", "hint": "Masaya yaklaş"
         },
         {
-          "x": "58.7%", "y": "78.7%",
+          "x": "46.9%", "y": "60.0%",
           "type": "navigate", "target": "gazeteci_oda_cop",
           "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
           "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş"
@@ -140,18 +140,18 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
         {
-          "x": "25.0%", "y": "35.0%", "w": "25.0%", "h": "40.0%",
+          "x": "17.9%", "y": "22.1%", "w": "26.3%", "h": "67.5%",
+          "type": "photo",
+          "image": "assets/arayuz/gazeteci_dosya.webp",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
+          "hint": "Gazeteci Dosyasını İncele"
+        },
+        {
+          "x": "57.6%", "y": "1.1%", "w": "28.9%", "h": "59.9%",
           "type": "examine", "target": "kamera_item",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
           "hideIfCollected": "polaroid",
           "hint": "Kamerayı İncele"
-        },
-        {
-          "x": "55.0%", "y": "35.0%", "w": "30.0%", "h": "40.0%",
-          "type": "examine", "target": "kagit_item",
-          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
-          "hideIfCollected": "gazeteci_dosyasi",
-          "hint": "Kağıtları İncele"
         }
       ]
     },
@@ -208,7 +208,7 @@
 
     "demirci": {
       "label": "Demirci", "background": "assets/odalar/demirci.webp",
-      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
+      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Değirmenciye git" } ]
     },
 
     "degirmenci": {
@@ -431,7 +431,7 @@
       "title": "Polaroid Fotoğraf",
       "image": "assets/arayuz/poloroid.webp",
       "collectId": "polaroid",
-      "desc": "Gazetecinin masasındaki polaroid fotoğraf."
+      "desc": "Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem..."
     },
     "kagit_item": {
       "title": "Gazeteci Dosyası",
