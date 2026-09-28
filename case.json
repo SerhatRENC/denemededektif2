@@ -95,13 +95,14 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
         {
-          "x": "40.0%", "y": "40.0%", "w": "20.0%", "h": "25.0%",
-          "type": "yanik_kagit_topla",
+          "x": "52.0%", "y": "38.0%",
+          "type": "yanik_kagit_incele_modal",
           "icon": "assets/arayuz/el.webp",
-          "iconWidth": "7%",
+          "iconWidth": "3.5%",
+          "label": "Kağıdı Al",
           "overlayImage": "assets/tiklanabilir/yanik_kagit_tiklanabilir.webp",
           "hideIfCollected": "yanik_kagit",
-          "hint": "Yanık Kağıdı İncele"
+          "hint": "Yanık Kağıdı Al"
         }
       ]
     },
@@ -132,7 +133,12 @@
       "label": "Çantanın İçi",
       "background": "assets/odalar/canta_ici.webp",
       "hotspots": [
-        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Çantaya dön" }
+        {
+          "x": "91.0%", "y": "8.0%",
+          "type": "navigate", "target": "gazeteci_oda",
+          "icon": "assets/arayuz/kapat.webp", "iconWidth": "5.5%",
+          "label": "Kapat", "hint": "Odaya dön"
+        }
       ]
     },
 
@@ -380,6 +386,7 @@
         { "speaker": "Cevdet", "text": "Konuşamam, konuşamam, konuşamam, konuşamam, konuşamam... (uzaklaşır)" }
       ]
     },
+
     "han": {
       "name": "Hancı Rıza",
       "image": "assets/karakterler/riza.webp",

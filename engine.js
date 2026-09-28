@@ -269,7 +269,7 @@ function renderSifreMinigame(stage) {
     stage.appendChild(btn);
   });
 
-  // 4. İlerle Butonu (5. Sayının Yanına Yerleştirildi & MORS Stiline Eşitlendi)
+  // 4. İlerle Butonu (5. Sayının Yanına Yerleştirildi)
   const ilerleBtn = document.createElement('button');
   ilerleBtn.className = 'btn show';
   ilerleBtn.textContent = 'İlerle';
@@ -297,16 +297,15 @@ function renderSifreMinigame(stage) {
       renderRoom();
     } else {
       if (typeof calSes === 'function') calSes('hata');
-      showCustomSubtitle("Dedektif: Yanlış şifre... Kilit açılmadı.");
+      showCustomSubtitle("Dedektif: Yanlış şifre... Kilit açılmadı.", true);
     }
   };
   stage.appendChild(ilerleBtn);
 }
 
 function handleHotspot(h) {
-  if (h.type === 'yanik_kagit_topla') {
-    collect('yanik_kagit', 'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp');
-    showCustomSubtitle("Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.");
+  if (h.type === 'yanik_kagit_incele_modal') {
+    openYanikKagitModal();
     return;
   }
 
@@ -340,7 +339,7 @@ function handleHotspot(h) {
       if (h.dialog) {
         startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
       } else {
-        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.");
+        showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.", true);
       }
       return;
     }
@@ -350,12 +349,12 @@ function handleHotspot(h) {
   if (currentDay === 2 && h.type === 'navigate') {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
+        showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
         return;
       }
     } else if (day2State === 'GO_HAN') {
       if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
         return;
       }
     } else if (day2State === 'HAN_UNLOCKED') {
@@ -364,7 +363,7 @@ function handleHotspot(h) {
         'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
       ];
       if (h.target && !allowedRoomsInHan.includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+        showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
         return;
       }
     }
@@ -389,9 +388,43 @@ function handleHotspot(h) {
   if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
+function openYanikKagitModal() {
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; flex-direction:column; align-items:center; justify-content:center;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div class="zoom-wrap" style="width:100vw; height:75vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="assets/arayuz/yanik_kagit_incele.webp" style="max-width:90vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>assets/arayuz/yanik_kagit_incele.webp</div>'">
+    </div>
+    <div style="text-align:center; margin-top:15px; z-index:10002;">
+      <button class="btn show" style="padding:0.7em 2em; background:linear-gradient(180deg, #6b4423, #4a2f18); color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; font-size:clamp(16px, 2cqw, 22px); cursor:pointer; box-shadow:0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6);" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit','assets/tiklanabilir/yanik_kagit_tiklanabilir.webp'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">
+        ENVANTERE EKLE
+      </button>
+    </div>
+  `;
+
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
 function showCustomSubtitle(text, clickToDismiss = false) {
   const stage = document.getElementById('stage') || document.getElementById('stageFrame') || document.getElementById('gameStage');
   if (!stage) return;
+  
+  // Konuşma yazısı çıktığı an envanteri gizle
+  const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
+  if (invEl) invEl.classList.add('dialog-gizli');
+
   let sub = document.getElementById('sceneSubtitle');
   if (!sub) {
     sub = document.createElement('div');
@@ -402,12 +435,16 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   sub.style.cursor = clickToDismiss ? 'pointer' : 'default';
   sub.innerHTML = `<div class="scene-subtitle-text">${text} ${clickToDismiss ? '<span style="font-size:0.75em; opacity:0.8; margin-left:10px;">(Devam etmek için tıkla)</span>' : ''}</div>`;
   
-  let timer = setTimeout(() => { if (sub) sub.remove(); }, 5000);
+  let timer = setTimeout(() => { 
+    if (sub) sub.remove(); 
+    if (invEl) invEl.classList.remove('dialog-gizli');
+  }, 5000);
   
   sub.onclick = (e) => {
     e.stopPropagation();
     clearTimeout(timer);
     if (sub) sub.remove();
+    if (invEl) invEl.classList.remove('dialog-gizli');
   };
 }
 
@@ -417,6 +454,9 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   stage.classList.add('dialog-active');
   document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
   
+  const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
+  if (invEl) invEl.classList.add('dialog-gizli');
+
   let charImg = document.getElementById('tempDay2Char');
   if (!charImg) {
     charImg = document.createElement('img');
@@ -446,6 +486,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
       if (sub) sub.remove();
       stage.classList.remove('dialog-active');
       document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
+      if (invEl) invEl.classList.remove('dialog-gizli');
       stage.removeEventListener('click', sonrakiSatir);
       dialogueActive = false;
       if (onCompleteCallback) onCompleteCallback();
@@ -487,20 +528,23 @@ function openPhoto(src) {
   if (el) zoomKur(el.parentElement, el);
 }
 
-/* DEVASE ÇERÇEVESİZ TAM EKRAN DOSYA GÖRÜNÜMÜ */
+/* DEVASE BLURLU ARKA PLANLI DOSYA GÖRÜNÜMÜ */
 function openBigPaperModal(src) {
   const body = document.getElementById('modalBody');
   const bg = document.getElementById('modalBg');
   if (!body || !bg) return;
 
   body.className = 'modal modal-fullscreen';
-  bg.className = 'modal-bg active reader-mode modal-dark-bg';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
 
   body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; align-items:center; justify-content:center;";
 
   body.innerHTML = `
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.92);">
+    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
       <img id="photoZoomImg" src="${src}" style="max-width:92vw; max-height:92vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
     </div>
   `;
@@ -559,6 +603,7 @@ function wakeUp() {
   renderRoom();
 }
 
+/* YARI YARIYA KÜÇÜLTÜLMÜŞ ENVANTER TASARIMI */
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
@@ -570,14 +615,20 @@ function renderInventory(lastImage) {
   inventory.forEach(id => {
     const el = document.createElement('div');
     el.className = 'inv-item';
+    el.style.width = '28px';
+    el.style.height = '28px';
+    el.style.minWidth = '28px';
+    el.style.padding = '2px';
+    el.style.margin = '0 2px';
+
     if (id === 'anahtar') {
       el.style.display = "flex";
       el.style.flexDirection = "column";
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: 50%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 0.75cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
+        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 8px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
       `;
       el.title = 'Gazetecinin Oda Anahtarı';
     } else if (id === 'polaroid') {
@@ -586,8 +637,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
+        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
       `;
       el.title = '(İşlenmemiş) Polaroid Fotoğraf';
     } else if (id === 'yanik_kagit') {
@@ -596,8 +647,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" alt="Yanık Kağıt" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Yanık Kağıt</span>
+        <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" alt="Yanık Kağıt" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Yanık Kağıt</span>
       `;
       el.title = 'Yanık Kağıt';
     } else if (id === 'gazeteci_dosyasi') {
@@ -606,8 +657,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
+        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
       `;
       el.title = 'Gazeteci Dosyası';
     } else {
@@ -803,6 +854,9 @@ function closeModal() {
   if (bg) {
     bg.classList.remove('active');
     bg.classList.remove('reader-mode');
+    bg.style.backdropFilter = "";
+    bg.style.webkitBackdropFilter = "";
+    bg.style.background = "";
   }
 }
 
@@ -824,17 +878,17 @@ function openMap() {
         if (currentDay === 2) {
           if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.");
+            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
             return;
           }
           if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
+            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
             return;
           }
           if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
+            showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
             return;
           }
         }
@@ -1136,6 +1190,7 @@ function renderCharacter() {
   characterAudio = null;
   dialogIndex = 0;
   document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
+  document.getElementById('inventory')?.classList.remove('dialog-gizli');
 
   let ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
@@ -1226,7 +1281,7 @@ function toggleCharacterLine(ch) {
         setDay2State('GO_HAN');
       }
       renderRoom();
-      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.");
+      showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.", true);
     });
     return;
   }
@@ -1259,6 +1314,7 @@ function toggleCharacterLine(ch) {
       characterAudio.play().catch(() => {});
     }
     document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
+    document.getElementById('inventory')?.classList.add('dialog-gizli');
     gosterDialogSatiri(dialog);
   } else {
     dialogIndex++;
@@ -1271,6 +1327,7 @@ function toggleCharacterLine(ch) {
       dialogueActive = false;
       if (stage) stage.classList.remove('dialog-active');
       document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
+      document.getElementById('inventory')?.classList.remove('dialog-gizli');
       if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }
