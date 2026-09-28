@@ -18,7 +18,9 @@ function setDay2State(newState) {
   localStorage.setItem('sd_day2_state', newState);
 }
 
-// case.json isteğine timestamp ekleyerek cache sorununu önlüyoruz
+// --- ŞİFRE KİRMA MİNİ OYUNU DEĞİŞKENLERİ ---
+let lockDigits = [0, 0, 0, 0, 0];
+
 fetch('case.json?v=' + Date.now())
   .then(r => {
     if (!r.ok) throw new Error("HTTP Hata Kodu: " + r.status);
@@ -170,11 +172,137 @@ function renderRoom() {
       });
     }
 
+    // --- ŞİFRE MİNİ OYUNU EKRANI KONTROLÜ ---
+    if (currentRoom === 'gazeteci_oda_sifre_giris') {
+      renderSifreMinigame(stage);
+    }
+
     stage.classList.remove('fading');
   }, 180);
 }
 
+/* ---------- ŞİFRE MİNİ OYUNU SİSTEMİ ---------- */
+function renderSifreMinigame(stage) {
+  const numCoords = [
+    { x: "32.8%", y: "57.5%" },
+    { x: "39.0%", y: "57.2%" },
+    { x: "46.1%", y: "57.3%" },
+    { x: "52.7%", y: "57.2%" },
+    { x: "59.2%", y: "57.2%" }
+  ];
+
+  const incCoords = [
+    { x: "32.7%", y: "36.1%" },
+    { x: "39.5%", y: "36.0%" },
+    { x: "45.9%", y: "36.4%" },
+    { x: "52.7%", y: "36.0%" },
+    { x: "59.8%", y: "36.1%" }
+  ];
+
+  const decCoords = [
+    { x: "32.6%", y: "79.0%" },
+    { x: "39.2%", y: "78.5%" },
+    { x: "45.3%", y: "78.5%" },
+    { x: "52.4%", y: "78.7%" },
+    { x: "59.0%", y: "78.5%" }
+  ];
+
+  // 1. Sayıların Ekranda Gösterimi
+  numCoords.forEach((c, idx) => {
+    const digitEl = document.createElement('div');
+    digitEl.id = `sifreDigit_${idx}`;
+    digitEl.style.position = 'absolute';
+    digitEl.style.left = c.x;
+    digitEl.style.top = c.y;
+    digitEl.style.transform = 'translate(-50%, -50%)';
+    digitEl.style.fontSize = 'clamp(24px, 3.5cqw, 48px)';
+    digitEl.style.fontWeight = 'bold';
+    digitEl.style.fontFamily = 'monospace, serif';
+    digitEl.style.color = '#e9dcc0';
+    digitEl.style.textShadow = '0 2px 6px rgba(0,0,0,0.9)';
+    digitEl.style.userSelect = 'none';
+    digitEl.style.pointerEvents = 'none';
+    digitEl.style.zIndex = '10';
+    digitEl.textContent = lockDigits[idx];
+    stage.appendChild(digitEl);
+  });
+
+  // 2. Arttırma Butonları
+  incCoords.forEach((c, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'hotspot';
+    btn.style.position = 'absolute';
+    btn.style.left = c.x;
+    btn.style.top = c.y;
+    btn.style.width = '5.5%';
+    btn.style.height = '8.5%';
+    btn.style.transform = 'translate(-50%, -50%)';
+    btn.style.cursor = 'pointer';
+    btn.style.zIndex = '11';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      lockDigits[idx] = (lockDigits[idx] + 1) % 10;
+      document.getElementById(`sifreDigit_${idx}`).textContent = lockDigits[idx];
+      if (typeof calSes === 'function') calSes('kapan');
+    };
+    stage.appendChild(btn);
+  });
+
+  // 3. Azaltma Butonları
+  decCoords.forEach((c, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'hotspot';
+    btn.style.position = 'absolute';
+    btn.style.left = c.x;
+    btn.style.top = c.y;
+    btn.style.width = '5.5%';
+    btn.style.height = '8.5%';
+    btn.style.transform = 'translate(-50%, -50%)';
+    btn.style.cursor = 'pointer';
+    btn.style.zIndex = '11';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      lockDigits[idx] = (lockDigits[idx] + 9) % 10;
+      document.getElementById(`sifreDigit_${idx}`).textContent = lockDigits[idx];
+      if (typeof calSes === 'function') calSes('kapan');
+    };
+    stage.appendChild(btn);
+  });
+
+  // 4. İlerle Butonu
+  const ilerleBtn = document.createElement('button');
+  ilerleBtn.className = 'btn show';
+  ilerleBtn.textContent = 'İlerle';
+  ilerleBtn.style.position = 'absolute';
+  ilerleBtn.style.right = '6%';
+  ilerleBtn.style.bottom = '8%';
+  ilerleBtn.style.zIndex = '12';
+  ilerleBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (lockDigits.join('') === '13697') {
+      if (typeof calSes === 'function') calSes('kilit_ac');
+      currentRoom = 'gazeteci_oda_canta_ici';
+      renderRoom();
+    } else {
+      if (typeof calSes === 'function') calSes('hata');
+      showCustomSubtitle("Dedektif: Yanlış şifre... Kilit açılmadı.");
+    }
+  };
+  stage.appendChild(ilerleBtn);
+}
+
 function handleHotspot(h) {
+  if (h.type === 'yanik_kagit_topla') {
+    collect('yanik_kagit', 'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp');
+    showCustomSubtitle("Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.");
+    return;
+  }
+
+  if (h.type === 'big_photo') {
+    openBigPaperModal(h.image);
+    return;
+  }
+
   if (h.type === 'gazeteci_odasi_gecis' || (currentRoom === 'han' && (h.target === 'han_kapi' || h.target === 'gazeteci_oda' || h.target === 'gazeteci_odasi'))) {
     currentRoom = 'han_kapi';
     renderRoom();
@@ -206,7 +334,7 @@ function handleHotspot(h) {
     }
   }
 
-  // --- 2. GÜN GEZİNTİ KISITLAMALARI (SADECE ODA GEÇİŞLERİ İÇİN KONTROL EDİLİR) ---
+  // --- 2. GÜN GEZİNTİ KISITLAMALARI ---
   if (currentDay === 2 && h.type === 'navigate') {
     if (day2State === 'GO_MUHTAR') {
       if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
@@ -221,7 +349,7 @@ function handleHotspot(h) {
     } else if (day2State === 'HAN_UNLOCKED') {
       const allowedRoomsInHan = [
         'han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 
-        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
+        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
       ];
       if (h.target && !allowedRoomsInHan.includes(h.target)) {
         showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
@@ -338,6 +466,18 @@ function openPhoto(src) {
   if (el) zoomKur(el.parentElement, el);
 }
 
+/* DEVASE ÇERÇEVESİZ TAM EKRAN DOSYA GÖRÜNÜMÜ */
+function openBigPaperModal(src) {
+  showModal(`
+    <button class="reader-close" style="position:fixed; top:25px; right:25px; z-index:10001; font-size:36px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9);" onclick="closeModal()">✕</button>
+    <div class="zoom-wrap" style="width:94vw; height:92vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="${src}" style="max-width:100%; max-height:100%; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
+    </div>
+  `, true);
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
 function updateDayBadge() {
   const el = document.getElementById('dayBadge');
   if (el) el.textContent = `GÜN ${currentDay}`;
@@ -418,7 +558,17 @@ function renderInventory(lastImage) {
         <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
         <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
       `;
-      el.title = 'Polaroid Fotoğraf';
+      el.title = '(İşlenmemiş) Polaroid Fotoğraf';
+    } else if (id === 'yanik_kagit') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" alt="Yanık Kağıt" style="width: 55%; height: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: 0.7cqw; color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Yanık Kağıt</span>
+      `;
+      el.title = 'Yanık Kağıt';
     } else if (id === 'gazeteci_dosyasi') {
       el.style.display = "flex";
       el.style.flexDirection = "column";
@@ -494,11 +644,6 @@ function openExamine(itemId) {
     return;
   }
 
-  // Polaroid / Kamera tıklandığında altyazıyı tetikle
-  if (itemId === 'kamera_item') {
-    showCustomSubtitle("Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem...");
-  }
-
   const isCollected = item.collectId && inventory.includes(item.collectId);
 
   const imgHtml = item.image
@@ -532,20 +677,6 @@ function openExamine(itemId) {
   if (item.image) { const el = document.getElementById('examineZoomImg'); if (el) zoomKur(el.parentElement, el); }
 }
 
-function tryUnlock(itemId) {
-  const item = CASE.items[itemId];
-  const val = document.getElementById('unlockInput').value.trim();
-  if (val === item.lockedCode) {
-    showModal(`<h3>${item.title}</h3><p>${item.unlockedText || 'çözüldü.'}</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
-  } else {
-    const unInp = document.getElementById('unlockInput');
-    if (unInp) {
-      unInp.style.borderColor = '#8f3a2e';
-      unInp.placeholder = 'yanlış kod';
-    }
-  }
-}
-
 function collect(collectId, image) {
   if (!inventory.includes(collectId)) {
     inventory.push(collectId);
@@ -554,6 +685,10 @@ function collect(collectId, image) {
   }
   closeModal();
   renderRoom();
+
+  if (collectId === 'polaroid') {
+    showCustomSubtitle("Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem...");
+  }
 }
 
 function openTV(deviceId) {
@@ -658,7 +793,7 @@ function openMap() {
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.");
             return;
           }
-          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_masa'].includes(h.target)) {
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.");
             return;

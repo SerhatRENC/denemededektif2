@@ -83,24 +83,9 @@
       "background": "assets/odalar/gazeteci_oda.webp",
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
-        {
-          "x": "23.0%", "y": "82.3%",
-          "type": "navigate", "target": "gazeteci_oda_canta",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Çanta", "hint": "Çantaya yaklaş"
-        },
-        {
-          "x": "64.7%", "y": "79.2%",
-          "type": "navigate", "target": "gazeteci_oda_masa",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Masa", "hint": "Masaya yaklaş"
-        },
-        {
-          "x": "46.9%", "y": "60.0%",
-          "type": "navigate", "target": "gazeteci_oda_cop",
-          "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%",
-          "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş"
-        }
+        { "x": "23.0%", "y": "82.3%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çanta", "hint": "Çantaya yaklaş" },
+        { "x": "64.7%", "y": "79.2%", "type": "navigate", "target": "gazeteci_oda_masa", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Masa", "hint": "Masaya yaklaş" },
+        { "x": "46.9%", "y": "60.0%", "type": "navigate", "target": "gazeteci_oda_cop", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş" }
       ]
     },
 
@@ -108,7 +93,16 @@
       "label": "Çöp Kutusu",
       "background": "assets/odalar/gazeteci_odasi_cöp.webp",
       "hotspots": [
-        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" }
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
+        {
+          "x": "40.0%", "y": "40.0%", "w": "20.0%", "h": "25.0%",
+          "type": "yanik_kagit_topla",
+          "icon": "assets/arayuz/el.webp",
+          "iconWidth": "7%",
+          "overlayImage": "assets/tiklanabilir/yanik_kagit_tiklanabilir.webp",
+          "hideIfCollected": "yanik_kagit",
+          "hint": "Yanık Kağıdı İncele"
+        }
       ]
     },
 
@@ -134,6 +128,14 @@
       ]
     },
 
+    "gazeteci_oda_canta_ici": {
+      "label": "Çantanın İçi",
+      "background": "assets/odalar/canta_ici.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Çantaya dön" }
+      ]
+    },
+
     "gazeteci_oda_masa": {
       "label": "Gazetecinin Masası",
       "background": "assets/odalar/gazeteci_oda_masa_bos.webp",
@@ -141,7 +143,7 @@
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
         {
           "x": "17.9%", "y": "22.1%", "w": "26.3%", "h": "67.5%",
-          "type": "photo",
+          "type": "big_photo",
           "image": "assets/arayuz/gazeteci_dosya.webp",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
           "hint": "Gazeteci Dosyasını İncele"
@@ -428,16 +430,22 @@
 
   "items": {
     "kamera_item": {
-      "title": "Polaroid Fotoğraf",
+      "title": "(İşlenmemiş) Polaroid Fotoğraf",
       "image": "assets/arayuz/poloroid.webp",
       "collectId": "polaroid",
-      "desc": "Dedektif: Bu fotoğrafı fotoğraf odasına sokmadan göremem..."
+      "desc": ""
     },
     "kagit_item": {
       "title": "Gazeteci Dosyası",
       "image": "assets/arayuz/gazeteci_dosya.webp",
       "collectId": "gazeteci_dosyasi",
       "desc": "Gazetecinin masasındaki gizli dosya ve notlar."
+    },
+    "yanik_kagit": {
+      "title": "Yanık Kağıt",
+      "image": "assets/tiklanabilir/yanik_kagit_tiklanabilir.webp",
+      "collectId": "yanik_kagit",
+      "desc": "Çöp kutusundan çıkan tamamen yanmış kağıt parçası."
     }
   },
 
