@@ -11,15 +11,22 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=4">
 <title>Sislidere Köyü Davası</title>
 
-<!-- Service Worker Kaydı -->
+<!-- Service Worker (Geliştirme Aşamasında Pasif & Temizleme) -->
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker Aktif:', reg.scope))
-        .catch(err => console.error('Service Worker Kayıt Hatası:', err));
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
     });
   }
+  /* OYUN BİTİNCE YAYINLARKEN AÇILACAK KOD:
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+  */
 </script>
 
 <style>
@@ -633,24 +640,20 @@ let deferredPrompt;
 const installWrap = document.getElementById('pwaInstallWrap');
 const installBtn = document.getElementById('pwaInstallBtn');
 
-// Zaten uygulama olarak açılmışsa yükle butonunu tamamen gizle
 if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
   if (installWrap) installWrap.style.display = 'none';
 }
 
-// Android (Chrome) Yükleme İsteyi Yakalama
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   if (installWrap) installWrap.classList.add('show');
 });
 
-// Butona Basıldığında Tetiklenen Mantık
 installBtn.addEventListener('click', () => {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   if (deferredPrompt) {
-    // Android / Chrome: Resmi Yükleme Penceresini Aç
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
@@ -659,10 +662,8 @@ installBtn.addEventListener('click', () => {
       deferredPrompt = null;
     });
   } else if (isIOS) {
-    // iOS / Safari: Alt Kısımdaki Paylaş Menüsü Rehberini Aç
     document.getElementById('pwa-guide-modal').classList.add('aktif');
   } else {
-    // Diğer Durumlar (Masaüstü veya Desteklemeyen Cihazlar)
     alert('Uygulamayı eklemek için tarayıcı menünüzden "Ana Ekrana Ekle" seçeneğini kullanabilirsiniz.');
   }
 });

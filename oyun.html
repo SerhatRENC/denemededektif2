@@ -17,15 +17,22 @@
 <script src="vfx.js"></script>
 <script src="sfx.js"></script>
 
-<!-- Service Worker Kaydı -->
+<!-- Service Worker (Geliştirme Aşamasında Pasif & Temizleme) -->
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker Aktif:', reg.scope))
-        .catch(err => console.error('Service Worker Kayıt Hatası:', err));
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
     });
   }
+  /* OYUN BİTİNCE YAYINLARKEN AÇILACAK KOD:
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+  */
 </script>
 </head>
 <body>
@@ -200,13 +207,10 @@
 
     const _handleHotspotOrijinal = handleHotspot;
     handleHotspot = function (h) {
-      // Gazeteci kapısındaki tokmak (Kapıyı Aç) tıklandığında
       if (h.type === 'kapida_konus') {
-        // 1. Özel kilit sesini çal
         const kilitAudio = new Audio('assets/ses/kilit.mp3');
         kilitAudio.play().catch(() => {});
 
-        // 2. Karakter görselini sağda oluştur
         let charImg = document.getElementById('tempKapiChar');
         if (!charImg) {
           charImg = document.createElement('img');
@@ -222,7 +226,6 @@
         charImg.src = h.characterImage || 'assets/karakterler/riza.webp';
         charImg.style.display = 'block';
 
-        // 3. Özel Diyalog Kutusu Oluştur
         let subBox = document.getElementById('kapiSubtitleBox');
         if (!subBox) {
           subBox = document.createElement('div');
@@ -254,7 +257,6 @@
             subBox.style.display = 'block';
             dIndex++;
           } else {
-            // Sohbet bitince elemanları kaldır
             if (subBox) subBox.remove();
             if (charImg) charImg.remove();
             document.getElementById('stageFrame').removeEventListener('click', adimAt);
