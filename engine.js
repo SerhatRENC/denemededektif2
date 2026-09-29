@@ -155,25 +155,22 @@ function renderRoom() {
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
 
-          // Eğer hotspot'a özel bir x/y/w/h verilmişse arka planı kaplamak yerine tam o alana konumlandır[cite: 1]
-          if (h.w && h.h) {
-            ovImg.style.left = h.x || '0';
-            ovImg.style.top = h.y || '0';
-            ovImg.style.width = h.w;
-            ovImg.style.height = h.h;
-            ovImg.style.objectFit = 'contain';
-            ovImg.style.transformOrigin = 'center center';
-          } else {
-            ovImg.style.left = '0';
-            ovImg.style.top = '0';
-            ovImg.style.width = '100%';
-            ovImg.style.height = '100%';
-          }
+          // Çanta içi ve Bakırcılar gibi tam ekran saydam katmanlar için varsayılan tam boy konumlandırma
+          ovImg.style.left = '0';
+          ovImg.style.top = '0';
+          ovImg.style.width = '100%';
+          ovImg.style.height = '100%';
 
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
           ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
           
+          if (h.x && h.y) {
+            const centerX = `calc(${h.x} + (${h.w || '10%'} / 2))`;
+            const centerY = `calc(${h.y} + (${h.h || '10%'} / 2))`;
+            ovImg.style.transformOrigin = `${centerX} ${centerY}`;
+          }
+
           stage.appendChild(ovImg);
         }
 
@@ -479,12 +476,12 @@ function handleHotspot(h) {
 
     if (currentDay === 2) {
       if (day2State === 'GO_MUHTAR') {
-        if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
+        if (h.target && !['muhtar', 'merkez', 'ofis', 'masa', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
           showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
           return;
         }
       } else if (day2State === 'GO_HAN') {
-        if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+        if (h.target && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
           showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
           return;
         }
@@ -1181,12 +1178,12 @@ function openMap() {
         }
 
         if (currentDay === 2) {
-          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
+          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
             return;
           }
-          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar'].includes(h.target)) {
+          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
             return;

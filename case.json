@@ -253,7 +253,10 @@
     },
 
     "degirmenci": {
-      "label": "Değirmenci", "background": "assets/odalar/degirmenci.webp",
+      "label": "Değirmenci", 
+      "background": "assets/odalar/degirmenci.webp", 
+      "closedOnDays": [2], 
+      "closedImage": "assets/odalar/degirmenci_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
 
@@ -263,12 +266,18 @@
     },
 
     "nadire_ev": {
-      "label": "Nadire Ev", "background": "assets/odalar/nadire_ev.webp",
+      "label": "Nadire Ev", 
+      "background": "assets/odalar/nadire_ev.webp", 
+      "closedOnDays": [2], 
+      "closedImage": "assets/odalar/nadire_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
 
     "halit_ev": {
-      "label": "Halit Ev", "background": "assets/odalar/halit_ev.webp", "closedOnDays": [2], "closedImage": "assets/odalar/halit_ev_kapi.webp",
+      "label": "Halit Ev", 
+      "background": "assets/odalar/halit_ev.webp", 
+      "closedOnDays": [2], 
+      "closedImage": "assets/odalar/halit_ev_kapi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     }
   },
