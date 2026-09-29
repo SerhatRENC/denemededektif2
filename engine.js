@@ -21,6 +21,12 @@ function setDay2State(newState) {
 // --- ŞİFRE KİRMA MİNİ OYUNU DEĞİŞKENLERİ ---
 let lockDigits = [0, 0, 0, 0, 0];
 
+// --- GAZETECİ DOSYASI ÇOKLU SAYFA DEĞİŞKENLERİ ---
+let gazeteciDosyaPagesDefault = [
+  'assets/arayuz/gazeteci_dosya_1.webp',
+  'assets/arayuz/gazeteci_dosya_2.webp'
+];
+
 fetch('case.json?v=' + Date.now())
   .then(r => {
     if (!r.ok) throw new Error("HTTP Hata Kodu: " + r.status);
@@ -321,6 +327,11 @@ function handleHotspot(h) {
     return;
   }
 
+  if (h.type === 'gazeteci_dosya_modal') {
+    openGazeteciDosyaModal(h.images || gazeteciDosyaPagesDefault, 0);
+    return;
+  }
+
   if (h.type === 'big_photo') {
     openBigPaperModal(h.image);
     return;
@@ -423,6 +434,39 @@ function openYanikKagitModal() {
         ENVANTERE EKLE
       </button>
     </div>
+  `;
+
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
+/* 2 SAYFALI GAZETECİ DOSYASI MODAL SİSTEMİ */
+function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; align-items:center; justify-content:center;";
+
+  const src = pages[index];
+  const total = pages.length;
+
+  const prevDisabled = index === 0 ? 'disabled' : '';
+  const nextDisabled = index === total - 1 ? 'disabled' : '';
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10001;" onclick="openGazeteciDosyaModal(CASE.rooms.gazeteci_oda_masa.hotspots.find(h=>h.type==='gazeteci_dosya_modal')?.images || gazeteciDosyaPagesDefault, ${index - 1})" ${prevDisabled}>‹</button>
+    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="${src}" style="max-width:92vw; max-height:92vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>${src}</div>'">
+    </div>
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10001;" onclick="openGazeteciDosyaModal(CASE.rooms.gazeteci_oda_masa.hotspots.find(h=>h.type==='gazeteci_dosya_modal')?.images || gazeteciDosyaPagesDefault, ${index + 1})" ${nextDisabled}>›</button>
   `;
 
   const el = document.getElementById('photoZoomImg');
@@ -539,7 +583,7 @@ function openPhoto(src) {
   if (el) zoomKur(el.parentElement, el);
 }
 
-/* DEVASE BLURLU ARKA PLANLI DOSYA GÖRÜNÜMÜ */
+/* DEVASE BLURLU ARKA PLANLI TEKİL GÖRSEL MODAL SİSTEMİ */
 function openBigPaperModal(src) {
   const body = document.getElementById('modalBody');
   const bg = document.getElementById('modalBg');

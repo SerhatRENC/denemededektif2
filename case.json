@@ -151,8 +151,11 @@
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" },
         {
           "x": "17.9%", "y": "22.1%", "w": "26.3%", "h": "67.5%",
-          "type": "big_photo",
-          "image": "assets/arayuz/gazeteci_dosya.webp",
+          "type": "gazeteci_dosya_modal",
+          "images": [
+            "assets/arayuz/gazeteci_dosya_1.webp",
+            "assets/arayuz/gazeteci_dosya_2.webp"
+          ],
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kagit_tiklanabilir.webp",
           "hint": "Gazeteci Dosyasını İncele"
         },
