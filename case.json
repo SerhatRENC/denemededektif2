@@ -84,9 +84,9 @@
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         { "x": "23.0%", "y": "82.3%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çanta", "hint": "Çantaya yaklaş" },
-        { "x": "64.7%", "y": "79.2%", "type": "navigate", "target": "gazeteci_oda_masa", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Masa", "hint": "Masaya yaklaş" },
-        { "x": "46.9%", "y": "60.0%", "type": "navigate", "target": "gazeteci_oda_cop", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş" },
-        { "x": "48.0%", "y": "28.0%", "type": "navigate", "target": "gazeteci_oda_tablo", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Tablo", "hint": "Yatağın üzerindeki tabloyu incele" }
+        { "x": "69.8%", "y": "81.2%", "type": "navigate", "target": "gazeteci_oda_masa", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Masa", "hint": "Masaya yaklaş" },
+        { "x": "49.0%", "y": "65.1%", "type": "navigate", "target": "gazeteci_oda_cop", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş" },
+        { "x": "18.1%", "y": "28.1%", "type": "navigate", "target": "gazeteci_oda_tablo", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Tablo", "hint": "Yatağın üzerindeki tabloyu incele" }
       ]
     },
 
