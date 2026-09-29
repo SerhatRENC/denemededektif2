@@ -141,7 +141,29 @@
     "gazeteci_oda_canta_ici": {
       "label": "Çantanın İçi",
       "background": "assets/odalar/canta_ici.webp",
-      "hotspots": []
+      "hotspots": [
+        {
+          "x": "22.0%", "y": "30.0%", "w": "24.0%", "h": "45.0%",
+          "type": "canta_evlilik_cuzdan_modal",
+          "overlayImage": "assets/tiklanabilir/evlilik_cuzdan_tiklanabilir.webp",
+          "hideIfCollected": "evlilik_cuzdan",
+          "hint": "Evlilik Cüzdanını İncele"
+        },
+        {
+          "x": "48.0%", "y": "30.0%", "w": "24.0%", "h": "45.0%",
+          "type": "canta_kagitlar_modal",
+          "overlayImage": "assets/tiklanabilir/canta_kagitlar_tiklanabilir.webp",
+          "hideIfCollected": "canta_kagitlar_incelendi",
+          "hint": "Kağıtları İncele"
+        },
+        {
+          "x": "72.0%", "y": "30.0%", "w": "22.0%", "h": "45.0%",
+          "type": "canta_polaroid_modal",
+          "overlayImage": "assets/tiklanabilir/canta_poloroid_tiklanabilir.webp",
+          "hideIfCollected": "polaroid",
+          "hint": "Polaroid Fotoğrafı İncele"
+        }
+      ]
     },
 
     "gazeteci_oda_masa": {
@@ -161,9 +183,8 @@
         },
         {
           "x": "57.6%", "y": "1.1%", "w": "28.9%", "h": "59.9%",
-          "type": "examine", "target": "kamera_item",
+          "type": "kamera_bos_subtitle",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
-          "hideIfCollected": "polaroid",
           "hint": "Kamerayı İncele"
         }
       ]
@@ -445,6 +466,12 @@
       "image": "assets/arayuz/poloroid.webp",
       "collectId": "polaroid",
       "desc": ""
+    },
+    "evlilik_cuzdan": {
+      "title": "Evlilik Cüzdanı",
+      "image": "assets/arayuz/evlilik_cuzdan.webp",
+      "collectId": "evlilik_cuzdan",
+      "desc": "Gazetecinin çantasından çıkan evlilik cüzdanı."
     },
     "kagit_item": {
       "title": "Gazeteci Dosyası",
