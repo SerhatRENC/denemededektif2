@@ -2,6 +2,22 @@
    ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Düzeltilmiş)
    ============================================================ */
 
+// Diyalog esnasında arka plandaki tüm hotspot ve görselleri gizleyen CSS kuralı
+if (!document.getElementById('dialogHideStyle')) {
+  const style = document.createElement('style');
+  style.id = 'dialogHideStyle';
+  style.textContent = `
+    #stage.dialog-active .hotspot,
+    #stage.dialog-active .hotspot-pulse-wrap,
+    #stage.dialog-active .room-clickable-glow,
+    #stage.dialog-active .room-clickable-hit {
+      display: none !important;
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 let CASE = null;
 let currentRoom = null;
 let inventory = [];
@@ -132,17 +148,26 @@ function renderRoom() {
         if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
         if (h.requiresDay2State && day2State !== h.requiresDay2State) return;
 
+        let ovImg = null;
         if (h.overlayImage) {
-          const ovImg = document.createElement('img');
+          ovImg = document.createElement('img');
           ovImg.className = 'room-clickable-glow';
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
-          ovImg.style.left = h.x || '0';
-          ovImg.style.top = h.y || '0';
-          ovImg.style.width = h.w || '100%';
-          ovImg.style.height = h.h || '100%';
+          ovImg.style.left = '0';
+          ovImg.style.top = '0';
+          ovImg.style.width = '100%';
+          ovImg.style.height = '100%';
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
+          ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
+          
+          if (h.x && h.y) {
+            const centerX = `calc(${h.x} + (${h.w || '10%'} / 2))`;
+            const centerY = `calc(${h.y} + (${h.h || '10%'} / 2))`;
+            ovImg.style.transformOrigin = `${centerX} ${centerY}`;
+          }
+          
           stage.appendChild(ovImg);
         }
 
@@ -193,6 +218,17 @@ function renderRoom() {
         el.style.zIndex = '10';
         el.style.pointerEvents = 'auto';
         el.style.cursor = 'pointer';
+
+        if (ovImg) {
+          el.onmouseenter = () => {
+            ovImg.style.transform = 'scale(1.08)';
+            ovImg.style.filter = 'brightness(1.2) drop-shadow(0 0 10px rgba(233,220,192,0.8))';
+          };
+          el.onmouseleave = () => {
+            ovImg.style.transform = 'scale(1)';
+            ovImg.style.filter = 'none';
+          };
+        }
 
         const iconHtml = h.icon
           ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
@@ -569,7 +605,7 @@ function closeCantaKagitlarModal() {
   renderRoom();
   setTimeout(() => {
     showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true);
-  }, 100);
+  }, 300);
 }
 
 function openCantaPolaroidModal() {
@@ -1544,6 +1580,8 @@ function renderSceneCharacter(ch, stage) {
 }
 
 function toggleCharacterLine(ch) {
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+
   // --- 2. GÜN ÖZEL DİYALOG TİTLEMELERİ ---
   if (currentDay === 2) {
     if (currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
@@ -1634,7 +1672,6 @@ function toggleCharacterLine(ch) {
     }
   }
 
-  const stage = document.getElementById('stage') || document.getElementById('gameStage');
   const charEl = document.getElementById('sceneCharacter');
   const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
 
@@ -1642,6 +1679,7 @@ function toggleCharacterLine(ch) {
     dialogueActive = true;
     dialogIndex = 0;
     if (charEl) charEl.classList.add('talking');
+    if (stage) stage.classList.add('dialog-active');
     if (ch.audio) {
       characterAudio = new Audio(ch.audio);
       characterAudio.play().catch(() => {});
