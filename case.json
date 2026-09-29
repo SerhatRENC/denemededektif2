@@ -85,7 +85,16 @@
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "han", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Hana dön" },
         { "x": "23.0%", "y": "82.3%", "type": "navigate", "target": "gazeteci_oda_canta", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çanta", "hint": "Çantaya yaklaş" },
         { "x": "64.7%", "y": "79.2%", "type": "navigate", "target": "gazeteci_oda_masa", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Masa", "hint": "Masaya yaklaş" },
-        { "x": "46.9%", "y": "60.0%", "type": "navigate", "target": "gazeteci_oda_cop", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş" }
+        { "x": "46.9%", "y": "60.0%", "type": "navigate", "target": "gazeteci_oda_cop", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Çöp Kutusu", "hint": "Çöp kutusuna yaklaş" },
+        { "x": "48.0%", "y": "28.0%", "type": "navigate", "target": "gazeteci_oda_tablo", "icon": "assets/arayuz/buyutec.webp", "iconWidth": "6%", "label": "Tablo", "hint": "Yatağın üzerindeki tabloyu incele" }
+      ]
+    },
+
+    "gazeteci_oda_tablo": {
+      "label": "Duvar Tablosu",
+      "background": "assets/odalar/gazeteci_oda_tablo.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "gazeteci_oda", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Odaya dön" }
       ]
     },
 
@@ -132,14 +141,7 @@
     "gazeteci_oda_canta_ici": {
       "label": "Çantanın İçi",
       "background": "assets/odalar/canta_ici.webp",
-      "hotspots": [
-        {
-          "x": "91.0%", "y": "8.0%",
-          "type": "navigate", "target": "gazeteci_oda",
-          "icon": "assets/arayuz/kapat.webp", "iconWidth": "5.5%",
-          "label": "Kapat", "hint": "Odaya dön"
-        }
-      ]
+      "hotspots": []
     },
 
     "gazeteci_oda_masa": {
@@ -303,7 +305,6 @@
         { "speaker": "Kamuran", "text": "Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım." },
         { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydu Ali İhsan beyle?" },
         { "speaker": "Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana." },
-        { "speaker": "Kamuran", "text": "Ben mektepli olduğum için tıbbi bitkiler hakkında bilgiliyimdir." },
         { "speaker": "Kamuran", "text": "Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş." },
         { "speaker": "Dedektif", "text": "Üzerlik nedir?" },
         { "speaker": "Kamuran", "text": "Normalde sonumun için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar." },

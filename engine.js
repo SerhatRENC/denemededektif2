@@ -177,6 +177,22 @@ function renderRoom() {
       renderSifreMinigame(stage);
     }
 
+    // --- ÇANTA İÇİ ÖZEL SADE ÇARPI (✕) KAPATMA BUTONU ---
+    if (currentRoom === 'gazeteci_oda_canta_ici') {
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕';
+      closeBtn.className = 'canta-close-btn';
+      closeBtn.style.cssText = "position:absolute; top:4%; right:4%; z-index:20; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(0,0,0,0.65); border:2px solid #e9dcc0; border-radius:50%; width:clamp(38px, 4.5cqw, 52px); height:clamp(38px, 4.5cqw, 52px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; text-shadow:0 2px 6px rgba(0,0,0,0.8); transition:all 0.2s;";
+      closeBtn.onmouseover = () => closeBtn.style.transform = 'scale(1.1)';
+      closeBtn.onmouseout = () => closeBtn.style.transform = 'scale(1)';
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        currentRoom = 'gazeteci_oda';
+        renderRoom();
+      };
+      stage.appendChild(closeBtn);
+    }
+
     stage.classList.remove('fading');
   }, 180);
 }
@@ -207,7 +223,6 @@ function renderSifreMinigame(stage) {
     { x: "59.0%", y: "78.5%" }
   ];
 
-  // 1. Sayıların Ekranda Gösterimi
   numCoords.forEach((c, idx) => {
     const digitEl = document.createElement('div');
     digitEl.id = `sifreDigit_${idx}`;
@@ -227,7 +242,6 @@ function renderSifreMinigame(stage) {
     stage.appendChild(digitEl);
   });
 
-  // 2. Arttırma Butonları
   incCoords.forEach((c, idx) => {
     const btn = document.createElement('div');
     btn.className = 'hotspot';
@@ -248,7 +262,6 @@ function renderSifreMinigame(stage) {
     stage.appendChild(btn);
   });
 
-  // 3. Azaltma Butonları
   decCoords.forEach((c, idx) => {
     const btn = document.createElement('div');
     btn.className = 'hotspot';
@@ -269,7 +282,6 @@ function renderSifreMinigame(stage) {
     stage.appendChild(btn);
   });
 
-  // 4. İlerle Butonu (5. Sayının Yanına Yerleştirildi)
   const ilerleBtn = document.createElement('button');
   ilerleBtn.className = 'btn show';
   ilerleBtn.textContent = 'İlerle';
@@ -360,7 +372,7 @@ function handleHotspot(h) {
     } else if (day2State === 'HAN_UNLOCKED') {
       const allowedRoomsInHan = [
         'han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 
-        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'han_mutfak', 'han_depo'
+        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo', 'han_mutfak', 'han_depo'
       ];
       if (h.target && !allowedRoomsInHan.includes(h.target)) {
         showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
@@ -421,7 +433,6 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   const stage = document.getElementById('stage') || document.getElementById('stageFrame') || document.getElementById('gameStage');
   if (!stage) return;
   
-  // Konuşma yazısı çıktığı an envanteri gizle
   const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
   if (invEl) invEl.classList.add('dialog-gizli');
 
@@ -603,7 +614,6 @@ function wakeUp() {
   renderRoom();
 }
 
-/* YARI YARIYA KÜÇÜLTÜLMÜŞ ENVANTER TASARIMI */
 function renderInventory(lastImage) {
   const inv = document.getElementById('inventory');
   if (!inv) return;
@@ -615,11 +625,12 @@ function renderInventory(lastImage) {
   inventory.forEach(id => {
     const el = document.createElement('div');
     el.className = 'inv-item';
-    el.style.width = '28px';
-    el.style.height = '28px';
-    el.style.minWidth = '28px';
-    el.style.padding = '2px';
-    el.style.margin = '0 2px';
+    el.style.width = 'clamp(38px, 4.5cqw, 54px)';
+    el.style.height = 'clamp(38px, 4.5cqw, 54px)';
+    el.style.minWidth = 'clamp(38px, 4.5cqw, 54px)';
+    el.style.padding = '3px';
+    el.style.margin = '0 3px';
+    el.style.boxSizing = 'border-box';
 
     if (id === 'anahtar') {
       el.style.display = "flex";
@@ -627,8 +638,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 8px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
+        <img src="assets/tiklanabilir/anahtar.webp" alt="Anahtar" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: clamp(8px, 0.8cqw, 11px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
       `;
       el.title = 'Gazetecinin Oda Anahtarı';
     } else if (id === 'polaroid') {
@@ -637,8 +648,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
+        <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: clamp(7px, 0.7cqw, 10px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
       `;
       el.title = '(İşlenmemiş) Polaroid Fotoğraf';
     } else if (id === 'yanik_kagit') {
@@ -647,8 +658,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" alt="Yanık Kağıt" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Yanık Kağıt</span>
+        <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" alt="Yanık Kağıt" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: clamp(7px, 0.7cqw, 10px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Yanık Kağıt</span>
       `;
       el.title = 'Yanık Kağıt';
     } else if (id === 'gazeteci_dosyasi') {
@@ -657,8 +668,8 @@ function renderInventory(lastImage) {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.innerHTML = `
-        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        <span style="font-size: 7px; color: var(--amber-bright); margin-top: 1px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
+        <img src="assets/arayuz/gazeteci_dosya.webp" alt="Gazeteci Dosyası" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+        <span style="font-size: clamp(7px, 0.7cqw, 10px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Dosya</span>
       `;
       el.title = 'Gazeteci Dosyası';
     } else {
@@ -886,7 +897,7 @@ function openMap() {
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
             return;
           }
-          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa'].includes(h.target)) {
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
             return;
