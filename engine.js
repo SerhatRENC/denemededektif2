@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Düzeltilmiş)
+   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Güncellenmiş)
    ============================================================ */
 
 let CASE = null;
@@ -331,7 +331,7 @@ function renderSifreMinigame(stage) {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
       if (typeof calSes === 'function') calSes('kilit_ac');
-      setDay2State('CANTA_UNLOCKED'); // Çanta açıldı! Artık odadan çıkılabilir.
+      setDay2State('CANTA_UNLOCKED'); // Çanta açıldı!
       currentRoom = 'gazeteci_oda_canta_ici';
       renderRoom();
     } else {
@@ -557,7 +557,7 @@ function closeCantaKagitlarModal() {
   }
   closeModal();
   renderRoom();
-  showCustomSubtitle("Dedektif: Bu kağıtlara bir şey yazamamış.", true);
+  showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true);
 }
 
 function openCantaPolaroidModal() {
@@ -656,7 +656,10 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   if (!stage) return;
   
   const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
+  const cornerEl = document.querySelector('.corner-icons');
+  
   if (invEl) invEl.classList.add('dialog-gizli');
+  if (cornerEl) cornerEl.classList.add('dialog-gizli');
 
   let sub = document.getElementById('sceneSubtitle');
   if (sub) sub.remove();
@@ -669,16 +672,18 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   sub.innerHTML = `<div class="scene-subtitle-text">${text} ${clickToDismiss ? '<span style="font-size:0.75em; opacity:0.8; margin-left:10px;">(Devam etmek için tıkla)</span>' : ''}</div>`;
   stage.appendChild(sub);
   
-  let timer = setTimeout(() => { 
-    if (sub) sub.remove(); 
+  const gizliKaldir = () => {
+    if (sub) sub.remove();
     if (invEl) invEl.classList.remove('dialog-gizli');
-  }, 5000);
+    if (cornerEl) cornerEl.classList.remove('dialog-gizli');
+  };
+
+  let timer = setTimeout(gizliKaldir, 5000);
   
   sub.onclick = (e) => {
     e.stopPropagation();
     clearTimeout(timer);
-    if (sub) sub.remove();
-    if (invEl) invEl.classList.remove('dialog-gizli');
+    gizliKaldir();
   };
 }
 
@@ -1543,6 +1548,12 @@ function toggleCharacterLine(ch) {
       startOzelDialog(CASE.day2_dialogs.polis_ofis, ch.image, () => {
         day2PolisGoruldu = true;
         localStorage.setItem('sd_day2_polis_goruldu', 'true');
+        
+        // Polaroid polise verildiği için envanterden siliniyor
+        inventory = inventory.filter(item => item !== 'polaroid');
+        localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+        renderInventory();
+
         renderRoom();
       });
       return;
