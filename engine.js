@@ -323,6 +323,7 @@ function renderSifreMinigame(stage) {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
       if (typeof calSes === 'function') calSes('kilit_ac');
+      setDay2State('CANTA_UNLOCKED'); // Çanta başarıyla açıldı, odadan çıkış serbestleşti
       currentRoom = 'gazeteci_oda_canta_ici';
       renderRoom();
     } else {
@@ -376,14 +377,16 @@ function handleHotspot(h) {
   }
 
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac' || (currentRoom === 'han_kapi' && h.type !== 'navigate')) {
-    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED';
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED';
 
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       
       inventory = inventory.filter(item => item !== 'anahtar');
       localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
-      setDay2State('HAN_UNLOCKED');
+      if (day2State !== 'CANTA_UNLOCKED') {
+        setDay2State('HAN_UNLOCKED');
+      }
       renderInventory();
       
       currentRoom = 'gazeteci_oda';
@@ -413,15 +416,17 @@ function handleHotspot(h) {
         return;
       }
     } else if (day2State === 'HAN_UNLOCKED') {
-      const allowedRoomsInHan = [
-        'han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 
-        'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo', 'han_mutfak', 'han_depo'
+      // Çanta henüz açılmadığı için odadan ve handan çıkış engellenir
+      const allowedInJournalistRoom = [
+        'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 
+        'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'
       ];
-      if (h.target && !allowedRoomsInHan.includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
+      if (h.target && !allowedInJournalistRoom.includes(h.target)) {
+        showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
         return;
       }
     }
+    // NOT: CANTA_UNLOCKED durumunda yukarıdaki engellere takılmaz, özgürce hareket edilir.
   }
 
   if (h.type === 'dialogue_bakirci1') {
@@ -1078,9 +1083,9 @@ function openMap() {
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
             return;
           }
-          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'].includes(h.target)) {
+          if (day2State === 'HAN_UNLOCKED' && !['gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Önce gazetecinin odasını araştırsam daha iyi olacak.", true);
+            showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
             return;
           }
         }
@@ -1484,7 +1489,7 @@ function toggleCharacterLine(ch) {
     document.getElementById('roomClickableHit')?.remove();
 
     startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
-      if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED') {
+      if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED' && day2State !== 'CANTA_UNLOCKED') {
         showAnahtarAcquisitionModal();
       } else {
         renderRoom();
