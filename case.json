@@ -40,16 +40,16 @@
       "label": "Çalışma Masası",
       "background": "assets/odalar/masa.webp",
       "hotspots": [
-        { "x": "12%", "y": "12%", "type": "navigate", "target": "ofis", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Geri çekil" },
-        { "x": "24%", "y": "30%", "w": "32%", "h": "48%", "type": "dosya", "icon": "assets/arayuz/sorgu.webp", "hint": "İfade zaptlarını incele" },
-        { "x": "58%", "y": "30%", "w": "30%", "h": "48%", "type": "notebook", "icon": "assets/arayuz/defter.webp", "hint": "Not defterini aç" },
+        { "x": "8%", "y": "10%", "type": "navigate", "target": "ofis", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Geri çekil" },
         { 
-          "x": "40%", "y": "65%", "w": "20%", "h": "25%", 
+          "x": "4%", "y": "32%", "w": "20%", "h": "45%", 
           "type": "otopsi_merkez_kaydi_modal", 
           "overlayImage": "assets/tiklanabilir/ali_ihsan_merkez_kaydi_tiklanabilir.webp", 
           "requiresDay2State": "CANTA_UNLOCKED",
           "hint": "Otopsi Raporu ve Cebindekileri İncele" 
-        }
+        },
+        { "x": "26%", "y": "30%", "w": "30%", "h": "48%", "type": "dosya", "icon": "assets/arayuz/sorgu.webp", "hint": "İfade zaptlarını incele" },
+        { "x": "58%", "y": "30%", "w": "30%", "h": "48%", "type": "notebook", "icon": "assets/arayuz/defter.webp", "hint": "Not defterini aç" }
       ]
     },
 
@@ -428,7 +428,7 @@
 
   "items": {
     "kamera_item": {
-      "title": "(İşlenmemiş) Polaroid Fotoğraf",
+      "title": "(İşlenmemiş) Polaroid Fotoğraf Kağıdı",
       "image": "assets/arayuz/poloroid.webp",
       "collectId": "polaroid",
       "desc": ""

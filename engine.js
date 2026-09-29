@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Güncellenmiş)
+   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Düzeltilmiş)
    ============================================================ */
 
 let CASE = null;
@@ -71,6 +71,14 @@ fetch('case.json?v=' + Date.now())
     }
   });
 
+/* ---------- ARAYÜZ GİZLEME / GÖSTERME (DİYALOG VE MODAL İÇİN) ---------- */
+function setUIElementsVisible(visible) {
+  const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
+  const cornerEl = document.querySelector('.corner-icons');
+  if (invEl) invEl.style.display = visible ? '' : 'none';
+  if (cornerEl) cornerEl.style.display = visible ? '' : 'none';
+}
+
 /* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
   if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
@@ -129,10 +137,10 @@ function renderRoom() {
           ovImg.className = 'room-clickable-glow';
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
-          ovImg.style.left = '0';
-          ovImg.style.top = '0';
-          ovImg.style.width = '100%';
-          ovImg.style.height = '100%';
+          ovImg.style.left = h.x || '0';
+          ovImg.style.top = h.y || '0';
+          ovImg.style.width = h.w || '100%';
+          ovImg.style.height = h.h || '100%';
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
           stage.appendChild(ovImg);
@@ -343,6 +351,8 @@ function renderSifreMinigame(stage) {
 }
 
 function handleHotspot(h) {
+  if (dialogueActive) return; // Diyalog sırasındaki tıklamaları engelle
+
   if (h.type === 'kamera_bos_subtitle') {
     showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
     return;
@@ -557,7 +567,9 @@ function closeCantaKagitlarModal() {
   }
   closeModal();
   renderRoom();
-  showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true);
+  setTimeout(() => {
+    showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true);
+  }, 100);
 }
 
 function openCantaPolaroidModal() {
@@ -655,11 +667,7 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   const stage = document.getElementById('stage') || document.getElementById('stageFrame') || document.getElementById('gameStage');
   if (!stage) return;
   
-  const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
-  const cornerEl = document.querySelector('.corner-icons');
-  
-  if (invEl) invEl.classList.add('dialog-gizli');
-  if (cornerEl) cornerEl.classList.add('dialog-gizli');
+  setUIElementsVisible(false);
 
   let sub = document.getElementById('sceneSubtitle');
   if (sub) sub.remove();
@@ -674,15 +682,17 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   
   const gizliKaldir = () => {
     if (sub) sub.remove();
-    if (invEl) invEl.classList.remove('dialog-gizli');
-    if (cornerEl) cornerEl.classList.remove('dialog-gizli');
+    setUIElementsVisible(true);
   };
 
-  let timer = setTimeout(gizliKaldir, 5000);
+  let timer = null;
+  if (!clickToDismiss) {
+    timer = setTimeout(gizliKaldir, 5000);
+  }
   
   sub.onclick = (e) => {
     e.stopPropagation();
-    clearTimeout(timer);
+    if (timer) clearTimeout(timer);
     gizliKaldir();
   };
 }
@@ -691,10 +701,8 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   dialogueActive = true;
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   stage.classList.add('dialog-active');
-  document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
   
-  const invEl = document.getElementById('inventory') || document.querySelector('.inventory-bar');
-  if (invEl) invEl.classList.add('dialog-gizli');
+  setUIElementsVisible(false);
 
   let charImg = document.getElementById('tempDay2Char');
   if (!charImg) {
@@ -724,8 +732,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
       const sub = document.getElementById('sceneSubtitle');
       if (sub) sub.remove();
       stage.classList.remove('dialog-active');
-      document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
-      if (invEl) invEl.classList.remove('dialog-gizli');
+      setUIElementsVisible(true);
       stage.removeEventListener('click', sonrakiSatir);
       dialogueActive = false;
       if (onCompleteCallback) onCompleteCallback();
@@ -890,7 +897,7 @@ function renderInventory(lastImage) {
         <img src="assets/arayuz/poloroid.webp" alt="Polaroid Fotoğraf" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
         <span style="font-size: clamp(7px, 0.7cqw, 10px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Polaroid</span>
       `;
-      el.title = '(İşlenmemiş) Polaroid Fotoğraf';
+      el.title = '(İşlenmemiş) Polaroid Fotoğraf Kağıdı';
     } else if (id === 'yanik_kagit') {
       el.style.display = "flex";
       el.style.flexDirection = "column";
@@ -1443,8 +1450,7 @@ function renderCharacter() {
   dialogueActive = false;
   characterAudio = null;
   dialogIndex = 0;
-  document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
-  document.getElementById('inventory')?.classList.remove('dialog-gizli');
+  setUIElementsVisible(true);
 
   // --- 2. GÜN OFİSE İLK GELİŞTE POLİS DİYALOĞU ---
   if (currentDay === 2 && currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
@@ -1549,7 +1555,7 @@ function toggleCharacterLine(ch) {
         day2PolisGoruldu = true;
         localStorage.setItem('sd_day2_polis_goruldu', 'true');
         
-        // Polaroid polise verildiği için envanterden siliniyor
+        // Sadece polaroid fotoğraf envanterden siliniyor
         inventory = inventory.filter(item => item !== 'polaroid');
         localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
         renderInventory();
@@ -1640,8 +1646,7 @@ function toggleCharacterLine(ch) {
       characterAudio = new Audio(ch.audio);
       characterAudio.play().catch(() => {});
     }
-    document.querySelector('.corner-icons')?.classList.add('dialog-gizli');
-    document.getElementById('inventory')?.classList.add('dialog-gizli');
+    setUIElementsVisible(false);
     gosterDialogSatiri(dialog);
   } else {
     dialogIndex++;
@@ -1653,8 +1658,7 @@ function toggleCharacterLine(ch) {
       if (c) c.remove();
       dialogueActive = false;
       if (stage) stage.classList.remove('dialog-active');
-      document.querySelector('.corner-icons')?.classList.remove('dialog-gizli');
-      document.getElementById('inventory')?.classList.remove('dialog-gizli');
+      setUIElementsVisible(true);
       if (ch.clickableImage) renderClickableCharacter(ch, stage);
       return;
     }
