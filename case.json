@@ -143,21 +143,21 @@
       "background": "assets/odalar/canta_ici.webp",
       "hotspots": [
         {
-          "x": "22.0%", "y": "30.0%", "w": "24.0%", "h": "45.0%",
+          "x": "36.9%", "y": "24.1%", "w": "39.8%", "h": "36.2%",
           "type": "canta_evlilik_cuzdan_modal",
           "overlayImage": "assets/tiklanabilir/evlilik_cuzdan_tiklanabilir.webp",
           "hideIfCollected": "evlilik_cuzdan",
           "hint": "Evlilik Cüzdanını İncele"
         },
         {
-          "x": "48.0%", "y": "30.0%", "w": "24.0%", "h": "45.0%",
+          "x": "22.9%", "y": "25.4%", "w": "11.6%", "h": "35.6%",
           "type": "canta_kagitlar_modal",
           "overlayImage": "assets/tiklanabilir/canta_kagitlar_tiklanabilir.webp",
           "hideIfCollected": "canta_kagitlar_incelendi",
           "hint": "Kağıtları İncele"
         },
         {
-          "x": "72.0%", "y": "30.0%", "w": "22.0%", "h": "45.0%",
+          "x": "47.5%", "y": "64.4%", "w": "14.2%", "h": "24.9%",
           "type": "canta_polaroid_modal",
           "overlayImage": "assets/tiklanabilir/canta_poloroid_tiklanabilir.webp",
           "hideIfCollected": "polaroid",
@@ -391,6 +391,7 @@
         { "speaker": "Nadire", "text": "Benim bildiğim bu kadar." }
       ]
     },
+
     "mezarlik": {
       "name": "Cevdet",
       "image": "assets/karakterler/cevdet.webp",
