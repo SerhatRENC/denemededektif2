@@ -154,19 +154,25 @@ function renderRoom() {
           ovImg.className = 'room-clickable-glow';
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
-          ovImg.style.left = '0';
-          ovImg.style.top = '0';
-          ovImg.style.width = '100%';
-          ovImg.style.height = '100%';
+
+          // Eğer hotspot'a özel bir x/y/w/h verilmişse arka planı kaplamak yerine tam o alana konumlandır[cite: 1]
+          if (h.w && h.h) {
+            ovImg.style.left = h.x || '0';
+            ovImg.style.top = h.y || '0';
+            ovImg.style.width = h.w;
+            ovImg.style.height = h.h;
+            ovImg.style.objectFit = 'contain';
+            ovImg.style.transformOrigin = 'center center';
+          } else {
+            ovImg.style.left = '0';
+            ovImg.style.top = '0';
+            ovImg.style.width = '100%';
+            ovImg.style.height = '100%';
+          }
+
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
           ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
-          
-          if (h.x && h.y) {
-            const centerX = `calc(${h.x} + (${h.w || '10%'} / 2))`;
-            const centerY = `calc(${h.y} + (${h.h || '10%'} / 2))`;
-            ovImg.style.transformOrigin = `${centerX} ${centerY}`;
-          }
           
           stage.appendChild(ovImg);
         }
@@ -375,7 +381,7 @@ function renderSifreMinigame(stage) {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
       if (typeof calSes === 'function') calSes('kilit_ac');
-      setDay2State('CANTA_UNLOCKED'); // Çanta açıldı!
+      setDay2State('CANTA_UNLOCKED');
       currentRoom = 'gazeteci_oda_canta_ici';
       renderRoom();
     } else {
@@ -387,7 +393,7 @@ function renderSifreMinigame(stage) {
 }
 
 function handleHotspot(h) {
-  if (dialogueActive) return; // Diyalog sırasındaki tıklamaları engelle
+  if (dialogueActive) return;
 
   if (h.type === 'kamera_bos_subtitle') {
     showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
@@ -464,7 +470,6 @@ function handleHotspot(h) {
 
   // --- GEZİNTİ VE ÇIKIŞ KISITLAMALARI ---
   if (h.type === 'navigate') {
-    // 1) Gazeteci odası kompleksinden dışarı çıkış engeli (Şifre açılmadan çıkılamaz)
     if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
       if (day2State !== 'CANTA_UNLOCKED') {
         showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
@@ -472,7 +477,6 @@ function handleHotspot(h) {
       }
     }
 
-    // 2) 2. Gün genel hikaye kısıtlamaları
     if (currentDay === 2) {
       if (day2State === 'GO_MUHTAR') {
         if (h.target && !['muhtar', 'merkez', 'ofis', 'masa'].includes(h.target)) {
@@ -1168,7 +1172,6 @@ function openMap() {
       dot.style.top = h.y;
       dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
       dot.onclick = () => {
-        // Gazeteci odası kompleksinde şifre açılmadan haritayla dışarı çıkış engeli
         if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
           if (day2State !== 'CANTA_UNLOCKED') {
             closeMap();
@@ -1593,7 +1596,6 @@ function toggleCharacterLine(ch) {
         day2PolisGoruldu = true;
         localStorage.setItem('sd_day2_polis_goruldu', 'true');
         
-        // Sadece polaroid fotoğraf envanterden siliniyor
         inventory = inventory.filter(item => item !== 'polaroid');
         localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
         renderInventory();

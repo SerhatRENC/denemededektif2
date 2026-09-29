@@ -279,14 +279,18 @@
       "image": "assets/karakterler/polis.webp",
       "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
       "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
-      "text": "Dedektif Bey, evraklar hazır."
+      "dialog": [
+        { "speaker": "Polis Memuru", "text": "Dedektif Bey, evraklar masada hazır. İfade zaptlarını ve not defterinizi inceleyebilirsiniz." }
+      ]
     },
     "kilise": {
       "name": "Peder Anselm",
       "image": "assets/karakterler/anselm.webp",
       "clickableImage": "assets/tiklanabilir/ansel_tiklanabilir.webp",
       "clickableArea": { "x": "15.7%", "y": "30.2%", "w": "15.7%", "h": "35.2%" },
-      "text": "(Kilisede ibadet ediyor)",
+      "dialog": [
+        { "speaker": "Peder Anselm", "text": "Tanrı'nın selamı üzerinize olsun. Duamızı edip köyün huzuru için yakarıyoruz..." }
+      ],
       "yOffset": "-15%"
     },
     "degirmenci": {
@@ -295,6 +299,9 @@
       "audio": "assets/karakterler/mustafa.mp3",
       "clickableImage": "assets/tiklanabilir/mustafa_tiklanabilir.webp",
       "clickableArea": { "x": "17.3%", "y": "22.0%", "w": "25.3%", "h": "77.0%" },
+      "dialog": [
+        { "speaker": "Değirmenci Mustafa", "text": "Selamünaleyküm dedektif bey. Un çuvallarıyla uğraşıyorum, bir isteğiniz mi vardı?" }
+      ],
       "yOffset": "-15%"
     },
     "muhtar": {
@@ -302,6 +309,9 @@
       "image": "assets/karakterler/halit.webp",
       "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp",
       "clickableArea": { "x": "50.9%", "y": "29.9%", "w": "29.0%", "h": "61.6%" },
+      "dialog": [
+        { "speaker": "Muhtar Halit", "text": "Hoş geldiniz dedektif bey. Köyümüz talihsiz bir olayla çalkalanıyor... Şimdilik işlerim var, yarın daha detaylı görüşürüz." }
+      ],
       "yOffset": "-15%"
     },
     "sifahane": {
@@ -310,6 +320,9 @@
       "audio": "assets/karakterler/kamuran.mp3",
       "clickableImage": "assets/tiklanabilir/kamuran_tiklanabilir.webp",
       "clickableArea": { "x": "25.1%", "y": "25.8%", "w": "13.5%", "h": "68.2%" },
+      "dialog": [
+        { "speaker": "Doktor Kamuran", "text": "Merhaba dedektif. Hastalarla ilgileniyorum, adli bir durum varsa yardımcı olayım." }
+      ],
       "yOffset": "-15%"
     },
     "demirci": {
@@ -318,6 +331,9 @@
       "audio": "assets/karakterler/cabbar.mp3",
       "clickableImage": "assets/tiklanabilir/cabbar_tiklanabilir.webp",
       "clickableArea": { "x": "56.1%", "y": "18.5%", "w": "18.0%", "h": "79.2%" },
+      "dialog": [
+        { "speaker": "Demirci Cabbar", "text": "Ne bakıyorsun hemşerim? İşimiz başımızdan aşkın, bir şey mi soracaktın?" }
+      ],
       "yOffset": "-15%"
     },
     "halit_ev": {
@@ -325,6 +341,9 @@
       "image": "assets/karakterler/aylin.webp",
       "clickableImage": "assets/tiklanabilir/aylin_tiklanabilir.webp",
       "clickableArea": { "x": "49.6%", "y": "36.6%", "w": "21.8%", "h": "46.7%" },
+      "dialog": [
+        { "speaker": "Aylin", "text": "Babam Muhtar Halit evde yoksa muhtarlıktadır beyim." }
+      ],
       "yOffset": "-15%"
     },
     "nadire_ev": {
@@ -332,6 +351,9 @@
       "image": "assets/karakterler/nadire.webp",
       "clickableImage": "assets/tiklanabilir/nadire_tiklanabilir.webp",
       "clickableArea": { "x": "45.2%", "y": "34.8%", "w": "14.0%", "h": "49.9%" },
+      "dialog": [
+        { "speaker": "Nadire", "text": "Buyrun dedektif bey, bir sorun mu var?" }
+      ],
       "yOffset": "-15%"
     },
     "mezarlik": {
@@ -339,6 +361,9 @@
       "image": "assets/karakterler/cevdet.webp",
       "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp",
       "clickableArea": { "x": "20.9%", "y": "16.5%", "w": "20.9%", "h": "82.6%" },
+      "dialog": [
+        { "speaker": "Cevdet", "text": "Gittiler... Hepsi gittiler..." }
+      ],
       "yOffset": "-15%"
     },
     "han": {
@@ -346,6 +371,9 @@
       "image": "assets/karakterler/riza.webp",
       "clickableImage": "assets/tiklanabilir/riza_tiklanabilir.webp",
       "clickableArea": { "x": "60.3%", "y": "39.3%", "w": "18.9%", "h": "56.9%" },
+      "dialog": [
+        { "speaker": "Hancı Rıza", "text": "Hoş geldiniz beyim. Gazeteci çocuk birkaç gün önce odasına çekilmişti, kapısı kilitli." }
+      ],
       "yOffset": "-15%"
     }
   },
