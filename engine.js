@@ -1,5 +1,5 @@
 /* ============================================================
-   ODA MOTORU — Sislidere Köyü Davası (Tam Sürüm / Düzeltilmiş)
+   ODA MOTORU — Sislidere Köyü Davası (Masa Kağıdı Düzeltilmiş)
    ============================================================ */
 
 // Diyalog esnasında arka plandaki tüm hotspot ve görselleri gizleyen CSS kuralı
@@ -155,11 +155,18 @@ function renderRoom() {
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
 
-          // Çanta içi ve Bakırcılar gibi tam ekran saydam katmanlar için varsayılan tam boy konumlandırma
-          ovImg.style.left = '0';
-          ovImg.style.top = '0';
-          ovImg.style.width = '100%';
-          ovImg.style.height = '100%';
+          // Masadaki Otopsi Kağıdı özel boyutu, diğer görseller tam boy kaplama
+          if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
+            ovImg.style.left = h.x;
+            ovImg.style.top = h.y;
+            ovImg.style.width = h.w || '20%';
+            ovImg.style.height = h.h || '45%';
+          } else {
+            ovImg.style.left = '0';
+            ovImg.style.top = '0';
+            ovImg.style.width = '100%';
+            ovImg.style.height = '100%';
+          }
 
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
