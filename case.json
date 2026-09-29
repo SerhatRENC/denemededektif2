@@ -327,7 +327,7 @@
         { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim." },
         { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü." },
         { "speaker": "Kamuran", "text": "Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım." },
-        { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydu Ali İhsan beyle?" },
+        { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydubAli İhsan beyle?" },
         { "speaker": "Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana." },
         { "speaker": "Kamuran", "text": "Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş." },
         { "speaker": "Dedektif", "text": "Üzerlik nedir?" },

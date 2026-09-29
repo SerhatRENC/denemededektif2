@@ -126,15 +126,19 @@ function renderRoom() {
           ovImg.style.width = '100%';
           ovImg.style.height = '100%';
           ovImg.style.pointerEvents = 'none';
+          ovImg.style.zIndex = '2';
           stage.appendChild(ovImg);
         }
 
         if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
           wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
+          wrap.style.position = 'absolute';
           wrap.style.left = h.x;
           wrap.style.top = h.y;
           wrap.style.width = h.iconWidth || '8%';
+          wrap.style.zIndex = '10';
+          wrap.style.pointerEvents = 'auto';
 
           const img = document.createElement('img');
           img.src = h.icon;
@@ -165,7 +169,15 @@ function renderRoom() {
 
         const el = document.createElement('div');
         el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
-        el.style.left = h.x; el.style.top = h.y; el.style.width = h.w; el.style.height = h.h;
+        el.style.position = 'absolute';
+        el.style.left = h.x; 
+        el.style.top = h.y; 
+        el.style.width = h.w || '10%'; 
+        el.style.height = h.h || '10%';
+        el.style.zIndex = '10';
+        el.style.pointerEvents = 'auto';
+        el.style.cursor = 'pointer';
+
         const iconHtml = h.icon
           ? `<img src="${h.icon}" class="hotspot-icon-img" alt="" onerror="this.outerHTML='<div class=\\'hotspot-icon-missing\\'>görsel yok:<br>${h.icon}</div>'">`
           : '';
@@ -188,7 +200,7 @@ function renderRoom() {
       const closeBtn = document.createElement('button');
       closeBtn.innerHTML = '✕';
       closeBtn.className = 'canta-close-btn';
-      closeBtn.style.cssText = "position:absolute; top:4%; right:4%; z-index:20; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(0,0,0,0.65); border:2px solid #e9dcc0; border-radius:50%; width:clamp(38px, 4.5cqw, 52px); height:clamp(38px, 4.5cqw, 52px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; text-shadow:0 2px 6px rgba(0,0,0,0.8); transition:all 0.2s;";
+      closeBtn.style.cssText = "position:absolute; top:4%; right:4%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(0,0,0,0.65); border:2px solid #e9dcc0; border-radius:50%; width:clamp(38px, 4.5cqw, 52px); height:clamp(38px, 4.5cqw, 52px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; text-shadow:0 2px 6px rgba(0,0,0,0.8); transition:all 0.2s;";
       closeBtn.onmouseover = () => closeBtn.style.transform = 'scale(1.1)';
       closeBtn.onmouseout = () => closeBtn.style.transform = 'scale(1)';
       closeBtn.onclick = (e) => {
@@ -322,6 +334,26 @@ function renderSifreMinigame(stage) {
 }
 
 function handleHotspot(h) {
+  if (h.type === 'kamera_bos_subtitle') {
+    showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
+    return;
+  }
+
+  if (h.type === 'canta_evlilik_cuzdan_modal') {
+    openCantaEvlilikCuzdanModal();
+    return;
+  }
+
+  if (h.type === 'canta_kagitlar_modal') {
+    openCantaKagitlarModal();
+    return;
+  }
+
+  if (h.type === 'canta_polaroid_modal') {
+    openCantaPolaroidModal();
+    return;
+  }
+
   if (h.type === 'yanik_kagit_incele_modal') {
     openYanikKagitModal();
     return;
@@ -411,6 +443,99 @@ function handleHotspot(h) {
   if (h.type === 'sleep')    { confirmSleep(); return; }
 }
 
+/* ÇANTA İÇİ ÖZEL MODALLAR */
+function openCantaEvlilikCuzdanModal() {
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; flex-direction:column; align-items:center; justify-content:center;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div class="zoom-wrap" style="width:100vw; height:75vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:90vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.src='assets/arayuz/evlilik_cuzdani.webp';">
+    </div>
+    <div style="text-align:center; margin-top:15px; z-index:10002;">
+      <button class="btn show" style="padding:0.7em 2em; background:linear-gradient(180deg, #6b4423, #4a2f18); color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; font-size:clamp(16px, 2cqw, 22px); cursor:pointer; box-shadow:0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6);" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan','assets/arayuz/evlilik_cuzdan.webp');">
+        ENVANTERE AL
+      </button>
+    </div>
+  `;
+
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
+function openCantaKagitlarModal() {
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; flex-direction:column; align-items:center; justify-content:center;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeCantaKagitlarModal()">✕</button>
+    <div class="zoom-wrap" style="width:100vw; height:85vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="assets/arayuz/bos_kagit.webp" style="max-width:90vw; max-height:80vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>assets/arayuz/bos_kagit.webp</div>'">
+    </div>
+  `;
+
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
+function closeCantaKagitlarModal() {
+  if (!inventory.includes('canta_kagitlar_incelendi')) {
+    inventory.push('canta_kagitlar_incelendi');
+    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+  }
+  closeModal();
+  renderRoom();
+  showCustomSubtitle("Dedektif: Bu kağıtlara bir şey yazamamış.", true);
+}
+
+function openCantaPolaroidModal() {
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  body.className = 'modal modal-fullscreen';
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.backdropFilter = 'blur(10px)';
+  bg.style.webkitBackdropFilter = 'blur(10px)';
+  bg.style.background = 'rgba(0, 0, 0, 0.65)';
+
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; flex-direction:column; align-items:center; justify-content:center;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10001; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div class="zoom-wrap" style="width:100vw; height:75vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="assets/arayuz/poloroid.webp" style="max-width:90vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(0,0,0,0.95));" onerror="this.outerHTML='<div class=doc-fallback>görsel bulunamadı:<br>assets/arayuz/poloroid.webp</div>'">
+    </div>
+    <div style="text-align:center; margin-top:15px; z-index:10002;">
+      <button class="btn show" style="padding:0.7em 2em; background:linear-gradient(180deg, #6b4423, #4a2f18); color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; font-size:clamp(16px, 2cqw, 22px); cursor:pointer; box-shadow:0 4px 0 #1c110a, 0 6px 12px rgba(0,0,0,0.6);" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid','assets/arayuz/poloroid.webp');">
+        ENVANTERE AL
+      </button>
+    </div>
+  `;
+
+  const el = document.getElementById('photoZoomImg');
+  if (el) zoomKur(el.parentElement, el);
+}
+
 function openYanikKagitModal() {
   const body = document.getElementById('modalBody');
   const bg = document.getElementById('modalBg');
@@ -481,14 +606,15 @@ function showCustomSubtitle(text, clickToDismiss = false) {
   if (invEl) invEl.classList.add('dialog-gizli');
 
   let sub = document.getElementById('sceneSubtitle');
-  if (!sub) {
-    sub = document.createElement('div');
-    sub.id = 'sceneSubtitle';
-    sub.className = 'scene-subtitle';
-    stage.appendChild(sub);
-  }
+  if (sub) sub.remove();
+
+  sub = document.createElement('div');
+  sub.id = 'sceneSubtitle';
+  sub.className = 'scene-subtitle';
+  sub.style.zIndex = '99999';
   sub.style.cursor = clickToDismiss ? 'pointer' : 'default';
   sub.innerHTML = `<div class="scene-subtitle-text">${text} ${clickToDismiss ? '<span style="font-size:0.75em; opacity:0.8; margin-left:10px;">(Devam etmek için tıkla)</span>' : ''}</div>`;
+  stage.appendChild(sub);
   
   let timer = setTimeout(() => { 
     if (sub) sub.remove(); 
@@ -583,7 +709,6 @@ function openPhoto(src) {
   if (el) zoomKur(el.parentElement, el);
 }
 
-/* DEVASE BLURLU ARKA PLANLI TEKİL GÖRSEL MODAL SİSTEMİ */
 function openBigPaperModal(src) {
   const body = document.getElementById('modalBody');
   const bg = document.getElementById('modalBg');
@@ -667,6 +792,8 @@ function renderInventory(lastImage) {
   }
   inv.innerHTML = '';
   inventory.forEach(id => {
+    if (id === 'canta_kagitlar_incelendi') return;
+
     const el = document.createElement('div');
     el.className = 'inv-item';
     el.style.width = 'clamp(38px, 4.5cqw, 54px)';
@@ -686,6 +813,16 @@ function renderInventory(lastImage) {
         <span style="font-size: clamp(8px, 0.8cqw, 11px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Anahtar</span>
       `;
       el.title = 'Gazetecinin Oda Anahtarı';
+    } else if (id === 'evlilik_cuzdan') {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.innerHTML = `
+        <img src="assets/arayuz/evlilik_cuzdan.webp" alt="Evlilik Cüzdanı" style="width: auto; height: 58%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));" onerror="this.src='assets/arayuz/evlilik_cuzdani.webp';">
+        <span style="font-size: clamp(7px, 0.7cqw, 10px); color: var(--amber-bright); margin-top: 2px; font-weight: 600; font-family: var(--mono); letter-spacing: 0.02em;">Cüzdan</span>
+      `;
+      el.title = 'Evlilik Cüzdanı';
     } else if (id === 'polaroid') {
       el.style.display = "flex";
       el.style.flexDirection = "column";
