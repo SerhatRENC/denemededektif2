@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — PRELOAD DESTEKLİ MODÜLER OYUN MOTORU
+   SISLIDERE DAVASI — PRELOAD & İLK YÜKLEME OPTİMİZE ENGINE
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -44,7 +44,7 @@ const gameState = {
     localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'), JSON.stringify(this.flags));
   },
   loadFlags() {
-    const saved = localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
+    const saved = localStorage.getItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
     this.flags = saved ? JSON.parse(saved) : {};
   }
 };
@@ -63,7 +63,7 @@ let gazeteciDosyaPagesDefault = [
   'assets/arayuz/gazeteci_dosya_2.webp'
 ];
 
-/* ---------- ASSET PRELOADING (GÖRSEL ÖN YÜKLEME) ---------- */
+/* ---------- ASSET PRELOADING (ÖNCELİKLİ ÖN YÜKLEME) ---------- */
 function preloadImage(url) {
   if (!url || preloadedImages.has(url)) return;
   const img = new Image();
@@ -109,7 +109,7 @@ function preloadDayAssets() {
     if (ch.clickableImage) preloadImage(ch.clickableImage);
   });
 
-  // 4. Sorgu Kartları, Harita, Not Defteri ve Arayüz Bilesenleri
+  // 4. Sorgu Kartları, Harita, Not Defteri ve Arayüz Bileşenleri
   if (CASE.statements) {
     CASE.statements.forEach(s => { if (s.cardImage) preloadImage(s.cardImage); });
   }
@@ -154,11 +154,17 @@ async function initGame() {
 
     await loadDayData(currentDay);
 
-    preloadDayAssets();
-
     updateDayBadge();
     renderInventory();
+
+    // Önce aktif odayı çiziyoruz ki arka plan ağı meşgul etmeden hemen yüklensin
     renderRoom();
+
+    // Kalan tüm medya varlıklarını ağ çakışmasını önlemek için 300ms sonra yüklüyoruz
+    setTimeout(() => {
+      preloadDayAssets();
+    }, 300);
+
   } catch (err) {
     console.error("OYUN YÜKLEME HATASI:", err);
   }
@@ -202,7 +208,11 @@ function renderRoom() {
     const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
     const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
 
-    stage.style.backgroundImage = `url(${bgImage})`;
+    // Arka plan resmini garantili tırnak dizilimi ve stil parametreleriyle veriyoruz
+    stage.style.backgroundImage = `url("${bgImage}")`;
+    stage.style.backgroundSize = 'cover';
+    stage.style.backgroundPosition = 'center';
+    stage.style.backgroundRepeat = 'no-repeat';
 
     if (kapali) {
       const geri = document.createElement('div');
@@ -1325,8 +1335,8 @@ function wakeUp() {
   }
   document.getElementById('sleepOverlay')?.classList.remove('active');
   loadDayData(currentDay).then(() => {
-    preloadDayAssets();
     renderRoom();
+    setTimeout(() => preloadDayAssets(), 300);
   });
 }
 
