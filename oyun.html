@@ -26,13 +26,6 @@
       }
     });
   }
-  /* OYUN BİTİNCE YAYINLARKEN AÇILACAK KOD:
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
-    });
-  }
-  */
 </script>
 </head>
 <body>
@@ -170,7 +163,7 @@
       if (sag) sag.style.right = Math.max(8, modalRect.right - imgRect.right - sag.offsetWidth * 0.5) + 'px';
     }
     window.addEventListener('resize', hizalaSorguOklari);
-    const _openStatementOrijinal = openStatement;
+    const _openStatementOrijinal = typeof openStatement !== 'undefined' ? openStatement : function(){};
     openStatement = function (index) {
       _openStatementOrijinal(index);
       const img = document.getElementById('statementZoomImg');
@@ -192,7 +185,7 @@
       setTimeout(ac, 90);
     }
 
-    const _updateDayBadgeOrijinal = updateDayBadge;
+    const _updateDayBadgeOrijinal = typeof updateDayBadge !== 'undefined' ? updateDayBadge : function(){};
     updateDayBadge = function () {
       const rozet = document.getElementById('dayBadge');
       rozet.src = 'assets/arayuz/takvim_gun' + currentDay + '.webp';
@@ -205,7 +198,7 @@
       this.classList.remove('yuklenemedi');
     });
 
-    const _handleHotspotOrijinal = handleHotspot;
+    const _handleHotspotOrijinal = typeof handleHotspot !== 'undefined' ? handleHotspot : function(){};
     handleHotspot = function (h) {
       if (h.type === 'kapida_konus') {
         const kilitAudio = new Audio('assets/ses/kilit.mp3');
@@ -290,7 +283,7 @@
       if (e.target.closest('.reader-side-arrow') && typeof calSes === 'function') calSes('sayfa');
     });
 
-    const _wakeUpOrijinal = wakeUp;
+    const _wakeUpOrijinal = typeof wakeUp !== 'undefined' ? wakeUp : function(){};
     wakeUp = function () {
       const parlak = document.createElement('div');
       parlak.className = 'sabah-parlama';
@@ -300,17 +293,18 @@
       setTimeout(() => parlak.remove(), 1300);
     };
 
-    const _renderRoomOrijinal = renderRoom;
+    const _renderRoomOrijinal = typeof renderRoom !== 'undefined' ? renderRoom : function(){};
     let _odaJetonu = 0;
     let _arkaPlanBasladi = false;
 
     function _odaCiz() {
       _renderRoomOrijinal();
+      const cfg = window.GAME_CONFIG || window.CASE;
       if (typeof Ogretici !== 'undefined') {
         Ogretici.kur({
           sahne: document.getElementById('stageFrame'),
-          icerik: (CASE && CASE.ogretici) || {},
-          onek: (CASE && CASE.caseLabel) || 'oyun',
+          icerik: (cfg && cfg.ogretici) || {},
+          onek: (cfg && cfg.caseLabel) || 'oyun',
           mevcut: () => currentRoom
         });
         Ogretici.iptal();
@@ -345,31 +339,33 @@
 
     function _arkaPlanListesi() {
       const liste = [];
-      if (!CASE || !CASE.rooms) return liste;
+      const cfg = window.GAME_CONFIG || window.CASE;
+      if (!cfg || !cfg.rooms) return liste;
       const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
       const oncelik = ['masa', 'merkez'];
-      const sirali = oncelik.concat(Object.keys(CASE.rooms).filter(k => !oncelik.includes(k)));
+      const sirali = oncelik.concat(Object.keys(cfg.rooms).filter(k => !oncelik.includes(k)));
       sirali.forEach(k => {
-        const oda = CASE.rooms[k];
+        const oda = cfg.rooms[k];
         if (!oda) return;
         ekle(oda.background);
         if (oda.closedOnDays && oda.closedOnDays.includes(currentDay)) ekle(oda.closedImage);
-        if (CASE.characters && CASE.characters[k]) ekle(CASE.characters[k].image);
+        if (cfg.characters && cfg.characters[k]) ekle(cfg.characters[k].image);
       });
-      ekle(CASE.map && CASE.map.image);
-      ekle(CASE.notebook && CASE.notebook.image);
+      ekle(cfg.map && cfg.map.image);
+      ekle(cfg.notebook && cfg.notebook.image);
       return liste;
     }
 
     renderRoom = function () {
       const jeton = ++_odaJetonu;
-      if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) {
+      const cfg = window.GAME_CONFIG || window.CASE;
+      if (!cfg || !cfg.rooms || !cfg.rooms[currentRoom]) {
         _odaCiz();
         return;
       }
-      const oda = CASE.rooms[currentRoom];
+      const oda = cfg.rooms[currentRoom];
       const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
-      const karakter = (!kapali && CASE.characters && CASE.characters[currentRoom]) ? CASE.characters[currentRoom].image : null;
+      const karakter = (!kapali && cfg.characters && cfg.characters[currentRoom]) ? cfg.characters[currentRoom].image : null;
       
       if (typeof Yukleme !== 'undefined' && Yukleme.gecis) {
         Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {

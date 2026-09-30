@@ -1,0 +1,86 @@
+{
+  "day": 2,
+  "initialFlags": {
+    "day2_started": true
+  },
+  "dialogs": {
+    "polis_ofis": [
+      { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir.", "emotion": "dusuneli" },
+      { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim.", "emotion": "normal" }
+    ],
+    "muhtar_halit": [
+      { "speaker": "Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Önemli değil. Otopsi raporu sizdeymiş Kamuran Hanım söyledi. Bir de dün hancı odaya girmeme izin vermedi orayı incelemem lazım.", "emotion": "normal" },
+      { "speaker": "Halit", "text": "He tamam siz gidin Rıza'ya benden selam söyleyin açar kapıyı. Odadaki eşyalara kimse dokunmasın diye kilitli kalsın demiştim. Otopsi raporunun da kopyasını yollatırım senin ofisine.", "emotion": "ciddi" }
+    ],
+    "hanci_riza": [
+      { "speaker": "Rıza", "text": "Beyim bakırcılar geldiler, onlar arada bir gelirler böyle işler çok yoğun olur bugünlerde yarın detaylıca konuşalım istersen şimdi doluyum.", "emotion": "telasli" },
+      { "speaker": "Dedektif", "text": "Tamam Rıza Bey. Yalnız benim odayı görmem lazım Halit Bey selamını iletti.", "emotion": "normal" },
+      { "speaker": "Rıza", "text": "Tabii buyrun odanın anahtarı.", "emotion": "normal" }
+    ],
+    "bakirci1": [
+      { "speaker": "Bakırcı Ahmet", "text": "Cinayet ha? Çetrefilli işler bunlar... Allah kolaylık versin.", "emotion": "uzgun" },
+      { "speaker": "Dedektif", "text": "Sağ olun. Sizler sık gelir misiniz buraya?", "emotion": "normal" },
+      { "speaker": "Bakırcı Ahmet", "text": "Beyim biz zaten bu köyden değiliz. Bakırcıyız biz kimi ticaret yaparız kimi hoş sohbete geliriz sadece. Bir şey bilmeyiz yani.", "emotion": "normal" }
+    ],
+    "bakirci2": [
+      { "speaker": "Dedektif", "text": "Afiyet olsun.", "emotion": "normal" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Buyrun beraber olsun.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Sağ olun. Hangi köydensiniz?", "emotion": "normal" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Bakırcılar efendim. İş için dolaşınca uğrayıp bir iki kadeh yuvarlayalım dedik. Biraz dinlenip köyümüze gideceğiz.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Geldiğiniz zamanlarda gazeteciye hiç rastladınız mı?", "emotion": "dusuneli" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Sima olarak gördük ama hiç sohbetimiz olmadı.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Anladım.", "emotion": "normal" }
+    ],
+    "peder_anselm": [
+      { "speaker": "Dedektif", "text": "Merhaba, dün de gelmiştim sorgu için yoktunuz.", "emotion": "normal" },
+      { "speaker": "Peder Anselm", "text": "Evet, evet bilirsiniz küçük yerler buralar. Diğer köylere gitmiştim cenaze işleri için, ama burada yaşarım çünkü zamanında buraya atandım şans işte.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Şans mı? Neyse gazeteciyi tanır mıydınız?", "emotion": "supheli" },
+      { "speaker": "Peder Anselm", "text": "Evet biraz bilirdim. Arada bir dua etmeye gelirdi kiliseye, tanrı günahlarını affetsin.", "emotion": "uzgun" },
+      { "speaker": "Dedektif", "text": "Odasında birkaç eşya buldum. Şefikayla Cevdetin evlilik cüzdanı ve bir tane yanmış bir not. Bir bilginiz var mı?", "emotion": "normal" },
+      { "speaker": "Peder Anselm", "text": "Şefika ve Cevdet... Evet zamanında evlilerdi, bu köyün ebesiydi fakat onun cadı olduğunu anladık ve muhtar kovdu onu görmedim bir daha.", "emotion": "ciddi" },
+      { "speaker": "Dedektif", "text": "Kimse mi görmedi? Nasıl kovdu?", "emotion": "supheli" },
+      { "speaker": "Peder Anselm", "text": "Kovdu işte evladım ben karıştırmadım oraları çok.", "emotion": "gergin" }
+    ],
+    "aylin": [
+      { "speaker": "Dedektif", "text": "Merhaba Aylin. Artık birkaç soru sormam gerekiyor.", "emotion": "normal" },
+      { "speaker": "Aylin", "text": "Buyrun beyim. Ne söylerim bilmem ama...", "emotion": "cekingan" },
+      { "speaker": "Dedektif", "text": "Şefikayı tanır mıydın?", "emotion": "normal" },
+      { "speaker": "Aylin", "text": "Şefika mı? Bin lanet olsun ona. Köyümüzün yüz karası Cadı! Babam olmasa ne halde olurduk. Babam ben doğmadan bir gün önce kovmuş onu köyümüzden. Belki kovmasa ben de yaşamazdım, babam hep öyle söyler lanet benimle kalkmış. Daha da gelmesin.", "emotion": "sinirli" },
+      { "speaker": "Dedektif", "text": "Sakin ol küçük hanım. Neden cadı derler ona? Bir de Cevdet o gittikten sonra mı öyle oldu?", "emotion": "normal" },
+      { "speaker": "Aylin", "text": "Ben o adamla hiç konuşmadım, zarar verirmiş bana yani babam öyle der. Herhalde karısından sonra öyle olmuş o manyak. Karısı cadı sonuçta adama da yazık.", "emotion": "uzgun" }
+    ],
+    "kamuran": [
+      { "speaker": "Dedektif", "text": "Merhaba doktor hanım. Raporu aldım çuval ipiyle öldürülmüş ne acı, sizce kim yapmış olabilir?", "emotion": "ciddi" },
+      { "speaker": "Doktor Kamuran", "text": "Burası köy yeri,Herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "dusuneli" },
+      { "speaker": "Dedektif", "text": "Dün mezarlıkta Cevdeti ip bağlarken gördüm sizce şüpheli olabilir mi?", "emotion": "supheli" },
+      { "speaker": "Doktor Kamuran", "text": "Zararsızdır o bakmayın. İp bağlar da haber bekler zavallı. Köylü kaçar ondan ama ben onunla iletişim kurabiliyorum. Zaten koca köyde bir ben, bir de Mustafa iyi davranıyor. Zamanında bana anlatmıştı not mu, mektup mu ne yollamışlar, kendisi mi yazmış bilmem ama kimseye zarar veremez o.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Not mu?", "emotion": "supheli" },
+      { "speaker": "Doktor Kamuran", "text": "Evet evet. Siz Cevdet evindeyken Cevdet'e \"beni onlar yolladı\" diyin o zaten anlatır size. Bir de çok üstüne gitmeyin o sinirlenirse bitirin sohbeti... Yani ben öyle yapıyorum.", "emotion": "ciddi" }
+    ],
+    "cevdet": [
+      { "speaker": "Dedektif", "text": "Merhaba Cevdet dün Şefika diye birinden söz ediyordun. Kimmiş bu Şefika?", "emotion": "normal" },
+      { "speaker": "Cevdet", "text": "Aldılar aldılar!", "emotion": "korkmus" },
+      { "speaker": "Dedektif", "text": "Tamam Cevdet aldılar ama kimdi o karın mı?", "emotion": "normal" },
+      { "speaker": "Cevdet", "text": "Çocuklarımın anası. Çocuklarımın anası. Çocuklarımın anası...", "emotion": "uzgun" },
+      { "speaker": "Dedektif", "text": "Çocukların mı? Onlar neredeler Cevdet?", "emotion": "supheli" },
+      { "speaker": "Cevdet", "text": "(Bağırarak uzaklaşır!)", "emotion": "sinirli" }
+    ],
+    "cabbar": [
+      { "speaker": "Dedektif", "text": "Dün savuşturdun beni Cabbar efendi. Bugün artık konuşalım ne dersin?", "emotion": "normal" },
+      { "speaker": "Demirci Cabbar", "text": "Sor ne soracaksan.", "emotion": "sinirli" },
+      { "speaker": "Dedektif", "text": "Öncelikle. Mustafayla ne derdiniz vardı?", "emotion": "supheli" },
+      { "speaker": "Demirci Cabbar", "text": "Ne derdim olur o sünepeyle. Handa bir iki kağıt oynuyordum içkiyi de biraz kaçırmışım Rıza da rahatsız olmuşmuş da beni kovmaya çalıştı. Bir iki itişirken Mustafa daldı araya.", "emotion": "sinirli" },
+      { "speaker": "Dedektif", "text": "Anladım. Asıl soruma geleceğim. Gazeteciyle hiç konuştun mu? Var mıydı anlaşamadığı birileri?", "emotion": "normal" },
+      { "speaker": "Demirci Cabbar", "text": "Valla ben de 3 senedir buradayım pek bilmem köy içini. Onun davası da 15-20 senenin muhabbeti herhalde.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Sohbetiniz olmadı yani. Yoksa bana yaptığın gibi onu da mı tersledin?", "emotion": "supheli" },
+      { "speaker": "Demirci Cabbar", "text": "Ne anlatıyon dedektif zaten bir ton işim gücüm var. Bunlarla mı vakit harcayacağım sordun ne soracaksan hadi selametle.", "emotion": "sinirli" }
+    ]
+  },
+  "roomOverrides": {
+    "degirmenci": { "closed": true, "closedImage": "assets/odalar/degirmenci_kapi.webp" },
+    "nadire_ev": { "closed": true, "closedImage": "assets/odalar/nadire_ev_kapi.webp" },
+    "halit_ev": { "closed": true, "closedImage": "assets/odalar/halit_ev_kapi.webp" }
+  }
+}

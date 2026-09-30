@@ -20,13 +20,6 @@
       }
     });
   }
-  /* OYUN BİTİNCE YAYINLARKEN AÇILACAK KOD:
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
-    });
-  }
-  */
 </script>
 
 <style>
@@ -601,7 +594,7 @@
 <script>
 /* ---------- PRELOADER YÜKLEME ÇUBUĞU SCRIPT'İ ---------- */
 const DOSYA_LISTESI = [
-  'style.css', 'ogretici.css', 'engine.js', 'case.json',
+  'style.css', 'ogretici.css', 'engine.js', 'data/game_config.json', 'data/days/day1.json',
   'assets/arayuz/harita.webp', 'assets/arayuz/defter.webp', 'assets/arayuz/tokmak.webp',
   'assets/arayuz/buyutec.webp', 'assets/arayuz/el.webp', 'assets/arayuz/ayak.webp',
   'assets/arayuz/geri.webp', 'assets/arayuz/kulak.webp', 'assets/arayuz/uyku.webp',

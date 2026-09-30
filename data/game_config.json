@@ -1,0 +1,81 @@
+{
+  "caseLabel": "KANIT-04",
+  "title": "Sislidere Davası",
+  "startRoom": "ofis",
+  "startDay": 1,
+
+  "sleepEvents": {
+    "2": "İkinci gün başladı. Önce Muhtarla görüşüp otopsi raporunu almalı, ardından gazetecinin odasını incelemelisin.",
+    "3": "Üçüncü gün. Köyü daha yakından tanıma vakti.",
+    "4": "Sabah bir haber geldi: Nadire ölü bulunmuş...",
+    "5": "Beşinci gün. Yan ipuçlarını toplama vakti.",
+    "6": "Sabah bir haber daha geldi: Muhtar Halit ölü bulunmuş...",
+    "7": "Son gün. Artık bir karar vermen gerekiyor."
+  },
+
+  "mainMenuButtons": {
+    "oyna": { "x": "8.5%", "y": "26.6%", "w": "16.0%", "h": "12.1%" },
+    "hakkinda": { "x": "8.5%", "y": "41.5%", "w": "16.2%", "h": "11.6%" },
+    "nasilOynanir": { "x": "8.5%", "y": "56.7%", "w": "16.0%", "h": "12.3%" }
+  },
+
+  "items": {
+    "kamera_item": { "title": "(İşlenmemiş) Polaroid Fotoğraf", "image": "assets/arayuz/poloroid.webp", "collectId": "polaroid", "desc": "" },
+    "evlilik_cuzdan": { "title": "Evlilik Cüzdanı", "image": "assets/arayuz/evlilik_cuzdan.webp", "collectId": "evlilik_cuzdan", "desc": "Gazetecinin çantasından çıkan evlilik cüzdanı." },
+    "kagit_item": { "title": "Gazeteci Dosyası", "image": "assets/arayuz/gazeteci_dosya.webp", "collectId": "gazeteci_dosyasi", "desc": "Gazetecinin masasındaki gizli dosya ve notlar." },
+    "yanik_kagit": { "title": "Yanık Kağıt", "image": "assets/tiklanabilir/yanik_kagit_tiklanabilir.webp", "collectId": "yanik_kagit", "desc": "Çöp kutusundan çıkan tamamen yanmış kağıt parçası." }
+  },
+
+  "map": {
+    "image": "assets/arayuz/harita.webp",
+    "hotspots": [
+      { "x": "18%", "y": "18%", "label": "Halit Ev",   "target": "halit_ev" },
+      { "x": "17%", "y": "51%", "label": "Ofis",       "target": "ofis" },
+      { "x": "35%", "y": "32%", "label": "Cevdet Ev",  "target": "cadi" },
+      { "x": "31%", "y": "46%", "label": "Nadire Ev",  "target": "nadire_ev" },
+      { "x": "48%", "y": "38%", "label": "Muhtarlık",  "target": "muhtar" },
+      { "x": "58%", "y": "36%", "label": "Kilise",     "target": "kilise" },
+      { "x": "72%", "y": "42%", "label": "Mezarlık",   "target": "mezarlik" },
+      { "x": "47%", "y": "51%", "label": "Merkez",     "target": "merkez" },
+      { "x": "52%", "y": "64%", "label": "Şifahane",   "target": "sifahane" },
+      { "x": "70%", "y": "61%", "label": "Değirmenci", "target": "degirmenci" },
+      { "x": "40%", "y": "78%", "label": "Han",        "target": "han" },
+      { "x": "83%", "y": "81%", "label": "Demirci",    "target": "demirci" }
+    ]
+  },
+
+  "notebook": {
+    "image": "assets/arayuz/yazi.webp",
+    "totalPages": 5,
+    "pageSol": { "top": "6%", "bottom": "8%", "left": "22%", "width": "30%" },
+    "pageSag": { "top": "6%", "bottom": "8%", "left": "58%", "width": "34%" },
+    "suspectLayout": {
+      "photoTop": "8%", "photoLeft": "14%", "photoHeight": "55%",
+      "nameTop": "16%", "nameLeft": "52%",
+      "noteTop": "32%", "noteLeft": "52%", "noteWidth": "46%", "noteHeight": "60%"
+    },
+    "suspects": [
+      { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem2.webp" },
+      { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.webp" },
+      { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.webp" },
+      { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.webp" },
+      { "name": "Halit", "image": "assets/karakalem/halit_karakalem.webp" },
+      { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.webp" },
+      { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.webp" },
+      { "name": "Nadire", "image": "assets/karakterler/nadire.webp" },
+      { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.webp" }
+    ]
+  },
+
+  "statements": [
+    { "id": "anselm", "name": "Peder Anselm", "cardImage": "assets/sorgu/ansel_sorgu.webp", "audio": "assets/ifadeler/anselm.mp3" },
+    { "id": "mustafa", "name": "Değirmenci Mustafa", "cardImage": "assets/sorgu/mustafa_sorgu.webp", "audio": "assets/ifadeler/kerem.mp3" },
+    { "id": "halit", "name": "Muhtar Halit", "cardImage": "assets/sorgu/halit_sorgu.webp", "audio": "assets/ifadeler/halit.mp3" },
+    { "id": "nadire", "name": "Nadire", "cardImage": "assets/sorgu/nadire_sorgu.webp", "audio": "assets/ifadeler/nadire.mp3" },
+    { "id": "aylin", "name": "Aylin", "cardImage": "assets/sorgu/aylin_sorgu.webp", "audio": "assets/ifadeler/zehra.mp3" },
+    { "id": "riza", "name": "Hancı Rıza", "cardImage": "assets/sorgu/riza_sorgu.webp", "audio": "assets/ifadeler/riza.mp3" },
+    { "id": "kamuran", "name": "Doktor Kamuran", "cardImage": "assets/sorgu/kamuran_sorgu.webp", "audio": "assets/ifadeler/yusuf.mp3" },
+    { "id": "cabbar", "name": "Demirci Cabbar", "cardImage": "assets/sorgu/cabbar_sorgu.webp", "audio": "assets/ifadeler/cabbar.mp3" },
+    { "id": "cevdet", "name": "Cevdet", "cardImage": "assets/sorgu/cevdet_sorgu.webp", "audio": "assets/ifadeler/cevdet.mp3" }
+  ]
+}
