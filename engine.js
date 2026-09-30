@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — TAM MODÜLER, MİMİK, DEFTER VE SORGU MOTORU
+   SISLIDERE DAVASI — ORİJİNAL ÇALIŞAN MOTOR & MODÜLER SİSTEM
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -17,39 +17,36 @@ if (!document.getElementById('dialogHideStyle')) {
   document.head.appendChild(style);
 }
 
-let GAME_CONFIG = null;
+let CASE = null;
 let CURRENT_DAY_DATA = null;
 let currentRoom = null;
 let inventory = [];
 let currentDay = 1;
 let calibMode = false;
+let currentSleepAudio = null;
 let dialogueActive = false;
+let dialogIndex = 0;
+let characterAudio = null;
 
-// Defter Durum Değişkenleri
-let currentNotebookPage = 0;
-let notebookNotes = {};
-let currentStatementAudio = null;
-
-// --- DİNAMİK BAYRAK (FLAG) YÖNETİMİ ---
-const gameState = {
-  flags: {},
-  getFlag(flag) { return this.flags[flag] || false; },
-  setFlag(flag, value = true) {
-    this.flags[flag] = value;
-    localStorage.setItem('sd_flags_' + (GAME_CONFIG ? GAME_CONFIG.caseLabel : 'default'), JSON.stringify(this.flags));
-  },
-  loadFlags() {
-    const saved = localStorage.getItem('sd_flags_' + (GAME_CONFIG ? GAME_CONFIG.caseLabel : 'default'));
-    this.flags = saved ? JSON.parse(saved) : {};
-  }
-};
-
+// Gazeteci odaları listesi
 const journalistRooms = [
   'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 
   'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'
 ];
 
+// 2. Gün Durum Yönetimi
+let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
+let day2PolisGoruldu = localStorage.getItem('sd_day2_polis_goruldu') === 'true';
+
+function setDay2State(newState) {
+  day2State = newState;
+  localStorage.setItem('sd_day2_state', newState);
+}
+
+// Şifre minigame değişkenleri
 let lockDigits = [0, 0, 0, 0, 0];
+
+// Gazeteci dosyası sayfaları
 let gazeteciDosyaPagesDefault = [
   'assets/arayuz/gazeteci_dosya_1.webp',
   'assets/arayuz/gazeteci_dosya_2.webp'
@@ -59,20 +56,14 @@ let gazeteciDosyaPagesDefault = [
 async function initGame() {
   try {
     const configRes = await fetch('data/game_config.json?v=' + Date.now());
-    GAME_CONFIG = await configRes.json();
-    window.CASE = GAME_CONFIG; // oyun.html geriye dönük uyumluluk
+    CASE = await configRes.json();
+    window.CASE = CASE;
 
-    gameState.loadFlags();
-    loadNotebookNotes();
+    currentRoom = CASE.startRoom;
 
-    const titleEl = document.getElementById('caseTitle');
-    if (titleEl) titleEl.textContent = GAME_CONFIG.title || '';
-
-    currentRoom = GAME_CONFIG.startRoom;
-
-    const savedDay = localStorage.getItem('sd_day_' + GAME_CONFIG.caseLabel);
-    const savedInv = localStorage.getItem('sd_inv_' + GAME_CONFIG.caseLabel);
-    currentDay = savedDay ? parseInt(savedDay, 10) : (GAME_CONFIG.startDay || 1);
+    const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
+    const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
+    currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
     inventory = savedInv ? JSON.parse(savedInv) : [];
 
     await loadDayData(currentDay);
@@ -90,18 +81,10 @@ async function loadDayData(dayNumber) {
     const dayRes = await fetch(`data/days/day${dayNumber}.json?v=` + Date.now());
     if (dayRes.ok) {
       CURRENT_DAY_DATA = await dayRes.json();
-      if (CURRENT_DAY_DATA.initialFlags) {
-        Object.keys(CURRENT_DAY_DATA.initialFlags).forEach(f => {
-          if (gameState.getFlag(f) === false) {
-            gameState.setFlag(f, CURRENT_DAY_DATA.initialFlags[f]);
-          }
-        });
-      }
     } else {
       CURRENT_DAY_DATA = { dialogs: {}, roomOverrides: {} };
     }
   } catch (e) {
-    console.warn(`${dayNumber}. Gün verisi yüklenemedi.`);
     CURRENT_DAY_DATA = { dialogs: {}, roomOverrides: {} };
   }
 }
@@ -113,21 +96,12 @@ function setUIElementsVisible(visible) {
   if (cornerEl) cornerEl.style.display = visible ? '' : 'none';
 }
 
-function getEmotionImagePath(basePath, emotion) {
-  if (!emotion || emotion === 'normal') return basePath;
-  const lastDot = basePath.lastIndexOf('.');
-  if (lastDot === -1) return basePath;
-  const base = basePath.substring(0, lastDot);
-  const ext = basePath.substring(lastDot);
-  return `${base}_${emotion}${ext}`;
-}
-
 /* ---------- ODA ÇİZİMİ ---------- */
 function renderRoom() {
-  if (!GAME_CONFIG || !GAME_CONFIG.rooms || !GAME_CONFIG.rooms[currentRoom]) return;
+  if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) return;
 
   renderInventory();
-  const room = GAME_CONFIG.rooms[currentRoom];
+  const room = CASE.rooms[currentRoom];
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
 
@@ -144,11 +118,21 @@ function renderRoom() {
 
     if (kapali) {
       const geri = document.createElement('div');
-      geri.className = 'hotspot-pulse-wrap';
+      geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
       geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '7.5%'; geri.style.position = 'absolute';
       geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri"><div class="hotspot-pulse-label">Geri</div>`;
       geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
       stage.appendChild(geri);
+
+      const tokmak = document.createElement('div');
+      tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
+      tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%'; tokmak.style.position = 'absolute';
+      tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
+      tokmak.onclick = () => {
+        showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok...)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
+      };
+      stage.appendChild(tokmak);
+
       stage.classList.remove('fading');
       return;
     }
@@ -160,80 +144,112 @@ function renderRoom() {
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
         if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
-        if (h.requiresFlag && !gameState.getFlag(h.requiresFlag)) return;
+        if (h.requiresDay2State && day2State !== h.requiresDay2State) return;
 
+        let ovImg = null;
         if (h.overlayImage) {
-          const ovImg = document.createElement('img');
+          ovImg = document.createElement('img');
           ovImg.className = 'room-clickable-glow';
           ovImg.src = h.overlayImage;
           ovImg.style.position = 'absolute';
 
-          if (h.type === 'otopsi_merkez_kaydi_modal' || h.overlayImage.includes('ali_ihsan_merkez_kaydi')) {
+          if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
             ovImg.style.left = h.x; ovImg.style.top = h.y;
             ovImg.style.width = h.w || '20%'; ovImg.style.height = h.h || '45%';
           } else {
             ovImg.style.left = '0'; ovImg.style.top = '0';
             ovImg.style.width = '100%'; ovImg.style.height = '100%';
           }
+
           ovImg.style.pointerEvents = 'none';
           ovImg.style.zIndex = '2';
+          ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
           stage.appendChild(ovImg);
         }
 
-        if (h.icon) {
+        if (h.icon && !h.w && !h.h) {
           const wrap = document.createElement('div');
-          wrap.className = 'hotspot-pulse-wrap';
+          wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
           wrap.style.position = 'absolute';
           wrap.style.left = h.x; wrap.style.top = h.y;
-          wrap.style.width = h.iconWidth || '7.5%';
+          wrap.style.width = h.iconWidth || '8%';
           wrap.style.zIndex = '10';
-          wrap.style.cursor = 'pointer';
+          wrap.style.pointerEvents = 'auto';
 
           const img = document.createElement('img');
           img.src = h.icon;
           wrap.appendChild(img);
 
-          const labelText = h.label || h.hint || '';
-          if (labelText) {
+          if (h.label) {
             const lbl = document.createElement('div');
             lbl.className = 'hotspot-pulse-label';
-            lbl.textContent = labelText;
+            lbl.textContent = h.label;
             wrap.appendChild(lbl);
           }
 
-          wrap.onclick = (e) => {
-            if (e) e.stopPropagation();
-            if (!calibMode && !dialogueActive) handleHotspot(h);
-          };
-          stage.appendChild(wrap);
-        } else {
-          const el = document.createElement('div');
-          el.className = 'hotspot';
-          el.style.position = 'absolute';
-          el.style.left = h.x; el.style.top = h.y; 
-          el.style.width = h.w || '10%'; el.style.height = h.h || '10%';
-          el.style.zIndex = '10'; el.style.cursor = 'pointer';
-
-          el.onclick = (e) => { 
+          wrap.onclick = (e) => { 
             if (e) e.stopPropagation();
             if (!calibMode && !dialogueActive) handleHotspot(h); 
           };
-          stage.appendChild(el);
+          stage.appendChild(wrap);
+          return;
         }
+
+        const el = document.createElement('div');
+        el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
+        el.style.position = 'absolute';
+        el.style.left = h.x; el.style.top = h.y; 
+        el.style.width = h.w || '10%'; el.style.height = h.h || '10%';
+        el.style.zIndex = '10'; el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer';
+
+        if (ovImg) {
+          el.onmouseenter = () => {
+            ovImg.style.transform = 'scale(1.08)';
+            ovImg.style.filter = 'brightness(1.2) drop-shadow(0 0 10px rgba(233,220,192,0.8))';
+          };
+          el.onmouseleave = () => {
+            ovImg.style.transform = 'scale(1)';
+            ovImg.style.filter = 'none';
+          };
+        }
+
+        const iconHtml = h.icon ? `<img src="${h.icon}" class="hotspot-icon-img" alt="">` : '';
+        el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
+        el.onclick = (e) => { 
+          if (e) e.stopPropagation();
+          if (!calibMode && !dialogueActive) handleHotspot(h); 
+        };
+        stage.appendChild(el);
       });
     }
 
     if (currentRoom === 'gazeteci_oda_sifre_giris') renderSifreMinigame(stage);
+
+    if (currentRoom === 'gazeteci_oda_canta_ici') {
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕';
+      closeBtn.className = 'canta-close-btn';
+      closeBtn.style.cssText = "position:absolute; top:4%; right:4%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(0,0,0,0.65); border:2px solid #e9dcc0; border-radius:50%; width:clamp(38px, 4.5cqw, 52px); height:clamp(38px, 4.5cqw, 52px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center;";
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        currentRoom = 'gazeteci_oda';
+        renderRoom();
+      };
+      stage.appendChild(closeBtn);
+    }
+
     stage.classList.remove('fading');
   }, 180);
 }
 
-/* ---------- KARAKTER VE TIKLANABİLİR SAHNE YÖNETİMİ ---------- */
+/* ---------- KARAKTER YÖNETİMİ ---------- */
 function renderCharacter() {
   dialogueActive = false;
+  characterAudio = null;
+  dialogIndex = 0;
   setUIElementsVisible(true);
 
-  if (currentDay === 2 && currentRoom === 'ofis' && gameState.getFlag('canta_unlocked') && !gameState.getFlag('polis_goruldu')) {
+  if (currentDay === 2 && currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
     const stage = document.getElementById('stage') || document.getElementById('gameStage');
     const polisCh = {
       name: "Polis Memuru",
@@ -245,11 +261,17 @@ function renderCharacter() {
     return;
   }
 
-  let ch = GAME_CONFIG.characters && GAME_CONFIG.characters[currentRoom];
+  let ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
 
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
+
+  ch = JSON.parse(JSON.stringify(ch));
+  if (currentDay === 2 && currentRoom === 'han') {
+    ch.clickableImage = 'assets/tiklanabilir/riza2_tiklanabilir.webp';
+    ch.clickableArea = { "x": "51.1%", "y": "27.6%", "w": "11.0%", "h": "20.5%" };
+  }
 
   if (ch.clickableImage) {
     renderClickableCharacter(ch, stage);
@@ -259,9 +281,6 @@ function renderCharacter() {
 }
 
 function renderClickableCharacter(ch, stage) {
-  document.getElementById('roomClickableGlow')?.remove();
-  document.getElementById('roomClickableHit')?.remove();
-
   const glow = document.createElement('img');
   glow.id = 'roomClickableGlow';
   glow.className = 'room-clickable-glow';
@@ -272,9 +291,8 @@ function renderClickableCharacter(ch, stage) {
   const hit = document.createElement('div');
   hit.id = 'roomClickableHit';
   hit.className = 'room-clickable-hit';
-  hit.style.left = area.x; hit.style.top = area.y; 
+  hit.style.left = area.x; hit.style.top = area.y;
   hit.style.width = area.w; hit.style.height = area.h;
-
   hit.onclick = (e) => { 
     if (e) e.stopPropagation();
     if (!dialogueActive) startDialogueFromClickable(ch); 
@@ -285,6 +303,9 @@ function renderClickableCharacter(ch, stage) {
 function startDialogueFromClickable(ch) {
   document.getElementById('roomClickableGlow')?.remove();
   document.getElementById('roomClickableHit')?.remove();
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (stage) stage.classList.add('dialog-active');
+  renderSceneCharacter(ch, stage);
   toggleCharacterLine(ch);
 }
 
@@ -296,29 +317,119 @@ function renderSceneCharacter(ch, stage) {
   el.style.bottom = ch.yOffset || '0%';
   el.onclick = (e) => { 
     if (e) e.stopPropagation();
-    toggleCharacterLine(ch); 
+    if (!calibMode) toggleCharacterLine(ch); 
   };
   stage.appendChild(el);
 }
 
 function toggleCharacterLine(ch) {
-  const dayDialog = CURRENT_DAY_DATA?.dialogs?.[currentRoom] || CURRENT_DAY_DATA?.dialogs?.[ch.name.toLowerCase()];
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
 
+  if (currentDay === 2) {
+    if (currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
+      document.getElementById('sceneCharacter')?.remove();
+      startOzelDialog(CASE.day2_dialogs.polis_ofis, ch.image, () => {
+        day2PolisGoruldu = true;
+        localStorage.setItem('sd_day2_polis_goruldu', 'true');
+        inventory = inventory.filter(item => item !== 'polaroid');
+        localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+        renderInventory();
+        renderRoom();
+      });
+      return;
+    }
+
+    if (currentRoom === 'muhtar') {
+      document.getElementById('sceneCharacter')?.remove();
+      startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+        if (day2State === 'GO_MUHTAR') setDay2State('GO_HAN');
+        renderRoom();
+        showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.", true);
+      });
+      return;
+    }
+
+    if (currentRoom === 'han') {
+      document.getElementById('sceneCharacter')?.remove();
+      startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+        if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED' && day2State !== 'CANTA_UNLOCKED') {
+          showAnahtarAcquisitionModal();
+        } else {
+          renderRoom();
+        }
+      });
+      return;
+    }
+
+    if (CASE.day2_dialogs && CASE.day2_dialogs[currentRoom]) {
+      document.getElementById('sceneCharacter')?.remove();
+      startOzelDialog(CASE.day2_dialogs[currentRoom], ch.image, () => renderRoom());
+      return;
+    }
+  }
+
+  const dayDialog = CURRENT_DAY_DATA?.dialogs?.[currentRoom];
   if (dayDialog) {
     document.getElementById('sceneCharacter')?.remove();
-    startOzelDialog(dayDialog, ch.image, () => {
-      if (currentRoom === 'muhtar') gameState.setFlag('muhtar_konusuldu', true);
-      if (currentRoom === 'ofis' && gameState.getFlag('canta_unlocked')) gameState.setFlag('polis_goruldu', true);
-      renderRoom();
-    });
+    startOzelDialog(dayDialog, ch.image, () => renderRoom());
     return;
   }
 
-  startOzelDialog(ch.dialog || [{ speaker: ch.name, text: ch.text || '', emotion: "normal" }], ch.image, () => renderRoom());
+  const charEl = document.getElementById('sceneCharacter');
+  const dialog = (ch.dialog && ch.dialog.length) ? ch.dialog : [{ speaker: ch.name, text: ch.text || '' }];
+
+  if (!dialogueActive) {
+    dialogueActive = true;
+    dialogIndex = 0;
+    if (charEl) charEl.classList.add('talking');
+    if (stage) stage.classList.add('dialog-active');
+    if (ch.audio) {
+      characterAudio = new Audio(ch.audio);
+      characterAudio.play().catch(() => {});
+    }
+    setUIElementsVisible(false);
+    gosterDialogSatiri(dialog);
+  } else {
+    dialogIndex++;
+    if (dialogIndex >= dialog.length) {
+      if (characterAudio) { characterAudio.pause(); characterAudio = null; }
+      document.getElementById('sceneSubtitle')?.remove();
+      document.getElementById('sceneCharacter')?.remove();
+      dialogueActive = false;
+      if (stage) stage.classList.remove('dialog-active');
+      setUIElementsVisible(true);
+      if (ch.clickableImage) renderClickableCharacter(ch, stage);
+      return;
+    }
+    gosterDialogSatiri(dialog);
+  }
 }
 
-/* ---------- DİYALOG VE MİMİK YÖNETİMİ ---------- */
-function startOzelDialog(dialogList, baseCharImgPath, onCompleteCallback) {
+function gosterDialogSatiri(dialog) {
+  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  if (!stage) return;
+  let sub = document.getElementById('sceneSubtitle');
+  if (!sub) {
+    sub = document.createElement('div');
+    sub.id = 'sceneSubtitle';
+    sub.className = 'scene-subtitle';
+    stage.appendChild(sub);
+  }
+  const satir = dialog[dialogIndex];
+  const charEl = document.getElementById('sceneCharacter');
+  const ch = CASE.characters && CASE.characters[currentRoom];
+  
+  if (charEl && ch && satir.emotion) {
+    const lastDot = ch.image.lastIndexOf('.');
+    const basePath = ch.image.substring(0, lastDot);
+    const ext = ch.image.substring(lastDot);
+    charEl.src = `${basePath}_${satir.emotion}${ext}`;
+  }
+
+  sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
+}
+
+function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   dialogueActive = true;
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   stage.classList.add('dialog-active');
@@ -331,17 +442,13 @@ function startOzelDialog(dialogList, baseCharImgPath, onCompleteCallback) {
     charImg.className = 'scene-character talking';
     stage.appendChild(charImg);
   }
+  charImg.src = charImgPath;
 
   let index = 0;
   function sonrakiSatir(e) {
     if (e) e.stopPropagation();
     if (index < dialogList.length) {
       const item = dialogList[index];
-      
-      const emotionImgPath = getEmotionImagePath(baseCharImgPath, item.emotion);
-      charImg.src = emotionImgPath;
-      charImg.onerror = () => { charImg.src = baseCharImgPath; };
-
       let sub = document.getElementById('sceneSubtitle');
       if (!sub) {
         sub = document.createElement('div');
@@ -352,7 +459,7 @@ function startOzelDialog(dialogList, baseCharImgPath, onCompleteCallback) {
       sub.innerHTML = `<div class="scene-subtitle-name">${item.speaker}</div><div class="scene-subtitle-text">${item.text}</div>`;
       index++;
     } else {
-      charImg.remove();
+      if (charImg) charImg.remove();
       document.getElementById('sceneSubtitle')?.remove();
       stage.classList.remove('dialog-active');
       setUIElementsVisible(true);
@@ -361,18 +468,20 @@ function startOzelDialog(dialogList, baseCharImgPath, onCompleteCallback) {
       if (onCompleteCallback) onCompleteCallback();
     }
   }
-
+  
   sonrakiSatir();
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* ---------- HOTSPOT YÖNETİMİ ---------- */
+/* ---------- HOTSPOT ISLEMLERI ---------- */
 function handleHotspot(h) {
   if (dialogueActive) return;
 
-  if (h.type === 'dosya') { openStatementsModal(); return; }
-  if (h.type === 'kamera_bos_subtitle') { showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir...", true); return; }
-  if (h.type === 'otopsi_merkez_kaydi_modal') { openOtopsiMerkezKaydiModal(); return; }
+  if (h.type === 'kamera_bos_subtitle') {
+    showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
+    return;
+  }
+  if (h.type === 'otopsi_merkez_kaydi_modal') { openOtopsiMerkezKaydiModal(0); return; }
   if (h.type === 'canta_evlilik_cuzdan_modal') { openCantaEvlilikCuzdanModal(); return; }
   if (h.type === 'canta_kagitlar_modal') { openCantaKagitlarModal(); return; }
   if (h.type === 'canta_polaroid_modal') { openCantaPolaroidModal(); return; }
@@ -386,34 +495,40 @@ function handleHotspot(h) {
   }
 
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac') {
-    const hasKey = inventory.includes('anahtar') || gameState.getFlag('han_unlocked');
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED';
+
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       inventory = inventory.filter(item => item !== 'anahtar');
-      localStorage.setItem('sd_inv_' + GAME_CONFIG.caseLabel, JSON.stringify(inventory));
-      gameState.setFlag('han_unlocked', true);
+      localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+      if (day2State !== 'CANTA_UNLOCKED') setDay2State('HAN_UNLOCKED');
       renderInventory();
       currentRoom = 'gazeteci_oda';
       renderRoom();
+      return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
       if (h.dialog) startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
-      else showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Rıza'dan anahtarı almam lazım.", true);
+      else showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.", true);
+      return;
     }
-    return;
   }
 
   if (h.type === 'navigate') {
     if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
-      if (!gameState.getFlag('canta_unlocked')) {
+      if (day2State !== 'CANTA_UNLOCKED') {
         showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
         return;
       }
     }
 
     if (currentDay === 2) {
-      if (!gameState.getFlag('muhtar_konusuldu') && !['muhtar', 'merkez', 'ofis', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Muhtarla konuşmadım en iyisi ilk ona gideyim de raporları alayım.", true);
+      if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis', 'masa', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
+        return;
+      }
+      if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
         return;
       }
     }
@@ -423,290 +538,419 @@ function handleHotspot(h) {
     return;
   }
 
-  if (h.type === 'dialogue_bakirci1' && CURRENT_DAY_DATA?.dialogs?.bakirci1) {
-    startOzelDialog(CURRENT_DAY_DATA.dialogs.bakirci1, 'assets/karakterler/bakirci1.webp');
-    return;
-  }
-  if (h.type === 'dialogue_bakirci2' && CURRENT_DAY_DATA?.dialogs?.bakirci2) {
-    startOzelDialog(CURRENT_DAY_DATA.dialogs.bakirci2, 'assets/karakterler/bakirci2.webp');
-    return;
-  }
+  if (h.type === 'dialogue_bakirci1') { startOzelDialog(CASE.day2_dialogs.bakirci1, 'assets/karakterler/bakirci1.webp'); return; }
+  if (h.type === 'dialogue_bakirci2') { startOzelDialog(CASE.day2_dialogs.bakirci2, 'assets/karakterler/bakirci2.webp'); return; }
 
+  if (h.type === 'dosya') { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep') { confirmSleep(); return; }
 }
 
-/* ---------- SORGU / İFADE DOSYALARI MODALI ---------- */
-function openStatementsModal() {
-  if (typeof calSes === 'function') calSes('sayfa');
-  const st = GAME_CONFIG?.statements || [];
-  let gridHtml = st.map((s, idx) => `
-    <div style="cursor:pointer; text-align:center; background:#241a0f; padding:8px; border-radius:6px; border:1px solid #8a5a2b;" onclick="openStatement(${idx})">
-      <img src="${s.cardImage}" style="width:100%; height:120px; object-fit:contain; border-radius:4px;">
-      <div style="color:#e9dcc0; font-size:13px; margin-top:5px; font-weight:bold;">${s.name}</div>
-    </div>
-  `).join('');
-
-  showModal(`
-    <div style="text-align:center; max-width:650px; margin:0 auto;">
-      <h3 style="color:#8a5a2b; margin-bottom:15px;">Sorgu İfade Zaptları</h3>
-      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; max-height:60vh; overflow-y:auto; padding:5px;">
-        ${gridHtml}
-      </div>
-      <br>
-      <button class="ghost" onclick="closeModal()">Kapat</button>
-    </div>
-  `);
-}
+/* ---------- SORGU KARTLARI MODALI ---------- */
+let statementAudio = null, statementPlaying = false;
+let currentStatementIndex = 0;
 
 function openStatement(index) {
-  const st = GAME_CONFIG?.statements;
-  if (!st || !st[index]) return;
-  const item = st[index];
+  stopStatementAudio();
+  currentStatementIndex = index;
+  const s = CASE.statements[index];
+  const total = CASE.statements.length;
 
-  if (currentStatementAudio) {
-    currentStatementAudio.pause();
-    currentStatementAudio = null;
-  }
-
-  const prevIdx = index > 0 ? index - 1 : st.length - 1;
-  const nextIdx = index < st.length - 1 ? index + 1 : 0;
+  const audioHtml = s.audio
+    ? `<button class="reader-play-simple" id="readerPlayBtn" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
+    : '';
 
   showModal(`
-    <div style="text-align:center; position:relative;">
-      <div class="reader-side-arrow left" style="position:absolute; left:0; top:50%; transform:translateY(-50%); font-size:28px; cursor:pointer; color:#8a5a2b;" onclick="openStatement(${prevIdx})">‹</div>
-      <div class="reader-side-arrow right" style="position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:28px; cursor:pointer; color:#8a5a2b;" onclick="openStatement(${nextIdx})">›</div>
-      
-      <h3 style="margin-bottom:10px; color:#8a5a2b;">${item.name} — İfade Kartı</h3>
-      <img id="statementZoomImg" src="${item.cardImage}" style="max-width:80%; max-height:55vh; border-radius:8px; border:2px solid #8a5a2b;">
-      <div style="margin-top:12px;">
-        <button onclick="playStatementAudio('${item.audio}')">🔊 Sesli İfadeyi Dinle</button>
-        <button class="ghost" onclick="stopStatementAudio(); closeModal(); openStatementsModal();">‹ Listeye Dön</button>
-      </div>
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
+    <div class="zoom-wrap" style="width:70vw;height:80vh;">
+      <img class="reader-card-img-wide" id="statementZoomImg" src="${s.cardImage}">
     </div>
-  `);
+    <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
+    ${audioHtml}
+  `, true);
+  
+  const mBg = document.getElementById('modalBg');
+  if (mBg) mBg.classList.add('reader-mode');
 }
 
-function playStatementAudio(src) {
-  stopStatementAudio();
-  if (src) {
-    currentStatementAudio = new Audio(src);
-    currentStatementAudio.play().catch(() => {});
+function toggleStatementAudio(src) {
+  if (!statementAudio) statementAudio = new Audio(src);
+  statementPlaying = !statementPlaying;
+  const btn = document.getElementById('readerPlayBtn');
+  if (statementPlaying) {
+    statementAudio.play().catch(() => {});
+    if (btn) btn.textContent = '⏸ Duraklat';
+  } else {
+    statementAudio.pause();
+    if (btn) btn.textContent = '▶ Sorguyu Oynat';
   }
 }
 
 function stopStatementAudio() {
-  if (currentStatementAudio) {
-    currentStatementAudio.pause();
-    currentStatementAudio = null;
-  }
+  statementPlaying = false;
+  if (statementAudio) { statementAudio.pause(); statementAudio = null; }
 }
 
 /* ---------- NOT DEFTERİ SİSTEMİ ---------- */
-function loadNotebookNotes() {
-  const saved = localStorage.getItem('sd_notes_' + (GAME_CONFIG ? GAME_CONFIG.caseLabel : 'default'));
-  notebookNotes = saved ? JSON.parse(saved) : {};
+let notebookState = null;
+let notebookMod = 'yaz';
+let notebookRenk = '#1a1a1a';
+
+function notebookKey() {
+  return 'sd_notebook_v3_' + CASE.caseLabel;
 }
 
-function saveNotebookNotes() {
-  localStorage.setItem('sd_notes_' + (GAME_CONFIG ? GAME_CONFIG.caseLabel : 'default'), JSON.stringify(notebookNotes));
+function loadNotebook() {
+  const saved = localStorage.getItem(notebookKey());
+  const total = (CASE.notebook && CASE.notebook.totalPages) || 5;
+  notebookState = saved ? JSON.parse(saved) : {
+    page: 0,
+    pages: Array.from({ length: total }, () => ({
+      solUst: '', solAlt: '', sag: '', pageDrawing: null
+    }))
+  };
+}
+
+function saveNotebook() {
+  localStorage.setItem(notebookKey(), JSON.stringify(notebookState));
 }
 
 function openNotebook() {
   if (typeof calSes === 'function') calSes('kitap');
-  const nbOverlay = document.getElementById('notebookOverlay');
+  if (!notebookState) loadNotebook();
   const nbImg = document.getElementById('notebookImage');
-  if (nbImg && GAME_CONFIG?.notebook?.image) nbImg.src = GAME_CONFIG.notebook.image;
+  const src = (CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
 
-  if (nbOverlay) {
-    nbOverlay.classList.add('active');
-    currentNotebookPage = 0;
-    renderNotebookPage();
+  const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
+  const pageSag = (CASE.notebook && CASE.notebook.pageSag) || {};
+  const solEl = document.getElementById('nbPageSol');
+  const sagEl = document.getElementById('nbPageSag');
+
+  if (solEl && sagEl) {
+    ['top', 'bottom', 'left', 'width'].forEach(k => {
+      if (pageSol[k]) solEl.style[k] = pageSol[k];
+      if (pageSag[k]) sagEl.style[k] = pageSag[k];
+    });
   }
+
+  if (nbImg) {
+    nbImg.style.display = '';
+    nbImg.src = src;
+  }
+
+  const nbOv = document.getElementById('notebookOverlay');
+  if (nbOv) nbOv.classList.add('active');
+  renderNotebookPage();
 }
 
 function closeNotebook() {
-  const nbOverlay = document.getElementById('notebookOverlay');
-  if (nbOverlay) nbOverlay.classList.remove('active');
+  const nbOv = document.getElementById('notebookOverlay');
+  if (nbOv) nbOv.classList.remove('active');
 }
+
+const NB_SOL_SATIRLAR = [
+  { taraf: 'solUst', yaziId: 'nbYaziSolUst', photoId: 'nbPhoto0', nameId: 'nbName0', notesId: 'nbNotesSolUst' },
+  { taraf: 'solAlt', yaziId: 'nbYaziSolAlt', photoId: 'nbPhoto1', nameId: 'nbName1', notesId: 'nbNotesSolAlt' }
+];
 
 function renderNotebookPage() {
-  const nbCfg = GAME_CONFIG?.notebook;
-  if (!nbCfg) return;
+  if (!notebookState) return;
+  const total = notebookState.pages.length;
+  const p = notebookState.pages[notebookState.page];
+  const suspects = (CASE.notebook && CASE.notebook.suspects) || [];
 
-  const totalPages = nbCfg.totalPages || 5;
-  const indicator = document.getElementById('nbSayfaGöstergesi');
-  if (indicator) indicator.textContent = `Sayfa ${currentNotebookPage + 1} / ${totalPages}`;
+  const yerlesim = (CASE.notebook && CASE.notebook.suspectLayout) || {};
+  const photoTop    = yerlesim.photoTop    || '8%';
+  const photoLeft   = yerlesim.photoLeft   || '14%';
+  const photoHeight = yerlesim.photoHeight || '55%';
+  const nameTop     = yerlesim.nameTop     || '16%';
+  const nameLeft    = yerlesim.nameLeft    || '52%';
+  const noteTop     = yerlesim.noteTop     || '32%';
+  const noteLeft    = yerlesim.noteLeft    || '52%';
+  const noteWidth   = yerlesim.noteWidth   || '46%';
+  const noteHeight  = yerlesim.noteHeight  || '60%';
 
-  const idx0 = currentNotebookPage * 2;
-  const idx1 = idx0 + 1;
-  const suspects = nbCfg.suspects || [];
+  NB_SOL_SATIRLAR.forEach((satir, i) => {
+    const suspect = suspects[notebookState.page * 2 + i];
+    const photoEl = document.getElementById(satir.photoId);
+    const nameEl = document.getElementById(satir.nameId);
+    const notesEl = document.getElementById(satir.notesId);
 
-  updateSuspectRow(0, suspects[idx0], 'solUst');
-  updateSuspectRow(1, suspects[idx1], 'solAlt');
+    if (nameEl && notesEl && photoEl) {
+      nameEl.style.top = nameTop;
+      nameEl.style.left = nameLeft;
+      notesEl.style.top = noteTop;
+      notesEl.style.left = noteLeft;
+      notesEl.style.width = noteWidth;
+      notesEl.style.height = noteHeight;
+      if (photoEl.tagName === 'IMG') {
+        photoEl.style.top = photoTop;
+        photoEl.style.left = photoLeft;
+        photoEl.style.height = photoHeight;
+        photoEl.style.width = 'auto';
+      }
 
-  const sagTextarea = document.getElementById('nbYaziSag');
-  if (sagTextarea) {
-    const key = 'sag_p' + currentNotebookPage;
-    sagTextarea.value = notebookNotes[key] || '';
+      if (suspect) {
+        nameEl.textContent = suspect.name;
+        photoEl.style.display = '';
+        photoEl.src = suspect.image;
+      } else {
+        nameEl.textContent = '';
+        photoEl.style.display = 'none';
+      }
+    }
+    const yaziEl = document.getElementById(satir.yaziId);
+    if (yaziEl) yaziEl.value = p[satir.taraf] || '';
+  });
+
+  const yaziSag = document.getElementById('nbYaziSag');
+  if (yaziSag) yaziSag.value = p.sag || '';
+
+  const cFull = document.getElementById('nbCanvasFull');
+  if (cFull) canvasResizeVeCiz(cFull, p.pageDrawing);
+
+  const nbS = document.getElementById('nbSayfaGöstergesi');
+  if (nbS) nbS.textContent = `Sayfa ${notebookState.page + 1} / ${total}`;
+}
+
+function canvasResizeVeCiz(canvas, dataURL) {
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (dataURL) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    img.src = dataURL;
   }
 }
 
-function updateSuspectRow(rowNum, suspectData, noteKey) {
-  const photoEl = document.getElementById('nbPhoto' + rowNum);
-  const nameEl = document.getElementById('nbName' + rowNum);
-  const textareaEl = document.getElementById(rowNum === 0 ? 'nbYaziSolUst' : 'nbYaziSolAlt');
+function notebookYaziKaydet(taraf, el) {
+  notebookState.pages[notebookState.page][taraf] = el.value;
+  saveNotebook();
+}
 
-  if (suspectData) {
-    if (photoEl) { photoEl.src = suspectData.image; photoEl.style.display = 'block'; }
-    if (nameEl) { nameEl.textContent = suspectData.name; nameEl.style.display = 'block'; }
-  } else {
-    if (photoEl) photoEl.style.display = 'none';
-    if (nameEl) nameEl.style.display = 'none';
-  }
-
-  if (textareaEl) {
-    textareaEl.value = notebookNotes[noteKey + '_p' + currentNotebookPage] || '';
+function notebookSayfaGeri() {
+  if (notebookState.page > 0) { 
+    if (typeof calSes === 'function') calSes('sayfa');
+    notebookState.page--; 
+    saveNotebook(); 
+    renderNotebookPage(); 
   }
 }
 
 function notebookSayfaIleri() {
-  const totalPages = GAME_CONFIG?.notebook?.totalPages || 5;
-  if (currentNotebookPage < totalPages - 1) {
+  if (notebookState.page < notebookState.pages.length - 1) { 
     if (typeof calSes === 'function') calSes('sayfa');
-    currentNotebookPage++;
-    renderNotebookPage();
+    notebookState.page++; 
+    saveNotebook(); 
+    renderNotebookPage(); 
   }
 }
 
-function notebookSayfaGeri() {
-  if (currentNotebookPage > 0) {
-    if (typeof calSes === 'function') calSes('sayfa');
-    currentNotebookPage--;
-    renderNotebookPage();
-  }
-}
-
-function notebookYaziKaydet(posKey, textarea) {
-  const key = posKey + '_p' + currentNotebookPage;
-  notebookNotes[key] = textarea.value;
-  saveNotebookNotes();
+function notebookTemizle() {
+  if (!confirm('Bu sayfadaki yazı ve çizimler silinsin mi?')) return;
+  const p = notebookState.pages[notebookState.page];
+  p.solUst = ''; p.solAlt = ''; p.sag = ''; p.pageDrawing = null;
+  saveNotebook();
+  renderNotebookPage();
 }
 
 function notebookModAyarla(mod) {
-  document.querySelectorAll('.nb-btn').forEach(b => b.classList.remove('active'));
-  if (mod === 'yaz') document.getElementById('nbModYaz')?.classList.add('active');
-  if (mod === 'ciz') document.getElementById('nbModCiz')?.classList.add('active');
-  if (mod === 'sil') document.getElementById('nbModSil')?.classList.add('active');
+  notebookMod = mod;
+  document.getElementById('nbModYaz')?.classList.toggle('active', mod === 'yaz');
+  document.getElementById('nbModCiz')?.classList.toggle('active', mod === 'ciz');
+  document.getElementById('nbModSil')?.classList.toggle('active', mod === 'sil');
+  
+  const cFull = document.getElementById('nbCanvasFull');
+  if (cFull) cFull.classList.toggle('pasif', mod === 'yaz');
+  document.querySelectorAll('.nb-yazi').forEach(t => t.style.pointerEvents = mod === 'yaz' ? 'auto' : 'none');
 }
 
 function notebookRenkSec(renk) {
-  document.querySelectorAll('.nb-renk-btn').forEach(b => b.classList.remove('aktif'));
-  if (renk === '#1a1a1a') document.getElementById('nbRenkSiyah')?.classList.add('aktif');
-  if (renk === '#8f2a1e') document.getElementById('nbRenkKirmizi')?.classList.add('aktif');
+  notebookRenk = renk;
+  document.getElementById('nbRenkSiyah')?.classList.toggle('aktif', renk === '#1a1a1a');
+  document.getElementById('nbRenkKirmizi')?.classList.toggle('aktif', renk === '#8f2a1e');
 }
 
-/* ---------- DİĞER ARAYÜZ MODALLARI ---------- */
-function openOtopsiMerkezKaydiModal() {
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Otopsi & Merkez Kaydı</h3>
-      <img src="assets/arayuz/ali_ihsan_merkez_kaydi.webp" style="max-width:100%; max-height:60vh; border-radius:8px;">
-      <br><br>
-      <button class="ghost" onclick="closeModal()">Kapat</button>
-    </div>
-  `);
-}
+function nbKalemKur(canvas, taraf) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let çiziyor = false;
 
-function openCantaEvlilikCuzdanModal() {
-  if (!inventory.includes('evlilik_cuzdan')) {
-    inventory.push('evlilik_cuzdan');
-    localStorage.setItem('sd_inv_' + GAME_CONFIG.caseLabel, JSON.stringify(inventory));
-    renderInventory();
+  function konum(e) {
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
   }
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Evlilik Cüzdanı İncelemesi</h3>
-      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:100%; max-height:60vh; border-radius:8px;">
-      <p style="margin-top:10px;">Cevdet ile Şefika'nın evlilik cüzdanı...</p>
-      <button class="ghost" onclick="closeModal(); renderRoom();">Kapat ve Envantere Al</button>
-    </div>
-  `);
-}
-
-function openCantaKagitlarModal() {
-  gameState.setFlag('canta_kagitlar_incelendi', true);
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Gazeteci Notları</h3>
-      <p>Çantadan çıkan eski gazete kupürleri ve el yazısı notlar...</p>
-      <button class="ghost" onclick="closeModal(); renderRoom();">Kapat</button>
-    </div>
-  `);
-}
-
-function openCantaPolaroidModal() {
-  if (!inventory.includes('polaroid')) {
-    inventory.push('polaroid');
-    localStorage.setItem('sd_inv_' + GAME_CONFIG.caseLabel, JSON.stringify(inventory));
-    renderInventory();
+  function başla(e) {
+    if (notebookMod === 'yaz') return;
+    çiziyor = true;
+    ctx.globalCompositeOperation = notebookMod === 'sil' ? 'destination-out' : 'source-over';
+    ctx.strokeStyle = notebookMod === 'sil' ? '#000' : notebookRenk;
+    ctx.lineWidth = notebookMod === 'sil' ? 24 : 2;
+    ctx.lineCap = 'round';
+    const { x, y } = konum(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
   }
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Polaroid Fotoğraf</h3>
-      <img src="assets/arayuz/poloroid.webp" style="max-width:100%; max-height:60vh; border-radius:8px;">
-      <p style="margin-top:10px;">Henüz işlenmemiş banyo edilmemiş bir fotoğraf filmi.</p>
-      <button class="ghost" onclick="closeModal(); renderRoom();">Kapat ve Envantere Al</button>
-    </div>
-  `);
-}
-
-function openYanikKagitModal() {
-  if (!inventory.includes('yanik_kagit')) {
-    inventory.push('yanik_kagit');
-    localStorage.setItem('sd_inv_' + GAME_CONFIG.caseLabel, JSON.stringify(inventory));
-    renderInventory();
+  function çiz(e) {
+    if (notebookMod === 'yaz' || !çiziyor) return;
+    const { x, y } = konum(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
   }
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Yanık Kağıt Parçası</h3>
-      <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" style="max-width:100%; max-height:60vh; border-radius:8px;">
-      <p style="margin-top:10px;">Kısmen yanmış bir mektup parçası.</p>
-      <button class="ghost" onclick="closeModal(); renderRoom();">Kapat ve Envantere Al</button>
-    </div>
-  `);
+  function bitir() {
+    if (!çiziyor) return;
+    çiziyor = false;
+    notebookState.pages[notebookState.page][taraf] = canvas.toDataURL();
+    saveNotebook();
+  }
+  canvas.addEventListener('mousedown', başla);
+  canvas.addEventListener('mousemove', çiz);
+  window.addEventListener('mouseup', bitir);
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); başla(e); }, { passive: false });
+  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); çiz(e); }, { passive: false });
+  canvas.addEventListener('touchend', bitir);
 }
 
-function openGazeteciDosyaModal(images = gazeteciDosyaPagesDefault, pageIndex = 0) {
-  if (!images || images.length === 0) images = gazeteciDosyaPagesDefault;
-  const currentImg = images[pageIndex] || images[0];
-  const prevBtn = pageIndex > 0 ? `<button onclick="openGazeteciDosyaModal(null, ${pageIndex - 1})">‹ Önceki</button>` : '';
-  const nextBtn = pageIndex < images.length - 1 ? `<button onclick="openGazeteciDosyaModal(null, ${pageIndex + 1})">Sonraki ›</button>` : '';
-  
-  showModal(`
-    <div style="text-align:center;">
-      <h3>Gazeteci Dosyası (${pageIndex + 1}/${images.length})</h3>
-      <img src="${currentImg}" style="max-width:100%; max-height:60vh; border-radius:8px;">
-      <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-        ${prevBtn}
-        ${nextBtn}
-        <button class="ghost" onclick="closeModal()">Kapat</button>
-      </div>
-    </div>
-  `);
+const cFullEl = document.getElementById('nbCanvasFull');
+if (cFullEl) nbKalemKur(cFullEl, 'pageDrawing');
+
+/* ---------- HARİTA SİSTEMİ ---------- */
+function openMap() {
+  if (!CASE.map) return;
+  const mapImg = document.getElementById('mapImage');
+  if (mapImg) mapImg.src = CASE.map.image;
+
+  const wrap = document.getElementById('mapHotspots');
+  if (wrap) {
+    wrap.innerHTML = '';
+    CASE.map.hotspots.forEach(h => {
+      const dot = document.createElement('div');
+      dot.className = 'map-hotspot';
+      dot.style.left = h.x; dot.style.top = h.y;
+      dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
+      dot.onclick = () => {
+        if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
+          if (day2State !== 'CANTA_UNLOCKED') {
+            closeMap();
+            showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
+            return;
+          }
+        }
+
+        if (currentDay === 2) {
+          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
+            return;
+          }
+          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
+            return;
+          }
+        }
+
+        if (h.target && CASE.rooms[h.target]) {
+          currentRoom = h.target;
+          closeMap();
+          renderRoom();
+        }
+      };
+      wrap.appendChild(dot);
+    });
+  }
+
+  const mapOv = document.getElementById('mapOverlay');
+  if (mapOv) mapOv.classList.add('active');
 }
 
+function closeMap() {
+  const mapOv = document.getElementById('mapOverlay');
+  if (mapOv) mapOv.classList.remove('active');
+}
+
+/* ---------- ŞİFRE MİNİGAMESİ ---------- */
 function renderSifreMinigame(stage) {
+  const numCoords = [
+    { x: "32.8%", y: "57.5%" }, { x: "39.0%", y: "57.2%" },
+    { x: "46.1%", y: "57.3%" }, { x: "52.7%", y: "57.2%" }, { x: "59.2%", y: "57.2%" }
+  ];
+  const incCoords = [
+    { x: "32.7%", y: "36.1%" }, { x: "39.5%", y: "36.0%" },
+    { x: "45.9%", y: "36.4%" }, { x: "52.7%", y: "36.0%" }, { x: "59.8%", y: "36.1%" }
+  ];
+  const decCoords = [
+    { x: "32.6%", y: "79.0%" }, { x: "39.2%", y: "78.5%" },
+    { x: "45.3%", y: "78.5%" }, { x: "52.4%", y: "78.7%" }, { x: "59.0%", y: "78.5%" }
+  ];
+
+  numCoords.forEach((c, idx) => {
+    const digitEl = document.createElement('div');
+    digitEl.id = `sifreDigit_${idx}`;
+    digitEl.style.position = 'absolute';
+    digitEl.style.left = c.x; digitEl.style.top = c.y;
+    digitEl.style.transform = 'translate(-50%, -50%)';
+    digitEl.style.fontSize = 'clamp(24px, 3.5cqw, 48px)';
+    digitEl.style.fontWeight = 'bold';
+    digitEl.style.color = '#e9dcc0';
+    digitEl.style.userSelect = 'none';
+    digitEl.style.zIndex = '10';
+    digitEl.textContent = lockDigits[idx];
+    stage.appendChild(digitEl);
+  });
+
+  incCoords.forEach((c, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'hotspot';
+    btn.style.position = 'absolute';
+    btn.style.left = c.x; btn.style.top = c.y;
+    btn.style.width = '5.5%'; btn.style.height = '8.5%';
+    btn.style.transform = 'translate(-50%, -50%)';
+    btn.style.cursor = 'pointer'; btn.style.zIndex = '11';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      lockDigits[idx] = (lockDigits[idx] + 1) % 10;
+      document.getElementById(`sifreDigit_${idx}`).textContent = lockDigits[idx];
+      if (typeof calSes === 'function') calSes('kapan');
+    };
+    stage.appendChild(btn);
+  });
+
+  decCoords.forEach((c, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'hotspot';
+    btn.style.position = 'absolute';
+    btn.style.left = c.x; btn.style.top = c.y;
+    btn.style.width = '5.5%'; btn.style.height = '8.5%';
+    btn.style.transform = 'translate(-50%, -50%)';
+    btn.style.cursor = 'pointer'; btn.style.zIndex = '11';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      lockDigits[idx] = (lockDigits[idx] + 9) % 10;
+      document.getElementById(`sifreDigit_${idx}`).textContent = lockDigits[idx];
+      if (typeof calSes === 'function') calSes('kapan');
+    };
+    stage.appendChild(btn);
+  });
+
   const ilerleBtn = document.createElement('button');
   ilerleBtn.className = 'btn show';
   ilerleBtn.textContent = 'İlerle';
   ilerleBtn.style.position = 'absolute';
   ilerleBtn.style.left = '67.5%'; ilerleBtn.style.top = '57.2%';
+  ilerleBtn.style.transform = 'translateY(-50%)';
+  ilerleBtn.style.zIndex = '12';
   ilerleBtn.onclick = (e) => {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
       if (typeof calSes === 'function') calSes('kilit_ac');
-      gameState.setFlag('canta_unlocked', true);
+      setDay2State('CANTA_UNLOCKED');
       currentRoom = 'gazeteci_oda_canta_ici';
       renderRoom();
     } else {
@@ -717,6 +961,118 @@ function renderSifreMinigame(stage) {
   stage.appendChild(ilerleBtn);
 }
 
+/* ---------- DİĞER İNCELEME MODALLARI ---------- */
+function openOtopsiMerkezKaydiModal(index = 0) {
+  const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
+  const src = pages[index];
+  const prevDisabled = index === 0 ? 'disabled' : '';
+  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
+
+  showModal(`
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" onclick="openOtopsiMerkezKaydiModal(${index - 1})" ${prevDisabled}>‹</button>
+    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
+      <img id="photoZoomImg" src="${src}" style="max-width:92vw; max-height:92vh; object-fit:contain;">
+    </div>
+    <button class="reader-side-arrow right" onclick="openOtopsiMerkezKaydiModal(${index + 1})" ${nextDisabled}>›</button>
+  `, true);
+}
+
+function openCantaEvlilikCuzdanModal() {
+  showModal(`
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <div style="text-align:center;">
+      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
+      <br><br>
+      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan');">ENVANTERE AL</button>
+    </div>
+  `, true);
+}
+
+function openCantaKagitlarModal() {
+  showModal(`
+    <button class="reader-close" onclick="closeCantaKagitlarModal()">✕</button>
+    <div style="text-align:center;">
+      <img src="assets/arayuz/bos_kagit.webp" style="max-width:80vw; max-height:70vh; object-fit:contain;">
+    </div>
+  `, true);
+}
+
+function closeCantaKagitlarModal() {
+  if (!inventory.includes('canta_kagitlar_incelendi')) {
+    inventory.push('canta_kagitlar_incelendi');
+    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+  }
+  closeModal();
+  renderRoom();
+  setTimeout(() => showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true), 300);
+}
+
+function openCantaPolaroidModal() {
+  showModal(`
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <div style="text-align:center;">
+      <img src="assets/arayuz/poloroid.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
+      <br><br>
+      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid');">ENVANTERE AL</button>
+    </div>
+  `, true);
+}
+
+function openYanikKagitModal() {
+  showModal(`
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <div style="text-align:center;">
+      <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
+      <br><br>
+      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">ENVANTERE EKLE</button>
+    </div>
+  `, true);
+}
+
+function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
+  const src = pages[index];
+  const prevDisabled = index === 0 ? 'disabled' : '';
+  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
+
+  showModal(`
+    <button class="reader-close" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" onclick="openGazeteciDosyaModal(null, ${index - 1})" ${prevDisabled}>‹</button>
+    <div style="text-align:center;">
+      <img src="${src}" style="max-width:80vw; max-height:80vh; object-fit:contain;">
+    </div>
+    <button class="reader-side-arrow right" onclick="openGazeteciDosyaModal(null, ${index + 1})" ${nextDisabled}>›</button>
+  `, true);
+}
+
+function showAnahtarAcquisitionModal() {
+  showModal(`
+    <div style="text-align:center; padding:20px;">
+      <h2>Oda Anahtarı Alındı</h2>
+      <img src="assets/tiklanabilir/anahtar.webp" style="max-width:300px; display:block; margin:20px auto;">
+      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();">ENVANTERE AL</button>
+    </div>
+  `, true);
+}
+
+function collectKey() {
+  if (!inventory.includes('anahtar')) inventory.push('anahtar');
+  localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+  setDay2State('HAN_UNLOCKED');
+  renderInventory();
+}
+
+function collect(collectId) {
+  if (!inventory.includes(collectId)) {
+    inventory.push(collectId);
+    localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
+    renderInventory();
+  }
+  closeModal();
+  renderRoom();
+}
+
+/* ---------- ARAYÜZ YARDIMCILARI ---------- */
 function updateDayBadge() {
   const el = document.getElementById('dayBadge');
   if (el) el.textContent = `GÜN ${currentDay}`;
@@ -731,81 +1087,123 @@ function renderInventory() {
   }
   inv.innerHTML = '';
   inventory.forEach(id => {
+    if (id === 'canta_kagitlar_incelendi') return;
     const el = document.createElement('div');
     el.className = 'inv-item';
-    el.textContent = '📄';
+    el.style.cssText = "width:clamp(38px, 4.5cqw, 54px); height:clamp(38px, 4.5cqw, 54px); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 3px;";
+
+    let imgSrc = '';
+    let label = '';
+    if (id === 'anahtar') { imgSrc = 'assets/tiklanabilir/anahtar.webp'; label = 'Anahtar'; }
+    else if (id === 'evlilik_cuzdan') { imgSrc = 'assets/arayuz/evlilik_cuzdan.webp'; label = 'Cüzdan'; }
+    else if (id === 'polaroid') { imgSrc = 'assets/arayuz/poloroid.webp'; label = 'Polaroid'; }
+    else if (id === 'yanik_kagit') { imgSrc = 'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp'; label = 'Yanık Kağıt'; }
+    else if (id === 'gazeteci_dosyasi') { imgSrc = 'assets/arayuz/gazeteci_dosya.webp'; label = 'Dosya'; }
+
+    if (imgSrc) {
+      el.innerHTML = `<img src="${imgSrc}" style="height:58%; object-fit:contain;"><span style="font-size:8px; color:#e9dcc0;">${label}</span>`;
+    } else {
+      el.textContent = '📄';
+    }
     inv.appendChild(el);
   });
 }
 
 function showCustomSubtitle(text, clickToDismiss = false) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
-  let sub = document.getElementById('sceneSubtitle');
-  if (sub) sub.remove();
-  sub = document.createElement('div');
-  sub.id = 'sceneSubtitle'; sub.className = 'scene-subtitle';
+  if (!stage) return;
+  
+  setUIElementsVisible(false);
+  document.getElementById('sceneSubtitle')?.remove();
+
+  const sub = document.createElement('div');
+  sub.id = 'sceneSubtitle';
+  sub.className = 'scene-subtitle';
+  sub.style.zIndex = '99999';
   sub.innerHTML = `<div class="scene-subtitle-text">${text}</div>`;
   stage.appendChild(sub);
-  sub.onclick = () => sub.remove();
+
+  const kaldir = () => {
+    sub.remove();
+    setUIElementsVisible(true);
+  };
+
+  let timer = null;
+  if (!clickToDismiss) timer = setTimeout(kaldir, 5000);
+
+  sub.onclick = (e) => {
+    e.stopPropagation();
+    if (timer) clearTimeout(timer);
+    kaldir();
+  };
 }
 
 function confirmSleep() {
-  showModal(`<h3>Uyumadan Önce</h3><p>Uyumak istediğine emin misin?</p><button onclick="closeModal(); sleep();">Evet, Uyu</button><button class="ghost" onclick="closeModal()">Vazgeç</button>`);
+  showModal(`
+    <h3>Uyumadan Önce</h3>
+    <p>Uyumak istediğine emin misin? Bir sonraki güne geçeceksin.</p>
+    <button onclick="closeModal(); sleep();">Evet, Uyu</button>
+    <button class="ghost" onclick="closeModal()">Vazgeç</button>
+  `);
 }
 
-async function sleep() {
+function sleep() {
   currentDay++;
-  localStorage.setItem('sd_day_' + GAME_CONFIG.caseLabel, currentDay);
-  await loadDayData(currentDay);
+  localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
   updateDayBadge();
-  renderRoom();
+
+  try {
+    currentSleepAudio = new Audio('assets/ses/uyuma.mp3');
+    currentSleepAudio.play().catch(() => {});
+  } catch (e) {}
+
+  const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
+  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
+  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
+  document.getElementById('sleepOverlay').classList.add('active');
 }
 
-function showModal(html) {
+function wakeUp() {
+  if (currentSleepAudio) {
+    currentSleepAudio.pause();
+    currentSleepAudio = null;
+  }
+  document.getElementById('sleepOverlay')?.classList.remove('active');
+  loadDayData(currentDay).then(() => renderRoom());
+}
+
+function showModal(html, wide) {
   const body = document.getElementById('modalBody');
-  if (body) body.innerHTML = html;
-  const bg = document.getElementById('modalBg');
-  if (bg) bg.classList.add('active');
+  if (!body) return;
+  body.innerHTML = html;
+  body.className = 'modal' + (wide ? ' wide' : '');
+  document.getElementById('modalBg')?.classList.add('active');
 }
 
 function closeModal() {
   stopStatementAudio();
   const bg = document.getElementById('modalBg');
-  if (bg) bg.classList.remove('active');
-}
-
-function openMap() {
-  if (typeof calSes === 'function') calSes('harita');
-  const mapOverlay = document.getElementById('mapOverlay');
-  if (mapOverlay) {
-    mapOverlay.classList.add('active');
-    renderMapHotspots();
+  const body = document.getElementById('modalBody');
+  if (body) body.className = 'modal';
+  if (bg) {
+    bg.classList.remove('active');
+    bg.classList.remove('reader-mode');
   }
 }
 
-function closeMap() {
-  const mapOverlay = document.getElementById('mapOverlay');
-  if (mapOverlay) mapOverlay.classList.remove('active');
-}
-
-function renderMapHotspots() {
-  const container = document.getElementById('mapHotspots');
-  const mapImg = document.getElementById('mapImage');
-  if (!container || !GAME_CONFIG?.map) return;
-  if (mapImg && GAME_CONFIG.map.image) mapImg.src = GAME_CONFIG.map.image;
-  container.innerHTML = '';
-  GAME_CONFIG.map.hotspots.forEach(h => {
-    const btn = document.createElement('div');
-    btn.className = 'map-hotspot';
-    btn.style.left = h.x; btn.style.top = h.y;
-    btn.innerHTML = `<span class="map-label">${h.label}</span>`;
-    btn.onclick = () => {
-      closeMap();
-      currentRoom = h.target;
-      renderRoom();
-    };
-    container.appendChild(btn);
-  });
-}
+// Global Pencere Fonksiyonları
+window.openNotebook = openNotebook;
+window.closeNotebook = closeNotebook;
+window.notebookSayfaGeri = notebookSayfaGeri;
+window.notebookSayfaIleri = notebookSayfaIleri;
+window.notebookModAyarla = notebookModAyarla;
+window.notebookRenkSec = notebookRenkSec;
+window.notebookTemizle = notebookTemizle;
+window.notebookYaziKaydet = notebookYaziKaydet;
+window.openMap = openMap;
+window.closeMap = closeMap;
+window.wakeUp = wakeUp;
+window.closeModal = closeModal;
+window.openOtopsiMerkezKaydiModal = openOtopsiMerkezKaydiModal;
 
 window.onload = () => { initGame(); };
