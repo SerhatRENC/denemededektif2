@@ -276,18 +276,21 @@
     });
 
     function kapatIntroOverlay() {
-  if (typeof calSes === 'function') calSes('kapi');
-  const overlay = document.getElementById('introOverlay');
-  if (overlay) {
-    overlay.classList.add('hidden');
-    setTimeout(() => overlay.remove(), 800);
-  }
-  
-  // Giriş ekranı kapandığı an odayı tekrar çizdirip görselin ekrana gelmesini garantiye alıyoruz
-  if (typeof renderRoom === 'function') {
-    renderRoom();
-  }
-}
+      if (typeof calSes === 'function') calSes('kapi');
+      const overlay = document.getElementById('introOverlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        setTimeout(() => overlay.remove(), 800);
+      }
+      
+      // Giriş ekranı kapandığı an odayı tazeleyerek çizilmeyi zorluyoruz
+      setTimeout(() => {
+        if (typeof renderRoom === 'function') {
+          renderRoom();
+        }
+      }, 100);
+    }
+
     function hizalaSorguOklari() {
       const img = document.getElementById('statementZoomImg');
       const modal = document.getElementById('modalBody');
@@ -493,6 +496,7 @@
       return liste;
     }
 
+    /* KORUMALI VE ZAMAN AŞIMLI RENDER ROOM OVERRIDE */
     renderRoom = function () {
       const jeton = ++_odaJetonu;
       const cfg = window.GAME_CONFIG || window.CASE;
@@ -504,10 +508,24 @@
       const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
       const karakter = (!kapali && cfg.characters && cfg.characters[currentRoom]) ? cfg.characters[currentRoom].image : null;
       
-      if (typeof Yukleme !== 'undefined' && Yukleme.gecis) {
-        Yukleme.gecis([kapali ? oda.closedImage : oda.background, karakter], () => {
-          if (jeton !== _odaJetonu) return;
-          _odaCiz();
+      // Sadece geçerli (null olmayan) resim yollarını diziye alıyoruz
+      const yuklenecekler = [kapali ? oda.closedImage : oda.background, karakter].filter(Boolean);
+
+      if (typeof Yukleme !== 'undefined' && Yukleme.gecis && yuklenecekler.length > 0) {
+        let cagirildi = false;
+        const guvenliOdaCiz = () => {
+          if (!cagirildi) {
+            cagirildi = true;
+            if (jeton === _odaJetonu) _odaCiz();
+          }
+        };
+
+        // KORUMA: Görsel yüklemesi 1 saniyeden uzun sürerse zorla odayı çizer
+        const timeout = setTimeout(guvenliOdaCiz, 1000);
+
+        Yukleme.gecis(yuklenecekler, () => {
+          clearTimeout(timeout);
+          guvenliOdaCiz();
         });
       } else {
         _odaCiz();
