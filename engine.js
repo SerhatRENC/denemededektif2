@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — TAM KONTROLLÜ MODÜLER OYUN MOTORU
+   SISLIDERE DAVASI — TAM KONTROLLÜ VE ÇERÇEVESİZ OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -157,9 +157,12 @@ function renderRoom() {
           if (currentDay < 2 || !day2PolisGoruldu) return;
         }
 
-        // 2. Gün ofiste otopsi raporu incelenmeden dışarı çıkış butonu gizlenir
-        if (currentRoom === 'ofis' && currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
-          if (h.target === 'merkez') return;
+        // DÜZELTME 4: Dışarı çıkış sadece Handan dönüldükten sonra (GO_OFIS / CANTA_UNLOCKED) ve otopsi incelenmeden önce engellenir.
+        // 2. gün ilk sabahında (GO_MUHTAR) dışarı çıkmak serbesttir!
+        if (currentRoom === 'ofis' && currentDay === 2) {
+          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
+            if (h.target === 'merkez') return;
+          }
         }
 
         if (h.requires && !inventory.includes(h.requires)) return;
@@ -269,7 +272,7 @@ function renderCharacter() {
   dialogIndex = 0;
   setUIElementsVisible(true);
 
-  // 2. Gün Ofise Gelindiğinde Polis Diyaloğu Otomatik Tetiklenir
+  // DÜZELTME 2: Ofise gelindiğinde polis tıklanabilir halde bekler, sohbet tıklandıktan sonra başlar!
   if (currentDay === 2 && currentRoom === 'ofis' && (day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS') && !day2PolisGoruldu) {
     const stage = document.getElementById('stage') || document.getElementById('gameStage');
     const polisCh = {
@@ -279,7 +282,6 @@ function renderCharacter() {
       clickableArea: { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" }
     };
     renderClickableCharacter(polisCh, stage);
-    setTimeout(() => startDialogueFromClickable(polisCh), 300);
     return;
   }
 
@@ -613,12 +615,28 @@ function handleHotspot(h) {
   if (h.type === 'sleep') { confirmSleep(); return; }
 }
 
+/* ---------- DÜZELTME 1 & 3: GENEL ÇERÇEVESİZ MODAL YARDIMCISI ---------- */
+function showFramelessModal(innerHtml) {
+  stopStatementAudio();
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.background = 'rgba(0, 0, 0, 0.88)';
+  bg.style.backdropFilter = 'blur(8px)';
+
+  body.className = 'modal modal-fullscreen';
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;";
+
+  body.innerHTML = innerHtml;
+}
+
 /* ---------- SORGU KARTLARI MODALI ---------- */
 let statementAudio = null, statementPlaying = false;
 let currentStatementIndex = 0;
 
 function openStatement(index) {
-  stopStatementAudio();
   currentStatementIndex = index;
   const s = CASE.statements[index];
   const total = CASE.statements.length;
@@ -627,18 +645,7 @@ function openStatement(index) {
     ? `<button class="reader-play-simple" id="readerPlayBtn" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:10002; padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
     : '';
 
-  const body = document.getElementById('modalBody');
-  const bg = document.getElementById('modalBg');
-  if (!body || !bg) return;
-
-  bg.className = 'modal-bg active reader-mode';
-  bg.style.background = 'rgba(0, 0, 0, 0.85)';
-  bg.style.backdropFilter = 'blur(8px)';
-
-  body.className = 'modal modal-fullscreen';
-  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; align-items:center; justify-content:center; position:relative;";
-
-  body.innerHTML = `
+  showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
     <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index > 0 ? index - 1 : total - 1})">‹</button>
     <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
@@ -646,7 +653,7 @@ function openStatement(index) {
     </div>
     <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index < total - 1 ? index + 1 : 0})">›</button>
     ${audioHtml}
-  `;
+  `);
 }
 
 function toggleStatementAudio(src) {
@@ -899,7 +906,6 @@ if (cFullEl) nbKalemKur(cFullEl, 'pageDrawing');
 function openMap() {
   if (!CASE.map) return;
 
-  // 2. Gün otopsi raporu incelenmeden harita gezintisine izin verilmez
   if (currentDay === 2 && (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
     showCustomSubtitle("Dedektif: Önce masadaki otopsi raporunu incelemeliyim.", true);
     return;
@@ -1040,41 +1046,41 @@ function renderSifreMinigame(stage) {
   stage.appendChild(ilerleBtn);
 }
 
-/* ---------- DİĞER İNCELEME MODALLARI ---------- */
+/* ---------- DÜZELTME 1 & 3: TAM ÇERÇEVESİZ İNCELEME MODALLARI ---------- */
 function openOtopsiMerkezKaydiModal(index = 0) {
   const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
   const src = pages[index];
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
 
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" onclick="openOtopsiMerkezKaydiModal(${index - 1})" ${prevDisabled}>‹</button>
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index - 1})" ${prevDisabled}>‹</button>
     <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
-      <img id="photoZoomImg" src="${src}" style="max-width:92vw; max-height:92vh; object-fit:contain;">
+      <img id="photoZoomImg" src="${src}" style="max-width:90vw; max-height:88vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-    <button class="reader-side-arrow right" onclick="openOtopsiMerkezKaydiModal(${index + 1})" ${nextDisabled}>›</button>
-  `, true);
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index + 1})" ${nextDisabled}>›</button>
+  `);
 }
 
 function openCantaEvlilikCuzdanModal() {
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <div style="text-align:center;">
-      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
-      <br><br>
-      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan');">ENVANTERE AL</button>
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <br>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan');">ENVANTERE AL</button>
     </div>
-  `, true);
+  `);
 }
 
 function openCantaKagitlarModal() {
-  showModal(`
-    <button class="reader-close" onclick="closeCantaKagitlarModal()">✕</button>
-    <div style="text-align:center;">
-      <img src="assets/arayuz/bos_kagit.webp" style="max-width:80vw; max-height:70vh; object-fit:contain;">
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeCantaKagitlarModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
+      <img src="assets/arayuz/bos_kagit.webp" style="max-width:88vw; max-height:85vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-  `, true);
+  `);
 }
 
 function closeCantaKagitlarModal() {
@@ -1088,25 +1094,25 @@ function closeCantaKagitlarModal() {
 }
 
 function openCantaPolaroidModal() {
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <div style="text-align:center;">
-      <img src="assets/arayuz/poloroid.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
-      <br><br>
-      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid');">ENVANTERE AL</button>
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      <img src="assets/arayuz/poloroid.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <br>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid');">ENVANTERE AL</button>
     </div>
-  `, true);
+  `);
 }
 
 function openYanikKagitModal() {
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <div style="text-align:center;">
-      <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" style="max-width:80vw; max-height:60vh; object-fit:contain;">
-      <br><br>
-      <button class="btn show" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">ENVANTERE EKLE</button>
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <br>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">ENVANTERE EKLE</button>
     </div>
-  `, true);
+  `);
 }
 
 function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
@@ -1114,24 +1120,24 @@ function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
 
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" onclick="openGazeteciDosyaModal(null, ${index - 1})" ${prevDisabled}>‹</button>
-    <div style="text-align:center;">
-      <img src="${src}" style="max-width:80vw; max-height:80vh; object-fit:contain;">
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openGazeteciDosyaModal(null, ${index - 1})" ${prevDisabled}>‹</button>
+    <div style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
+      <img src="${src}" style="max-width:88vw; max-height:85vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-    <button class="reader-side-arrow right" onclick="openGazeteciDosyaModal(null, ${index + 1})" ${nextDisabled}>›</button>
-  `, true);
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openGazeteciDosyaModal(null, ${index + 1})" ${nextDisabled}>›</button>
+  `);
 }
 
 function showAnahtarAcquisitionModal() {
-  showModal(`
-    <div style="text-align:center; padding:20px;">
-      <h2>Oda Anahtarı Alındı</h2>
-      <img src="assets/tiklanabilir/anahtar.webp" style="max-width:300px; display:block; margin:20px auto;">
-      <button onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();">ENVANTERE AL</button>
+  showFramelessModal(`
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#e9dcc0;">
+      <h2 style="font-family:'Georgia', serif; font-size:28px; margin-bottom:15px; text-shadow:0 2px 8px rgba(0,0,0,0.8);">Oda Anahtarı Alındı</h2>
+      <img src="assets/tiklanabilir/anahtar.webp" style="max-width:280px; max-height:40vh; object-fit:contain; margin:20px 0; filter:drop-shadow(0 0 15px rgba(0,0,0,0.9));">
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collectKey(); closeModal(); renderRoom();">ENVANTERE AL</button>
     </div>
-  `, true);
+  `);
 }
 
 function collectKey() {
