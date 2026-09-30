@@ -2,7 +2,7 @@
   "roomOverrides": {
     "halit_ev": {
       "closed": true,
-      "closedImage": "assets/odalar/halit_ev_kapali.webp"
+      "closedImage": "assets/odalar/halit_ev_kapi.webp"
     }
   },
   "dialogs": {
