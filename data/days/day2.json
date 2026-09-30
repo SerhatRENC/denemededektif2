@@ -4,17 +4,17 @@
     "day2_started": true
   },
   "dialogs": {
-    "polis_ofis": [
+    "ofis": [
       { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir.", "emotion": "dusuneli" },
       { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim.", "emotion": "normal" }
     ],
-    "muhtar_halit": [
+    "muhtar": [
       { "speaker": "Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Önemli değil. Otopsi raporu sizdeymiş Kamuran Hanım söyledi. Bir de dün hancı odaya girmeme izin vermedi orayı incelemem lazım.", "emotion": "normal" },
       { "speaker": "Halit", "text": "He tamam siz gidin Rıza'ya benden selam söyleyin açar kapıyı. Odadaki eşyalara kimse dokunmasın diye kilitli kalsın demiştim. Otopsi raporunun da kopyasını yollatırım senin ofisine.", "emotion": "ciddi" }
     ],
-    "hanci_riza": [
+    "han": [
       { "speaker": "Rıza", "text": "Beyim bakırcılar geldiler, onlar arada bir gelirler böyle işler çok yoğun olur bugünlerde yarın detaylıca konuşalım istersen şimdi doluyum.", "emotion": "telasli" },
       { "speaker": "Dedektif", "text": "Tamam Rıza Bey. Yalnız benim odayı görmem lazım Halit Bey selamını iletti.", "emotion": "normal" },
       { "speaker": "Rıza", "text": "Tabii buyrun odanın anahtarı.", "emotion": "normal" }
@@ -33,7 +33,7 @@
       { "speaker": "Bakırcı Hüseyin", "text": "Sima olarak gördük ama hiç sohbetimiz olmadı.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Anladım.", "emotion": "normal" }
     ],
-    "peder_anselm": [
+    "kilise": [
       { "speaker": "Dedektif", "text": "Merhaba, dün de gelmiştim sorgu için yoktunuz.", "emotion": "normal" },
       { "speaker": "Peder Anselm", "text": "Evet, evet bilirsiniz küçük yerler buralar. Diğer köylere gitmiştim cenaze işleri için, ama burada yaşarım çünkü zamanında buraya atandım şans işte.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Şans mı? Neyse gazeteciyi tanır mıydınız?", "emotion": "supheli" },
@@ -43,7 +43,7 @@
       { "speaker": "Dedektif", "text": "Kimse mi görmedi? Nasıl kovdu?", "emotion": "supheli" },
       { "speaker": "Peder Anselm", "text": "Kovdu işte evladım ben karıştırmadım oraları çok.", "emotion": "gergin" }
     ],
-    "aylin": [
+    "halit_ev": [
       { "speaker": "Dedektif", "text": "Merhaba Aylin. Artık birkaç soru sormam gerekiyor.", "emotion": "normal" },
       { "speaker": "Aylin", "text": "Buyrun beyim. Ne söylerim bilmem ama...", "emotion": "cekingan" },
       { "speaker": "Dedektif", "text": "Şefikayı tanır mıydın?", "emotion": "normal" },
@@ -51,7 +51,7 @@
       { "speaker": "Dedektif", "text": "Sakin ol küçük hanım. Neden cadı derler ona? Bir de Cevdet o gittikten sonra mı öyle oldu?", "emotion": "normal" },
       { "speaker": "Aylin", "text": "Ben o adamla hiç konuşmadım, zarar verirmiş bana yani babam öyle der. Herhalde karısından sonra öyle olmuş o manyak. Karısı cadı sonuçta adama da yazık.", "emotion": "uzgun" }
     ],
-    "kamuran": [
+    "sifahane": [
       { "speaker": "Dedektif", "text": "Merhaba doktor hanım. Raporu aldım çuval ipiyle öldürülmüş ne acı, sizce kim yapmış olabilir?", "emotion": "ciddi" },
       { "speaker": "Doktor Kamuran", "text": "Burası köy yeri,Herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "dusuneli" },
       { "speaker": "Dedektif", "text": "Dün mezarlıkta Cevdeti ip bağlarken gördüm sizce şüpheli olabilir mi?", "emotion": "supheli" },
@@ -59,7 +59,7 @@
       { "speaker": "Dedektif", "text": "Not mu?", "emotion": "supheli" },
       { "speaker": "Doktor Kamuran", "text": "Evet evet. Siz Cevdet evindeyken Cevdet'e \"beni onlar yolladı\" diyin o zaten anlatır size. Bir de çok üstüne gitmeyin o sinirlenirse bitirin sohbeti... Yani ben öyle yapıyorum.", "emotion": "ciddi" }
     ],
-    "cevdet": [
+    "mezarlik": [
       { "speaker": "Dedektif", "text": "Merhaba Cevdet dün Şefika diye birinden söz ediyordun. Kimmiş bu Şefika?", "emotion": "normal" },
       { "speaker": "Cevdet", "text": "Aldılar aldılar!", "emotion": "korkmus" },
       { "speaker": "Dedektif", "text": "Tamam Cevdet aldılar ama kimdi o karın mı?", "emotion": "normal" },
@@ -67,7 +67,7 @@
       { "speaker": "Dedektif", "text": "Çocukların mı? Onlar neredeler Cevdet?", "emotion": "supheli" },
       { "speaker": "Cevdet", "text": "(Bağırarak uzaklaşır!)", "emotion": "sinirli" }
     ],
-    "cabbar": [
+    "demirci": [
       { "speaker": "Dedektif", "text": "Dün savuşturdun beni Cabbar efendi. Bugün artık konuşalım ne dersin?", "emotion": "normal" },
       { "speaker": "Demirci Cabbar", "text": "Sor ne soracaksan.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Öncelikle. Mustafayla ne derdiniz vardı?", "emotion": "supheli" },
