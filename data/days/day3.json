@@ -65,6 +65,17 @@
       { "speaker": "Mustafa", "text": "Yasin mi?... Hiç duymadım." },
       { "speaker": "Dedektif", "text": "Demek duymadın. Tamam o zaman, ben yine uğrarım. Kolay gelsin sana." }
     ],
+    "degirmenci": [
+      { "speaker": "Dedektif", "text": "Dün konuşamadık Mustafa bey!" },
+      { "speaker": "Mustafa", "text": "Ha evet, Nadire hanım teyzeyi merkeze kadar götürüp geldim. Hem benim de birkaç işim vardı." },
+      { "speaker": "Dedektif", "text": "Rıza'yı da Cabbar ile kavgadan korumuşsun, Nadire hanımı da götürüp getiriyorsun. Herkesle böyle iyi mi anlaşırsın sen?" },
+      { "speaker": "Mustafa", "text": "Özel olarak yaptığım bir şey yok. Ben böyleyim, başkaları gibi maraz çıkarma değil derdim." },
+      { "speaker": "Dedektif", "text": "Cabbar'dan mı bahsediyorsun?" },
+      { "speaker": "Mustafa", "text": "Evet, o manyağın köylüyle ne alıp veremediği varsa... Sanırsın çok eskiden beri düşman herkesle." },
+      { "speaker": "Dedektif", "text": "Boşver Cabbar'ı, sana sorum başka. Yasin diye birini duydun mu hiç?" },
+      { "speaker": "Mustafa", "text": "Yasin mi?... Hiç duymadım." },
+      { "speaker": "Dedektif", "text": "Demek duymadın. Tamam o zaman, ben yine uğrarım. Kolay gelsin sana." }
+    ],
     "demirci": [
       { "speaker": "Dedektif", "text": "Cabbar efendi kolay gelsin. Sana Yasin diye birini soracağım." },
       { "speaker": "Cabbar", "text": "Yasin mi? Kimmiş o?" },
@@ -76,6 +87,15 @@
       { "speaker": "Cabbar", "text": "Ben bu köyün nasıl rezil olduğunu biliyorum! Sana ne anlatayım ki; dolandırıcı Halit'i mi, yardakçısı Peder'i mi, kumarbaz Rıza'yı mı, yoksa çok bilmiş Kamuran'ı mı..." },
       { "speaker": "Dedektif", "text": "Yavaş gel Cabbar efendi, düzgün anlat bir." },
       { "speaker": "Cabbar", "text": "Sen beni dedikoducu Nadire ile mi karıştırdın! Bak işine!" }
+    ],
+    "cadi": [
+      { "speaker": "Dedektif", "text": "Merhaba Cevdet, 'beni onlar yolladı'" },
+      { "speaker": "Cevdet", "text": "ÖYLE Mİ! Hoşgeldiniz hoşgeldiniz!" },
+      { "speaker": "Dedektif", "text": "Not hala sende duruyor mu Cevdet? Kamuran söyledi, notu biliyormuş." },
+      { "speaker": "Cevdet", "text": "Ağzımdan kaçtı. Ağzımdan kaçtı... Özür dilerim, anlatmadım zaten söylemeyecektim, söylemeyecektim." },
+      { "speaker": "Dedektif", "text": "Tamam Cevdet, kızmayacaklar onlar merak etme. Notu bana göstermeni istediler." },
+      { "speaker": "Cevdet", "text": "Buyrun buyrun burada. Şefikam da gelecek mi, Şefikam nasıl? İyi mi, sen gördün mv onu?" },
+      { "speaker": "Dedektif", "text": "Yok Cevdet, notu alıp çıkacağım." }
     ],
     "cevdet_ev": [
       { "speaker": "Dedektif", "text": "Merhaba Cevdet, 'beni onlar yolladı'" },
@@ -89,7 +109,7 @@
     "kilise": [
       { "speaker": "Dedektif", "text": "Şefika ve Cevdet'in bir çocuğu daha olacakmış. Neden söylemedin Peder?" },
       { "speaker": "Peder", "text": "Ha, evet... ne bileyim... Ama 1 gün bile yaşamadı ki." },
-      { "speaker": "Dedektif", "text": "Nasıl yani, doğmuş muydu?" },
+      { "speaker": "Dedektif", "text": "Nasıl yani, doğmuş mudur?" },
       { "speaker": "Peder", "text": "Yok yani.. hiç doğmadığı için öyle söyledim." },
       { "speaker": "Dedektif", "text": "Peder bildiğin bir şey varsa anlat bana." },
       { "speaker": "Peder", "text": "Ben ne bileceğim evladım?" },
