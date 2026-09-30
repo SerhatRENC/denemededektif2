@@ -137,6 +137,7 @@ function preloadDayAssets() {
 }
 
 /* ---------- BAŞLATMA VE YÜKLEME ---------- */
+/* ---------- BAŞLATMA VE YÜKLEME ---------- */
 async function initGame() {
   try {
     const configRes = await fetch('data/game_config.json?v=' + Date.now());
@@ -145,20 +146,27 @@ async function initGame() {
 
     gameState.loadFlags();
 
-    currentRoom = CASE.startRoom;
-
     const savedDay = localStorage.getItem('sd_day_' + CASE.caseLabel);
     const savedInv = localStorage.getItem('sd_inv_' + CASE.caseLabel);
     currentDay = savedDay ? parseInt(savedDay, 10) : (CASE.startDay || 1);
     inventory = savedInv ? JSON.parse(savedInv) : [];
+
+    currentRoom = CASE.startRoom || 'ofis';
+
+    // Başlangıç odasının arka planını anında hafızaya yüklüyoruz
+    if (CASE.rooms && CASE.rooms[currentRoom] && CASE.rooms[currentRoom].background) {
+      preloadImage(CASE.rooms[currentRoom].background);
+    }
 
     await loadDayData(currentDay);
 
     updateDayBadge();
     renderInventory();
 
+    // Aktif odayı çiz
     renderRoom();
 
+    // Diğer tüm medya varlıklarını arka planda indirmeye başla
     setTimeout(() => {
       preloadDayAssets();
     }, 300);
@@ -167,7 +175,6 @@ async function initGame() {
     console.error("OYUN YÜKLEME HATASI:", err);
   }
 }
-
 async function loadDayData(dayNumber) {
   try {
     const dayRes = await fetch(`data/days/day${dayNumber}.json?v=` + Date.now());

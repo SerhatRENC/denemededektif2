@@ -276,14 +276,18 @@
     });
 
     function kapatIntroOverlay() {
-      if (typeof calSes === 'function') calSes('kapi');
-      const overlay = document.getElementById('introOverlay');
-      if (overlay) {
-        overlay.classList.add('hidden');
-        setTimeout(() => overlay.remove(), 800);
-      }
-    }
-
+  if (typeof calSes === 'function') calSes('kapi');
+  const overlay = document.getElementById('introOverlay');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    setTimeout(() => overlay.remove(), 800);
+  }
+  
+  // Giriş ekranı kapandığı an odayı tekrar çizdirip görselin ekrana gelmesini garantiye alıyoruz
+  if (typeof renderRoom === 'function') {
+    renderRoom();
+  }
+}
     function hizalaSorguOklari() {
       const img = document.getElementById('statementZoomImg');
       const modal = document.getElementById('modalBody');
