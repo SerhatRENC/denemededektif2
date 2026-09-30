@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — TAM ONARILMIŞ MODÜLER OYUN MOTORU
+   SISLIDERE DAVASI — TAM KONTROLLÜ MODÜLER OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -33,6 +33,20 @@ const journalistRooms = [
   'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'
 ];
 
+// Bayrak Yönetimi
+const gameState = {
+  flags: {},
+  getFlag(flag) { return this.flags[flag] || false; },
+  setFlag(flag, value = true) {
+    this.flags[flag] = value;
+    localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'), JSON.stringify(this.flags));
+  },
+  loadFlags() {
+    const saved = localStorage.getItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
+    this.flags = saved ? JSON.parse(saved) : {};
+  }
+};
+
 let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
 let day2PolisGoruldu = localStorage.getItem('sd_day2_polis_goruldu') === 'true';
 
@@ -53,6 +67,8 @@ async function initGame() {
     const configRes = await fetch('data/game_config.json?v=' + Date.now());
     CASE = await configRes.json();
     window.CASE = CASE;
+
+    gameState.loadFlags();
 
     currentRoom = CASE.startRoom;
 
@@ -136,15 +152,19 @@ function renderRoom() {
 
     if (room.hotspots) {
       room.hotspots.forEach(h => {
-        // HATA 2 DÜZELTMESİ: 1. Gün masada Ali İhsan otopsi kaydı görünemez
+        // Otopsi raporu masada sadece polis geldikten sonra görünür
         if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
-          if (currentDay < 2 || day2State !== 'CANTA_UNLOCKED') return;
+          if (currentDay < 2 || !day2PolisGoruldu) return;
+        }
+
+        // 2. Gün ofiste otopsi raporu incelenmeden dışarı çıkış butonu gizlenir
+        if (currentRoom === 'ofis' && currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
+          if (h.target === 'merkez') return;
         }
 
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
         if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
-        if (h.requiresDay2State && day2State !== h.requiresDay2State) return;
 
         let ovImg = null;
         if (h.overlayImage) {
@@ -229,7 +249,7 @@ function renderRoom() {
       const closeBtn = document.createElement('button');
       closeBtn.innerHTML = '✕';
       closeBtn.className = 'canta-close-btn';
-      closeBtn.style.cssText = "position:absolute; top:4%; right:4%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(0,0,0,0.65); border:2px solid #e9dcc0; border-radius:50%; width:clamp(38px, 4.5cqw, 52px); height:clamp(38px, 4.5cqw, 52px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center;";
+      closeBtn.style.cssText = "position:absolute; top:8%; right:12%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(30,20,10,0.85); border:2px solid #e9dcc0; border-radius:50%; width:clamp(42px, 5cqw, 56px); height:clamp(42px, 5cqw, 56px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.8); transition:transform 0.2s;";
       closeBtn.onclick = (e) => {
         e.stopPropagation();
         currentRoom = 'gazeteci_oda';
@@ -249,7 +269,8 @@ function renderCharacter() {
   dialogIndex = 0;
   setUIElementsVisible(true);
 
-  if (currentDay === 2 && currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
+  // 2. Gün Ofise Gelindiğinde Polis Diyaloğu Otomatik Tetiklenir
+  if (currentDay === 2 && currentRoom === 'ofis' && (day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS') && !day2PolisGoruldu) {
     const stage = document.getElementById('stage') || document.getElementById('gameStage');
     const polisCh = {
       name: "Polis Memuru",
@@ -258,6 +279,7 @@ function renderCharacter() {
       clickableArea: { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" }
     };
     renderClickableCharacter(polisCh, stage);
+    setTimeout(() => startDialogueFromClickable(polisCh), 300);
     return;
   }
 
@@ -322,23 +344,23 @@ function renderSceneCharacter(ch, stage) {
   stage.appendChild(el);
 }
 
-// Güvenli diyalog alma yardımcı fonksiyonu
 function getDialogForRoom(roomKey, defaultDialog) {
   if (CURRENT_DAY_DATA?.dialogs?.[roomKey]) return CURRENT_DAY_DATA.dialogs[roomKey];
   if (CASE?.day2_dialogs?.[roomKey]) return CASE.day2_dialogs[roomKey];
-  if (CASE?.day2_dialogs?.[roomKey + '_halit']) return CASE.day2_dialogs[roomKey + '_halit'];
-  if (CASE?.day2_dialogs?.[roomKey + '_riza']) return CASE.day2_dialogs[roomKey + '_riza'];
   return defaultDialog;
 }
 
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
 
-  // HATA 3 DÜZELTMESİ: 2. Güne ait tüm diyalog geçişleri güvenli hale getirildi
   if (currentDay === 2) {
-    if (currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
+    if (currentRoom === 'ofis' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
-      const polisDialog = getDialogForRoom('polis_ofis', [{ speaker: "Polis", text: "Komserim otopsi raporu geldi." }]);
+      const polisDialog = getDialogForRoom('ofis', [
+        { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum." },
+        { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir." },
+        { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim." }
+      ]);
       startOzelDialog(polisDialog, ch.image, () => {
         day2PolisGoruldu = true;
         localStorage.setItem('sd_day2_polis_goruldu', 'true');
@@ -346,13 +368,14 @@ function toggleCharacterLine(ch) {
         localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
         renderInventory();
         renderRoom();
+        showCustomSubtitle("Dedektif: Otopsi raporunu masaya bıraktı, inceleyeyim.", true);
       });
       return;
     }
 
     if (currentRoom === 'muhtar') {
       document.getElementById('sceneCharacter')?.remove();
-      const muhtarDialog = getDialogForRoom('muhtar_halit', getDialogForRoom('muhtar', ch.dialog));
+      const muhtarDialog = getDialogForRoom('muhtar', ch.dialog);
       startOzelDialog(muhtarDialog, ch.image, () => {
         if (day2State === 'GO_MUHTAR') setDay2State('GO_HAN');
         renderRoom();
@@ -363,9 +386,9 @@ function toggleCharacterLine(ch) {
 
     if (currentRoom === 'han') {
       document.getElementById('sceneCharacter')?.remove();
-      const rizaDialog = getDialogForRoom('hanci_riza', getDialogForRoom('han', ch.dialog));
+      const rizaDialog = getDialogForRoom('han', ch.dialog);
       startOzelDialog(rizaDialog, ch.image, () => {
-        if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED' && day2State !== 'CANTA_UNLOCKED') {
+        if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED' && day2State !== 'CANTA_UNLOCKED' && day2State !== 'GO_OFIS' && !gameState.getFlag('otopsi_incelendi')) {
           showAnahtarAcquisitionModal();
         } else {
           renderRoom();
@@ -448,7 +471,6 @@ function gosterDialogSatiri(dialog) {
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   
-  // Güvenlik Koruması: Diyalog listesi boşsa kilitlenme olmasını engelle
   if (!dialogList || !Array.isArray(dialogList) || dialogList.length === 0) {
     if (stage) stage.classList.remove('dialog-active');
     setUIElementsVisible(true);
@@ -499,7 +521,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* ---------- HOTSPOT ISLEMLERI ---------- */
+/* ---------- HOTSPOT ISLEMLERI & 2. GÜN KISITLAMALARI ---------- */
 function handleHotspot(h) {
   if (dialogueActive) return;
 
@@ -520,42 +542,53 @@ function handleHotspot(h) {
     return;
   }
 
+  // Gazeteci odası kapısını anahtarsız açmaya çalışırken
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac') {
-    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED';
+    const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS' || gameState.getFlag('otopsi_incelendi');
 
     if (hasKey) {
       if (typeof calSes === 'function') calSes('kilit_ac');
       inventory = inventory.filter(item => item !== 'anahtar');
       localStorage.setItem('sd_inv_' + CASE.caseLabel, JSON.stringify(inventory));
-      if (day2State !== 'CANTA_UNLOCKED') setDay2State('HAN_UNLOCKED');
       renderInventory();
       currentRoom = 'gazeteci_oda';
       renderRoom();
       return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
-      if (h.dialog) startOzelDialog(h.dialog, h.characterImage || 'assets/karakterler/riza.webp');
-      else showCustomSubtitle("Dedektif: Kapı kilitli. Odaya girmek için Hancı Rıza'dan anahtarı almam lazım.", true);
+      showCustomSubtitle("Dedektif: Önce Hancı Rıza'dan anahtarı alsam iyi olur...", true);
       return;
     }
   }
 
+  // Gezinti Kısıtlamaları (2. Gün)
   if (h.type === 'navigate') {
+    // Handan/Gazeteci odasından çıkış
     if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
-      if (day2State !== 'CANTA_UNLOCKED') {
-        showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
-        return;
+      if (day2State === 'CANTA_UNLOCKED') {
+        setDay2State('GO_OFIS');
       }
     }
 
-    if (currentDay === 2) {
-      if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis', 'masa', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
-        return;
-      }
-      if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
-        showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
-        return;
+    if (currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
+      if (day2State === 'GO_MUHTAR') {
+        const allowed = ['muhtar', 'merkez', 'ofis', 'masa'];
+        if (h.target && !allowed.includes(h.target)) {
+          showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
+          return;
+        }
+      } else if (day2State === 'GO_HAN') {
+        const allowed = ['han', 'han_kapi', 'han_mutfak', 'han_depo', 'merkez', 'muhtar', 'ofis', 'masa'];
+        if (h.target && !allowed.includes(h.target)) {
+          showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
+          return;
+        }
+      } else if (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') {
+        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'han', 'han_kapi'];
+        if (h.target && !allowedInOfis.includes(h.target)) {
+          showCustomSubtitle("Ofise gidip otopsi raporunu incelesem iyi olacak. Sonra köy halkıyla detaylıca konuşurum.", true);
+          return;
+        }
       }
     }
 
@@ -580,7 +613,7 @@ function handleHotspot(h) {
   if (h.type === 'sleep') { confirmSleep(); return; }
 }
 
-/* ---------- HATA 1 DÜZELTMESİ: SORGU KARTLARI TAM EKRAN MODALI ---------- */
+/* ---------- SORGU KARTLARI MODALI ---------- */
 let statementAudio = null, statementPlaying = false;
 let currentStatementIndex = 0;
 
@@ -865,6 +898,13 @@ if (cFullEl) nbKalemKur(cFullEl, 'pageDrawing');
 /* ---------- HARİTA SİSTEMİ ---------- */
 function openMap() {
   if (!CASE.map) return;
+
+  // 2. Gün otopsi raporu incelenmeden harita gezintisine izin verilmez
+  if (currentDay === 2 && (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
+    showCustomSubtitle("Dedektif: Önce masadaki otopsi raporunu incelemeliyim.", true);
+    return;
+  }
+
   const mapImg = document.getElementById('mapImage');
   if (mapImg) mapImg.src = CASE.map.image;
 
@@ -877,23 +917,20 @@ function openMap() {
       dot.style.left = h.x; dot.style.top = h.y;
       dot.innerHTML = `<span class="map-hotspot-label">${h.label}</span>`;
       dot.onclick = () => {
-        if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
-          if (day2State !== 'CANTA_UNLOCKED') {
-            closeMap();
-            showCustomSubtitle("Dedektif: Çantayı incelemeden ve odadaki araştırmamı bitirmeden buradan çıkamam.", true);
-            return;
-          }
-        }
-
-        if (currentDay === 2) {
-          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+        if (currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
+          if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
             return;
           }
-          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'degirmenci', 'nadire_ev', 'halit_ev'].includes(h.target)) {
+          if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'ofis'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
+            return;
+          }
+          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !['ofis', 'merkez', 'han', 'han_kapi'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Ofise gidip otopsi raporunu incelesem iyi olacak. Sonra köy halkıyla detaylıca konuşurum.", true);
             return;
           }
         }
@@ -984,10 +1021,10 @@ function renderSifreMinigame(stage) {
   const ilerleBtn = document.createElement('button');
   ilerleBtn.className = 'btn show';
   ilerleBtn.textContent = 'İlerle';
-  ilerleBtn.style.position = 'absolute';
-  ilerleBtn.style.left = '67.5%'; ilerleBtn.style.top = '57.2%';
-  ilerleBtn.style.transform = 'translateY(-50%)';
-  ilerleBtn.style.zIndex = '12';
+  ilerleBtn.style.cssText = "position:absolute; left:67.5%; top:57.2%; transform:translateY(-50%); z-index:12; padding:12px 28px; background:linear-gradient(180deg, #8a5a2b, #4a2f18); color:#f3e5ab; border:2px solid #2c1c0e; border-radius:8px; font-family:'Georgia', serif; font-size:clamp(16px, 2cqw, 22px); font-weight:bold; letter-spacing:0.08em; cursor:pointer; box-shadow:0 4px 0 #1c110a, 0 6px 15px rgba(0,0,0,0.8); text-shadow:0 2px 4px rgba(0,0,0,0.8); transition:all 0.15s ease;";
+  ilerleBtn.onmouseover = () => ilerleBtn.style.transform = 'translateY(-50%) scale(1.05)';
+  ilerleBtn.onmouseout = () => ilerleBtn.style.transform = 'translateY(-50%) scale(1)';
+
   ilerleBtn.onclick = (e) => {
     e.stopPropagation();
     if (lockDigits.join('') === '13697') {
@@ -1226,6 +1263,17 @@ function closeModal() {
   stopStatementAudio();
   const bg = document.getElementById('modalBg');
   const body = document.getElementById('modalBody');
+
+  // 2. Gün Otopsi Raporu Kapatılınca Kısıtlamaları Kaldır
+  if (currentDay === 2 && day2PolisGoruldu && !gameState.getFlag('otopsi_incelendi')) {
+    gameState.setFlag('otopsi_incelendi', true);
+    setDay2State('DAY2_FREE');
+    setTimeout(() => {
+      showCustomSubtitle("Dedektif: Otopsi raporunu inceledim. Artık köy halkıyla detaylıca konuşabilirim.", true);
+      renderRoom();
+    }, 250);
+  }
+
   if (body) body.className = 'modal';
   if (bg) {
     bg.classList.remove('active');
