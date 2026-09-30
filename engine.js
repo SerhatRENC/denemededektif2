@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — UYANMA SESİ DÜZELTİLMİŞ OYUN MOTORU
+   SISLIDERE DAVASI — AĞ KUYRUĞU OPTİMİZE OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -44,7 +44,7 @@ const gameState = {
     localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'), JSON.stringify(this.flags));
   },
   loadFlags() {
-    const saved = localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
+    const saved = localStorage.getItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
     this.flags = saved ? JSON.parse(saved) : {};
   }
 };
@@ -63,7 +63,22 @@ let gazeteciDosyaPagesDefault = [
   'assets/arayuz/gazeteci_dosya_2.webp'
 ];
 
-/* ---------- ASSET PRELOADING (ÖNCELİKLİ ÖN YÜKLEME) ---------- */
+/* ---------- RESİM YÜKLEME SÖZÜ (PROMISE) ---------- */
+function loadImageAsync(url) {
+  if (!url) return Promise.resolve();
+  if (preloadedImages.has(url)) return Promise.resolve(preloadedImages.get(url));
+  
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      preloadedImages.set(url, img);
+      resolve(img);
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 function preloadImage(url) {
   if (!url || preloadedImages.has(url)) return;
   const img = new Image();
@@ -71,30 +86,11 @@ function preloadImage(url) {
   preloadedImages.set(url, img);
 }
 
+/* ---------- ARKA PLAN PRELOAD (GECİKTİRMELİ) ---------- */
 function preloadDayAssets() {
   if (!CASE) return;
 
-  // 1. Oda ve Hotspot Görselleri
-  Object.values(CASE.rooms || {}).forEach(room => {
-    if (room.background) preloadImage(room.background);
-    if (room.closedImage) preloadImage(room.closedImage);
-    if (room.hotspots) {
-      room.hotspots.forEach(h => {
-        if (h.overlayImage) preloadImage(h.overlayImage);
-        if (h.icon) preloadImage(h.icon);
-        if (h.images) h.images.forEach(imgUrl => preloadImage(imgUrl));
-      });
-    }
-  });
-
-  // 2. Gün Sonu / Özel Oda Değişim Görselleri
-  if (CURRENT_DAY_DATA && CURRENT_DAY_DATA.roomOverrides) {
-    Object.values(CURRENT_DAY_DATA.roomOverrides).forEach(ov => {
-      if (ov.closedImage) preloadImage(ov.closedImage);
-    });
-  }
-
-  // 3. Karakterler ve Duygu Durum Varyasyonları
+  // 1. Karakterler
   const emotions = ['normal', 'ciddi', 'telasli', 'supheli', 'dusuneli', 'sinirli', 'uzgun', 'korkmus', 'cekingan', 'gergin'];
   Object.values(CASE.characters || {}).forEach(ch => {
     if (ch.image) {
@@ -109,34 +105,26 @@ function preloadDayAssets() {
     if (ch.clickableImage) preloadImage(ch.clickableImage);
   });
 
-  // 4. Sorgu Kartları, Harita, Not Defteri ve Arayüz Bileşenleri
+  // 2. Diğer Odalar
+  Object.values(CASE.rooms || {}).forEach(room => {
+    if (room.background) preloadImage(room.background);
+    if (room.closedImage) preloadImage(room.closedImage);
+    if (room.hotspots) {
+      room.hotspots.forEach(h => {
+        if (h.overlayImage) preloadImage(h.overlayImage);
+        if (h.icon) preloadImage(h.icon);
+      });
+    }
+  });
+
+  // 3. Arayüz Görselleri
   if (CASE.statements) {
     CASE.statements.forEach(s => { if (s.cardImage) preloadImage(s.cardImage); });
   }
   if (CASE.map && CASE.map.image) preloadImage(CASE.map.image);
-  if (CASE.notebook) {
-    if (CASE.notebook.image) preloadImage(CASE.notebook.image);
-    if (CASE.notebook.suspects) {
-      CASE.notebook.suspects.forEach(s => { if (s.image) preloadImage(s.image); });
-    }
-  }
-
-  // 5. Standart Arayüz Resimleri
-  const uiAssets = [
-    'assets/arayuz/otopsi.webp',
-    'assets/arayuz/cebindekiler.webp',
-    'assets/arayuz/evlilik_cuzdan.webp',
-    'assets/arayuz/bos_kagit.webp',
-    'assets/arayuz/poloroid.webp',
-    'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp',
-    'assets/tiklanabilir/anahtar.webp',
-    'assets/arayuz/gazeteci_dosya_1.webp',
-    'assets/arayuz/gazeteci_dosya_2.webp'
-  ];
-  uiAssets.forEach(preloadImage);
+  if (CASE.notebook && CASE.notebook.image) preloadImage(CASE.notebook.image);
 }
 
-/* ---------- BAŞLATMA VE YÜKLEME ---------- */
 /* ---------- BAŞLATMA VE YÜKLEME ---------- */
 async function initGame() {
   try {
@@ -153,28 +141,29 @@ async function initGame() {
 
     currentRoom = CASE.startRoom || 'ofis';
 
-    // Başlangıç odasının arka planını anında hafızaya yüklüyoruz
-    if (CASE.rooms && CASE.rooms[currentRoom] && CASE.rooms[currentRoom].background) {
-      preloadImage(CASE.rooms[currentRoom].background);
-    }
-
     await loadDayData(currentDay);
 
     updateDayBadge();
     renderInventory();
 
-    // Aktif odayı çiz
+    // Sadece aktif oda resmini öncelikli indirip ardından sahneyi çiziyoruz
+    const initialRoomObj = CASE.rooms[currentRoom];
+    if (initialRoomObj && initialRoomObj.background) {
+      await loadImageAsync(initialRoomObj.background);
+    }
+
     renderRoom();
 
-    // Diğer tüm medya varlıklarını arka planda indirmeye başla
+    // Diğer görselleri ağ tıkanıklığı yaratmamak için 1.5 saniye sonra indiriyoruz
     setTimeout(() => {
       preloadDayAssets();
-    }, 300);
+    }, 1500);
 
   } catch (err) {
     console.error("OYUN YÜKLEME HATASI:", err);
   }
 }
+
 async function loadDayData(dayNumber) {
   try {
     const dayRes = await fetch(`data/days/day${dayNumber}.json?v=` + Date.now());
@@ -196,7 +185,7 @@ function setUIElementsVisible(visible) {
 }
 
 /* ---------- ODA ÇİZİMİ ---------- */
-function renderRoom() {
+async function renderRoom() {
   if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) return;
 
   renderInventory();
@@ -204,153 +193,149 @@ function renderRoom() {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
 
-  stage.classList.add('fading');
-  
-  setTimeout(() => {
-    stage.innerHTML = `<div class="room-label">${room.label}</div>`;
+  const isClosedOverride = CURRENT_DAY_DATA?.roomOverrides?.[currentRoom]?.closed;
+  const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
+  const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
 
-    const isClosedOverride = CURRENT_DAY_DATA?.roomOverrides?.[currentRoom]?.closed;
-    const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
-    const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
+  // Arka plan resminin indiğinden emin oluyoruz
+  if (bgImage) {
+    await loadImageAsync(bgImage);
+  }
 
-    stage.style.backgroundImage = `url("${bgImage}")`;
-    stage.style.backgroundSize = 'cover';
-    stage.style.backgroundPosition = 'center';
-    stage.style.backgroundRepeat = 'no-repeat';
+  stage.innerHTML = `<div class="room-label">${room.label}</div>`;
+  stage.style.backgroundImage = `url("${bgImage}")`;
+  stage.style.backgroundSize = 'cover';
+  stage.style.backgroundPosition = 'center';
+  stage.style.backgroundRepeat = 'no-repeat';
 
-    if (kapali) {
-      const geri = document.createElement('div');
-      geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
-      geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '7.5%'; geri.style.position = 'absolute';
-      geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri"><div class="hotspot-pulse-label">Geri</div>`;
-      geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
-      stage.appendChild(geri);
+  if (kapali) {
+    const geri = document.createElement('div');
+    geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
+    geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '7.5%'; geri.style.position = 'absolute';
+    geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri"><div class="hotspot-pulse-label">Geri</div>`;
+    geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
+    stage.appendChild(geri);
 
-      const tokmak = document.createElement('div');
-      tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
-      tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%'; tokmak.style.position = 'absolute';
-      tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
-      tokmak.onclick = () => {
-        showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok...)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
-      };
-      stage.appendChild(tokmak);
+    const tokmak = document.createElement('div');
+    tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
+    tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%'; tokmak.style.position = 'absolute';
+    tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
+    tokmak.onclick = () => {
+      showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok...)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
+    };
+    stage.appendChild(tokmak);
+    return;
+  }
 
-      stage.classList.remove('fading');
-      return;
-    }
+  renderCharacter();
 
-    renderCharacter();
+  if (room.hotspots) {
+    room.hotspots.forEach(h => {
+      if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
+        if (currentDay < 2 || !day2PolisGoruldu) return;
+      }
 
-    if (room.hotspots) {
-      room.hotspots.forEach(h => {
+      if (currentRoom === 'ofis' && currentDay === 2) {
+        if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
+          if (h.target === 'merkez') return;
+        }
+      }
+
+      if (h.requires && !inventory.includes(h.requires)) return;
+      if (h.activeDays && !h.activeDays.includes(currentDay)) return;
+      if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
+
+      let ovImg = null;
+      if (h.overlayImage) {
+        ovImg = document.createElement('img');
+        ovImg.className = 'room-clickable-glow';
+        ovImg.src = h.overlayImage;
+        ovImg.style.position = 'absolute';
+
         if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
-          if (currentDay < 2 || !day2PolisGoruldu) return;
+          ovImg.style.left = h.x; ovImg.style.top = h.y;
+          ovImg.style.width = h.w || '20%'; ovImg.style.height = h.h || '45%';
+        } else {
+          ovImg.style.left = '0'; ovImg.style.top = '0';
+          ovImg.style.width = '100%'; ovImg.style.height = '100%';
         }
 
-        if (currentRoom === 'ofis' && currentDay === 2) {
-          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
-            if (h.target === 'merkez') return;
-          }
+        ovImg.style.pointerEvents = 'none';
+        ovImg.style.zIndex = '2';
+        ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
+        stage.appendChild(ovImg);
+      }
+
+      if (h.icon && !h.w && !h.h) {
+        const wrap = document.createElement('div');
+        wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
+        wrap.style.position = 'absolute';
+        wrap.style.left = h.x; wrap.style.top = h.y;
+        wrap.style.width = h.iconWidth || '8%';
+        wrap.style.zIndex = '10';
+        wrap.style.pointerEvents = 'auto';
+
+        const img = document.createElement('img');
+        img.src = h.icon;
+        wrap.appendChild(img);
+
+        if (h.label) {
+          const lbl = document.createElement('div');
+          lbl.className = 'hotspot-pulse-label';
+          lbl.textContent = h.label;
+          wrap.appendChild(lbl);
         }
 
-        if (h.requires && !inventory.includes(h.requires)) return;
-        if (h.activeDays && !h.activeDays.includes(currentDay)) return;
-        if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
-
-        let ovImg = null;
-        if (h.overlayImage) {
-          ovImg = document.createElement('img');
-          ovImg.className = 'room-clickable-glow';
-          ovImg.src = h.overlayImage;
-          ovImg.style.position = 'absolute';
-
-          if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
-            ovImg.style.left = h.x; ovImg.style.top = h.y;
-            ovImg.style.width = h.w || '20%'; ovImg.style.height = h.h || '45%';
-          } else {
-            ovImg.style.left = '0'; ovImg.style.top = '0';
-            ovImg.style.width = '100%'; ovImg.style.height = '100%';
-          }
-
-          ovImg.style.pointerEvents = 'none';
-          ovImg.style.zIndex = '2';
-          ovImg.style.transition = 'transform 0.22s ease-in-out, filter 0.22s ease-in-out';
-          stage.appendChild(ovImg);
-        }
-
-        if (h.icon && !h.w && !h.h) {
-          const wrap = document.createElement('div');
-          wrap.className = 'hotspot-pulse-wrap ikon-bekliyor';
-          wrap.style.position = 'absolute';
-          wrap.style.left = h.x; wrap.style.top = h.y;
-          wrap.style.width = h.iconWidth || '8%';
-          wrap.style.zIndex = '10';
-          wrap.style.pointerEvents = 'auto';
-
-          const img = document.createElement('img');
-          img.src = h.icon;
-          wrap.appendChild(img);
-
-          if (h.label) {
-            const lbl = document.createElement('div');
-            lbl.className = 'hotspot-pulse-label';
-            lbl.textContent = h.label;
-            wrap.appendChild(lbl);
-          }
-
-          wrap.onclick = (e) => { 
-            if (e) e.stopPropagation();
-            if (!calibMode && !dialogueActive) handleHotspot(h); 
-          };
-          stage.appendChild(wrap);
-          return;
-        }
-
-        const el = document.createElement('div');
-        el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
-        el.style.position = 'absolute';
-        el.style.left = h.x; el.style.top = h.y; 
-        el.style.width = h.w || '10%'; el.style.height = h.h || '10%';
-        el.style.zIndex = '10'; el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer';
-
-        if (ovImg) {
-          el.onmouseenter = () => {
-            ovImg.style.transform = 'scale(1.08)';
-            ovImg.style.filter = 'brightness(1.2) drop-shadow(0 0 10px rgba(233,220,192,0.8))';
-          };
-          el.onmouseleave = () => {
-            ovImg.style.transform = 'scale(1)';
-            ovImg.style.filter = 'none';
-          };
-        }
-
-        const iconHtml = h.icon ? `<img src="${h.icon}" class="hotspot-icon-img" alt="">` : '';
-        el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
-        el.onclick = (e) => { 
+        wrap.onclick = (e) => { 
           if (e) e.stopPropagation();
           if (!calibMode && !dialogueActive) handleHotspot(h); 
         };
-        stage.appendChild(el);
-      });
-    }
+        stage.appendChild(wrap);
+        return;
+      }
 
-    if (currentRoom === 'gazeteci_oda_sifre_giris') renderSifreMinigame(stage);
+      const el = document.createElement('div');
+      el.className = 'hotspot' + (h.icon ? ' hotspot-icon' : '');
+      el.style.position = 'absolute';
+      el.style.left = h.x; el.style.top = h.y; 
+      el.style.width = h.w || '10%'; el.style.height = h.h || '10%';
+      el.style.zIndex = '10'; el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer';
 
-    if (currentRoom === 'gazeteci_oda_canta_ici') {
-      const closeBtn = document.createElement('button');
-      closeBtn.innerHTML = '✕';
-      closeBtn.className = 'canta-close-btn';
-      closeBtn.style.cssText = "position:absolute; top:8%; right:12%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(30,20,10,0.85); border:2px solid #e9dcc0; border-radius:50%; width:clamp(42px, 5cqw, 56px); height:clamp(42px, 5cqw, 56px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.8); transition:transform 0.2s;";
-      closeBtn.onclick = (e) => {
-        e.stopPropagation();
-        currentRoom = 'gazeteci_oda';
-        renderRoom();
+      if (ovImg) {
+        el.onmouseenter = () => {
+          ovImg.style.transform = 'scale(1.08)';
+          ovImg.style.filter = 'brightness(1.2) drop-shadow(0 0 10px rgba(233,220,192,0.8))';
+        };
+        el.onmouseleave = () => {
+          ovImg.style.transform = 'scale(1)';
+          ovImg.style.filter = 'none';
+        };
+      }
+
+      const iconHtml = h.icon ? `<img src="${h.icon}" class="hotspot-icon-img" alt="">` : '';
+      el.innerHTML = `${iconHtml}<div class="hint">${h.hint || ''}</div>`;
+      el.onclick = (e) => { 
+        if (e) e.stopPropagation();
+        if (!calibMode && !dialogueActive) handleHotspot(h); 
       };
-      stage.appendChild(closeBtn);
-    }
+      stage.appendChild(el);
+    });
+  }
 
-    stage.classList.remove('fading');
-  }, 180);
+  if (currentRoom === 'gazeteci_oda_sifre_giris') renderSifreMinigame(stage);
+
+  if (currentRoom === 'gazeteci_oda_canta_ici') {
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.className = 'canta-close-btn';
+    closeBtn.style.cssText = "position:absolute; top:8%; right:12%; z-index:30; font-size:clamp(22px, 3.2cqw, 36px); background:rgba(30,20,10,0.85); border:2px solid #e9dcc0; border-radius:50%; width:clamp(42px, 5cqw, 56px); height:clamp(42px, 5cqw, 56px); color:#e9dcc0; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.8); transition:transform 0.2s;";
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      currentRoom = 'gazeteci_oda';
+      renderRoom();
+    };
+    stage.appendChild(closeBtn);
+  }
 }
 
 /* ---------- KARAKTER YÖNETİMİ ---------- */
@@ -1079,13 +1064,11 @@ function sleep() {
 }
 
 function wakeUp() {
-  // 1. Uyuma sesini durdur
   if (currentSleepAudio) {
     currentSleepAudio.pause();
     currentSleepAudio = null;
   }
 
-  // 2. Uyanma sesini çal
   if (typeof calSes === 'function') {
     calSes('uyanma');
   } else {
@@ -1095,11 +1078,9 @@ function wakeUp() {
     } catch (e) {}
   }
 
-  // 3. Ekranı aç ve yeni günü yükle
   document.getElementById('sleepOverlay')?.classList.remove('active');
   loadDayData(currentDay).then(() => {
     renderRoom();
-    setTimeout(() => preloadDayAssets(), 300);
   });
 }
 

@@ -259,12 +259,10 @@
       const step1 = document.getElementById('introStep1');
       const step2 = document.getElementById('introStep2');
 
-      // 1. "DAVA BAŞLIYOR..." ekrana gelir
       setTimeout(() => {
         step1.classList.add('show');
       }, 300);
 
-      // 2. "DAVA BAŞLIYOR..." kaybolur ve Gün kuralları gelir
       setTimeout(() => {
         step1.classList.remove('show');
         setTimeout(() => {
@@ -282,13 +280,6 @@
         overlay.classList.add('hidden');
         setTimeout(() => overlay.remove(), 800);
       }
-      
-      // Giriş ekranı kapandığı an odayı tazeleyerek çizilmeyi zorluyoruz
-      setTimeout(() => {
-        if (typeof renderRoom === 'function') {
-          renderRoom();
-        }
-      }, 100);
     }
 
     function hizalaSorguOklari() {
@@ -303,20 +294,6 @@
       if (sag) sag.style.right = Math.max(8, modalRect.right - imgRect.right - sag.offsetWidth * 0.5) + 'px';
     }
     window.addEventListener('resize', hizalaSorguOklari);
-    const _openStatementOrijinal = typeof openStatement !== 'undefined' ? openStatement : function(){};
-    openStatement = function (index) {
-      _openStatementOrijinal(index);
-      const img = document.getElementById('statementZoomImg');
-      if (img) { if (img.complete) requestAnimationFrame(hizalaSorguOklari); else img.onload = hizalaSorguOklari; }
-    };
-
-    const IKON_BEKLEME_MS = 1000;
-    const ARKA_PLAN_YUKLEME = true;
-    const YURUME_SESI = 'assets/ses/yuru.mp3';
-
-    if (typeof Yukleme !== 'undefined') {
-      Yukleme.kur({ sahne: document.getElementById('stageFrame'), ses: YURUME_SESI, metin: '(Mekana yürünüyor...)' });
-    }
 
     function kosePop(btn, ac, ses) {
       if (ses && typeof calSes === 'function') calSes(ses);
@@ -330,206 +307,6 @@
       const rozet = document.getElementById('dayBadge');
       rozet.src = 'assets/arayuz/takvim_gun' + currentDay + '.webp';
       rozet.alt = 'Gün ' + currentDay;
-    };
-    document.getElementById('dayBadge').addEventListener('error', function () {
-      this.classList.add('yuklenemedi');
-    });
-    document.getElementById('dayBadge').addEventListener('load', function () {
-      this.classList.remove('yuklenemedi');
-    });
-
-    const _handleHotspotOrijinal = typeof handleHotspot !== 'undefined' ? handleHotspot : function(){};
-    handleHotspot = function (h) {
-      if (h.type === 'kapida_konus') {
-        const kilitAudio = new Audio('assets/ses/kilit.mp3');
-        kilitAudio.play().catch(() => {});
-
-        let charImg = document.getElementById('tempKapiChar');
-        if (!charImg) {
-          charImg = document.createElement('img');
-          charImg.id = 'tempKapiChar';
-          charImg.style.position = 'absolute';
-          charImg.style.right = '5%';
-          charImg.style.bottom = '-15%';
-          charImg.style.height = '85%';
-          charImg.style.zIndex = '100';
-          charImg.style.cursor = 'pointer';
-          document.getElementById('stageFrame').appendChild(charImg);
-        }
-        charImg.src = h.characterImage || 'assets/karakterler/riza.webp';
-        charImg.style.display = 'block';
-
-        let subBox = document.getElementById('kapiSubtitleBox');
-        if (!subBox) {
-          subBox = document.createElement('div');
-          subBox.id = 'kapiSubtitleBox';
-          subBox.style.position = 'absolute';
-          subBox.style.left = '5%';
-          subBox.style.right = '32%';
-          subBox.style.bottom = '6%';
-          subBox.style.background = 'rgba(20, 14, 8, 0.95)';
-          subBox.style.color = '#e9dcc0';
-          subBox.style.padding = '1.2em 1.5em';
-          subBox.style.borderRadius = '8px';
-          subBox.style.borderLeft = '5px solid #8a5a2b';
-          subBox.style.fontSize = 'clamp(16px, 1.9cqw, 22px)';
-          subBox.style.zIndex = '101';
-          subBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.8)';
-          subBox.style.cursor = 'pointer';
-          document.getElementById('stageFrame').appendChild(subBox);
-        }
-
-        let dIndex = 0;
-        const dialogList = h.dialog || [];
-
-        function adimAt(e) {
-          if (e) e.stopPropagation();
-          if (dIndex < dialogList.length) {
-            const item = dialogList[dIndex];
-            subBox.innerHTML = `<strong>${item.speaker}:</strong> ${item.text}`;
-            subBox.style.display = 'block';
-            dIndex++;
-          } else {
-            if (subBox) subBox.remove();
-            if (charImg) charImg.remove();
-            document.getElementById('stageFrame').removeEventListener('click', adimAt);
-          }
-        }
-
-        adimAt();
-
-        setTimeout(() => {
-          document.getElementById('stageFrame').addEventListener('click', adimAt);
-        }, 100);
-
-        return;
-      }
-
-      if (h.icon && typeof calSes === 'function') {
-        if (h.icon.endsWith('tokmak.webp')) calSes('kapi');
-        else if (h.icon.endsWith('geri.webp')) calSes('geri');
-        else if (h.icon.endsWith('ayak.webp') && h.label === 'Git') calSes('kapi_git');
-        else if (h.icon.endsWith('buyutec.webp')) calSes('incele');
-      }
-      if (h.type === 'dosya' && typeof calSes === 'function') calSes('harita');
-      _handleHotspotOrijinal(h);
-    };
-
-    document.getElementById('mapHotspots').addEventListener('click', (e) => {
-      if (e.target.closest('.map-hotspot') && typeof calSes === 'function') calSes('kapi');
-    });
-
-    document.getElementById('modalBg').addEventListener('click', (e) => {
-      if (e.target.closest('.reader-side-arrow') && typeof calSes === 'function') calSes('sayfa');
-    });
-
-    const _wakeUpOrijinal = typeof wakeUp !== 'undefined' ? wakeUp : function(){};
-    wakeUp = function () {
-      const parlak = document.createElement('div');
-      parlak.className = 'sabah-parlama';
-      document.getElementById('stageFrame').appendChild(parlak);
-      requestAnimationFrame(() => parlak.classList.add('aktif'));
-      _wakeUpOrijinal();
-      setTimeout(() => parlak.remove(), 1300);
-    };
-
-    const _renderRoomOrijinal = typeof renderRoom !== 'undefined' ? renderRoom : function(){};
-    let _odaJetonu = 0;
-    let _arkaPlanBasladi = false;
-
-    function _odaCiz() {
-      _renderRoomOrijinal();
-      const cfg = window.GAME_CONFIG || window.CASE;
-      if (typeof Ogretici !== 'undefined') {
-        Ogretici.kur({
-          sahne: document.getElementById('stageFrame'),
-          icerik: (cfg && cfg.ogretici) || {},
-          onek: (cfg && cfg.caseLabel) || 'oyun',
-          mevcut: () => currentRoom
-        });
-        Ogretici.iptal();
-        Ogretici.goster(currentRoom);
-      }
-
-      setTimeout(() => {
-        document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
-      }, 180 + IKON_BEKLEME_MS);
-
-      setTimeout(() => {
-        document.querySelectorAll('#stage img[alt="Geri dön"]').forEach(img => {
-          const kap = img.parentElement;
-          kap.style.width = '7.5%';
-          if (!kap.querySelector('.hotspot-pulse-label')) {
-            const et = document.createElement('div');
-            et.className = 'hotspot-pulse-label';
-            et.textContent = 'Geri';
-            kap.appendChild(et);
-          }
-        });
-      }, 220);
-
-      if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || document.getElementById('stage'));
-      if (typeof SFX !== 'undefined') SFX.play(currentRoom);
-
-      if (ARKA_PLAN_YUKLEME && !_arkaPlanBasladi && typeof Yukleme !== 'undefined') {
-        _arkaPlanBasladi = true;
-        Yukleme.arkaPlanda(_arkaPlanListesi());
-      }
-    }
-
-    function _arkaPlanListesi() {
-      const liste = [];
-      const cfg = window.GAME_CONFIG || window.CASE;
-      if (!cfg || !cfg.rooms) return liste;
-      const ekle = u => { if (u && !liste.includes(u)) liste.push(u); };
-      const oncelik = ['masa', 'merkez'];
-      const sirali = oncelik.concat(Object.keys(cfg.rooms).filter(k => !oncelik.includes(k)));
-      sirali.forEach(k => {
-        const oda = cfg.rooms[k];
-        if (!oda) return;
-        ekle(oda.background);
-        if (oda.closedOnDays && oda.closedOnDays.includes(currentDay)) ekle(oda.closedImage);
-        if (cfg.characters && cfg.characters[k]) ekle(cfg.characters[k].image);
-      });
-      ekle(cfg.map && cfg.map.image);
-      ekle(cfg.notebook && cfg.notebook.image);
-      return liste;
-    }
-
-    /* KORUMALI VE ZAMAN AŞIMLI RENDER ROOM OVERRIDE */
-    renderRoom = function () {
-      const jeton = ++_odaJetonu;
-      const cfg = window.GAME_CONFIG || window.CASE;
-      if (!cfg || !cfg.rooms || !cfg.rooms[currentRoom]) {
-        _odaCiz();
-        return;
-      }
-      const oda = cfg.rooms[currentRoom];
-      const kapali = oda.closedOnDays && oda.closedOnDays.includes(currentDay);
-      const karakter = (!kapali && cfg.characters && cfg.characters[currentRoom]) ? cfg.characters[currentRoom].image : null;
-      
-      // Sadece geçerli (null olmayan) resim yollarını diziye alıyoruz
-      const yuklenecekler = [kapali ? oda.closedImage : oda.background, karakter].filter(Boolean);
-
-      if (typeof Yukleme !== 'undefined' && Yukleme.gecis && yuklenecekler.length > 0) {
-        let cagirildi = false;
-        const guvenliOdaCiz = () => {
-          if (!cagirildi) {
-            cagirildi = true;
-            if (jeton === _odaJetonu) _odaCiz();
-          }
-        };
-
-        // KORUMA: Görsel yüklemesi 1 saniyeden uzun sürerse zorla odayı çizer
-        const timeout = setTimeout(guvenliOdaCiz, 1000);
-
-        Yukleme.gecis(yuklenecekler, () => {
-          clearTimeout(timeout);
-          guvenliOdaCiz();
-        });
-      } else {
-        _odaCiz();
-      }
     };
 
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
