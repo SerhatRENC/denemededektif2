@@ -10,12 +10,102 @@
 <link rel="manifest" href="manifest.json?v=3">
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=3">
 <title>Sislidere Davası</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Georgia&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
 <link rel="stylesheet" href="ogretici.css?v=9">
 <link rel="stylesheet" href="vfx.css">
 <script src="vfx.js"></script>
 <script src="sfx.js"></script>
+
+<style>
+  /* GİRİŞ / YÜKLENME EKRANI CSS */
+  .intro-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #0a0806;
+    z-index: 20000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #e9dcc0;
+    font-family: 'Georgia', serif;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+  }
+  .intro-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .intro-text-1 {
+    font-size: clamp(28px, 4cqw, 52px);
+    font-weight: bold;
+    letter-spacing: 0.18em;
+    color: #d1a76c;
+    text-shadow: 0 0 20px rgba(209, 167, 108, 0.4);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  .intro-text-1.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .intro-box-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 650px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .intro-box-2.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .intro-box-2 h2 {
+    font-size: clamp(24px, 3.2cqw, 42px);
+    color: #f3e5ab;
+    margin-bottom: 15px;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid #8a5a2b;
+    padding-bottom: 8px;
+  }
+  .intro-box-2 p {
+    font-size: clamp(15px, 2cqw, 22px);
+    line-height: 1.6;
+    color: #c9cabd;
+    margin: 8px 0;
+  }
+  .intro-box-2 .highlight {
+    color: #e67e22;
+    font-weight: bold;
+  }
+  .intro-start-btn {
+    margin-top: 25px;
+    padding: 12px 32px;
+    background: linear-gradient(180deg, #8a5a2b, #4a2f18);
+    color: #f3e5ab;
+    border: 2px solid #2c1c0e;
+    border-radius: 6px;
+    font-family: 'Georgia', serif;
+    font-size: clamp(16px, 2cqw, 22px);
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .intro-start-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(180deg, #a06b35, #5a3a1f);
+  }
+</style>
 
 <!-- Service Worker (Geliştirme Aşamasında Pasif & Temizleme) -->
 <script>
@@ -34,6 +124,19 @@
 
   <div class="stage-wrap">
     <div class="stage-frame" id="stageFrame">
+      
+      <!-- İNTRO / AÇILIŞ KATMANI -->
+      <div class="intro-overlay" id="introOverlay">
+        <div class="intro-text-1" id="introStep1">DAVA BAŞLIYOR...</div>
+        <div class="intro-box-2" id="introStep2" style="display: none;">
+          <h2>GÜN 1...</h2>
+          <p>1 hafta içinde davayı çözmen gerek.</p>
+          <p>Uyuduğun zaman gün sayısı artar.</p>
+          <p class="highlight">7. gün şüpheliyi seçeceksin...</p>
+          <button class="intro-start-btn" onclick="kapatIntroOverlay()">SORUŞTURMAYA BAŞLA</button>
+        </div>
+      </div>
+
       <div class="stage" id="stage"></div>
 
       <img class="stage-day-tag" id="dayBadge" src="assets/arayuz/takvim_gun1.webp" alt="Gün 1">
@@ -151,6 +254,36 @@
   <script src="ogretici.js?v=3"></script>
   <script src="yukleme.js?v=1"></script>
   <script>
+    /* İNTRO / YÜKLENME AKIŞI YÖNETİMİ */
+    window.addEventListener('DOMContentLoaded', () => {
+      const step1 = document.getElementById('introStep1');
+      const step2 = document.getElementById('introStep2');
+
+      // 1. "DAVA BAŞLIYOR..." ekrana gelir
+      setTimeout(() => {
+        step1.classList.add('show');
+      }, 300);
+
+      // 2. "DAVA BAŞLIYOR..." kaybolur ve Gün kuralları gelir
+      setTimeout(() => {
+        step1.classList.remove('show');
+        setTimeout(() => {
+          step1.style.display = 'none';
+          step2.style.display = 'flex';
+          setTimeout(() => step2.classList.add('show'), 50);
+        }, 1000);
+      }, 2200);
+    });
+
+    function kapatIntroOverlay() {
+      if (typeof calSes === 'function') calSes('kapi');
+      const overlay = document.getElementById('introOverlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        setTimeout(() => overlay.remove(), 800);
+      }
+    }
+
     function hizalaSorguOklari() {
       const img = document.getElementById('statementZoomImg');
       const modal = document.getElementById('modalBody');
