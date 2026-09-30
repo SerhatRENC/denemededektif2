@@ -390,10 +390,10 @@ function renderCharacter() {
   }
   let ch = CASE.characters && CASE.characters[currentRoom];
 
-  // 3. Gün Cevdet mezarlıkta olmasın, evinde görünsün
+  // 3. Gün Cevdet mezarlıkta olmasın, Cadı Evi ('cadi' / 'cevdet_ev') odasında görünsün
   if (currentDay === 3) {
     if (currentRoom === 'mezarlik') return;
-    if (currentRoom === 'cevdet_ev') {
+    if (currentRoom === 'cadi' || currentRoom === 'cevdet_ev') {
       ch = {
         name: "Cevdet",
         image: "assets/karakterler/cevdet.webp"
@@ -410,7 +410,7 @@ function renderCharacter() {
   }
 
   if (!ch) return;
-  const stage = document.getElementById('stage') || document.getElementById('gameStage');
+    const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
 
   ch = JSON.parse(JSON.stringify(ch));
@@ -470,8 +470,10 @@ function renderSceneCharacter(ch, stage) {
 
 function getDialogForRoom(roomKey, defaultDialog) {
   if (CURRENT_DAY_DATA?.dialogs?.[roomKey]) return CURRENT_DAY_DATA.dialogs[roomKey];
-  if (roomKey === 'degirmenci' && CURRENT_DAY_DATA?.dialogs?.['degirmen']) return CURRENT_DAY_DATA.dialogs['degirmen'];
-  if (roomKey === 'degirmen' && CURRENT_DAY_DATA?.dialogs?.['degirmenci']) return CURRENT_DAY_DATA.dialogs['degirmenci'];
+  if ((roomKey === 'cadi' || roomKey === 'cevdet_ev') && CURRENT_DAY_DATA?.dialogs?.['cadi']) return CURRENT_DAY_DATA.dialogs['cadi'];
+  if ((roomKey === 'cadi' || roomKey === 'cevdet_ev') && CURRENT_DAY_DATA?.dialogs?.['cevdet_ev']) return CURRENT_DAY_DATA.dialogs['cevdet_ev'];
+  if ((roomKey === 'degirmenci' || roomKey === 'degirmen') && CURRENT_DAY_DATA?.dialogs?.['degirmen']) return CURRENT_DAY_DATA.dialogs['degirmen'];
+  if ((roomKey === 'degirmenci' || roomKey === 'degirmen') && CURRENT_DAY_DATA?.dialogs?.['degirmenci']) return CURRENT_DAY_DATA.dialogs['degirmenci'];
   if (CASE?.day2_dialogs?.[roomKey]) return CASE.day2_dialogs[roomKey];
   return defaultDialog;
 }
@@ -493,9 +495,9 @@ if (currentDay === 3) {
       return;
     }
 
-    if (currentRoom === 'cevdet_ev') {
+    if (currentRoom === 'cadi' || currentRoom === 'cevdet_ev') {
       document.getElementById('sceneCharacter')?.remove();
-      const cevdetDialog = CURRENT_DAY_DATA?.dialogs?.cevdet_ev;
+      const cevdetDialog = getDialogForRoom(currentRoom, null);
       startOzelDialog(cevdetDialog, ch ? ch.image : 'assets/karakterler/cevdet.webp', () => {
         renderRoom();
         if (!inventory.includes('cevdet_not')) {
@@ -504,7 +506,7 @@ if (currentDay === 3) {
       });
       return;
     }
-  }
+      }
   if (currentDay === 2) {
     if (currentRoom === 'ofis' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
@@ -557,7 +559,7 @@ if (currentDay === 3) {
     }
   }
 
-  const dayDialog = CURRENT_DAY_DATA?.dialogs?.[currentRoom];
+  const dayDialog = getDialogForRoom(currentRoom, null);
   if (dayDialog) {
     document.getElementById('sceneCharacter')?.remove();
     startOzelDialog(dayDialog, ch.image, () => renderRoom());
