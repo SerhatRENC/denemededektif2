@@ -188,10 +188,16 @@ async function renderRoom() {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
 
-  const isClosedOverride = CURRENT_DAY_DATA?.roomOverrides?.[currentRoom]?.closed;
-  const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
-  const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
+  let isClosedOverride = CURRENT_DAY_DATA?.roomOverrides?.[currentRoom]?.closed;
+  let kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
 
+  // 2. Gün otopsi raporu incelendikten veya serbest gezme başladıktan sonra Muhtar/Halit evi kilitli olmamalı
+  if (currentDay === 2 && (currentRoom === 'muhtar' || currentRoom === 'halit_ev') && (gameState.getFlag('otopsi_incelendi') || day2State === 'DAY2_FREE')) {
+    isClosedOverride = false;
+    kapali = false;
+  }
+
+  const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
   if (bgImage) {
     await loadImageAsync(bgImage);
   }
@@ -684,7 +690,7 @@ function handleHotspot(h) {
           return;
         }
       } else if (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') {
-        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'han', 'han_kapi'];
+        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'han', 'han_kapi', 'muhtar', 'halit_ev'];
         if (h.target && !allowedInOfis.includes(h.target)) {
           showCustomSubtitle("Ofise gidip otopsi raporunu incelesem iyi olacak. Sonra köy halkıyla detaylıca konuşurum.", true);
           return;
@@ -1090,6 +1096,16 @@ function wakeUp() {
     currentSleepAudio = null;
   }
 
+  // Sabah Parlama Efekti
+  const stageFrame = document.getElementById('stageFrame') || document.getElementById('stage');
+  if (stageFrame) {
+    const parlak = document.createElement('div');
+    parlak.className = 'sabah-parlama';
+    stageFrame.appendChild(parlak);
+    requestAnimationFrame(() => parlak.classList.add('aktif'));
+    setTimeout(() => parlak.remove(), 1300);
+  }
+
   if (typeof calSes === 'function') {
     calSes('uyanma');
   } else {
@@ -1104,7 +1120,6 @@ function wakeUp() {
     renderRoom();
   });
 }
-
 /* ---------- DİĞER İNCELEME MODALLARI & DİĞER İŞLEMLER ---------- */
 function renderSifreMinigame(stage) {
   const numCoords = [
@@ -1241,28 +1256,33 @@ function openCantaPolaroidModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
     <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-      <img src="assets/arayuz/poloroid.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">(İşlenmemiş) Polaroid Fotoğraf</h3>
+      <img src="assets/arayuz/poloroid.webp" style="max-width:88vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid');">ENVANTERE AL</button>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Bu fotoğrafı fotoğraf odasına götürüp netleştirmem lazım.', true), 300);">ENVANTERE AL</button>
     </div>
   `);
 }
-
 function openYanikKagitModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
     <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-      <img src="assets/tiklanabilir/yanik_kagit_tiklanabilir.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <img src="assets/arayuz/yanik_kagit_incele.webp" style="max-width:88vw; max-height:78vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <br>
       <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">ENVANTERE EKLE</button>
     </div>
   `);
 }
+let currentGazeteciPagesList = gazeteciDosyaPagesDefault;
 
-function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
-  const src = pages[index];
+function openGazeteciDosyaModal(pages = null, index = 0) {
+  if (pages && Array.isArray(pages)) {
+    currentGazeteciPagesList = pages;
+  }
+  const activePages = currentGazeteciPagesList || gazeteciDosyaPagesDefault;
+  const src = activePages[index];
   const prevDisabled = index === 0 ? 'disabled' : '';
-  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
+  const nextDisabled = index === activePages.length - 1 ? 'disabled' : '';
 
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
@@ -1273,7 +1293,6 @@ function openGazeteciDosyaModal(pages = gazeteciDosyaPagesDefault, index = 0) {
     <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openGazeteciDosyaModal(null, ${index + 1})" ${nextDisabled}>›</button>
   `);
 }
-
 function showAnahtarAcquisitionModal() {
   showFramelessModal(`
     <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#e9dcc0;">
