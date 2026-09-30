@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — AĞ KUYRUĞU OPTİMİZE OYUN MOTORU
+   SISLIDERE DAVASI — TAM ENTEGRE OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -90,7 +90,6 @@ function preloadImage(url) {
 function preloadDayAssets() {
   if (!CASE) return;
 
-  // 1. Karakterler
   const emotions = ['normal', 'ciddi', 'telasli', 'supheli', 'dusuneli', 'sinirli', 'uzgun', 'korkmus', 'cekingan', 'gergin'];
   Object.values(CASE.characters || {}).forEach(ch => {
     if (ch.image) {
@@ -105,7 +104,6 @@ function preloadDayAssets() {
     if (ch.clickableImage) preloadImage(ch.clickableImage);
   });
 
-  // 2. Diğer Odalar
   Object.values(CASE.rooms || {}).forEach(room => {
     if (room.background) preloadImage(room.background);
     if (room.closedImage) preloadImage(room.closedImage);
@@ -117,7 +115,6 @@ function preloadDayAssets() {
     }
   });
 
-  // 3. Arayüz Görselleri
   if (CASE.statements) {
     CASE.statements.forEach(s => { if (s.cardImage) preloadImage(s.cardImage); });
   }
@@ -146,7 +143,6 @@ async function initGame() {
     updateDayBadge();
     renderInventory();
 
-    // Sadece aktif oda resmini öncelikli indirip ardından sahneyi çiziyoruz
     const initialRoomObj = CASE.rooms[currentRoom];
     if (initialRoomObj && initialRoomObj.background) {
       await loadImageAsync(initialRoomObj.background);
@@ -154,7 +150,6 @@ async function initGame() {
 
     renderRoom();
 
-    // Diğer görselleri ağ tıkanıklığı yaratmamak için 1.5 saniye sonra indiriyoruz
     setTimeout(() => {
       preloadDayAssets();
     }, 1500);
@@ -197,7 +192,6 @@ async function renderRoom() {
   const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
   const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
 
-  // Arka plan resminin indiğinden emin oluyoruz
   if (bgImage) {
     await loadImageAsync(bgImage);
   }
@@ -210,14 +204,14 @@ async function renderRoom() {
 
   if (kapali) {
     const geri = document.createElement('div');
-    geri.className = 'hotspot-pulse-wrap ikon-bekliyor';
+    geri.className = 'hotspot-pulse-wrap';
     geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '7.5%'; geri.style.position = 'absolute';
     geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri"><div class="hotspot-pulse-label">Geri</div>`;
     geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
     stage.appendChild(geri);
 
     const tokmak = document.createElement('div');
-    tokmak.className = 'hotspot-pulse-wrap ikon-bekliyor';
+    tokmak.className = 'hotspot-pulse-wrap';
     tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%'; tokmak.style.position = 'absolute';
     tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
     tokmak.onclick = () => {
@@ -335,6 +329,25 @@ async function renderRoom() {
       renderRoom();
     };
     stage.appendChild(closeBtn);
+  }
+
+  // 1. İKON GÖRÜNÜRLÜK TEMİZLİĞİ (Görünmeyen 'ikon-bekliyor' sınıflarını kaldırır)
+  setTimeout(() => {
+    document.querySelectorAll('#stage .ikon-bekliyor').forEach(el => el.classList.remove('ikon-bekliyor'));
+  }, 250);
+
+  // 2. VFX, SFX VE ÖĞRETİCİ TETİKLEMELERİ
+  if (typeof VFX !== 'undefined') VFX.load(currentRoom, document.getElementById('stageFrame') || stage);
+  if (typeof SFX !== 'undefined') SFX.play(currentRoom);
+  if (typeof Ogretici !== 'undefined') {
+    Ogretici.kur({
+      sahne: document.getElementById('stageFrame') || stage,
+      icerik: (CASE && CASE.ogretici) || {},
+      onek: (CASE && CASE.caseLabel) || 'oyun',
+      mevcut: () => currentRoom
+    });
+    Ogretici.iptal();
+    Ogretici.goster(currentRoom);
   }
 }
 
@@ -598,6 +611,14 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
 /* ---------- HOTSPOT ISLEMLERI ---------- */
 function handleHotspot(h) {
   if (dialogueActive) return;
+
+  // İkon Ses Efektlerini Çal
+  if (h.icon && typeof calSes === 'function') {
+    if (h.icon.includes('tokmak')) calSes('kapi');
+    else if (h.icon.includes('geri')) calSes('geri');
+    else if (h.icon.includes('ayak')) calSes('kapi_git');
+    else if (h.icon.includes('buyutec')) calSes('incele');
+  }
 
   if (h.type === 'kamera_bos_subtitle') {
     showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
