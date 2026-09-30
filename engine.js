@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — ORİJİNAL ÇALIŞAN MOTOR & MODÜLER SİSTEM
+   SISLIDERE DAVASI — TAM ONARILMIŞ MODÜLER OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -28,13 +28,11 @@ let dialogueActive = false;
 let dialogIndex = 0;
 let characterAudio = null;
 
-// Gazeteci odaları listesi
 const journalistRooms = [
   'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 
   'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'
 ];
 
-// 2. Gün Durum Yönetimi
 let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
 let day2PolisGoruldu = localStorage.getItem('sd_day2_polis_goruldu') === 'true';
 
@@ -43,10 +41,7 @@ function setDay2State(newState) {
   localStorage.setItem('sd_day2_state', newState);
 }
 
-// Şifre minigame değişkenleri
 let lockDigits = [0, 0, 0, 0, 0];
-
-// Gazeteci dosyası sayfaları
 let gazeteciDosyaPagesDefault = [
   'assets/arayuz/gazeteci_dosya_1.webp',
   'assets/arayuz/gazeteci_dosya_2.webp'
@@ -141,6 +136,11 @@ function renderRoom() {
 
     if (room.hotspots) {
       room.hotspots.forEach(h => {
+        // HATA 2 DÜZELTMESİ: 1. Gün masada Ali İhsan otopsi kaydı görünemez
+        if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
+          if (currentDay < 2 || day2State !== 'CANTA_UNLOCKED') return;
+        }
+
         if (h.requires && !inventory.includes(h.requires)) return;
         if (h.activeDays && !h.activeDays.includes(currentDay)) return;
         if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
@@ -322,13 +322,24 @@ function renderSceneCharacter(ch, stage) {
   stage.appendChild(el);
 }
 
+// Güvenli diyalog alma yardımcı fonksiyonu
+function getDialogForRoom(roomKey, defaultDialog) {
+  if (CURRENT_DAY_DATA?.dialogs?.[roomKey]) return CURRENT_DAY_DATA.dialogs[roomKey];
+  if (CASE?.day2_dialogs?.[roomKey]) return CASE.day2_dialogs[roomKey];
+  if (CASE?.day2_dialogs?.[roomKey + '_halit']) return CASE.day2_dialogs[roomKey + '_halit'];
+  if (CASE?.day2_dialogs?.[roomKey + '_riza']) return CASE.day2_dialogs[roomKey + '_riza'];
+  return defaultDialog;
+}
+
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
 
+  // HATA 3 DÜZELTMESİ: 2. Güne ait tüm diyalog geçişleri güvenli hale getirildi
   if (currentDay === 2) {
     if (currentRoom === 'ofis' && day2State === 'CANTA_UNLOCKED' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
-      startOzelDialog(CASE.day2_dialogs.polis_ofis, ch.image, () => {
+      const polisDialog = getDialogForRoom('polis_ofis', [{ speaker: "Polis", text: "Komserim otopsi raporu geldi." }]);
+      startOzelDialog(polisDialog, ch.image, () => {
         day2PolisGoruldu = true;
         localStorage.setItem('sd_day2_polis_goruldu', 'true');
         inventory = inventory.filter(item => item !== 'polaroid');
@@ -341,7 +352,8 @@ function toggleCharacterLine(ch) {
 
     if (currentRoom === 'muhtar') {
       document.getElementById('sceneCharacter')?.remove();
-      startOzelDialog(CASE.day2_dialogs.muhtar_halit, ch.image, () => {
+      const muhtarDialog = getDialogForRoom('muhtar_halit', getDialogForRoom('muhtar', ch.dialog));
+      startOzelDialog(muhtarDialog, ch.image, () => {
         if (day2State === 'GO_MUHTAR') setDay2State('GO_HAN');
         renderRoom();
         showCustomSubtitle("Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim.", true);
@@ -351,7 +363,8 @@ function toggleCharacterLine(ch) {
 
     if (currentRoom === 'han') {
       document.getElementById('sceneCharacter')?.remove();
-      startOzelDialog(CASE.day2_dialogs.hanci_riza, ch.image, () => {
+      const rizaDialog = getDialogForRoom('hanci_riza', getDialogForRoom('han', ch.dialog));
+      startOzelDialog(rizaDialog, ch.image, () => {
         if (!inventory.includes('anahtar') && day2State !== 'HAN_UNLOCKED' && day2State !== 'CANTA_UNLOCKED') {
           showAnahtarAcquisitionModal();
         } else {
@@ -361,9 +374,10 @@ function toggleCharacterLine(ch) {
       return;
     }
 
-    if (CASE.day2_dialogs && CASE.day2_dialogs[currentRoom]) {
+    const genericDay2Dialog = getDialogForRoom(currentRoom, null);
+    if (genericDay2Dialog) {
       document.getElementById('sceneCharacter')?.remove();
-      startOzelDialog(CASE.day2_dialogs[currentRoom], ch.image, () => renderRoom());
+      startOzelDialog(genericDay2Dialog, ch.image, () => renderRoom());
       return;
     }
   }
@@ -419,19 +433,31 @@ function gosterDialogSatiri(dialog) {
   const charEl = document.getElementById('sceneCharacter');
   const ch = CASE.characters && CASE.characters[currentRoom];
   
-  if (charEl && ch && satir.emotion) {
+  if (charEl && ch && satir && satir.emotion) {
     const lastDot = ch.image.lastIndexOf('.');
     const basePath = ch.image.substring(0, lastDot);
     const ext = ch.image.substring(lastDot);
     charEl.src = `${basePath}_${satir.emotion}${ext}`;
   }
 
-  sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
+  if (satir) {
+    sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
+  }
 }
 
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
-  dialogueActive = true;
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
+  
+  // Güvenlik Koruması: Diyalog listesi boşsa kilitlenme olmasını engelle
+  if (!dialogList || !Array.isArray(dialogList) || dialogList.length === 0) {
+    if (stage) stage.classList.remove('dialog-active');
+    setUIElementsVisible(true);
+    dialogueActive = false;
+    if (onCompleteCallback) onCompleteCallback();
+    return;
+  }
+
+  dialogueActive = true;
   stage.classList.add('dialog-active');
   setUIElementsVisible(false);
 
@@ -442,7 +468,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
     charImg.className = 'scene-character talking';
     stage.appendChild(charImg);
   }
-  charImg.src = charImgPath;
+  if (charImgPath) charImg.src = charImgPath;
 
   let index = 0;
   function sonrakiSatir(e) {
@@ -538,15 +564,23 @@ function handleHotspot(h) {
     return;
   }
 
-  if (h.type === 'dialogue_bakirci1') { startOzelDialog(CASE.day2_dialogs.bakirci1, 'assets/karakterler/bakirci1.webp'); return; }
-  if (h.type === 'dialogue_bakirci2') { startOzelDialog(CASE.day2_dialogs.bakirci2, 'assets/karakterler/bakirci2.webp'); return; }
+  if (h.type === 'dialogue_bakirci1') { 
+    const b1Dialog = getDialogForRoom('bakirci1', CASE?.day2_dialogs?.bakirci1);
+    startOzelDialog(b1Dialog, 'assets/karakterler/bakirci1.webp'); 
+    return; 
+  }
+  if (h.type === 'dialogue_bakirci2') { 
+    const b2Dialog = getDialogForRoom('bakirci2', CASE?.day2_dialogs?.bakirci2);
+    startOzelDialog(b2Dialog, 'assets/karakterler/bakirci2.webp'); 
+    return; 
+  }
 
   if (h.type === 'dosya') { openStatement(0); return; }
   if (h.type === 'notebook') { openNotebook(); return; }
   if (h.type === 'sleep') { confirmSleep(); return; }
 }
 
-/* ---------- SORGU KARTLARI MODALI ---------- */
+/* ---------- HATA 1 DÜZELTMESİ: SORGU KARTLARI TAM EKRAN MODALI ---------- */
 let statementAudio = null, statementPlaying = false;
 let currentStatementIndex = 0;
 
@@ -557,21 +591,29 @@ function openStatement(index) {
   const total = CASE.statements.length;
 
   const audioHtml = s.audio
-    ? `<button class="reader-play-simple" id="readerPlayBtn" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
+    ? `<button class="reader-play-simple" id="readerPlayBtn" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:10002; padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
     : '';
 
-  showModal(`
-    <button class="reader-close" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" onclick="${index > 0 ? `openStatement(${index - 1})` : ''}" ${index === 0 ? 'disabled' : ''}>‹</button>
-    <div class="zoom-wrap" style="width:70vw;height:80vh;">
-      <img class="reader-card-img-wide" id="statementZoomImg" src="${s.cardImage}">
+  const body = document.getElementById('modalBody');
+  const bg = document.getElementById('modalBg');
+  if (!body || !bg) return;
+
+  bg.className = 'modal-bg active reader-mode';
+  bg.style.background = 'rgba(0, 0, 0, 0.85)';
+  bg.style.backdropFilter = 'blur(8px)';
+
+  body.className = 'modal modal-fullscreen';
+  body.style.cssText = "background:transparent !important; border:none !important; box-shadow:none !important; padding:0 !important; max-width:100vw !important; width:100vw !important; height:100vh !important; max-height:100vh !important; overflow:hidden !important; display:flex; align-items:center; justify-content:center; position:relative;";
+
+  body.innerHTML = `
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index > 0 ? index - 1 : total - 1})">‹</button>
+    <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
+      <img id="statementZoomImg" src="${s.cardImage}" style="max-width:90vw; max-height:88vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-    <button class="reader-side-arrow right" onclick="${index < total - 1 ? `openStatement(${index + 1})` : ''}" ${index === total - 1 ? 'disabled' : ''}>›</button>
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index < total - 1 ? index + 1 : 0})">›</button>
     ${audioHtml}
-  `, true);
-  
-  const mBg = document.getElementById('modalBg');
-  if (mBg) mBg.classList.add('reader-mode');
+  `;
 }
 
 function toggleStatementAudio(src) {
@@ -1188,6 +1230,8 @@ function closeModal() {
   if (bg) {
     bg.classList.remove('active');
     bg.classList.remove('reader-mode');
+    bg.style.background = "";
+    bg.style.backdropFilter = "";
   }
 }
 
