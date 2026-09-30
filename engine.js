@@ -51,6 +51,7 @@ const gameState = {
 
 let day2State = localStorage.getItem('sd_day2_state') || 'GO_MUHTAR';
 let day2PolisGoruldu = localStorage.getItem('sd_day2_polis_goruldu') === 'true';
+let day3PolisGoruldu = localStorage.getItem('sd_day3_polis_goruldu') === 'true';
 
 function setDay2State(newState) {
   day2State = newState;
@@ -376,6 +377,17 @@ function renderCharacter() {
     return;
   }
 
+  if (currentDay === 3 && currentRoom === 'ofis' && !day3PolisGoruldu) {
+    const stage = document.getElementById('stage') || document.getElementById('gameStage');
+    const polisCh = {
+      name: "Polis Memuru",
+      image: "assets/karakterler/polis.webp",
+      clickableImage: "assets/tiklanabilir/polis_tiklanabilir.webp",
+      clickableArea: { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" }
+    };
+    renderClickableCharacter(polisCh, stage);
+    return;
+  }
   let ch = CASE.characters && CASE.characters[currentRoom];
   if (!ch) return;
 
@@ -445,6 +457,34 @@ function getDialogForRoom(roomKey, defaultDialog) {
 
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
+
+if (currentDay === 3) {
+    if (currentRoom === 'ofis' && !day3PolisGoruldu) {
+      document.getElementById('sceneCharacter')?.remove();
+      const polisDialog = [
+        { "speaker": "Polis Memuru", "text": "Efendim istediğiniz evrağı getirdim, bir ihtiyacınız varsa söylemeniz yeterli." }
+      ];
+      startOzelDialog(polisDialog, ch.image || 'assets/karakterler/polis.webp', () => {
+        day3PolisGoruldu = true;
+        localStorage.setItem('sd_day3_polis_goruldu', 'true');
+        renderRoom();
+        openPolaroidIslenmisModal();
+      });
+      return;
+    }
+
+    if (currentRoom === 'cevdet_ev') {
+      document.getElementById('sceneCharacter')?.remove();
+      const cevdetDialog = CURRENT_DAY_DATA?.dialogs?.cevdet_ev;
+      startOzelDialog(cevdetDialog, ch.image, () => {
+        renderRoom();
+        if (!inventory.includes('cevdet_not')) {
+          openCevdetNotModal();
+        }
+      });
+      return;
+    }
+  }
 
   if (currentDay === 2) {
     if (currentRoom === 'ofis' && !day2PolisGoruldu) {
@@ -1345,9 +1385,10 @@ function renderInventory() {
     if (id === 'anahtar') { imgSrc = 'assets/tiklanabilir/anahtar.webp'; label = 'Anahtar'; }
     else if (id === 'evlilik_cuzdan') { imgSrc = 'assets/arayuz/evlilik_cuzdan.webp'; label = 'Cüzdan'; }
     else if (id === 'polaroid') { imgSrc = 'assets/arayuz/poloroid.webp'; label = 'Polaroid'; }
+    else if (id === 'polaroid_islenmis') { imgSrc = 'assets/arayuz/poloroid_islenmis.webp'; label = 'İşlenmiş Polaroid'; }
+    else if (id === 'cevdet_not') { imgSrc = 'assets/arayuz/cevdet_not.webp'; label = 'Cevdet\'in Notu'; }
     else if (id === 'yanik_kagit') { imgSrc = 'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp'; label = 'Yanık Kağıt'; }
     else if (id === 'gazeteci_dosyasi') { imgSrc = 'assets/arayuz/gazeteci_dosya.webp'; label = 'Dosya'; }
-
     if (imgSrc) {
       el.innerHTML = `<img src="${imgSrc}" style="height:58%; object-fit:contain;"><span style="font-size:8px; color:#e9dcc0;">${label}</span>`;
     } else {
@@ -1415,6 +1456,30 @@ function closeModal() {
     bg.style.background = "";
     bg.style.backdropFilter = "";
   }
+}
+
+function openPolaroidIslenmisModal() {
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">(İşlenmiş) Polaroid Fotoğraf</h3>
+      <img src="assets/arayuz/poloroid_islenmis.webp" style="max-width:88vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <br>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid_islenmis');">ENVANTERE AL</button>
+    </div>
+  `);
+}
+
+function openCevdetNotModal() {
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">Cevdet'in Notu</h3>
+      <img src="assets/arayuz/cevdet_not.webp" style="max-width:88vw; max-height:70vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <br>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('cevdet_not');">ENVANTERE AL</button>
+    </div>
+  `);
 }
 
 // Global Pencere Fonksiyonları
