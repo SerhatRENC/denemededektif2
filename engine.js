@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — TAM KONTROLLÜ VE ÇERÇEVESİZ OYUN MOTORU
+   SISLIDERE DAVASI — PRELOAD DESTEKLİ MODÜLER OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -28,6 +28,8 @@ let dialogueActive = false;
 let dialogIndex = 0;
 let characterAudio = null;
 
+const preloadedImages = new Map();
+
 const journalistRooms = [
   'gazeteci_oda', 'gazeteci_oda_cop', 'gazeteci_oda_canta', 
   'gazeteci_oda_sifre_giris', 'gazeteci_oda_canta_ici', 'gazeteci_oda_masa', 'gazeteci_oda_tablo'
@@ -42,7 +44,7 @@ const gameState = {
     localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'), JSON.stringify(this.flags));
   },
   loadFlags() {
-    const saved = localStorage.getItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
+    const saved = localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
     this.flags = saved ? JSON.parse(saved) : {};
   }
 };
@@ -61,6 +63,79 @@ let gazeteciDosyaPagesDefault = [
   'assets/arayuz/gazeteci_dosya_2.webp'
 ];
 
+/* ---------- ASSET PRELOADING (GÖRSEL ÖN YÜKLEME) ---------- */
+function preloadImage(url) {
+  if (!url || preloadedImages.has(url)) return;
+  const img = new Image();
+  img.src = url;
+  preloadedImages.set(url, img);
+}
+
+function preloadDayAssets() {
+  if (!CASE) return;
+
+  // 1. Oda ve Hotspot Görselleri
+  Object.values(CASE.rooms || {}).forEach(room => {
+    if (room.background) preloadImage(room.background);
+    if (room.closedImage) preloadImage(room.closedImage);
+    if (room.hotspots) {
+      room.hotspots.forEach(h => {
+        if (h.overlayImage) preloadImage(h.overlayImage);
+        if (h.icon) preloadImage(h.icon);
+        if (h.images) h.images.forEach(imgUrl => preloadImage(imgUrl));
+      });
+    }
+  });
+
+  // 2. Gün Sonu / Özel Oda Değişim Görselleri
+  if (CURRENT_DAY_DATA && CURRENT_DAY_DATA.roomOverrides) {
+    Object.values(CURRENT_DAY_DATA.roomOverrides).forEach(ov => {
+      if (ov.closedImage) preloadImage(ov.closedImage);
+    });
+  }
+
+  // 3. Karakterler ve Duygu Durum Varyasyonları
+  const emotions = ['normal', 'ciddi', 'telasli', 'supheli', 'dusuneli', 'sinirli', 'uzgun', 'korkmus', 'cekingan', 'gergin'];
+  Object.values(CASE.characters || {}).forEach(ch => {
+    if (ch.image) {
+      preloadImage(ch.image);
+      const lastDot = ch.image.lastIndexOf('.');
+      if (lastDot !== -1) {
+        const basePath = ch.image.substring(0, lastDot);
+        const ext = ch.image.substring(lastDot);
+        emotions.forEach(em => preloadImage(`${basePath}_${em}${ext}`));
+      }
+    }
+    if (ch.clickableImage) preloadImage(ch.clickableImage);
+  });
+
+  // 4. Sorgu Kartları, Harita, Not Defteri ve Arayüz Bilesenleri
+  if (CASE.statements) {
+    CASE.statements.forEach(s => { if (s.cardImage) preloadImage(s.cardImage); });
+  }
+  if (CASE.map && CASE.map.image) preloadImage(CASE.map.image);
+  if (CASE.notebook) {
+    if (CASE.notebook.image) preloadImage(CASE.notebook.image);
+    if (CASE.notebook.suspects) {
+      CASE.notebook.suspects.forEach(s => { if (s.image) preloadImage(s.image); });
+    }
+  }
+
+  // 5. Standart Arayüz Resimleri
+  const uiAssets = [
+    'assets/arayuz/otopsi.webp',
+    'assets/arayuz/cebindekiler.webp',
+    'assets/arayuz/evlilik_cuzdan.webp',
+    'assets/arayuz/bos_kagit.webp',
+    'assets/arayuz/poloroid.webp',
+    'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp',
+    'assets/tiklanabilir/anahtar.webp',
+    'assets/arayuz/gazeteci_dosya_1.webp',
+    'assets/arayuz/gazeteci_dosya_2.webp'
+  ];
+  uiAssets.forEach(preloadImage);
+}
+
 /* ---------- BAŞLATMA VE YÜKLEME ---------- */
 async function initGame() {
   try {
@@ -78,6 +153,8 @@ async function initGame() {
     inventory = savedInv ? JSON.parse(savedInv) : [];
 
     await loadDayData(currentDay);
+
+    preloadDayAssets();
 
     updateDayBadge();
     renderInventory();
@@ -152,13 +229,10 @@ function renderRoom() {
 
     if (room.hotspots) {
       room.hotspots.forEach(h => {
-        // Otopsi raporu masada sadece polis geldikten sonra görünür
         if (h.type === 'otopsi_merkez_kaydi_modal' || (h.overlayImage && h.overlayImage.includes('ali_ihsan_merkez_kaydi'))) {
           if (currentDay < 2 || !day2PolisGoruldu) return;
         }
 
-        // DÜZELTME 4: Dışarı çıkış sadece Handan dönüldükten sonra (GO_OFIS / CANTA_UNLOCKED) ve otopsi incelenmeden önce engellenir.
-        // 2. gün ilk sabahında (GO_MUHTAR) dışarı çıkmak serbesttir!
         if (currentRoom === 'ofis' && currentDay === 2) {
           if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
             if (h.target === 'merkez') return;
@@ -272,7 +346,6 @@ function renderCharacter() {
   dialogIndex = 0;
   setUIElementsVisible(true);
 
-  // DÜZELTME 2: Ofise gelindiğinde polis tıklanabilir halde bekler, sohbet tıklandıktan sonra başlar!
   if (currentDay === 2 && currentRoom === 'ofis' && (day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS') && !day2PolisGoruldu) {
     const stage = document.getElementById('stage') || document.getElementById('gameStage');
     const polisCh = {
@@ -544,7 +617,6 @@ function handleHotspot(h) {
     return;
   }
 
-  // Gazeteci odası kapısını anahtarsız açmaya çalışırken
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac') {
     const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS' || gameState.getFlag('otopsi_incelendi');
 
@@ -563,9 +635,7 @@ function handleHotspot(h) {
     }
   }
 
-  // Gezinti Kısıtlamaları (2. Gün)
   if (h.type === 'navigate') {
-    // Handan/Gazeteci odasından çıkış
     if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
       if (day2State === 'CANTA_UNLOCKED') {
         setDay2State('GO_OFIS');
@@ -615,7 +685,7 @@ function handleHotspot(h) {
   if (h.type === 'sleep') { confirmSleep(); return; }
 }
 
-/* ---------- DÜZELTME 1 & 3: GENEL ÇERÇEVESİZ MODAL YARDIMCISI ---------- */
+/* ---------- GENEL ÇERÇEVESİZ MODAL YARDIMCISI ---------- */
 function showFramelessModal(innerHtml) {
   stopStatementAudio();
   const body = document.getElementById('modalBody');
@@ -1046,7 +1116,7 @@ function renderSifreMinigame(stage) {
   stage.appendChild(ilerleBtn);
 }
 
-/* ---------- DÜZELTME 1 & 3: TAM ÇERÇEVESİZ İNCELEME MODALLARI ---------- */
+/* ---------- DİĞER İNCELEME MODALLARI ---------- */
 function openOtopsiMerkezKaydiModal(index = 0) {
   const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
   const src = pages[index];
@@ -1254,7 +1324,10 @@ function wakeUp() {
     currentSleepAudio = null;
   }
   document.getElementById('sleepOverlay')?.classList.remove('active');
-  loadDayData(currentDay).then(() => renderRoom());
+  loadDayData(currentDay).then(() => {
+    preloadDayAssets();
+    renderRoom();
+  });
 }
 
 function showModal(html, wide) {
@@ -1270,7 +1343,6 @@ function closeModal() {
   const bg = document.getElementById('modalBg');
   const body = document.getElementById('modalBody');
 
-  // 2. Gün Otopsi Raporu Kapatılınca Kısıtlamaları Kaldır
   if (currentDay === 2 && day2PolisGoruldu && !gameState.getFlag('otopsi_incelendi')) {
     gameState.setFlag('otopsi_incelendi', true);
     setDay2State('DAY2_FREE');
