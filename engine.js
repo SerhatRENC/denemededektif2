@@ -389,8 +389,27 @@ function renderCharacter() {
     return;
   }
   let ch = CASE.characters && CASE.characters[currentRoom];
-  if (!ch) return;
 
+  // 3. Gün Cevdet mezarlıkta olmasın, evinde görünsün
+  if (currentDay === 3) {
+    if (currentRoom === 'mezarlik') return;
+    if (currentRoom === 'cevdet_ev') {
+      ch = {
+        name: "Cevdet",
+        image: "assets/karakterler/cevdet.webp"
+      };
+    }
+  }
+
+  // Değirmen / Değirmenci Mustafa kontrolü
+  if ((currentRoom === 'degirmen' || currentRoom === 'degirmenci') && !ch) {
+    ch = {
+      name: "Mustafa",
+      image: "assets/karakterler/mustafa.webp"
+    };
+  }
+
+  if (!ch) return;
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   if (!stage) return;
 
@@ -451,10 +470,11 @@ function renderSceneCharacter(ch, stage) {
 
 function getDialogForRoom(roomKey, defaultDialog) {
   if (CURRENT_DAY_DATA?.dialogs?.[roomKey]) return CURRENT_DAY_DATA.dialogs[roomKey];
+  if (roomKey === 'degirmenci' && CURRENT_DAY_DATA?.dialogs?.['degirmen']) return CURRENT_DAY_DATA.dialogs['degirmen'];
+  if (roomKey === 'degirmen' && CURRENT_DAY_DATA?.dialogs?.['degirmenci']) return CURRENT_DAY_DATA.dialogs['degirmenci'];
   if (CASE?.day2_dialogs?.[roomKey]) return CASE.day2_dialogs[roomKey];
   return defaultDialog;
 }
-
 function toggleCharacterLine(ch) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
 
@@ -464,7 +484,7 @@ if (currentDay === 3) {
       const polisDialog = [
         { "speaker": "Polis Memuru", "text": "Efendim istediğiniz evrağı getirdim, bir ihtiyacınız varsa söylemeniz yeterli." }
       ];
-      startOzelDialog(polisDialog, ch.image || 'assets/karakterler/polis.webp', () => {
+      startOzelDialog(polisDialog, ch ? ch.image : 'assets/karakterler/polis.webp', () => {
         day3PolisGoruldu = true;
         localStorage.setItem('sd_day3_polis_goruldu', 'true');
         renderRoom();
@@ -476,7 +496,7 @@ if (currentDay === 3) {
     if (currentRoom === 'cevdet_ev') {
       document.getElementById('sceneCharacter')?.remove();
       const cevdetDialog = CURRENT_DAY_DATA?.dialogs?.cevdet_ev;
-      startOzelDialog(cevdetDialog, ch.image, () => {
+      startOzelDialog(cevdetDialog, ch ? ch.image : 'assets/karakterler/cevdet.webp', () => {
         renderRoom();
         if (!inventory.includes('cevdet_not')) {
           openCevdetNotModal();
@@ -485,7 +505,6 @@ if (currentDay === 3) {
       return;
     }
   }
-
   if (currentDay === 2) {
     if (currentRoom === 'ofis' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
