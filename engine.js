@@ -1107,7 +1107,7 @@ function wakeUp() {
   }
 
   if (typeof calSes === 'function') {
-    calSes('uyanma');
+    calSes('sabah');
   } else {
     try {
       const wakeAudio = new Audio('assets/ses/uyanma.mp3');
