@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — GÜN BAZLI KAPI VE OPTİMİZE OYUN MOTORU
+   SISLIDERE DAVASI — UYANMA SESİ DÜZELTİLMİŞ OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -44,7 +44,7 @@ const gameState = {
     localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'), JSON.stringify(this.flags));
   },
   loadFlags() {
-    const saved = localStorage.getItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
+    const saved = localStorage.setItem('sd_flags_' + (CASE ? CASE.caseLabel : 'default'));
     this.flags = saved ? JSON.parse(saved) : {};
   }
 };
@@ -603,7 +603,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* ---------- HOTSPOT ISLEMLERI & 1. / 2. GÜN DÜZELTMELERİ ---------- */
+/* ---------- HOTSPOT ISLEMLERI ---------- */
 function handleHotspot(h) {
   if (dialogueActive) return;
 
@@ -624,7 +624,6 @@ function handleHotspot(h) {
     return;
   }
 
-  // DÜZELTME: GAZETECİ ODASI KAPISINA TIKLANDIĞINDA
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac') {
     const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS' || gameState.getFlag('otopsi_incelendi');
 
@@ -639,14 +638,12 @@ function handleHotspot(h) {
     } else {
       if (typeof calSes === 'function') calSes('kilit');
       
-      // 1. Gün Rıza kapıda belirmeli ve Muhtarın emrini söylemeli
       if (currentDay === 1) {
         const dialog1 = h.dialog || [
           { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
         ];
         startOzelDialog(dialog1, h.characterImage || 'assets/karakterler/riza.webp');
       } else {
-        // 2. Gün Rıza görünmez, Dedektif kendi kendine konuşur
         showCustomSubtitle("Dedektif: Önce Hancı Rıza'dan anahtarı alsam iyi olur...", true);
       }
       return;
@@ -1048,7 +1045,58 @@ function closeMap() {
   if (mapOv) mapOv.classList.remove('active');
 }
 
-/* ---------- ŞİFRE MİNİGAMESİ ---------- */
+/* ---------- UYUMA VE UYANMA SİSTEMİ ---------- */
+function confirmSleep() {
+  showModal(`
+    <h3>Uyumadan Önce</h3>
+    <p>Uyumak istediğine emin misin? Bir sonraki güne geçeceksin.</p>
+    <button onclick="closeModal(); sleep();">Evet, Uyu</button>
+    <button class="ghost" onclick="closeModal()">Vazgeç</button>
+  `);
+}
+
+function sleep() {
+  currentDay++;
+  localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
+  updateDayBadge();
+
+  try {
+    currentSleepAudio = new Audio('assets/ses/uyuma.mp3');
+    currentSleepAudio.play().catch(() => {});
+  } catch (e) {}
+
+  const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
+  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
+  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
+  document.getElementById('sleepOverlay').classList.add('active');
+}
+
+function wakeUp() {
+  // 1. Uyuma sesini durdur
+  if (currentSleepAudio) {
+    currentSleepAudio.pause();
+    currentSleepAudio = null;
+  }
+
+  // 2. Uyanma sesini çal
+  if (typeof calSes === 'function') {
+    calSes('uyanma');
+  } else {
+    try {
+      const wakeAudio = new Audio('assets/ses/uyanma.mp3');
+      wakeAudio.play().catch(() => {});
+    } catch (e) {}
+  }
+
+  // 3. Ekranı aç ve yeni günü yükle
+  document.getElementById('sleepOverlay')?.classList.remove('active');
+  loadDayData(currentDay).then(() => {
+    renderRoom();
+    setTimeout(() => preloadDayAssets(), 300);
+  });
+}
+
+/* ---------- DİĞER İNCELEME MODALLARI & DİĞER İŞLEMLER ---------- */
 function renderSifreMinigame(stage) {
   const numCoords = [
     { x: "32.8%", y: "57.5%" }, { x: "39.0%", y: "57.2%" },
@@ -1134,7 +1182,6 @@ function renderSifreMinigame(stage) {
   stage.appendChild(ilerleBtn);
 }
 
-/* ---------- DİĞER İNCELEME MODALLARI ---------- */
 function openOtopsiMerkezKaydiModal(index = 0) {
   const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
   const src = pages[index];
@@ -1309,43 +1356,6 @@ function showCustomSubtitle(text, clickToDismiss = false) {
     if (timer) clearTimeout(timer);
     kaldir();
   };
-}
-
-function confirmSleep() {
-  showModal(`
-    <h3>Uyumadan Önce</h3>
-    <p>Uyumak istediğine emin misin? Bir sonraki güne geçeceksin.</p>
-    <button onclick="closeModal(); sleep();">Evet, Uyu</button>
-    <button class="ghost" onclick="closeModal()">Vazgeç</button>
-  `);
-}
-
-function sleep() {
-  currentDay++;
-  localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
-  updateDayBadge();
-
-  try {
-    currentSleepAudio = new Audio('assets/ses/uyuma.mp3');
-    currentSleepAudio.play().catch(() => {});
-  } catch (e) {}
-
-  const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
-  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
-  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
-  document.getElementById('sleepOverlay').classList.add('active');
-}
-
-function wakeUp() {
-  if (currentSleepAudio) {
-    currentSleepAudio.pause();
-    currentSleepAudio = null;
-  }
-  document.getElementById('sleepOverlay')?.classList.remove('active');
-  loadDayData(currentDay).then(() => {
-    renderRoom();
-    setTimeout(() => preloadDayAssets(), 300);
-  });
 }
 
 function showModal(html, wide) {
