@@ -1,5 +1,5 @@
 /* ============================================================
-   SISLIDERE DAVASI — PRELOAD & İLK YÜKLEME OPTİMİZE ENGINE
+   SISLIDERE DAVASI — GÜN BAZLI KAPI VE OPTİMİZE OYUN MOTORU
    ============================================================ */
 
 if (!document.getElementById('dialogHideStyle')) {
@@ -157,10 +157,8 @@ async function initGame() {
     updateDayBadge();
     renderInventory();
 
-    // Önce aktif odayı çiziyoruz ki arka plan ağı meşgul etmeden hemen yüklensin
     renderRoom();
 
-    // Kalan tüm medya varlıklarını ağ çakışmasını önlemek için 300ms sonra yüklüyoruz
     setTimeout(() => {
       preloadDayAssets();
     }, 300);
@@ -208,7 +206,6 @@ function renderRoom() {
     const kapali = isClosedOverride || (room.closedOnDays && room.closedOnDays.includes(currentDay));
     const bgImage = isClosedOverride ? CURRENT_DAY_DATA.roomOverrides[currentRoom].closedImage : (kapali ? room.closedImage : room.background);
 
-    // Arka plan resmini garantili tırnak dizilimi ve stil parametreleriyle veriyoruz
     stage.style.backgroundImage = `url("${bgImage}")`;
     stage.style.backgroundSize = 'cover';
     stage.style.backgroundPosition = 'center';
@@ -606,7 +603,7 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   setTimeout(() => stage.addEventListener('click', sonrakiSatir), 100);
 }
 
-/* ---------- HOTSPOT ISLEMLERI & 2. GÜN KISITLAMALARI ---------- */
+/* ---------- HOTSPOT ISLEMLERI & 1. / 2. GÜN DÜZELTMELERİ ---------- */
 function handleHotspot(h) {
   if (dialogueActive) return;
 
@@ -627,6 +624,7 @@ function handleHotspot(h) {
     return;
   }
 
+  // DÜZELTME: GAZETECİ ODASI KAPISINA TIKLANDIĞINDA
   if (h.type === 'kapida_konus' || h.type === 'gazeteci_kapi_ac') {
     const hasKey = inventory.includes('anahtar') || day2State === 'HAN_UNLOCKED' || day2State === 'CANTA_UNLOCKED' || day2State === 'GO_OFIS' || gameState.getFlag('otopsi_incelendi');
 
@@ -640,7 +638,17 @@ function handleHotspot(h) {
       return;
     } else {
       if (typeof calSes === 'function') calSes('kilit');
-      showCustomSubtitle("Dedektif: Önce Hancı Rıza'dan anahtarı alsam iyi olur...", true);
+      
+      // 1. Gün Rıza kapıda belirmeli ve Muhtarın emrini söylemeli
+      if (currentDay === 1) {
+        const dialog1 = h.dialog || [
+          { "speaker": "Rıza", "text": "Dedektif bey bu kapıyı size bugün açamam. Muhtar Halit beni tembihledi kağıtları merkezden getirene kadar açılmasın dedi. Yarın beraber gelin o zaman bakarsınız." }
+        ];
+        startOzelDialog(dialog1, h.characterImage || 'assets/karakterler/riza.webp');
+      } else {
+        // 2. Gün Rıza görünmez, Dedektif kendi kendine konuşur
+        showCustomSubtitle("Dedektif: Önce Hancı Rıza'dan anahtarı alsam iyi olur...", true);
+      }
       return;
     }
   }
