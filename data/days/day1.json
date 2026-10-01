@@ -11,7 +11,7 @@
       { "speaker": "Mustafa", "text": "Değil gazeteciyi, köylüyü bile tanımam ben. Sadece 5 yıldır bu köydeyim.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Öyle mi, nereden geldiniz?", "emotion": "normal" },
       { "speaker": "Mustafa", "text": "Bakırcılar köyünden geldim. Bizim oralar sulaktır, herkes değirmenci olunca ben de buraya geldim iş için.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "25 gündür adam buradaymış, hiç mi konuşmadınız?", "emotion": "sasirmis" },
+      { "speaker": "Dedektif", "text": "25 gündür adam buradaymış, hiç mi konuşmadınız?", "emotion": "normal" },
       { "speaker": "Mustafa", "text": "Konuştum elbet, birkaç soru sormuştu bana. Ama araştırdığı konunun 18 yıllık mazisi var, ben o zamanlar burada bile değildim.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Tamam, yine de söylemek istediğin bir şey olursa ben buralardayım.", "emotion": "normal" }
     ],
@@ -24,20 +24,20 @@
       { "speaker": "Kamuran", "text": "Buyrun, hoş geldiniz.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim.", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü. Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydu Ali İhsan beyle?", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydum Ali İhsan beyle?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana. Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Üzerlik nedir?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Normalde solunum için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Cadı mı? Zaten İhsan bey bunu araştırılmaya gelmişti, değil mi?", "emotion": "sasirmis" },
+      { "speaker": "Dedektif", "text": "Cadı mı? Zaten İhsan bey bunu araştırılmaya gelmişti, değil mi?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Evet evet. Bu köyde öyle bir inanış var. Benden önceki ebe zamanında bebek ölümleri çok fazlaymış, bu cahil insanlar da kadını kovmuş mu, ne yapmışsa artık — kadın yok olmuş diyorlar.", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit beylerin laneti kaldırmış da bebeği olmuş. İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten.", "emotion": "sinirli" },
-      { "speaker": "Dedektif", "text": "Yani Halit'in bebeği doğunca mı kalkmış lanet?", "emotion": "sasirmis" },
+      { "speaker": "Dedektif", "text": "Yani Halit'in bebeği doğunca mı kalkmış lanet?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Öyle der bu insanlar. Şimdi izninizle işime devam etmem gerek.", "emotion": "normal" }
     ],
     "demirci": [
       { "speaker": "Dedektif", "text": "Kolay gelsin.", "emotion": "normal" },
       { "speaker": "Cabbar", "text": "Kolaysa başına gelsin.", "emotion": "sinirli" },
-      { "speaker": "Dedektif", "text": "Yavaş ol demirci bey, gazeteciyle ilgili bir iki şey soracaktım.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Yavaş ol demirci bey, gazeteciyle ilgili bir iki şey soracaktım.", "emotion": "sinirli" },
       { "speaker": "Cabbar", "text": "İşim başımdan aşkın, başka zaman gel.", "emotion": "sinirli" }
     ],
     "halit_ev": [
@@ -63,7 +63,7 @@
     "mezarlik": [
       { "speaker": "Dedektif", "text": "Sen Cevdet misin? Mezarlıkta ne yapıyorsun?", "emotion": "normal" },
       { "speaker": "Cevdet", "text": "Melekler...", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Melekler mi?", "emotion": "sasirmis" },
+      { "speaker": "Dedektif", "text": "Melekler mi?", "emotion": "normal" },
       { "speaker": "Cevdet", "text": "Evet evet evet evet, melekler... Şefika'yı tanıyorlar ama söylemiyorlar bana. Onları bekliyorum, ağacı süslüyorum. Şefika'm sever kurdeleleri.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "İyi de onlar kurdele değil ki, ip.", "emotion": "normal" },
       { "speaker": "Cevdet", "text": "(güler)", "emotion": "normal" },

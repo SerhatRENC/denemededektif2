@@ -49,11 +49,11 @@
       { "speaker": "Dedektif", "text": "Şefikayı tanır mıydın?", "emotion": "normal" },
       { "speaker": "Aylin", "text": "Şefika mı? Bin lanet olsun ona. Köyümüzün yüz karası Cadı! Babam olmasa ne halde olurduk. Babam ben doğmadan bir gün önce kovmuş onu köyümüzden. Belki kovmasa ben de yaşamazdım, babam hep öyle söyler lanet benimle kalkmış. Daha da gelmesin.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Sakin ol küçük hanım. Neden cadı derler ona? Bir de Cevdet o gittikten sonra mı öyle oldu?", "emotion": "normal" },
-      { "speaker": "Aylin", "text": "Ben o adamla hiç konuşmadım, zarar verirmiş bana yani babam öyle der. Herhalde karısından sonra öyle olmuş o manyak. Karısı cadı sonuçta adama da yazık.", "emotion": "uzgun" }
+      { "speaker": "Aylin", "text": "Ben o adamla hiç konuşmadım, zarar verirmiş bana yani babam öyle der. Herhalde karısından sonra öyle olmuş o manyak. Karısı cadı sonuçta adama da yazık.", "emotion": "normal" }
     ],
     "sifahane": [
       { "speaker": "Dedektif", "text": "Merhaba doktor hanım. Raporu aldım çuval ipiyle öldürülmüş ne acı, sizce kim yapmış olabilir?", "emotion": "ciddi" },
-      { "speaker": "Doktor Kamuran", "text": "Burası köy yeri,Herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "dusuneli" },
+      { "speaker": "Doktor Kamuran", "text": "Burası köy yeri,Herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Dün mezarlıkta Cevdeti ip bağlarken gördüm sizce şüpheli olabilir mi?", "emotion": "supheli" },
       { "speaker": "Doktor Kamuran", "text": "Zararsızdır o bakmayın. İp bağlar da haber bekler zavallı. Köylü kaçar ondan ama ben onunla iletişim kurabiliyorum. Zaten koca köyde bir ben, bir de Mustafa iyi davranıyor. Zamanında bana anlatmıştı not mu, mektup mu ne yollamışlar, kendisi mi yazmış bilmem ama kimseye zarar veremez o.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Not mu?", "emotion": "supheli" },
@@ -61,15 +61,15 @@
     ],
     "mezarlik": [
       { "speaker": "Dedektif", "text": "Merhaba Cevdet dün Şefika diye birinden söz ediyordun. Kimmiş bu Şefika?", "emotion": "normal" },
-      { "speaker": "Cevdet", "text": "Aldılar aldılar!", "emotion": "korkmus" },
+      { "speaker": "Cevdet", "text": "Aldılar aldılar!", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Tamam Cevdet aldılar ama kimdi o karın mı?", "emotion": "normal" },
-      { "speaker": "Cevdet", "text": "Çocuklarımın anası. Çocuklarımın anası. Çocuklarımın anası...", "emotion": "uzgun" },
+      { "speaker": "Cevdet", "text": "Çocuklarımın anası. Çocuklarımın anası. Çocuklarımın anası...", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Çocukların mı? Onlar neredeler Cevdet?", "emotion": "supheli" },
       { "speaker": "Cevdet", "text": "(Bağırarak uzaklaşır!)", "emotion": "sinirli" }
     ],
     "demirci": [
       { "speaker": "Dedektif", "text": "Dün savuşturdun beni Cabbar efendi. Bugün artık konuşalım ne dersin?", "emotion": "normal" },
-      { "speaker": "Demirci Cabbar", "text": "Sor ne soracaksan.", "emotion": "sinirli" },
+      { "speaker": "Demirci Cabbar", "text": "Sor ne soracaksan.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Öncelikle. Mustafayla ne derdiniz vardı?", "emotion": "supheli" },
       { "speaker": "Demirci Cabbar", "text": "Ne derdim olur o sünepeyle. Handa bir iki kağıt oynuyordum içkiyi de biraz kaçırmışım Rıza da rahatsız olmuşmuş da beni kovmaya çalıştı. Bir iki itişirken Mustafa daldı araya.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Anladım. Asıl soruma geleceğim. Gazeteciyle hiç konuştun mu? Var mıydı anlaşamadığı birileri?", "emotion": "normal" },
