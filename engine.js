@@ -30,6 +30,7 @@ let characterAudio = null;
 let introAcik = !!document.getElementById('introOverlay');
 let otopsiModalAcik = false;
 let renderToken = 0;
+let subtitleTimer = null;
 
 const preloadedImages = new Map();
 
@@ -195,6 +196,13 @@ function setUIElementsVisible(visible) {
   if (cornerEl) cornerEl.style.display = visible ? '' : 'none';
 }
 
+function odaKapaliMi(roomId) {
+  const room = CASE && CASE.rooms && CASE.rooms[roomId];
+  if (!room) return false;
+  if (currentDay === 2 && (roomId === 'muhtar' || roomId === 'halit_ev') && (gameState.getFlag('otopsi_incelendi') || day2State === 'DAY2_FREE')) return false;
+  return !!(CURRENT_DAY_DATA?.roomOverrides?.[roomId]?.closed || (room.closedOnDays && room.closedOnDays.includes(currentDay)));
+}
+
 /* ---------- ODA ÇİZİMİ ---------- */
 async function renderRoom() {
   if (!CASE || !CASE.rooms || !CASE.rooms[currentRoom]) return;
@@ -231,7 +239,7 @@ async function renderRoom() {
     geri.className = 'hotspot-pulse-wrap';
     geri.style.left = '9%'; geri.style.top = '57.5%'; geri.style.width = '7.5%'; geri.style.position = 'absolute';
     geri.innerHTML = `<img src="assets/arayuz/geri.webp" alt="Geri"><div class="hotspot-pulse-label">Geri</div>`;
-    geri.onclick = () => { currentRoom = 'merkez'; renderRoom(); };
+    geri.onclick = () => { if (typeof calSes === 'function') calSes('geri'); currentRoom = 'merkez'; renderRoom(); };
     stage.appendChild(geri);
 
     const tokmak = document.createElement('div');
@@ -239,7 +247,8 @@ async function renderRoom() {
     tokmak.style.left = '50%'; tokmak.style.top = '45%'; tokmak.style.width = '7%'; tokmak.style.position = 'absolute';
     tokmak.innerHTML = `<img src="assets/arayuz/tokmak.webp" alt="Kapıyı çal"><div class="hotspot-pulse-label">Çal</div>`;
     tokmak.onclick = () => {
-      showModal(`<p style="text-align:center;font-style:italic;color:#c9cabd;">(Kimse yok...)</p><button class="ghost" onclick="closeModal()">Kapat</button>`);
+      if (typeof calSes === 'function') calSes('kimse_yok');
+      showCustomSubtitle("Dedektif: Sanırım evde kimse yok...");
     };
     stage.appendChild(tokmak);
     if (typeof VFX !== 'undefined') VFX.clear();
@@ -376,7 +385,7 @@ async function renderRoom() {
       mevcut: () => currentRoom
     });
     Ogretici.iptal();
-    if (!introAcik) Ogretici.goster(currentRoom);
+    if (!introAcik && !Ogretici.goster(currentRoom) && inventory.some(id => ITEM_DEFS[id])) Ogretici.goster('envanter_ilk');
   }
 }
 
@@ -709,7 +718,15 @@ function handleHotspot(h) {
 
   // İkon Ses Efektlerini Çal
   if (h.icon && typeof calSes === 'function') {
-    if (h.icon.includes('tokmak')) calSes('kapi');
+    if (h.icon.includes('tokmak')) {
+      if (h.type === 'gazeteci_kapi_ac' || h.type === 'kapida_konus') {
+        // kapı açılma sesi yok: kilit / kilit_ac aşağıda çalınır
+      } else if (h.type === 'gazeteci_odasi_gecis' || (h.type === 'navigate' && odaKapaliMi(h.target))) {
+        calSes('kapi_git');   // kapıya doğru yürüme; kapı açılmıyor
+      } else {
+        calSes('kapi');
+      }
+    }
     else if (h.icon.includes('geri')) calSes('geri');
     else if (h.icon.includes('ayak')) calSes('kapi_git');
     else if (h.icon.includes('buyutec')) calSes('incele');
@@ -779,7 +796,7 @@ function handleHotspot(h) {
           return;
         }
       } else if (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') {
-        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici'];
+        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'gazeteci_oda_sifre_giris', 'han', 'han_kapi'];
         if (h.target && !allowedInOfis.includes(h.target)) {
           showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
           return;
@@ -1199,7 +1216,7 @@ function sleep() {
   }
   if (sleepTxtEl) {
     sleepTxtEl.textContent = evt || 'Yeni bir gün başlıyor.';
-    sleepTxtEl.style.fontSize = 'clamp(22px, 3.2cqw, 38px)';
+    sleepTxtEl.style.fontSize = 'clamp(18px, 2.6vw, 32px)';
     sleepTxtEl.style.marginTop = '15px';
   }
   document.getElementById('sleepOverlay')?.classList.add('active');
@@ -1468,6 +1485,7 @@ function openGorselModal(src, title) {
 
 function openEnvanterEsyasi(id) {
   if (dialogueActive) return;
+  if (typeof Ogretici !== 'undefined') { Ogretici.isaretle('envanter_ilk'); Ogretici.kapat(); }
   const def = ITEM_DEFS[id];
   if (!def) return;
   if (typeof calSes === 'function') calSes('incele');
@@ -1488,9 +1506,9 @@ function renderInventory() {
     const def = ITEM_DEFS[id];
     const el = document.createElement('div');
     el.className = 'inv-item';
-    el.style.cssText = "width:clamp(38px, 4.5cqw, 54px); height:clamp(38px, 4.5cqw, 54px); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 3px; cursor:pointer;";
+    el.style.cssText = "width:clamp(57px, 6.8cqw, 81px); height:clamp(57px, 6.8cqw, 81px); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 3px; cursor:pointer;";
     el.title = def.title;
-    el.innerHTML = `<img src="${def.img}" style="height:58%; object-fit:contain;"><span style="font-size:8px; color:#e9dcc0;">${def.label}</span>`;
+    el.innerHTML = `<img src="${def.img}" style="height:56%; object-fit:contain;"><span style="font-size:clamp(9px,1.25cqw,12px); line-height:1.05; text-align:center; color:#e9dcc0;">${def.label}</span>`;
     el.onclick = (ev) => { if (ev) ev.stopPropagation(); openEnvanterEsyasi(id); };
     inv.appendChild(el);
   });
@@ -1515,12 +1533,12 @@ function showCustomSubtitle(text, clickToDismiss = false) {
     setUIElementsVisible(true);
   };
 
-  let timer = null;
-  if (!clickToDismiss) timer = setTimeout(kaldir, 5000);
+  clearTimeout(subtitleTimer);
+  if (!clickToDismiss) subtitleTimer = setTimeout(kaldir, 5000);
 
   sub.onclick = (e) => {
     e.stopPropagation();
-    if (timer) clearTimeout(timer);
+    clearTimeout(subtitleTimer);
     kaldir();
   };
 }

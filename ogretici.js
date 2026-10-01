@@ -162,6 +162,54 @@ const Ogretici = (function () {
    nesnesi oluşturuluyor ki art arda hızlı tıklamalarda sesler birbirini
    kesmesin.
    ============================================================ */
-function calSes(ad) {
-  try { new Audio('assets/ses/' + ad + '.mp3').play().catch(() => {}); } catch (e) { /* yoksay */ }
-}
+/* Düşük gecikmeli ses motoru: kısa arayüz sesleri önceden indirilip çözülür (WebAudio),
+   tıklama anında dosya yüklemesi beklenmez. Bulunamazsa eski yönteme (Audio) düşer. */
+const SesMotoru = (function () {
+  const ONYUKLEME = ['al', 'geri', 'harita', 'incele', 'kapi', 'kapi_git', 'kilit', 'kilit_ac', 'kitap', 'sayfa', 'take', 'kimse_yok'];
+  const tamponlar = {};   // ad -> AudioBuffer | null (yükleniyor) | false (dosya yok)
+  let ctx = null;
+
+  function baslat() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { ctx = new AC(); } catch (e) { ctx = null; }
+    return ctx;
+  }
+  function yukle(ad) {
+    const c = baslat();
+    if (!c || tamponlar[ad] !== undefined) return;
+    tamponlar[ad] = null;
+    fetch('assets/ses/' + ad + '.mp3')
+      .then(r => r.ok ? r.arrayBuffer() : Promise.reject())
+      .then(b => new Promise((res, rej) => c.decodeAudioData(b, res, rej)))
+      .then(buf => { tamponlar[ad] = buf; })
+      .catch(() => { tamponlar[ad] = false; });
+  }
+  function hepsiniYukle() { ONYUKLEME.forEach(yukle); }
+  function ac() { if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); }
+  ['pointerdown', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, ac, { passive: true }));
+
+  function cal(ad) {
+    try {
+      const buf = tamponlar[ad];
+      if (buf === false) return;                       // dosya yok, sessiz geç
+      if (ctx && buf) {
+        ac();
+        const kaynak = ctx.createBufferSource();
+        kaynak.buffer = buf;
+        kaynak.connect(ctx.destination);
+        kaynak.start(0);
+        return;
+      }
+      if (buf === undefined) yukle(ad);                // bir dahaki sefere hazır olsun
+      new Audio('assets/ses/' + ad + '.mp3').play().catch(() => {});
+    } catch (e) { /* yoksay */ }
+  }
+  return { cal, hepsiniYukle };
+})();
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', SesMotoru.hepsiniYukle);
+else SesMotoru.hepsiniYukle();
+
+function calSes(ad) { SesMotoru.cal(ad); }

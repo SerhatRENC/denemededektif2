@@ -316,7 +316,7 @@ body:has(.dialog-active) .corner-icons {
   z-index:60;text-align:center;padding:30px;
 }
 .sleep-overlay.active{display:flex;}
-.sleep-overlay .content{max-width:420px;}
+.sleep-overlay .content{max-width:min(90vw,1100px);}
 .sleep-overlay .day-num{font-size:13px;color:var(--amber-bright);letter-spacing:.15em;
   text-transform:uppercase;margin-bottom:14px;}
 .sleep-overlay p{font-size:14px;line-height:1.7;color:#c9cabd;margin-bottom:24px;}

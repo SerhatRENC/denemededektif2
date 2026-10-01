@@ -368,6 +368,19 @@
     .donme-uyarisi{display:flex;}
     #stage-frame{display:none;}
   }
+  /* DAVA BAŞLIYOR geçişi */
+  #dava-layer{
+    position:absolute; inset:0; z-index:70; background:#0a0806;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .8s ease;
+  }
+  #dava-layer.show{ opacity:1; pointer-events:auto; }
+  #dava-text{
+    font-family:'Georgia',serif; font-weight:bold; letter-spacing:.18em; color:#d1a76c;
+    text-shadow:0 0 20px rgba(209,167,108,.4); font-size:clamp(28px,4cqw,52px);
+    opacity:0; transform:scale(.95); transition:opacity 1s ease, transform 1s ease;
+  }
+  #dava-layer.show #dava-text{ opacity:1; transform:scale(1); }
 </style>
 <link rel="stylesheet" href="ogretici.css?v=9">
 <link rel="stylesheet" href="vfx.css?v=11">
@@ -387,8 +400,8 @@
 <div id="pwa-guide-modal">
   <div class="pwa-guide-box">
     <h3>Uygulamayı Yükle</h3>
-    <p>Oyunu internetsiz oynamak için Safari menüsünden <b>Paylaş</b> simgesine dokunun ve <b>"Ana Ekrana Ekle"</b> seçeneğini seçin.</p>
-    <div class="ok-down">⬇️</div>
+    <p id="pwa-guide-text">Oyunu uygulama gibi tam ekran oynamak için Safari menüsünden <b>Paylaş</b> simgesine dokunun ve <b>"Ana Ekrana Ekle"</b> seçeneğini seçin.</p>
+    <div class="ok-down" id="pwa-guide-ok">⬇️</div>
     <br>
     <button class="pwa-close-btn" onclick="document.getElementById('pwa-guide-modal').classList.remove('aktif')">Anladım</button>
   </div>
@@ -581,6 +594,8 @@
     </div>
   </div>
 
+  <div id="dava-layer"><div id="dava-text">DAVA BAŞLIYOR...</div></div>
+
   <div id="fade-layer">
     <div id="fade-text">(at arabası sesleri...)</div>
   </div>
@@ -590,7 +605,7 @@
 
 </div>
 
-<script src="ogretici.js?v=3"></script>
+<script src="ogretici.js?v=4"></script>
 <script>
 /* ---------- PRELOADER YÜKLEME ÇUBUĞU SCRIPT'İ ---------- */
 const DOSYA_LISTESI = [
@@ -654,10 +669,21 @@ installBtn.addEventListener('click', () => {
       }
       deferredPrompt = null;
     });
-  } else if (isIOS) {
-    document.getElementById('pwa-guide-modal').classList.add('aktif');
   } else {
-    alert('Uygulamayı eklemek için tarayıcı menünüzden "Ana Ekrana Ekle" seçeneğini kullanabilirsiniz.');
+    const ua = navigator.userAgent;
+    const uygulamaIci = /Instagram|FBAN|FBAV|FB_IAB|Snapchat|TikTok|musical_ly|Line\/|; wv\)/i.test(ua);
+    const metin = document.getElementById('pwa-guide-text');
+    const ok = document.getElementById('pwa-guide-ok');
+    if (uygulamaIci) {
+      metin.innerHTML = 'Şu an bir uygulamanın (Instagram, WhatsApp vb.) içindesin. Önce sağ üstteki menüden <b>"Tarayıcıda aç"</b> de, sonra <b>Chrome</b> ya da <b>Safari</b> üzerinden tekrar dene.';
+      ok.style.display = 'none';
+    } else if (isIOS) {
+      ok.style.display = '';
+    } else {
+      metin.innerHTML = 'Tarayıcının sağ üstündeki <b>⋮</b> menüsüne dokun ve <b>"Ana ekrana ekle"</b> (ya da <b>"Uygulamayı yükle"</b>) seçeneğini seç.';
+      ok.style.display = 'none';
+    }
+    document.getElementById('pwa-guide-modal').classList.add('aktif');
   }
 });
 
@@ -818,14 +844,25 @@ document.getElementById('btn-hakkinda-geri').addEventListener('click', () => {
   showScreen('scr-ana');
 });
 let mesajZamanlayici = null;
+let davaBasladi = false;
 document.getElementById('btn-oyna').addEventListener('click', () => {
-  showScreen('scr-ofis');
-  clearTimeout(mesajZamanlayici);
-  mesajZamanlayici = setTimeout(() => {
-    const aud = document.getElementById('aud-mesaj');
-    aud.currentTime = 0;
-    aud.play().catch(() => {});
-  }, 2000);
+  if (davaBasladi) return;
+  davaBasladi = true;
+  const katman = document.getElementById('dava-layer');
+  const aud = document.getElementById('aud-mesaj');
+  // Mobil tarayıcılar için: ses dosyasını bu dokunuşta "uyandır", sonra başa sar
+  aud.play().then(() => { aud.pause(); aud.currentTime = 0; }).catch(() => {});
+  katman.classList.add('show');
+  setTimeout(() => {
+    showScreen('scr-ofis');
+    clearTimeout(mesajZamanlayici);
+    mesajZamanlayici = setTimeout(() => {
+      aud.currentTime = 0;
+      aud.play().catch(() => {});
+    }, 2000);
+    setTimeout(() => katman.classList.remove('show'), 700);
+    setTimeout(() => { davaBasladi = false; }, 2000);
+  }, 2400);
 });
 
 document.getElementById('btn-telgraf').addEventListener('click', () => {
