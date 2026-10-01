@@ -236,12 +236,14 @@ async function renderRoom() {
         if (currentDay < 2 || !day2PolisGoruldu) return;
       }
 
-      if (currentRoom === 'ofis' && currentDay === 2) {
-        if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
+      if (currentRoom === 'ofis') {
+        if (currentDay === 2 && (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
+          if (h.target === 'merkez') return;
+        }
+        if (currentDay === 3 && !day3PolisGoruldu) {
           if (h.target === 'merkez') return;
         }
       }
-
       if (h.requires && !inventory.includes(h.requires)) return;
       if (h.activeDays && !h.activeDays.includes(currentDay)) return;
       if (h.hideIfCollected && inventory.includes(h.hideIfCollected)) return;
@@ -751,13 +753,13 @@ function handleHotspot(h) {
           return;
         }
       } else if (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') {
-        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'han', 'han_kapi', 'muhtar', 'halit_ev'];
+        const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici'];
         if (h.target && !allowedInOfis.includes(h.target)) {
-          showCustomSubtitle("Ofise gidip otopsi raporunu incelesem iyi olacak. Sonra köy halkıyla detaylıca konuşurum.", true);
+          showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
           return;
         }
       }
-    }
+          }
 
     currentRoom = h.target;
     renderRoom();
@@ -801,22 +803,26 @@ function showFramelessModal(innerHtml) {
 let statementAudio = null, statementPlaying = false;
 let currentStatementIndex = 0;
 
-function openStatement(index) {
+function openStatement(index, isPageSwitch = false) {
   currentStatementIndex = index;
   const s = CASE.statements[index];
   const total = CASE.statements.length;
 
+  if (typeof calSes === 'function') {
+    if (isPageSwitch) calSes('sayfa');
+    else calSes('harita');
+  }
   const audioHtml = s.audio
     ? `<button class="reader-play-simple" id="readerPlayBtn" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:10002; padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="toggleStatementAudio('${s.audio}')">▶ Sorguyu Oynat</button>`
     : '';
 
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index > 0 ? index - 1 : total - 1})">‹</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index > 0 ? index - 1 : total - 1}, true)">‹</button>
     <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
       <img id="statementZoomImg" src="${s.cardImage}" style="max-width:90vw; max-height:88vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index < total - 1 ? index + 1 : 0})">›</button>
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openStatement(${index < total - 1 ? index + 1 : 0}, true)">›</button>
     ${audioHtml}
   `);
 }
@@ -864,9 +870,11 @@ function saveNotebook() {
 }
 
 function openNotebook() {
+  const nbOv = document.getElementById('notebookOverlay');
+  if (nbOv && nbOv.classList.contains('active')) return;
+
   if (typeof calSes === 'function') calSes('kitap');
-  if (!notebookState) loadNotebook();
-  const nbImg = document.getElementById('notebookImage');
+  if (!notebookState) loadNotebook();  const nbImg = document.getElementById('notebookImage');
   const src = (CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
 
   const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
@@ -1071,13 +1079,7 @@ if (cFullEl) nbKalemKur(cFullEl, 'pageDrawing');
 function openMap() {
   if (!CASE.map) return;
 
-  if (currentDay === 2 && (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
-    showCustomSubtitle("Dedektif: Önce masadaki otopsi raporunu incelemeliyim.", true);
-    return;
-  }
-
-  const mapImg = document.getElementById('mapImage');
-  if (mapImg) mapImg.src = CASE.map.image;
+  const mapImg = document.getElementById('mapImage');  if (mapImg) mapImg.src = CASE.map.image;
 
   const wrap = document.getElementById('mapHotspots');
   if (wrap) {
@@ -1091,21 +1093,20 @@ function openMap() {
         if (currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
           if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
+            showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
             return;
           }
           if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
+            showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
             return;
           }
-          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !['ofis', 'merkez', 'han', 'han_kapi'].includes(h.target)) {
+          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !['ofis', 'merkez', 'masa'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Ofise gidip otopsi raporunu incelesem iyi olacak. Sonra köy halkıyla detaylıca konuşurum.", true);
+            showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
             return;
           }
         }
-
         if (h.target && CASE.rooms[h.target]) {
           currentRoom = h.target;
           closeMap();
@@ -1146,10 +1147,19 @@ function sleep() {
   } catch (e) {}
 
   const evt = CASE.sleepEvents && CASE.sleepEvents[currentDay];
-  document.getElementById('sleepDayNum').textContent = `GÜN ${currentDay}`;
-  document.getElementById('sleepText').textContent = evt || 'Yeni bir gün başlıyor.';
-  document.getElementById('sleepOverlay').classList.add('active');
-}
+  const sleepNumEl = document.getElementById('sleepDayNum');
+  const sleepTxtEl = document.getElementById('sleepText');
+  if (sleepNumEl) {
+    sleepNumEl.textContent = `GÜN ${currentDay}`;
+    sleepNumEl.style.fontSize = 'clamp(32px, 5cqw, 64px)';
+  }
+  if (sleepTxtEl) {
+    sleepTxtEl.textContent = evt || 'Yeni bir gün başlıyor.';
+    sleepTxtEl.style.fontSize = 'clamp(22px, 3.2cqw, 38px)';
+    sleepTxtEl.style.marginTop = '15px';
+  }
+  document.getElementById('sleepOverlay')?.classList.add('active');
+  }
 
 function wakeUp() {
   if (currentSleepAudio) {
@@ -1267,22 +1277,26 @@ function renderSifreMinigame(stage) {
   stage.appendChild(ilerleBtn);
 }
 
-function openOtopsiMerkezKaydiModal(index = 0) {
+function openOtopsiMerkezKaydiModal(index = 0, isPageSwitch = false) {
   const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
   const src = pages[index];
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
 
+  if (typeof calSes === 'function') {
+    if (isPageSwitch) calSes('sayfa');
+    else calSes('harita');
+  }
+
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index - 1})" ${prevDisabled}>‹</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index - 1}, true)" ${prevDisabled}>‹</button>
     <div class="zoom-wrap" style="width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;">
       <img id="photoZoomImg" src="${src}" style="max-width:90vw; max-height:88vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
     </div>
-    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index + 1})" ${nextDisabled}>›</button>
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index + 1}, true)" ${nextDisabled}>›</button>
   `);
 }
-
 function openCantaEvlilikCuzdanModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
