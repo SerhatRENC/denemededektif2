@@ -565,9 +565,9 @@ if (currentDay === 3) {
     if (currentRoom === 'ofis' && !day3PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
       const polisDialog = [
-        { "speaker": "Polis Memuru", "text": "Efendim istediğiniz evrağı getirdim, bir ihtiyacınız varsa söylemeniz yeterli." }
+        { "speaker": "Polis Memuru", "text": "Efendim istediğiniz evrağı getirdim, bir ihtiyacınız varsa söylemeniz yeterli.", "emotion": "poloroid" }
       ];
-      startOzelDialog(polisDialog, ch ? ch.image : 'assets/karakterler/polis.webp', () => {
+            startOzelDialog(polisDialog, ch ? ch.image : 'assets/karakterler/polis.webp', () => {
         day3PolisGoruldu = true;
         lsSet('day3_polis_goruldu', 'true');
         renderRoom();
@@ -593,11 +593,11 @@ if (currentDay === 3) {
       if (currentRoom === 'ofis' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
       const polisDialog = getDialogForRoom('ofis', [
-        { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum." },
-        { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir." },
-        { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim." }
+        { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum.", "emotion": "dosya" },
+        { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir.", "emotion": "normal" },
+        { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim.", "emotion": "poloroid" }
       ]);
-      startOzelDialog(polisDialog, ch.image, async () => {
+            startOzelDialog(polisDialog, ch.image, async () => {
         day2PolisGoruldu = true;
         lsSet('day2_polis_goruldu', 'true');
         inventory = inventory.filter(item => item !== 'polaroid');
