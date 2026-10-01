@@ -3,6 +3,7 @@
   "title": "Sislidere Davası",
   "startRoom": "ofis",
   "startDay": 1,
+  "emotionImages": false,
 
   "sleepEvents": {
     "2": "İkinci gün başladı. Önce Muhtarla görüşüp otopsi raporunu almalı, ardından gazetecinin odasını incelemelisin.",
@@ -372,14 +373,14 @@
       "noteTop": "32%", "noteLeft": "52%", "noteWidth": "46%", "noteHeight": "60%"
     },
     "suspects": [
-      { "name": "Ansel", "image": "assets/karakalem/ansel_karakalem2.webp" },
+      { "name": "Anselm", "image": "assets/karakalem/ansel_karakalem2.webp" },
       { "name": "Aylin", "image": "assets/karakalem/aylin_karakalem.webp" },
       { "name": "Cabbar", "image": "assets/karakalem/cabbar_karakalem.webp" },
       { "name": "Cevdet", "image": "assets/karakalem/cevdet_karakalem.webp" },
       { "name": "Halit", "image": "assets/karakalem/halit_karakalem.webp" },
       { "name": "Kamuran", "image": "assets/karakalem/kamuran_karakalem.webp" },
       { "name": "Mustafa", "image": "assets/karakalem/mustafa_karakalem.webp" },
-      { "name": "Nadire", "image": "assets/karakterler/nadire.webp" },
+      { "name": "Nadire", "image": "assets/karakalem/nadire_karakalem.webp" },
       { "name": "Rıza", "image": "assets/karakalem/riza_karakalem.webp" }
     ]
   },
