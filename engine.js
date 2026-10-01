@@ -390,6 +390,56 @@ async function renderRoom() {
 }
 
 /* ---------- KARAKTER YÖNETİMİ ---------- */
+/* ---------- KARAKTER YÖNETİMİ ---------- */
+function updateCharacterSprite(charImg, line, defaultPath) {
+  if (!charImg || !line) return;
+
+  // Satırda doğrudan özel görsel yolu verilmişse
+  if (line.image) {
+    charImg.src = line.image;
+    return;
+  }
+
+  const emotion = line.emotion ? line.emotion.toLowerCase().trim() : 'normal';
+  
+  let base = '';
+  let ext = '.webp';
+
+  if (defaultPath) {
+    const lastDot = defaultPath.lastIndexOf('.');
+    if (lastDot !== -1) {
+      base = defaultPath.substring(0, lastDot);
+      ext = defaultPath.substring(lastDot);
+    } else {
+      base = defaultPath;
+    }
+  } else if (line.speaker) {
+    const speakerKey = line.speaker
+      .toLowerCase()
+      .trim()
+      .replace(/i̇/g, 'i').replace(/ı/g, 'i').replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c');
+    base = `assets/karakterler/${speakerKey}`;
+  }
+
+  if (!base) return;
+
+  const fallbackSrc = defaultPath || `${base}${ext}`;
+  let targetSrc = fallbackSrc;
+
+  if (emotion && emotion !== 'normal' && emotion !== 'netral') {
+    targetSrc = `${base}_${emotion}${ext}`;
+  }
+
+  // Görsel yoksa (404) varsayılan resme düşme güvencesi
+  charImg.onerror = function () {
+    this.onerror = null;
+    this.src = fallbackSrc;
+  };
+
+  charImg.src = targetSrc;
+}
+
 function renderCharacter() {
   dialogueActive = false;
   characterAudio = null;
@@ -642,13 +692,9 @@ function gosterDialogSatiri(dialog) {
   const charEl = document.getElementById('sceneCharacter');
   const ch = CASE.characters && CASE.characters[currentRoom];
   
-  if (CASE.emotionImages && charEl && ch && satir && satir.emotion) {
-    const lastDot = ch.image.lastIndexOf('.');
-    const basePath = ch.image.substring(0, lastDot);
-    const ext = ch.image.substring(lastDot);
-    charEl.src = `${basePath}_${satir.emotion}${ext}`;
+  if (charEl && satir) {
+    updateCharacterSprite(charEl, satir, ch ? ch.image : null);
   }
-
   if (satir) {
     sub.innerHTML = `<div class="scene-subtitle-name">${satir.speaker}</div><div class="scene-subtitle-text">${satir.text}</div>`;
   }
@@ -691,13 +737,11 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
         stage.appendChild(sub);
       }
       sub.innerHTML = `<div class="scene-subtitle-name">${item.speaker}</div><div class="scene-subtitle-text">${item.text}</div>`;
-      if (CASE.emotionImages && item.emotion && charImg && charImgPath) {
-        const d = charImgPath.lastIndexOf('.');
-        charImg.onerror = () => { charImg.onerror = null; charImg.src = charImgPath; };
-        charImg.src = charImgPath.slice(0, d) + '_' + item.emotion + charImgPath.slice(d);
+      if (charImg) {
+        updateCharacterSprite(charImg, item, charImgPath);
       }
       index++;
-    } else {
+          } else {
       if (charImg) charImg.remove();
       document.getElementById('sceneSubtitle')?.remove();
       stage.classList.remove('dialog-active');
