@@ -984,12 +984,26 @@ document.getElementById('char-polis').addEventListener('click', polisKonus);
 function polisKonus() {
   const sub = document.getElementById('sub-polis');
   const char = document.getElementById('char-polis');
+
   if (polisState === 0) {
-    sub.textContent = "Başkomiserim, durum dosyasını masaya bıraktım. Soruşturmaya başlayabilirsiniz.";
+    // 1. ADIM: Polis elde dosyayla konuşur
+    char.src = "assets/karakterler/polis_dosya.webp";
+    sub.textContent = "Polis Memuru: Başkomiserim, durum dosyasını masaya bıraktım. Soruşturmaya başlayabilirsiniz.";
     sub.classList.add('show');
     char.classList.add('talking');
     polisState = 1;
+  } else if (polisState === 1) {
+    // 2. ADIM: Dedektif cevap verir (Polis dosyayı bıraktığı için normal duruşa geçer)
+    char.src = "assets/karakterler/polis.webp";
+    sub.textContent = "Dedektif: Tamamdır, bir şeye ihtiyacım olursa buralarda ol.";
+    polisState = 2;
+  } else if (polisState === 2) {
+    // 3. ADIM: Polis emredersiniz der (Selam/Emret duruşu)
+    char.src = "assets/karakterler/polis_emret.webp";
+    sub.textContent = "Polis Memuru: Emredersiniz!";
+    polisState = 3;
   } else {
+    // 4. ADIM: Sahne kapanır, oyun başlar
     sub.classList.remove('show');
     char.classList.remove('show');
     document.getElementById('scr-dedektif').classList.remove('dialog-active');
