@@ -351,7 +351,7 @@ body:has(.dialog-active) .corner-icons {
 .map-hotspot:hover{background:radial-gradient(circle, rgba(227,169,74,1), rgba(227,169,74,.25));}
 .map-hotspot-label{
   position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
-  background:rgba(10,10,8,.92);color:var(--amber-bright);font-size:11px;padding:4px 99px;
+  background:rgba(10,10,8,.92);color:var(--amber-bright);font-size:11px;padding:4px 9px;
   border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;
   font-family:var(--mono);letter-spacing:.03em;
 }

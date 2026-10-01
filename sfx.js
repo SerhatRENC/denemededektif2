@@ -4,6 +4,7 @@
 const SFX = (function () {
   let currentAmbience = null;
   let currentRoomId = null;
+  let currentFile = null;
 
   // Odalara özel ses haritası
   const audioMap = {
@@ -20,9 +21,19 @@ const SFX = (function () {
     'kilise': 'assets/ses/kilise_eko_ambiance.mp3'
   };
 
+  function fadeOut(audio) {
+    const iv = setInterval(() => {
+      if (audio.volume > 0.05) {
+        audio.volume = Math.max(0, audio.volume - 0.05);
+      } else {
+        audio.pause();
+        clearInterval(iv);
+      }
+    }, 50);
+  }
+
   function playAmbience(roomId) {
     if (!roomId || currentRoomId === roomId) return;
-    currentRoomId = roomId;
 
     let soundFile = null;
     for (let key in audioMap) {
@@ -32,35 +43,58 @@ const SFX = (function () {
       }
     }
 
-    // Eski ses yumuşakça fads-out olsun
+    // Aynı ses dosyası zaten çalıyorsa kesmeden devam et
+    if (soundFile && soundFile === currentFile && currentAmbience) {
+      currentRoomId = roomId;
+      return;
+    }
+    currentRoomId = roomId;
+
+    // Eski ses yumuşakça kapansın
     if (currentAmbience) {
-      let oldAudio = currentAmbience;
-      let fadeOut = setInterval(() => {
-        if (oldAudio.volume > 0.05) {
-          oldAudio.volume -= 0.05;
-        } else {
-          oldAudio.pause();
-          clearInterval(fadeOut);
-        }
-      }, 50);
+      fadeOut(currentAmbience);
+      currentAmbience = null;
+      currentFile = null;
     }
 
     // Yeni oda için ses varsa yükle ve fade-in yap
     if (soundFile) {
-      currentAmbience = new Audio(soundFile);
-      currentAmbience.loop = true;
-      currentAmbience.volume = 0;
-      currentAmbience.play().then(() => {
-        let fadeIn = setInterval(() => {
-          if (currentAmbience.volume < 0.35) {
-            currentAmbience.volume += 0.03;
+      const audio = new Audio(soundFile);
+      audio.loop = true;
+      audio.volume = 0;
+      currentAmbience = audio;
+      currentFile = soundFile;
+      audio.play().then(() => {
+        const fadeIn = setInterval(() => {
+          if (audio !== currentAmbience) { clearInterval(fadeIn); return; }
+          if (audio.volume < 0.35) {
+            audio.volume = Math.min(0.35, audio.volume + 0.03);
           } else {
             clearInterval(fadeIn);
           }
         }, 50);
-      }).catch(() => {}); // Kullanıcı henüz ekrana dokunmadıysa tarayıcı engeline takılmaması için
+      }).catch((err) => {
+        // Tarayıcı otomatik oynatmayı engellediyse bir sonraki odada/çağrıda tekrar denensin
+        if (err && err.name === 'NotAllowedError') {
+          if (currentAmbience === audio) { currentAmbience = null; currentFile = null; }
+          currentRoomId = null;
+        }
+      });
     }
   }
 
-  return { play: playAmbience };
+  // Sesi tamamen kapat (ör. kapalı kapı ekranı)
+  function stop() {
+    if (currentAmbience) fadeOut(currentAmbience);
+    currentAmbience = null;
+    currentFile = null;
+    currentRoomId = null;
+  }
+
+  // Çalmayı bırakmadan "bu oda için henüz çalmadım" durumuna döner (intro sonrası vb.)
+  function reset() {
+    currentRoomId = null;
+  }
+
+  return { play: playAmbience, stop, reset };
 })();

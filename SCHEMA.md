@@ -25,3 +25,4 @@ Bu dosya, oyuna yeni bir gün eklenirken kullanılacak JSON formatını tanımla
     }
   }
 }
+```

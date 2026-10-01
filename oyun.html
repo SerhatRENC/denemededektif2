@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json?v=3">
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=3">
 <title>Sislidere Davası</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Georgia&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=14">
 <link rel="stylesheet" href="ogretici.css?v=9">
 <link rel="stylesheet" href="vfx.css">
@@ -129,7 +129,7 @@
       <div class="intro-overlay" id="introOverlay">
         <div class="intro-text-1" id="introStep1">DAVA BAŞLIYOR...</div>
         <div class="intro-box-2" id="introStep2" style="display: none;">
-          <h2>GÜN 1...</h2>
+          <h2 id="introDay">GÜN 1...</h2>
           <p>1 hafta içinde davayı çözmen gerek.</p>
           <p>Uyuduğun zaman gün sayısı artar.</p>
           <p class="highlight">7. gün şüpheliyi seçeceksin...</p>
@@ -275,6 +275,7 @@
 
     function kapatIntroOverlay() {
       if (typeof calSes === 'function') calSes('kapi');
+      if (typeof introKapandi === 'function') introKapandi();
       const overlay = document.getElementById('introOverlay');
       if (overlay) {
         overlay.classList.add('hidden');
