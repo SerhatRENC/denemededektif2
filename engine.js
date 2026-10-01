@@ -508,9 +508,10 @@ if (currentDay === 3) {
       });
       return;
     }
-      }
+  }
+
   if (currentDay === 2) {
-    if (currentRoom === 'ofis' && !day2PolisGoruldu) {
+      if (currentRoom === 'ofis' && !day2PolisGoruldu) {
       document.getElementById('sceneCharacter')?.remove();
       const polisDialog = getDialogForRoom('ofis', [
         { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum." },
@@ -874,7 +875,9 @@ function openNotebook() {
   if (nbOv && nbOv.classList.contains('active')) return;
 
   if (typeof calSes === 'function') calSes('kitap');
-  if (!notebookState) loadNotebook();  const nbImg = document.getElementById('notebookImage');
+  if (!notebookState) loadNotebook();
+
+  const nbImg = document.getElementById('notebookImage');
   const src = (CASE.notebook && CASE.notebook.image) || 'assets/arayuz/yazi.webp';
 
   const pageSol = (CASE.notebook && CASE.notebook.pageSol) || {};
@@ -894,11 +897,9 @@ function openNotebook() {
     nbImg.src = src;
   }
 
-  const nbOv = document.getElementById('notebookOverlay');
   if (nbOv) nbOv.classList.add('active');
   renderNotebookPage();
 }
-
 function closeNotebook() {
   const nbOv = document.getElementById('notebookOverlay');
   if (nbOv) nbOv.classList.remove('active');
