@@ -55,7 +55,7 @@
       "label": "Köy Merkezi",
       "background": "assets/odalar/merkez.webp",
       "hotspots": [
-        { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Dedektif Ofisine dön" },
+        { "x": "7%", "y": "52.5%", "type": "navigate", "target": "ofis", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Ofise Dön", "hint": "Dedektif Ofisine dön" },
         { "x": "47.6%", "y": "49.9%", "type": "navigate", "target": "han", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Han", "hint": "Hana git" },
         { "x": "55.8%", "y": "46.4%", "type": "navigate", "target": "kilise", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Kiliseye git" },
         { "x": "51.5%", "y": "45.9%", "type": "navigate", "target": "mezarlik", "icon": "assets/arayuz/tokmak.webp", "iconWidth": "4.6%", "label": "Mezarlığa git" },
@@ -399,6 +399,13 @@
       "vurgu": [".corner-icon-btn"],
       "konum": "ust-orta",
       "gecikme": 1200
+    },
+    "envanter_ilk": {
+      "baslik": "Envanterine ilk eşyanı ekledin",
+      "metin": "Topladığın eşyalar sol alttaki envanterde durur. Bir eşyaya tıklayarak onu istediğin zaman yeniden inceleyebilirsin.",
+      "vurgu": [".inv-item"],
+      "konum": "ust-orta",
+      "gecikme": 600
     }
   },
 
