@@ -30,7 +30,7 @@
       { "speaker": "Kamuran", "text": "Normalde solunum için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Cadı mı? Zaten İhsan bey bunu araştırılmaya gelmişti, değil mi?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Evet evet. Bu köyde öyle bir inanış var. Benden önceki ebe zamanında bebek ölümleri çok fazlaymış, bu cahil insanlar da kadını kovmuş mu, ne yapmışsa artık — kadın yok olmuş diyorlar.", "emotion": "normal" },
-      { "speaker": "Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit beylerin laneti kaldırmış da bebeği olmuş. İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten.", "emotion": "sinirli" },
+      { "speaker": "Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit bey cadıyı köyden kovduğu için lnaet kalkmış da bebeği olmuş. İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Yani Halit'in bebeği doğunca mı kalkmış lanet?", "emotion": "normal" },
       { "speaker": "Kamuran", "text": "Öyle der bu insanlar. Şimdi izninizle işime devam etmem gerek.", "emotion": "normal" }
     ],
