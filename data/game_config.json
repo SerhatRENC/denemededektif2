@@ -179,6 +179,12 @@
           "hint": "Gazeteci Dosyasını İncele"
         },
         {
+          "x": "42.0%", "y": "48.0%", "w": "18.0%", "h": "22.0%",
+          "type": "gazeteci_ses_kaydi_modal",
+          "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_fonogram_tiklanabilir.webp",
+          "hint": "Ses Kaydını Dinle"
+        },
+        {
           "x": "57.6%", "y": "1.1%", "w": "28.9%", "h": "59.9%",
           "type": "kamera_bos_subtitle",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
@@ -186,7 +192,7 @@
         }
       ]
     },
-    "han_kapi": {
+        "han_kapi": {
       "label": "Gazetecinin Odası Kapısı",
       "background": "assets/odalar/han_kapi.webp",
       "hotspots": [
