@@ -784,6 +784,7 @@ function handleHotspot(h) {
   if (h.type === 'canta_evlilik_cuzdan_modal') { openCantaEvlilikCuzdanModal(); return; }
   if (h.type === 'canta_kagitlar_modal') { openCantaKagitlarModal(); return; }
   if (h.type === 'canta_polaroid_modal') { openCantaPolaroidModal(); return; }
+  if (h.type === 'gazeteci_ses_kaydi_modal') { openGazeteciSesKaydiModal(); return; }
   if (h.type === 'yanik_kagit_incele_modal') { openYanikKagitModal(); return; }
   if (h.type === 'gazeteci_dosya_modal') { openGazeteciDosyaModal(h.images || gazeteciDosyaPagesDefault, 0); return; }
 
@@ -1597,8 +1598,14 @@ function showModal(html, wide) {
 
 function closeModal() {
   stopStatementAudio();
+  if (typeof fonogramAudio !== 'undefined' && fonogramAudio) {
+    fonogramAudio.pause();
+    fonogramAudio.currentTime = 0;
+    fonogramAudio = null;
+    fonogramPlaying = false;
+  }
   const bg = document.getElementById('modalBg');
-  const body = document.getElementById('modalBody');
+    const body = document.getElementById('modalBody');
 
   // Otopsi bayrağı sadece otopsi/cebindekiler modalı kapanınca verilir
   if (otopsiModalAcik) {
@@ -1620,6 +1627,80 @@ function closeModal() {
     bg.style.background = "";
     bg.style.backdropFilter = "";
   }
+}
+
+/* ---------- MAGNETOPHON / SES KAYDI MODALI ---------- */
+let fonogramAudio = null;
+let fonogramPlaying = false;
+
+function openGazeteciSesKaydiModal() {
+  if (typeof calSes === 'function') calSes('al');
+  
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeFonogramModal()">✕</button>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:15px;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); text-shadow:0 2px 8px rgba(0,0,0,0.9);">Gazetecinin Ses Kaydı</h3>
+      
+      <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center;">
+        <img id="fonogramImg" src="assets/tiklanabilir/gazeteci_oda_masa_fonogram_tiklanabilir.webp" style="max-width:85cqw; max-height:38cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95)); transition:all 0.3s ease;">
+      </div>
+
+      <button id="fonogramPlayBtn" class="btn show" style="position:relative; opacity:1; pointer-events:auto; padding:10px 26px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:clamp(15px, 1.8cqw, 20px); display:flex; align-items:center; gap:10px; box-shadow:0 4px 12px rgba(0,0,0,0.8);" onclick="toggleFonogramAudio()">
+        <span id="fonogramIcon">▶</span> <span id="fonogramText">Ses Kaydını Dinle</span>
+      </button>
+    </div>
+  `);
+}
+
+function toggleFonogramAudio() {
+  if (!fonogramAudio) {
+    fonogramAudio = new Audio('assets/ses/gazeteci_gunluk.mp3');
+    fonogramAudio.onended = () => {
+      fonogramPlaying = false;
+      updateFonogramUI();
+    };
+  }
+
+  fonogramPlaying = !fonogramPlaying;
+
+  if (fonogramPlaying) {
+    fonogramAudio.play().catch(e => console.warn("Ses oynatılamadı:", e));
+  } else {
+    fonogramAudio.pause();
+  }
+  updateFonogramUI();
+}
+
+function updateFonogramUI() {
+  const btnIcon = document.getElementById('fonogramIcon');
+  const btnText = document.getElementById('fonogramText');
+  const img = document.getElementById('fonogramImg');
+
+  if (fonogramPlaying) {
+    if (btnIcon) {
+      btnIcon.textContent = '⚙';
+      btnIcon.className = 'makara-ikon-donuyor';
+    }
+    if (btnText) btnText.textContent = 'Kaydı Duraklat';
+    if (img) img.classList.add('fonogram-donuyor');
+  } else {
+    if (btnIcon) {
+      btnIcon.textContent = '▶';
+      btnIcon.className = '';
+    }
+    if (btnText) btnText.textContent = 'Ses Kaydını Dinle';
+    if (img) img.classList.remove('fonogram-donuyor');
+  }
+}
+
+function closeFonogramModal() {
+  if (fonogramAudio) {
+    fonogramAudio.pause();
+    fonogramAudio.currentTime = 0;
+    fonogramAudio = null;
+  }
+  fonogramPlaying = false;
+  closeModal();
 }
 
 function openPolaroidIslenmisModal() {
@@ -1707,5 +1788,8 @@ window.yeniOyun = yeniOyun;
 window.baslatSuclama = baslatSuclama;
 window.suclamaSec = suclamaSec;
 window.openGorselModal = openGorselModal;
+window.closeFonogramModal = closeFonogramModal;
+window.toggleFonogramAudio = toggleFonogramAudio;
+window.openGazeteciSesKaydiModal = openGazeteciSesKaydiModal;
 
 window.onload = () => { initGame(); };
