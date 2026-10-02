@@ -179,20 +179,27 @@
           "hint": "Gazeteci Dosyasını İncele"
         },
         {
-          "x": "45.7%", "y": "8.5%", "w": "2.9%", "h": "4.5%",
+          "x": "62.1%",
+          "y": "46.0%",
+          "w": "35.4%",
+          "h": "53.5%",
+          "clipPath": "polygon(0% 38%, 68% 0%, 100% 62%, 27% 100%)",
           "type": "gazeteci_ses_kaydi_modal",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_fonogram_tiklanabilir.webp",
           "hint": "Ses Kaydını Dinle"
         },
         {
-          "x": "57.4%", "y": "9.3%", "w": "14.0%", "h": "51.8%",
+          "x": "55.3%",
+          "y": "7.1%",
+          "w": "27.1%",
+          "h": "54.4%",
+          "clipPath": "polygon(100% 24%, 37% 100%, 0% 76%, 45% 0%)",
           "type": "kamera_bos_subtitle",
           "overlayImage": "assets/tiklanabilir/gazeteci_oda_masa_kamera_tiklanabilir.webp",
           "hint": "Kamerayı İncele"
         }
       ]
-    },
-            "han_kapi": {
+    },            "han_kapi": {
       "label": "Gazetecinin Odası Kapısı",
       "background": "assets/odalar/han_kapi.webp",
       "hotspots": [
