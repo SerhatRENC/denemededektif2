@@ -91,11 +91,10 @@ function loadImageAsync(url) {
 
 function preloadImage(url) {
   if (!url || preloadedImages.has(url)) return;
+  preloadedImages.set(url, true); // Ağda kaydet ama tam nesneyi RAM'de/VRAM'de kilitli tutma
   const img = new Image();
   img.src = url;
-  preloadedImages.set(url, img);
 }
-
 /* ---------- ARKA PLAN PRELOAD (GECİKTİRMELİ) ---------- */
 function preloadDayAssets() {
   if (!CASE) return;
@@ -704,6 +703,8 @@ function gosterDialogSatiri(dialog) {
 function preloadDialogImages(dialogList, defaultPath) {
   if (!dialogList || !Array.isArray(dialogList)) return;
 
+  const uniqueUrls = new Set();
+
   dialogList.forEach(item => {
     let targetSrc = item.image;
     if (!targetSrc) {
@@ -734,12 +735,14 @@ function preloadDialogImages(dialogList, defaultPath) {
       }
     }
 
-    if (targetSrc) {
-      preloadImage(targetSrc);
+    if (targetSrc && !preloadedImages.has(targetSrc)) {
+      uniqueUrls.add(targetSrc);
     }
   });
-}
 
+  // Aynı istekleri teke düşürüp sırayla indir
+  uniqueUrls.forEach(url => preloadImage(url));
+}
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   
