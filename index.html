@@ -949,23 +949,31 @@ let halitState = 0;
 document.getElementById('char-halit').addEventListener('click', () => {
   const sub = document.getElementById('sub-halit');
   const char = document.getElementById('char-halit');
+  
   if (halitState === 0) {
+    // 1. ADIM: İlk karşılama cümlesi (Normal Halit görseli)
     Ogretici.isaretle('koy_giris');
     Ogretici.iptal();
-    sub.textContent = "Hoş geldiniz dedektif! Sisledere Köyü'ne varışınız tam zamanında oldu.";
+    char.src = "assets/karakterler/halit.webp";
+    sub.textContent = "Muhtar Halit: Sisledere Köyü'ne hoş geldiniz dedektif!";
     sub.classList.add('show');
     char.classList.add('talking');
     halitState = 1;
+  } else if (halitState === 1) {
+    // 2. ADIM: Ofise yönlendirme cümlesi (Hoş geldin görseli)
+    char.src = "assets/karakterler/halit_hosgeldin.webp";
+    sub.textContent = "Muhtar Halit: Buyur sana bir ofis ayarladık, git bir uğra.";
+    halitState = 2;
   } else {
+    // 3. ADIM: Konuşma biter, karakter ve alt yazı kapanır, buton açılır
     sub.classList.remove('show');
-    document.getElementById('char-halit').classList.remove('show');
+    char.classList.remove('show');
     setTimeout(() => {
       document.getElementById('btn-ofise-git').classList.remove('gizli');
     }, IKON_BEKLEME_MS);
     halitState = 0;
   }
 });
-
 document.getElementById('btn-ofise-git').addEventListener('click', () => {
   calSes('kapi_git');
   showScreen('scr-dedektif');
