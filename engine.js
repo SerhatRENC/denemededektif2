@@ -264,6 +264,12 @@ async function renderRoom() {
         if (currentDay < 2 || !day2PolisGoruldu) return;
       }
 
+      // 2. GÜN: Çanta kilidi açılmadan (HAN_UNLOCKED) gazeteci odasından geri çıkış butonunu gizle
+      if (currentDay === 2 && day2State === 'HAN_UNLOCKED') {
+        if (journalistRooms.includes(currentRoom) && h.target && !journalistRooms.includes(h.target)) {
+          return;
+        }
+      }
       if (currentRoom === 'ofis') {
         if (currentDay === 2 && (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !gameState.getFlag('otopsi_incelendi')) {
           if (h.target === 'merkez') return;
@@ -876,8 +882,14 @@ function handleHotspot(h) {
 
   if (h.type === 'navigate') {
     if (journalistRooms.includes(currentRoom) && !journalistRooms.includes(h.target)) {
-      if (day2State === 'CANTA_UNLOCKED') {
-        setDay2State('GO_OFIS');
+      if (currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
+        if (day2State === 'HAN_UNLOCKED') {
+          showCustomSubtitle("Dedektif: Gazetecinin odasını ve çantasını tam incelemeden buradan çıkamam.", true);
+          return;
+        }
+        if (day2State === 'CANTA_UNLOCKED') {
+          setDay2State('GO_OFIS');
+        }
       }
     }
 
@@ -894,6 +906,12 @@ function handleHotspot(h) {
           showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
           return;
         }
+      } else if (day2State === 'HAN_UNLOCKED') {
+        const allowedInHanUnlocked = ['han', 'han_kapi', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'gazeteci_oda_sifre_giris', 'merkez', 'ofis', 'masa', 'muhtar'];
+        if (h.target && !allowedInHanUnlocked.includes(h.target)) {
+          showCustomSubtitle("Dedektif: Önce gazetecinin odasındaki çantayı incelemeliyim.", true);
+          return;
+        }
       } else if (day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') {
         const allowedInOfis = ['ofis', 'masa', 'merkez', 'gazeteci_oda', 'gazeteci_oda_canta', 'gazeteci_oda_cop', 'gazeteci_oda_tablo', 'gazeteci_oda_masa', 'gazeteci_oda_canta_ici', 'gazeteci_oda_sifre_giris', 'han', 'han_kapi'];
         if (h.target && !allowedInOfis.includes(h.target)) {
@@ -901,13 +919,12 @@ function handleHotspot(h) {
           return;
         }
       }
-          }
+    }
 
     currentRoom = h.target;
     renderRoom();
     return;
   }
-
   if (h.type === 'dialogue_bakirci1') { 
     const b1Dialog = getDialogForRoom('bakirci1', CASE?.day2_dialogs?.bakirci1);
     startOzelDialog(b1Dialog, 'assets/karakterler/bakirci1.webp'); 
@@ -1243,15 +1260,20 @@ function openMap() {
         if (currentDay === 2 && !gameState.getFlag('otopsi_incelendi')) {
           if (day2State === 'GO_MUHTAR' && !['muhtar', 'merkez', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
+            showCustomSubtitle("Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım.", true);
             return;
           }
           if (day2State === 'GO_HAN' && !['han', 'han_kapi', 'merkez', 'muhtar', 'ofis'].includes(h.target)) {
             closeMap();
-            showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
+            showCustomSubtitle("Dedektif: Önce hana uğrasam daha iyi olacak.", true);
             return;
           }
-          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !['ofis', 'merkez', 'masa'].includes(h.target)) {
+          if (day2State === 'HAN_UNLOCKED' && !['han', 'han_kapi', 'gazeteci_oda', 'merkez', 'muhtar', 'ofis'].includes(h.target)) {
+            closeMap();
+            showCustomSubtitle("Dedektif: Önce gazetecinin odasındaki çantayı incelemeliyim.", true);
+            return;
+          }
+          if ((day2State === 'GO_OFIS' || day2State === 'CANTA_UNLOCKED') && !['ofis', 'merkez', 'masa', 'han', 'han_kapi', 'gazeteci_oda'].includes(h.target)) {
             closeMap();
             showCustomSubtitle("Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum.", true);
             return;
@@ -1263,7 +1285,7 @@ function openMap() {
           renderRoom();
         }
       };
-      wrap.appendChild(dot);
+            wrap.appendChild(dot);
     });
   }
 
