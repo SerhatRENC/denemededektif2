@@ -700,11 +700,54 @@ function gosterDialogSatiri(dialog) {
   }
 }
 
+/* Diyalogda geçecek tüm karakter görsellerini önceden belleğe yükler */
+function preloadDialogImages(dialogList, defaultPath) {
+  if (!dialogList || !Array.isArray(dialogList)) return;
+
+  dialogList.forEach(item => {
+    let targetSrc = item.image;
+    if (!targetSrc) {
+      const emotion = item.emotion ? item.emotion.toLowerCase().trim() : 'normal';
+      let base = '';
+      let ext = '.webp';
+
+      if (defaultPath) {
+        const lastDot = defaultPath.lastIndexOf('.');
+        if (lastDot !== -1) {
+          base = defaultPath.substring(0, lastDot);
+          ext = defaultPath.substring(lastDot);
+        } else {
+          base = defaultPath;
+        }
+      } else if (item.speaker) {
+        const speakerKey = item.speaker
+          .toLowerCase()
+          .trim()
+          .replace(/i̇/g, 'i').replace(/ı/g, 'i').replace(/ğ/g, 'g')
+          .replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c');
+        base = `assets/karakterler/${speakerKey}`;
+      }
+
+      if (base) {
+        const fallbackSrc = defaultPath || `${base}${ext}`;
+        targetSrc = (emotion && emotion !== 'normal' && emotion !== 'netral') ? `${base}_${emotion}${ext}` : fallbackSrc;
+      }
+    }
+
+    if (targetSrc) {
+      preloadImage(targetSrc);
+    }
+  });
+}
+
 function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   const stage = document.getElementById('stage') || document.getElementById('gameStage');
   
+  // Diyalog başlar başlamaz içindeki tüm kareleri tarayıcı belleğine yükle
+  preloadDialogImages(dialogList, charImgPath);
+
   if (!dialogList || !Array.isArray(dialogList) || dialogList.length === 0) {
-    if (stage) stage.classList.remove('dialog-active');
+      if (stage) stage.classList.remove('dialog-active');
     setUIElementsVisible(true);
     dialogueActive = false;
     if (onCompleteCallback) onCompleteCallback();
@@ -715,15 +758,23 @@ function startOzelDialog(dialogList, charImgPath, onCompleteCallback) {
   stage.classList.add('dialog-active');
   setUIElementsVisible(false);
 
-  let charImg = document.getElementById('tempDay2Char');
+let charImg = document.getElementById('tempDay2Char');
   if (!charImg) {
     charImg = document.createElement('img');
     charImg.id = 'tempDay2Char';
     charImg.className = 'scene-character talking';
     stage.appendChild(charImg);
   }
-  if (charImgPath) charImg.src = charImgPath;
 
+  // Karakterin odadaki yOffset (örneğin -15%) konumunu diyalogda da koru
+  const currentChConfig = CASE.characters && CASE.characters[currentRoom];
+  if (currentChConfig && currentChConfig.yOffset) {
+    charImg.style.bottom = currentChConfig.yOffset;
+  } else {
+    charImg.style.bottom = '0%';
+  }
+
+  if (charImgPath) charImg.src = charImgPath;
   let index = 0;
   function sonrakiSatir(e) {
     if (e) e.stopPropagation();
