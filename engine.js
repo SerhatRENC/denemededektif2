@@ -100,7 +100,7 @@ function preloadImage(url) {
 function preloadDayAssets() {
   if (!CASE) return;
 
-  const emotions = ['normal', 'ciddi', 'telasli', 'supheli', 'dusuneli', 'sinirli', 'uzgun', 'korkmus', 'cekingan', 'gergin'];
+  const emotions = ['normal', 'sasirmis', 'idle', 'idle2', 'sinirli'];
   Object.values(CASE.characters || {}).forEach(ch => {
     if (ch.image) {
       preloadImage(ch.image);
