@@ -3,6 +3,86 @@
   "initialFlags": {
     "day2_started": true
   },
+  "initialState": "GO_MUHTAR",
+
+  "gatesIf": { "notFlag": "otopsi_incelendi" },
+  "gates": [
+    { "state": "HAN_UNLOCKED", "from": "@gazeteci", "toNot": "@gazeteci",
+      "msg": "Dedektif: Gazetecinin odasını ve çantasını tam incelemeden buradan çıkamam." },
+    { "state": "CANTA_UNLOCKED", "from": "@gazeteci", "toNot": "@gazeteci", "setState": "GO_OFIS" },
+    { "state": "GO_MUHTAR", "allow": ["muhtar", "merkez", "ofis", "masa"],
+      "msg": "Dedektif: Muhtarla dün konuşamadım en iyisi ilk ona gideyim de raporları alayım." },
+    { "state": "GO_HAN", "allow": ["han", "han_kapi", "han_mutfak", "han_depo", "merkez", "muhtar", "ofis", "masa"],
+      "msg": "Dedektif: Önce hana uğrasam daha iyi olacak." },
+    { "state": "HAN_UNLOCKED", "allow": ["han", "han_kapi", "@gazeteci", "merkez", "ofis", "masa", "muhtar"],
+      "msg": "Dedektif: Önce gazetecinin odasındaki çantayı incelemeliyim." },
+    { "state": ["GO_OFIS", "CANTA_UNLOCKED"], "allow": ["ofis", "masa", "merkez", "@gazeteci", "han", "han_kapi"],
+      "msg": "Muhtar otopsiyi masama yollamıştır gidip ofisi bir kontrol edeyim sonra köy halkıyla konuşurum." }
+  ],
+
+  "hotspotRules": [
+    { "room": "@gazeteci", "targetNot": "@gazeteci", "hideIf": { "state": "HAN_UNLOCKED" } },
+    { "room": "ofis", "target": "merkez", "hideIf": { "state": ["GO_OFIS", "CANTA_UNLOCKED"], "notFlag": "otopsi_incelendi" } }
+  ],
+
+  "characters": {
+    "ofis": {
+      "name": "Polis Memuru",
+      "image": "assets/karakterler/polis.webp",
+      "clickableImage": "assets/tiklanabilir/polis_tiklanabilir.webp",
+      "clickableArea": { "x": "48.7%", "y": "27.8%", "w": "16.5%", "h": "39.6%" },
+      "showIf": { "state": ["CANTA_UNLOCKED", "GO_OFIS"], "notFlag": "day2_polis_goruldu" }
+    },
+    "han": {
+      "clickableImage": "assets/tiklanabilir/riza2_tiklanabilir.webp",
+      "clickableArea": { "x": "51.1%", "y": "27.6%", "w": "11.0%", "h": "20.5%" }
+    }
+  },
+
+  "events": {
+    "dialogEnd": {
+      "ofis": [
+        { "do": [
+          { "setFlag": "day2_polis_goruldu" },
+          { "removeItem": "polaroid" },
+          { "render": true },
+          { "subtitle": "Dedektif: Otopsi raporunu masaya bıraktı, inceleyeyim." }
+        ] }
+      ],
+      "muhtar": [
+        { "if": { "state": "GO_MUHTAR" }, "do": [ { "setState": "GO_HAN" } ] },
+        { "do": [
+          { "render": true },
+          { "subtitle": "Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim." }
+        ] }
+      ],
+      "han": [
+        { "if": { "notItem": "anahtar", "notFlag": ["gazeteci_oda_acik", "otopsi_incelendi"] }, "stop": true,
+          "do": [ { "modal": "anahtar" } ] },
+        { "do": [ { "render": true } ] }
+      ]
+    },
+    "collect": {
+      "anahtar": [ { "do": [ { "setState": "HAN_UNLOCKED" } ] } ]
+    },
+    "modalClose": {
+      "otopsi": [
+        { "if": { "flag": "day2_polis_goruldu", "notFlag": "otopsi_incelendi" }, "do": [
+          { "setFlag": "otopsi_incelendi" },
+          { "setState": "DAY2_FREE" },
+          { "delay": 250 },
+          { "render": true },
+          { "subtitle": "Dedektif: Otopsi raporunu inceledim. Artık köy halkıyla detaylıca konuşabilirim." }
+        ] }
+      ]
+    }
+  },
+
+  "sleepRequires": [
+    { "need": { "flag": "otopsi_incelendi" }, "msg": "Dedektif: Önce masadaki otopsi raporunu incelemeliyim." },
+    { "need": { "flag": "col_evlilik_cuzdan" }, "msg": "Dedektif: Gazetecinin çantasındaki evlilik cüzdanını almadan uyumamalıyım." },
+    { "need": { "flag": "col_yanik_kagit" }, "msg": "Dedektif: Gazetecinin çöp kutusunu da kontrol etmeliyim, yanmış bir kağıt görmüştüm." }
+  ],
   "dialogs": {
     "ofis": [
       { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum.", "emotion": "normal" },
@@ -10,14 +90,14 @@
       { "speaker": "Polis Memuru", "text": "Emredersiniz. Ben bunu götüreyim yarın size teslim ederim.", "emotion": "idle2" }
     ],
     "muhtar": [
-      { "speaker": "Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım.", "emotion": "normal" },
+      { "speaker": "Muhtar Halit", "text": "Dedektif hoş geldin, dün merkezde işlerim vardı kusura bakma. Bugün ne istiyorsan konuşalım.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Önemli değil. Otopsi raporu sizdeymiş Kamuran Hanım söyledi. Bir de dün hancı odaya girmeme izin vermedi orayı incelemem lazım.", "emotion": "idle" },
-      { "speaker": "Halit", "text": "He tamam siz gidin Rıza'ya benden selam söyleyin açar kapıyı. Odadaki eşyalara kimse dokunmasın diye kilitli kalsın demiştim. Otopsi raporunun da kopyasını yollatırım senin ofisine.", "emotion": "ciddi" }
+      { "speaker": "Muhtar Halit", "text": "He tamam siz gidin Rıza'ya benden selam söyleyin açar kapıyı. Odadaki eşyalara kimse dokunmasın diye kilitli kalsın demiştim. Otopsi raporunun da kopyasını yollatırım senin ofisine.", "emotion": "ciddi" }
     ],
     "han": [
-      { "speaker": "Rıza", "text": "Beyim bakırcılar geldiler, onlar arada bir gelirler böyle işler çok yoğun olur bugünlerde yarın detaylıca konuşalım istersen şimdi doluyum.", "emotion": "idle" },
+      { "speaker": "Hancı Rıza", "text": "Beyim bakırcılar geldiler, onlar arada bir gelirler böyle işler çok yoğun olur bugünlerde yarın detaylıca konuşalım istersen şimdi doluyum.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Tamam Rıza Bey. Yalnız benim odayı görmem lazım Halit Bey selamını iletti.", "emotion": "normal" },
-      { "speaker": "Rıza", "text": "Tabii buyrun odanın anahtarı.", "emotion": "idle2" }
+      { "speaker": "Hancı Rıza", "text": "Tabii buyrun odanın anahtarı.", "emotion": "idle2" }
     ],
     "bakirci1": [
       { "speaker": "Bakırcı Ahmet", "text": "Cinayet ha? Çetrefilli işler bunlar... Allah kolaylık versin.", "emotion": "idle" },
@@ -26,7 +106,7 @@
     ],
     "bakirci2": [
       { "speaker": "Dedektif", "text": "Afiyet olsun.", "emotion": "normal" },
-      { "speaker": "Bakırcı Hüseyin", "text": "Buyrun beraber olsun.", "emotion": "idle1" },
+      { "speaker": "Bakırcı Hüseyin", "text": "Buyrun beraber olsun.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Sağ olun. Hangi köydensiniz?", "emotion": "idle2" },
       { "speaker": "Bakırcı Hüseyin", "text": "Bakırcılar efendim. İş için dolaşınca uğrayıp bir iki kadeh yuvarlayalım dedik. Biraz dinlenip köyümüze gideceğiz.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Geldiğiniz zamanlarda gazeteciye hiç rastladınız mı?", "emotion": "idle" },
@@ -53,8 +133,8 @@
     ],
     "sifahane": [
       { "speaker": "Dedektif", "text": "Merhaba doktor hanım. Raporu aldım çuval ipiyle öldürülmüş ne acı, sizce kim yapmış olabilir?", "emotion": "idle" },
-      { "speaker": "Doktor Kamuran", "text": "Burası köy yeri,Herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Dün mezarlıkta Cevdeti ip bağlarken gördüm sizce şüpheli olabilir mi?", "emotion": "idle2" },
+      { "speaker": "Doktor Kamuran", "text": "Burası köy yeri, herkeste çuval ipi vardır ama buna kim cesaret edebilir?", "emotion": "sasirmis" },
+      { "speaker": "Dedektif", "text": "Dün mezarlıkta Cevdet'i ip bağlarken gördüm sizce şüpheli olabilir mi?", "emotion": "idle2" },
       { "speaker": "Doktor Kamuran", "text": "Zararsızdır o bakmayın. İp bağlar da haber bekler zavallı. Köylü kaçar ondan ama ben onunla iletişim kurabiliyorum. Zaten koca köyde bir ben, bir de Mustafa iyi davranıyor. Zamanında bana anlatmıştı not mu, mektup mu ne yollamışlar, kendisi mi yazmış bilmem ama kimseye zarar veremez o.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Not mu?", "emotion": "idle" },
       { "speaker": "Doktor Kamuran", "text": "Evet evet. Siz Cevdet evindeyken Cevdet'e \"beni onlar yolladı\" diyin o zaten anlatır size. Bir de çok üstüne gitmeyin o sinirlenirse bitirin sohbeti... Yani ben öyle yapıyorum.", "emotion": "idle2" }
@@ -81,6 +161,6 @@
   "roomOverrides": {
     "degirmenci": { "closed": true, "closedImage": "assets/odalar/degirmenci_kapi.webp" },
     "nadire_ev": { "closed": true, "closedImage": "assets/odalar/nadire_ev_kapi.webp" },
-    "halit_ev": { "closed": true, "closedImage": "assets/odalar/halit_ev_kapi.webp" }
+    "halit_ev": { "closed": true, "closedImage": "assets/odalar/halit_ev_kapi.webp", "openIf": { "flag": "otopsi_incelendi" } }
   }
 }

@@ -6,39 +6,39 @@
   "dialogs": {
     "degirmenci": [
       { "speaker": "Dedektif", "text": "Kolay gelsin, bir iki sualim olacak.", "emotion": "normal" },
-      { "speaker": "Mustafa", "text": "Buyrun beyim.", "emotion": "idle" },
+      { "speaker": "Değirmenci Mustafa", "text": "Buyrun beyim.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Gazeteciyi ne kadar tanırdınız?", "emotion": "normal" },
-      { "speaker": "Mustafa", "text": "Değil gazeteciyi, köylüyü bile tanımam ben. Sadece 5 yıldır bu köydeyim.", "emotion": "idle2" },
+      { "speaker": "Değirmenci Mustafa", "text": "Değil gazeteciyi, köylüyü bile tanımam ben. Sadece 5 yıldır bu köydeyim.", "emotion": "idle2" },
       { "speaker": "Dedektif", "text": "Öyle mi, nereden geldiniz?", "emotion": "normal" },
-      { "speaker": "Mustafa", "text": "Bakırcılar köyünden geldim. Bizim oralar sulaktır, herkes değirmenci olunca ben de buraya geldim iş için.", "emotion": "normal" },
+      { "speaker": "Değirmenci Mustafa", "text": "Bakırcılar köyünden geldim. Bizim oralar sulaktır, herkes değirmenci olunca ben de buraya geldim iş için.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "25 gündür adam buradaymış, hiç mi konuşmadınız?", "emotion": "idle2" },
-      { "speaker": "Mustafa", "text": "Konuştum elbet, birkaç soru sormuştu bana. Ama araştırdığı konunun 18 yıllık mazisi var, ben o zamanlar burada bile değildim.", "emotion": "normal" },
+      { "speaker": "Değirmenci Mustafa", "text": "Konuştum elbet, birkaç soru sormuştu bana. Ama araştırdığı konunun 18 yıllık mazisi var, ben o zamanlar burada bile değildim.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Tamam, yine de söylemek istediğin bir şey olursa ben buralardayım.", "emotion": "idle" }
     ],
     "muhtar": [
-      { "speaker": "Halit", "text": "Buyrun dedektif bey. Çıkacağım birazdan, acil bir şey var mı?", "emotion": "normal" },
+      { "speaker": "Muhtar Halit", "text": "Buyrun dedektif bey. Çıkacağım birazdan, acil bir şey var mı?", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Sizinle Ali İhsan bey hakkında konuşmam lazım.", "emotion": "idle" },
-      { "speaker": "Halit", "text": "Ben de onun ölüm belgelerini merkeze götüreceğim şimdi. Sen en iyisi mi yarın uğra, bana konuşalım — şimdi gitmem gerek.", "emotion": "idle2" }
+      { "speaker": "Muhtar Halit", "text": "Ben de onun ölüm belgelerini merkeze götüreceğim şimdi. Sen en iyisi mi yarın uğra, konuşalım — şimdi gitmem gerek.", "emotion": "idle2" }
     ],
     "sifahane": [
-      { "speaker": "Kamuran", "text": "Buyrun, hoş geldiniz.", "emotion": "normal" },
+      { "speaker": "Doktor Kamuran", "text": "Buyrun, hoş geldiniz.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Gazetecinin ölümünü soruşturmaya geldim.", "emotion": "idle" },
-      { "speaker": "Kamuran", "text": "Evet, ben tespit ettim ölümünü. Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydum Ali İhsan beyle?", "emotion": "idle2" },
-      { "speaker": "Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana. Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş.", "emotion": "idle" },
+      { "speaker": "Doktor Kamuran", "text": "Evet, ben tespit ettim ölümünü. Zaten ölüm kağıdını da yazmıştım, Muhtar Halit beyde olması lazım.", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Siz tanır mıydınız? Kişisel bir sohbetiniz olmuş muydu Ali İhsan beyle?", "emotion": "idle2" },
+      { "speaker": "Doktor Kamuran", "text": "Kişisel bir şeyler değil ama bitkiler hakkında sorular soruyordu bana. Söylediklerimi de not alırdı zaten. Tesadüf müdür bilmem ama cebinde de üzerlik bulunmuş.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Üzerlik nedir?", "emotion": "normal" },
-      { "speaker": "Kamuran", "text": "Normalde solunum için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar.", "emotion": "idle" },
+      { "speaker": "Doktor Kamuran", "text": "Normalde solunum için kullanırız ama köy yerlerinde nazarı, hatta onların deyimiyle 'cadıları' kovar.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Cadı mı? Zaten İhsan bey bunu araştırılmaya gelmişti, değil mi?", "emotion": "normal" },
-      { "speaker": "Kamuran", "text": "Evet evet. Bu köyde öyle bir inanış var. Benden önceki ebe zamanında bebek ölümleri çok fazlaymış, bu cahil insanlar da kadını kovmuş mu, ne yapmışsa artık — kadın yok olmuş diyorlar.", "emotion": "idle2" },
-      { "speaker": "Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit bey cadıyı köyden kovduğu için lnaet kalkmış da bebeği olmuş. İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten.", "emotion": "sinirli" },
+      { "speaker": "Doktor Kamuran", "text": "Evet evet. Bu köyde öyle bir inanış var. Benden önceki ebe zamanında bebek ölümleri çok fazlaymış, bu cahil insanlar da kadını kovmuş mu, ne yapmışsa artık — kadın yok olmuş diyorlar.", "emotion": "idle2" },
+      { "speaker": "Doktor Kamuran", "text": "Ben geldikten sonra lanet manet kalmadı ama onlara sorsanız, Halit bey cadıyı köyden kovduğu için lanet kalkmış da bebeği olmuş. İlah bellemişler adamı, doktorun yaptığını kimse görmez zaten.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Yani Halit'in bebeği doğunca mı kalkmış lanet?", "emotion": "normal" },
-      { "speaker": "Kamuran", "text": "Öyle der bu insanlar. Şimdi izninizle işime devam etmem gerek.", "emotion": "idle" }
+      { "speaker": "Doktor Kamuran", "text": "Öyle der bu insanlar. Şimdi izninizle işime devam etmem gerek.", "emotion": "idle" }
     ],
     "demirci": [
       { "speaker": "Dedektif", "text": "Kolay gelsin.", "emotion": "normal" },
-      { "speaker": "Cabbar", "text": "Kolaysa başına gelsin.", "emotion": "sinirli" },
+      { "speaker": "Demirci Cabbar", "text": "Kolaysa başına gelsin.", "emotion": "sinirli" },
       { "speaker": "Dedektif", "text": "Yavaş ol demirci bey, gazeteciyle ilgili bir iki şey soracaktım.", "emotion": "sinirli" },
-      { "speaker": "Cabbar", "text": "İşim başımdan aşkın, başka zaman gel.", "emotion": "sinirli" }
+      { "speaker": "Demirci Cabbar", "text": "İşim başımdan aşkın, başka zaman gel.", "emotion": "sinirli" }
     ],
     "halit_ev": [
       { "speaker": "Aylin", "text": "Buyrun beyim, babama mı baktınız? Kendisi muhtarlıkta, evde değil şu an.", "emotion": "normal" },
@@ -74,11 +74,11 @@
     ],
     "han": [
       { "speaker": "Dedektif", "text": "Ali İhsan bey senin hanında ölü bulunmuş.", "emotion": "normal" },
-      { "speaker": "Rıza", "text": "Evet beyim, çok efendi bir adamdı. Hatta 25 gündür burada olmasına rağmen bana bile yardım etmişliği vardır. Valla üzülmedim desem yalan olur.", "emotion": "idle2" },
+      { "speaker": "Hancı Rıza", "text": "Evet beyim, çok efendi bir adamdı. Hatta 25 gündür burada olmasına rağmen bana bile yardım etmişliği vardır. Valla üzülmedim desem yalan olur.", "emotion": "idle2" },
       { "speaker": "Dedektif", "text": "Anlaşamadığı birisi var mıydı?", "emotion": "normal" },
-      { "speaker": "Rıza", "text": "Valla dediğim gibi efendi bir adamdı, kimseyle ters düştüğünü görmedim... Gerçi... Kart Nadire geçen anlatmıştı, bizim muhtarla bir iki takışmışlar. Kızıyla konuşmasını mı istememiş, ne öyle bir şey varmış.", "emotion": "idle" },
+      { "speaker": "Hancı Rıza", "text": "Valla dediğim gibi efendi bir adamdı, kimseyle ters düştüğünü görmedim... Gerçi... Kart Nadire geçen anlatmıştı, bizim muhtarla bir iki takışmışlar. Kızıyla konuşmasını mı istememiş, ne öyle bir şey varmış.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Neden istememiş, biliyor musun?", "emotion": "normal" },
-      { "speaker": "Rıza", "text": "Valla ben bilmiyorum, Nadire'ye sorun isterseniz.", "emotion": "idle" }
+      { "speaker": "Hancı Rıza", "text": "Valla ben bilmiyorum, Nadire'ye sorun isterseniz.", "emotion": "idle" }
     ]
   },
   "roomOverrides": {
