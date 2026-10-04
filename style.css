@@ -510,31 +510,6 @@ body:has(.dialog-active) .corner-icons {
 .suclama-credits{color:#c9cabd;font-family:var(--sans);font-size:14px;line-height:1.8;margin-bottom:6px;}
 .suclama-gorsel{ width:100%;height:100%;object-fit:contain;display:block;border-radius:4px;background:transparent; }
 
-.vfx-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 4;
-}
-
-.vfx-flicker-light {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 5;
-  mix-blend-mode: screen;
-}
-
-@keyframes vfxSlowFlicker {
-  0% { opacity: 0.50; transform: translate(-50%, -50%) scale(0.94); }
-  35% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.02); }
-  70% { opacity: 0.58; transform: translate(-50%, -50%) scale(0.97); }
-  100% { opacity: 0.68; transform: translate(-50%, -50%) scale(1.00); }
-}
-
 .vfx-fog-overlay {
   position: absolute;
   inset: 0;

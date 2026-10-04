@@ -1,0 +1,114 @@
+/* oyun.html'e özel görsel düzeltmeler (style.css'ten SONRA yüklenir).
+   Eskiden ogretici.css'in sonundaydı. */
+
+/* ============================================================
+   OYUN.HTML'E ÖZEL GÖRSEL DÜZELTMELER
+   ============================================================ */
+
+/* ---------- TAM EKRAN düğmesi ---------- */
+#stageFrame .tam-ekran-btn{
+  top:calc(34px + env(safe-area-inset-top)); left:calc(10px + env(safe-area-inset-left));
+}
+
+/* ---------- KÖŞE İKONLARI: %30 BÜYÜTÜLMÜŞ VAKUM ÖLÇEKLENDİRME ---------- */
+#stageFrame .corner-icons{ bottom:1.4cqw; right:1.4cqw; gap:1cqw; align-items:flex-end; }
+#stageFrame .corner-icon-item{ display:flex; flex-direction:column; align-items:center; gap:.4cqw; }
+
+#stageFrame .corner-icon-btn{
+  width:7.2cqw !important; 
+  height:7.2cqw !important; 
+  min-width:0 !important; 
+  min-height:0 !important; 
+  max-width:none !important; 
+  max-height:none !important;
+  background:rgba(28,24,16,.38); border:1px solid rgba(227,169,74,.28); border-radius:.9cqw;
+  padding:6%;
+  box-shadow:0 3px 8px rgba(0,0,0,.5);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, background .22s ease;
+}
+#stageFrame .corner-icon-btn img{ filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); transform:rotate(90deg); }
+#stageFrame .corner-icon-label{
+  font-family:var(--mono); 
+  font-size:1.4cqw !important; 
+  letter-spacing:.03em;
+  color:var(--amber-bright); background:rgba(10,10,8,.75); padding:.25cqw .8cqw; border-radius:.4cqw;
+}
+
+#stageFrame .corner-icon-item.harita .corner-icon-btn{ transform:rotate(-4deg); }
+#stageFrame .corner-icon-item.defter .corner-icon-btn{ transform:rotate(3deg); }
+#stageFrame .corner-icon-btn:hover,
+#stageFrame .corner-icon-btn.tiklandi{
+  transform:scale(1.12) rotate(0deg) !important;
+  background:rgba(28,24,16,.55); box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+#stageFrame .corner-icon-btn:hover img,
+#stageFrame .corner-icon-btn.tiklandi img{ transform:rotate(90deg); }
+
+/* Açılan harita/defter katmanları */
+#stageFrame .map-overlay, #stageFrame .notebook-overlay{ transition:background-color .25s ease; }
+#stageFrame .map-box, #stageFrame .notebook-box{
+  opacity:0; transform:scale(.88); transition:opacity .28s ease, transform .32s cubic-bezier(.22,1,.36,1);
+}
+#stageFrame .map-overlay.active .map-box, #stageFrame .notebook-overlay.active .notebook-box{
+  opacity:1; transform:scale(1);
+}
+
+/* ---------- MEKAN İSİM ETİKETLERİ + KAPI TOKMAKLARI ---------- */
+#stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(227,169,74,.55));
+  animation:tokmakParilti 2.2s ease-in-out infinite;
+}
+@keyframes tokmakParilti{
+  0%,100%{ filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 4px rgba(227,169,74,.35)); }
+  50%{ filter:drop-shadow(0 3px 8px rgba(0,0,0,.6)) drop-shadow(0 0 10px rgba(227,169,74,.75)); }
+}
+@media (prefers-reduced-motion: reduce){
+  #stageFrame .hotspot-pulse-wrap img[src$="tokmak.webp"]{ animation:none; }
+}
+
+/* ---------- GÜN SAYACI ---------- */
+#stageFrame .stage-day-tag{
+  position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px;
+  width:clamp(55px,14.3cqw,101px); height:auto;
+  z-index:15;
+}
+#stageFrame .stage-day-tag.yuklenemedi{
+  aspect-ratio:5/6; background:#1c1d18; border:1px solid var(--amber); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--amber-bright); font-family:var(--mono); font-size:clamp(13px,2.1cqw,18px);
+}
+
+/* ---------- SORGU KAĞIDI OKUYUCUSU ---------- */
+#stageFrame .reader-close{
+  width:clamp(34px,5.4cqw,48px); height:clamp(34px,5.4cqw,48px);
+  font-size:clamp(20px,3.2cqw,34px);
+  display:flex; align-items:center; justify-content:center;
+}
+#stageFrame .reader-side-arrow{
+  width:clamp(40px,6.8cqw,60px); height:clamp(40px,6.8cqw,60px);
+  font-size:clamp(26px,4.6cqw,52px);
+}
+#stageFrame .modal.reader .zoom-wrap{ width:70cqi !important; height:45cqi !important; }
+
+/* ---------- MEKAN İSMİ / ENVANTER / HOTSPOT ETİKETLERİ ---------- */
+#stageFrame .room-label{ font-size:16.8px; padding:7px 13px; }
+#stageFrame .inv-empty{ font-size:16px; padding:6px 11px; }
+#stageFrame .hotspot-pulse-label{ font-size:16px; padding:3px 10px; }
+
+/* ---------- UYKU / UYANMA GEÇİŞLERİ ---------- */
+.sleep-overlay{
+  display:flex !important; opacity:0; pointer-events:none;
+  transition:opacity .6s ease;
+}
+.sleep-overlay.active{ opacity:1; pointer-events:auto; }
+
+#stageFrame .sabah-parlama{
+  position:absolute; inset:0; z-index:300; pointer-events:none;
+  background:radial-gradient(circle, #fff8e8 0%, #e9dcc0 75%);
+  opacity:.95; transition:opacity 1.1s ease;
+}
+#stageFrame .sabah-parlama.aktif{ opacity:0; }
+@media (prefers-reduced-motion: reduce){
+  .sleep-overlay{ transition:none; }
+  #stageFrame .sabah-parlama{ transition:none; }
+}

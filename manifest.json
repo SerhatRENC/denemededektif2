@@ -1,8 +1,8 @@
 {
   "id": "./index.html",
-  "name": "Sisledere Köyü Davası",
-  "short_name": "Sisledere",
-  "description": "Sisledere Köyü Davası - tarayıcıda oynanan dedektiflik oyunu",
+  "name": "Sislidere Köyü Davası",
+  "short_name": "Sislidere",
+  "description": "Sislidere Köyü Davası - tarayıcıda oynanan dedektiflik oyunu",
   "lang": "tr",
   "start_url": "./index.html",
   "scope": "./",

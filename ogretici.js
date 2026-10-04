@@ -53,7 +53,7 @@ const Ogretici = (function () {
       <div class="ogr-demo">
         <div class="ogr-demo-sol">
           <img class="ogr-demo-kar" src="${d.karakter}" alt="">
-          <img class="ogr-demo-el" src="${d.el || 'assets/el.png'}" alt="">
+          <img class="ogr-demo-el" src="${d.el || 'assets/arayuz/el.webp'}" alt="">
         </div>
         <div class="ogr-demo-sag">
           <div class="ogr-demo-balon">

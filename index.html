@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Sisledere">
+<meta name="apple-mobile-web-app-title" content="Sislidere">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json?v=4">
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=4">
@@ -13,6 +13,7 @@
 
 <!-- Service Worker (Geliştirme Aşamasında Pasif & Temizleme) -->
 <script>
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(registrations => {
       for (let registration of registrations) {
@@ -382,7 +383,7 @@
   }
   #dava-layer.show #dava-text{ opacity:1; transform:scale(1); }
 </style>
-<link rel="stylesheet" href="ogretici.css?v=9">
+<link rel="stylesheet" href="ogretici.css?v=10">
 <link rel="stylesheet" href="vfx.css?v=11">
 <script src="vfx.js?v=11"></script>
 <script src="sfx.js"></script>
@@ -391,9 +392,9 @@
 
 <!-- PRELOADER KATMANI (%0 - %100) -->
 <div id="preloader">
-  <div style="font-size:20px; font-weight:bold;">Sisledere Davası Hazırlanıyor</div>
+  <div style="font-size:20px; font-weight:bold;">Sislidere Davası Hazırlanıyor</div>
   <div class="pre-bar-wrap"><div class="pre-bar" id="preBar"></div></div>
-  <div class="pre-text" id="preText">%0 - Çevrimdışı dosyalar indiriliyor...</div>
+  <div class="pre-text" id="preText">%0 - Dosyalar yükleniyor...</div>
 </div>
 
 <!-- iOS SAFARI YÖNLENDİRME MODALI -->
@@ -609,7 +610,6 @@
 <script>
 /* ---------- PRELOADER YÜKLEME ÇUBUĞU SCRIPT'İ ---------- */
 const DOSYA_LISTESI = [
-  'style.css', 'ogretici.css', 'engine.js', 'data/game_config.json', 'data/days/day1.json',
   'assets/arayuz/harita.webp', 'assets/arayuz/defter.webp', 'assets/arayuz/tokmak.webp',
   'assets/arayuz/buyutec.webp', 'assets/arayuz/el.webp', 'assets/arayuz/ayak.webp',
   'assets/arayuz/geri.webp', 'assets/arayuz/kulak.webp', 'assets/arayuz/uyku.webp',
@@ -628,7 +628,7 @@ function tumunuIndir() {
       indirilen++;
       const yuzde = Math.floor((indirilen / DOSYA_LISTESI.length) * 100);
       document.getElementById('preBar').style.width = yuzde + '%';
-      document.getElementById('preText').textContent = `%${yuzde} - Dosyalar telefon hafızasına yükleniyor...`;
+      document.getElementById('preText').textContent = `%${yuzde} - Dosyalar yükleniyor...`;
       if (indirilen >= DOSYA_LISTESI.length) setTimeout(bitirPreloader, 300);
     };
   });
@@ -955,7 +955,7 @@ document.getElementById('char-halit').addEventListener('click', () => {
     Ogretici.isaretle('koy_giris');
     Ogretici.iptal();
     char.src = "assets/karakterler/halit.webp";
-    sub.textContent = "Muhtar Halit: Sisledere Köyü'ne hoş geldiniz dedektif!";
+    sub.textContent = "Muhtar Halit: Sislidere Köyü'ne hoş geldiniz dedektif!";
     sub.classList.add('show');
     char.classList.add('talking');
     halitState = 1;
@@ -1030,6 +1030,11 @@ document.getElementById('tamEkranBtn').addEventListener('click', () => {
     const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
     if (exit) exit.call(document).catch(() => {});
   }
+});
+
+// Seslendirmen adı henüz yazılmamışsa ("[Seslendirmen Adı]") satırı gösterme
+document.querySelectorAll('.credit-voice').forEach(el => {
+  if (/^\[.*\]$/.test(el.textContent.trim())) el.style.display = 'none';
 });
 
 const aliIhsanZoom = zoomKur(document.querySelector('#popup-overlay .zoom-wrap'), document.getElementById('popupImg'));

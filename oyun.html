@@ -5,18 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Sisledere">
+<meta name="apple-mobile-web-app-title" content="Sislidere">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json?v=3">
 <link rel="apple-touch-icon" href="assets/icon-192.png?v=3">
 <title>Sislidere Davası</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=16">
-<link rel="stylesheet" href="ogretici.css?v=9">
-<link rel="stylesheet" href="vfx.css">
-<script src="vfx.js"></script>
-<script src="sfx.js"></script>
-
+<!-- SÜRÜM: her güncellemede SADECE bu sabiti değiştir; CSS/JS/JSON hepsi bununla istenir -->
+<script>
+  window.SD_VERSION = '20261004a';
+  (function () {
+    var v = '?v=' + window.SD_VERSION;
+    ['style.css', 'ogretici.css', 'oyun.css', 'vfx.css'].forEach(function (f) {
+      document.write('<link rel="stylesheet" href="' + f + v + '">');
+    });
+    // Sıra önemli: state -> events -> inventory -> dialogue -> modals -> tools -> engine
+    ['ogretici', 'yukleme', 'state', 'events', 'inventory', 'dialogue', 'modals', 'tools', 'engine', 'vfx', 'sfx'].forEach(function (f) {
+      document.write('<script src="' + f + '.js' + v + '"><\/script>');
+    });
+  })();
+</script>
+<!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+</script>
 <style>
   /* GİRİŞ / YÜKLENME EKRANI CSS */
   .intro-overlay {
@@ -249,9 +267,6 @@
     </div>
   </div>
 
-  <script src="engine.js?v=17"></script>
-  <script src="ogretici.js?v=4"></script>
-  <script src="yukleme.js?v=1"></script>
   <script>
     /* İNTRO / YÜKLENME AKIŞI YÖNETİMİ */
     window.addEventListener('DOMContentLoaded', () => {
@@ -289,13 +304,6 @@
       setTimeout(() => btn.classList.remove('tiklandi'), 260);
       setTimeout(ac, 90);
     }
-
-    const _updateDayBadgeOrijinal = typeof updateDayBadge !== 'undefined' ? updateDayBadge : function(){};
-    updateDayBadge = function () {
-      const rozet = document.getElementById('dayBadge');
-      rozet.src = 'assets/arayuz/takvim_gun' + currentDay + '.webp';
-      rozet.alt = 'Gün ' + currentDay;
-    };
 
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || !document.fullscreenEnabled) {
       document.getElementById('tamEkranBtn').style.display = 'none';
