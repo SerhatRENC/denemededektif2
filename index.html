@@ -459,15 +459,18 @@
       <img src="assets/arayuz/el.webp" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-takvim" style="left:28%;top:38%;width:5%;">
+    <!-- Takvim (8.5%, 19.0%) -->
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-takvim" style="left:8.5%;top:19.0%;width:5%;">
       <img src="assets/arayuz/buyutec.webp" alt="Takvim">
       <div class="nabiz-ikon-etiket">Takvim</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-fotograflar" style="left:62%;top:38%;width:5%;">
+    <!-- Fotoğraflar (21.4%, 30.4%) -->
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-fotograflar" style="left:21.4%;top:30.4%;width:5%;">
       <img src="assets/arayuz/buyutec.webp" alt="Fotoğraflar">
       <div class="nabiz-ikon-etiket">Fotoğraflar</div>
     </div>
-    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-harita" style="left:78%;top:42%;width:5%;">
+    <!-- Harita (49.8%, 22.8%) -->
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-harita" style="left:49.8%;top:22.8%;width:5%;">
       <img src="assets/arayuz/buyutec.webp" alt="Harita">
       <div class="nabiz-ikon-etiket">Harita</div>
     </div>
@@ -480,6 +483,30 @@
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
   </div>
+    <!-- 2A. OFİS TAKVİM -->
+  <div class="screen" id="scr-ofis-takvim" style="background-image:url('assets/odalar/sehir_ofis_takvim.webp')">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-ofis-takvim-geri" style="left:9%;top:57.5%;width:7.5%;">
+      <img src="assets/arayuz/geri.webp" alt="Geri">
+      <div class="nabiz-ikon-etiket">Geri</div>
+    </div>
+  </div>
+
+  <!-- 2B. OFİS FOTOĞRAF -->
+  <div class="screen" id="scr-ofis-fotograf" style="background-image:url('assets/odalar/sehir_ofis_fotograf.webp')">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-ofis-fotograf-geri" style="left:9%;top:57.5%;width:7.5%;">
+      <img src="assets/arayuz/geri.webp" alt="Geri">
+      <div class="nabiz-ikon-etiket">Geri</div>
+    </div>
+  </div>
+
+  <!-- 2C. OFİS HARİTA -->
+  <div class="screen" id="scr-ofis-harita" style="background-image:url('assets/odalar/sehir_ofis_harita.webp')">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-ofis-harita-geri" style="left:9%;top:57.5%;width:7.5%;">
+      <img src="assets/arayuz/geri.webp" alt="Geri">
+      <div class="nabiz-ikon-etiket">Geri</div>
+    </div>
+  </div>
+
   <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
@@ -1000,6 +1027,38 @@ function ofisDonusIkonlari() {
   }, IKON_BEKLEME_MS);
 }
 
+// Takvim İnceleme
+document.getElementById('btn-ofis-takvim').addEventListener('click', () => {
+  calSes('incele');
+  showScreen('scr-ofis-takvim');
+});
+document.getElementById('btn-ofis-takvim-geri').addEventListener('click', () => {
+  calSes('geri');
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
+});
+
+// Fotoğraflar İnceleme
+document.getElementById('btn-ofis-fotograflar').addEventListener('click', () => {
+  calSes('incele');
+  showScreen('scr-ofis-fotograf');
+});
+document.getElementById('btn-ofis-fotograf-geri').addEventListener('click', () => {
+  calSes('geri');
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
+});
+
+// Harita İnceleme
+document.getElementById('btn-ofis-harita').addEventListener('click', () => {
+  calSes('incele');
+  showScreen('scr-ofis-harita');
+});
+document.getElementById('btn-ofis-harita-geri').addEventListener('click', () => {
+  calSes('geri');
+  showScreen('scr-ofis');
+  ofisDonusIkonlari();
+});
 document.getElementById('btn-ofis-takvim').addEventListener('click', () => {
   calSes('incele');
   // Takvim görseli veya pop-up açma mantığını buraya ekleyebilirsin
