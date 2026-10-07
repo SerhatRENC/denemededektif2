@@ -21,6 +21,7 @@
       }
     });
   }
+  
 </script>
 
 <style>
@@ -603,11 +604,47 @@
 
   <audio id="aud-mesaj" src="assets/ses/mesaj.mp3" preload="auto"></audio>
   <audio id="aud-mors" src="assets/ses/mors_kodu.mp3" preload="auto"></audio>
+  <audio id="aud-menu-bg" src="assets/ses/gece_atmosfer_men.mp3" loop preload="auto"></audio>
+  <audio id="aud-button" src="assets/ses/button.mp3" preload="auto"></audio>
 
 </div>
 
 <script src="ogretici.js?v=4"></script>
 <script>
+// Ses Nesneleri ve Yardımcı Fonksiyonlar
+const menuBgAudio = document.getElementById('aud-menu-bg');
+const buttonAudio = document.getElementById('aud-button');
+
+function butonSesiCal() {
+  if (buttonAudio) {
+    buttonAudio.currentTime = 0;
+    buttonAudio.play().catch(() => {});
+  }
+}
+
+function menuSesiBaslat() {
+  if (menuBgAudio && menuBgAudio.paused) {
+    menuBgAudio.volume = 0.6;
+    menuBgAudio.play().catch(() => {});
+  }
+}
+
+function menuSesiDurdur() {
+  if (menuBgAudio) {
+    menuBgAudio.pause();
+    menuBgAudio.currentTime = 0;
+  }
+}
+
+// Oyuncunun ilk dokunuşunda/tıklamasında menü müzik atmosferini başlatır
+window.addEventListener('click', function ilkTiklama() {
+  const aktifEkran = document.querySelector('.screen.active')?.id;
+  if (aktifEkran === 'scr-ana' || aktifEkran === 'scr-hakkinda' || aktifEkran === 'scr-nasil') {
+    menuSesiBaslat();
+  }
+  window.removeEventListener('click', ilkTiklama);
+}, { once: true });
+
 /* ---------- PRELOADER YÜKLEME ÇUBUĞU SCRIPT'İ ---------- */
 const DOSYA_LISTESI = [
   'assets/arayuz/harita.webp', 'assets/arayuz/defter.webp', 'assets/arayuz/tokmak.webp',
@@ -835,18 +872,30 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-document.getElementById('btn-nasil').addEventListener('click', () => showScreen('scr-nasil'));
-document.getElementById('btn-nasil-geri').addEventListener('click', () => showScreen('scr-ana'));
+document.getElementById('btn-nasil').addEventListener('click', () => {
+  butonSesiCal();
+  showScreen('scr-nasil');
+});
+document.getElementById('btn-nasil-geri').addEventListener('click', () => {
+  butonSesiCal();
+  showScreen('scr-ana');
+});
 document.getElementById('btn-hakkinda').addEventListener('click', () => {
+  butonSesiCal();
   showScreen('scr-hakkinda');
 });
 document.getElementById('btn-hakkinda-geri').addEventListener('click', () => {
+  butonSesiCal();
   showScreen('scr-ana');
 });
 let mesajZamanlayici = null;
 let davaBasladi = false;
 document.getElementById('btn-oyna').addEventListener('click', () => {
   if (davaBasladi) return;
+
+  butonSesiCal();
+  menuSesiDurdur();
+
   davaBasladi = true;
   const katman = document.getElementById('dava-layer');
   const aud = document.getElementById('aud-mesaj');
@@ -864,7 +913,6 @@ document.getElementById('btn-oyna').addEventListener('click', () => {
     setTimeout(() => { davaBasladi = false; }, 2000);
   }, 2400);
 });
-
 document.getElementById('btn-telgraf').addEventListener('click', () => {
   clearTimeout(mesajZamanlayici);
   calSes('al');
