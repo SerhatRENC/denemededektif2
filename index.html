@@ -383,8 +383,30 @@
     opacity:0; transform:scale(.95); transition:opacity 1s ease, transform 1s ease;
   }
   #dava-layer.show #dava-text{ opacity:1; transform:scale(1); }
-</style>
-<link rel="stylesheet" href="ogretici.css?v=10">
+
+  /* Telgraf Bildirim Balonu */
+  .telgraf-balon {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #a93226;
+    color: var(--parchment);
+    border: 1px solid var(--accent);
+    font-size: clamp(10px, 1.2cqw, 13px);
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+    animation: balonZip 0.8s infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes balonZip {
+    from { transform: translateX(-50%) translateY(0); }
+    to { transform: translateX(-50%) translateY(-4px); }
+  }
+</style><link rel="stylesheet" href="ogretici.css?v=10">
 <link rel="stylesheet" href="vfx.css?v=11">
 <script src="vfx.js?v=11"></script>
 <script src="sfx.js"></script>
@@ -432,9 +454,22 @@
 
   <!-- 2. OFİS / ŞEHİR -->
   <div class="screen" id="scr-ofis" style="background-image:url('assets/odalar/ofis_sehir.webp')">
-    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:8%;">
+    <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-telgraf" style="left:14.6%;top:71.5%;width:4%;">
+      <div class="telgraf-balon">💬 TELGRAF MESAJI GELDİ</div>
       <img src="assets/arayuz/el.webp" alt="Telgrafa Bas">
       <div class="nabiz-ikon-etiket">Bak</div>
+    </div>
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-takvim" style="left:28%;top:38%;width:5%;">
+      <img src="assets/arayuz/buyutec.webp" alt="Takvim">
+      <div class="nabiz-ikon-etiket">Takvim</div>
+    </div>
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-fotograflar" style="left:62%;top:38%;width:5%;">
+      <img src="assets/arayuz/buyutec.webp" alt="Fotoğraflar">
+      <div class="nabiz-ikon-etiket">Fotoğraflar</div>
+    </div>
+    <div class="nabiz-ikon-wrap gizli" id="btn-ofis-harita" style="left:78%;top:42%;width:5%;">
+      <img src="assets/arayuz/buyutec.webp" alt="Harita">
+      <div class="nabiz-ikon-etiket">Harita</div>
     </div>
     <div class="nabiz-ikon-wrap gizli" id="btn-ofis-incele" style="left:50%;top:72%;width:8%;">
       <img src="assets/arayuz/buyutec.webp" alt="İncele">
@@ -445,7 +480,6 @@
       <div class="nabiz-ikon-etiket">Git</div>
     </div>
   </div>
-
   <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
@@ -604,7 +638,7 @@
 
   <audio id="aud-mesaj" src="assets/ses/mesaj.mp3" preload="auto"></audio>
   <audio id="aud-mors" src="assets/ses/mors_kodu.mp3" preload="auto"></audio>
-  <audio id="aud-menu-bg" src="assets/ses/gece_atmosfer_men.mp3" loop preload="auto"></audio>
+  <audio id="aud-menu-bg" src="assets/ses/gece_atmosfer_menu.mp3" loop preload="auto"></audio>
   <audio id="aud-button" src="assets/ses/button.mp3" preload="auto"></audio>
 
 </div>
@@ -960,9 +994,26 @@ function ofisDonusIkonlari() {
   setTimeout(() => {
     document.getElementById('btn-ofis-incele').classList.remove('gizli');
     document.getElementById('btn-kapi-ayak').classList.remove('gizli');
+    document.getElementById('btn-ofis-takvim').classList.remove('gizli');
+    document.getElementById('btn-ofis-fotograflar').classList.remove('gizli');
+    document.getElementById('btn-ofis-harita').classList.remove('gizli');
   }, IKON_BEKLEME_MS);
 }
 
+document.getElementById('btn-ofis-takvim').addEventListener('click', () => {
+  calSes('incele');
+  // Takvim görseli veya pop-up açma mantığını buraya ekleyebilirsin
+});
+
+document.getElementById('btn-ofis-fotograflar').addEventListener('click', () => {
+  calSes('incele');
+  // Fotoğraflar görseli veya pop-up açma mantığını buraya ekleyebilirsin
+});
+
+document.getElementById('btn-ofis-harita').addEventListener('click', () => {
+  calSes('incele');
+  // Harita görseli veya pop-up açma mantığını buraya ekleyebilirsin
+});
 document.getElementById('popup-close').addEventListener('click', () => {
   calSes('geri');
   document.getElementById('popup-overlay').classList.remove('show');
