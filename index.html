@@ -513,9 +513,20 @@
 
   <!-- 3. MORS KAĞIDI -->
   <div class="screen" id="scr-mors" style="background-image:url('assets/odalar/mors_kagidi.webp')">
+    <!-- İlk Baştaki Dinle Butonu -->
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-mors-tekrar" style="left:17.7%;top:59.2%;width:8%;">
       <img src="assets/arayuz/kulak.webp" alt="Mesajı Dinle">
       <div class="nabiz-ikon-etiket">Dinle</div>
+    </div>
+
+    <!-- Dinle'ye Basılınca Açılacak Oynat/Durdur ve Baştan Kontrolleri -->
+    <div class="nabiz-ikon-wrap" id="btn-mors-playpause" style="left:13.5%;top:59.2%;width:7%;display:none;">
+      <img src="assets/arayuz/kulak.webp" alt="Oynat/Durdur">
+      <div class="nabiz-ikon-etiket" id="lbl-mors-playpause">Durdur</div>
+    </div>
+    <div class="nabiz-ikon-wrap" id="btn-mors-restart" style="left:22.0%;top:59.2%;width:7%;display:none;">
+      <img src="assets/arayuz/kulak.webp" alt="Baştan Oynat">
+      <div class="nabiz-ikon-etiket">Baştan</div>
     </div>
 
     <div class="mors-yazi-alani">
@@ -523,7 +534,6 @@
     </div>
     <button class="btn show" id="btn-mors-ilerle" style="left:82.0%;top:76.0%;">İlerle</button>
   </div>
-
   <!-- 4. RAF -->
   <div class="screen" id="scr-raf" style="background-image:url('assets/odalar/raf.webp')">
     <div class="nabiz-ikon-wrap gec-bekle gizli" id="btn-dosya-incele" style="left:64.4%;top:47.4%;width:8%;">
@@ -1013,12 +1023,45 @@ function normalizeTR(str) {
     .toUpperCase();
 }
 
-document.getElementById('btn-mors-tekrar').addEventListener('click', () => {
-  const aud = document.getElementById('aud-mors');
-  aud.currentTime = 0;
-  aud.play().catch(() => {});
+const audMors = document.getElementById('aud-mors');
+const btnMorsTekrar = document.getElementById('btn-mors-tekrar');
+const btnMorsPlayPause = document.getElementById('btn-mors-playpause');
+const btnMorsRestart = document.getElementById('btn-mors-restart');
+const lblMorsPlayPause = document.getElementById('lbl-mors-playpause');
+
+// İlk 'Dinle' butonuna basıldığında
+btnMorsTekrar.addEventListener('click', () => {
+  btnMorsTekrar.style.display = 'none';
+  btnMorsPlayPause.style.display = 'flex';
+  btnMorsRestart.style.display = 'flex';
+  
+  audMors.currentTime = 0;
+  audMors.play().catch(() => {});
+  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
 });
 
+// Oynat / Durdur toggle mantığı (Harf harf çözmek için duraklatma)
+btnMorsPlayPause.addEventListener('click', () => {
+  if (audMors.paused) {
+    audMors.play().catch(() => {});
+    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+  } else {
+    audMors.pause();
+    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Oynat';
+  }
+});
+
+// Baştan tekrar oynatma
+btnMorsRestart.addEventListener('click', () => {
+  audMors.currentTime = 0;
+  audMors.play().catch(() => {});
+  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+});
+
+// Ses bittiğinde etiketi otomatik 'Oynat' yap
+audMors.addEventListener('ended', () => {
+  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Oynat';
+});
 document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
   const inputEl = document.getElementById('mors-input');
   const inputVal = normalizeTR(inputEl.value);
