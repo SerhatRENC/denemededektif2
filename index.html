@@ -316,46 +316,50 @@
 
   .hakkinda-scroll{
     position:absolute; inset:0; overflow-y:auto;
-    background:var(--parchment-dark); padding:4% 5%;
+    background:var(--parchment-dark); padding:2% 3%;
   }
   .hakkinda-panel{
-    position:relative; max-width:700px; margin:0 auto;
+    position:relative; max-width:92%; margin:0 auto;
     background:var(--parchment); color:var(--ink);
-    border-radius:10px; padding:28px 24px 40px; box-shadow:0 10px 40px rgba(0,0,0,.5);
+    border-radius:10px; padding:18px 24px 24px; box-shadow:0 10px 40px rgba(0,0,0,.5);
+  }
+  .panel-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;
   }
   .hakkinda-geri{
-    position:sticky; top:0; float:right;
+    position:sticky; top:0; float:right; z-index:10;
     background:var(--accent); color:var(--parchment);
-    border:none; border-radius:6px; padding:8px 14px;
-    font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; margin-bottom:10px;
+    border:none; border-radius:6px; padding:6px 14px;
+    font-family:inherit; font-size:14px; font-weight:bold; cursor:pointer; margin-bottom:8px;
   }
-  .hakkinda-baslik{ font-size:clamp(24px,3.6cqw,36px); margin-bottom:14px; clear:both; }
-  .hakkinda-alt-baslik{ font-size:clamp(18px,2.4cqw,23px); margin:22px 0 10px; color:var(--accent); }
-  .hakkinda-metin p{ font-size:clamp(16px,1.7cqw,19px); line-height:1.6; margin-bottom:10px; }
+  .hakkinda-baslik{ font-size:clamp(20px,3cqw,30px); margin-bottom:10px; clear:both; }
+  .hakkinda-alt-baslik{ font-size:clamp(15px,1.8cqw,19px); margin:12px 0 6px; color:var(--accent); }
+  .hakkinda-metin p{ font-size:clamp(13px,1.4cqw,16px); line-height:1.45; margin-bottom:6px; }
   .hakkinda-metin a{ color:var(--accent); }
-  .hakkinda-blok{ margin-top:6px; }
-  .hakkinda-blok-baslik{ font-weight:bold; font-size:16px; margin-bottom:6px; }
+  .hakkinda-blok{ margin-top:4px; }
+  .hakkinda-blok-baslik{ font-weight:bold; font-size:14px; margin-bottom:3px; }
   .credits-grid{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:14px; margin-top:8px;
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-top:6px;
   }
-  .credit-item{ text-align:center; font-size:13px; }
+  .credit-item{ text-align:center; font-size:11px; }
   .credit-item img{
-    width:100%; aspect-ratio:3/4; object-fit:contain; border-radius:8px;
-    border:2px solid var(--accent); margin-bottom:5px; background:#00000012;
+    width:100%; aspect-ratio:3/4; object-fit:contain; border-radius:6px;
+    border:1.5px solid var(--accent); margin-bottom:3px; background:#00000012;
   }
-  .credit-name{ font-weight:bold; }
-  .credit-voice{ color:#5a4530; font-size:12px; }
-  @media (max-width:600px){ .credits-grid{ grid-template-columns:repeat(3,1fr); } }
-
+  .credit-name{ font-weight:bold; font-size:11px; }
+  .credit-voice{ color:#5a4530; font-size:10px; }
+  @media (max-width:650px){
+    .panel-grid{ grid-template-columns:1fr; }
+    .credits-grid{ grid-template-columns:repeat(4,1fr); }
+  }
   .nasil-ikonlar{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px 18px; margin:8px 0 6px;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:6px 10px; margin:6px 0;
   }
-  .nasil-madde{ display:flex; align-items:center; gap:10px; font-size:clamp(16px,1.7cqw,19px); line-height:1.4; }
+  .nasil-madde{ display:flex; align-items:center; gap:8px; font-size:clamp(12px,1.3cqw,15px); line-height:1.3; }
   .nasil-madde img{
-    width:44px; height:44px; flex:none; object-fit:contain;
-    background:var(--parchment-dark); border-radius:8px; padding:5px;
+    width:36px; height:36px; flex:none; object-fit:contain;
+    background:var(--parchment-dark); border-radius:6px; padding:4px;
   }
-
   .donme-uyarisi{
     display:none; position:fixed;inset:0;z-index:9999;
     background:#0a0806;color:var(--parchment);
@@ -572,36 +576,46 @@
       <div class="hakkinda-panel">
         <button class="hakkinda-geri" id="btn-nasil-geri">‹ Ana Menü</button>
         <h2 class="hakkinda-baslik">Nasıl Oynanır?</h2>
-        <div class="hakkinda-metin">
-          <p>Sislidere Köyü'nde yaşanan ölümlerin ardındaki gerçeği araştırıyorsun. Köyü gez, insanlarla konuş, ipuçlarını topla ve doğru kişiyi bul.</p>
+        
+        <div class="panel-grid">
+          <!-- Sol Kolon -->
+          <div class="panel-col">
+            <div class="hakkinda-metin">
+              <p>Sislidere Köyü'nde yaşanan ölümlerin ardındaki gerçeği araştırıyorsun. Köyü gez, insanlarla konuş, ipuçlarını topla ve doğru kişiyi bul.</p>
+            </div>
+
+            <h3 class="hakkinda-alt-baslik">Simgeler</h3>
+            <div class="hakkinda-metin"><p>Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir.</p></div>
+            <div class="nasil-ikonlar">
+              <div class="nasil-madde"><img src="assets/arayuz/el.webp" alt=""><div><b>Bak</b> — dokun</div></div>
+              <div class="nasil-madde"><img src="assets/arayuz/buyutec.webp" alt=""><div><b>İncele</b> — gör</div></div>
+              <div class="nasil-madde"><img src="assets/arayuz/kulak.webp" alt=""><div><b>Dinle</b> — çal</div></div>
+              <div class="nasil-madde"><img src="assets/arayuz/ayak.webp" alt=""><div><b>Git</b> — geç</div></div>
+              <div class="nasil-madde"><img src="assets/arayuz/geri.webp" alt=""><div><b>Geri</b> — dön</div></div>
+              <div class="nasil-madde"><img src="assets/arayuz/uyku.webp" alt=""><div><b>Uyku</b> — uyu</div></div>
+            </div>
+          </div>
+
+          <!-- Sağ Kolon -->
+          <div class="panel-col">
+            <h3 class="hakkinda-alt-baslik" style="margin-top:0;">Sohbet</h3>
+            <div class="hakkinda-metin">
+              <p>Etrafında hafif bir parıltı olan karakterler tıklanabilir. Konuşmak için karaktere tıkla, sonraki cümleye geçmek için tekrar tıkla.</p>
+            </div>
+
+            <h3 class="hakkinda-alt-baslik">Harita ve Not Defteri</h3>
+            <div class="hakkinda-metin">
+              <p>Sağ alttaki harita, köyde gitmek istediğin yere hemen ulaşmanı sağlar. Not defterine ipuçlarını yazabilir, şüphelilerin yanına not alabilirsin.</p>
+            </div>
+
+            <h3 class="hakkinda-alt-baslik">Günler</h3>
+            <div class="hakkinda-metin">
+              <p>Oyun yedi gün sürer. Ofisteki yatağa tıklayıp uyuduğunda bir sonraki güne geçersin. Uyumadan önce ipuçlarını topladığından emin ol.</p>
+              <p><b>Yedinci günün sonunda suçlamanı yapacaksın. Bol şans!</b></p>
+            </div>
+          </div>
         </div>
 
-        <h3 class="hakkinda-alt-baslik">Simgeler</h3>
-        <div class="hakkinda-metin"><p>Ekranda nabız gibi atan simgeler tıklanabilir noktaları gösterir.</p></div>
-        <div class="nasil-ikonlar">
-          <div class="nasil-madde"><img src="assets/arayuz/el.webp" alt=""><div><b>Bak</b> — nesneye dokun</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/buyutec.webp" alt=""><div><b>İncele</b> — belgeyi ya da nesneyi yakından gör</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/kulak.webp" alt=""><div><b>Dinle</b> — sesi çal</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/ayak.webp" alt=""><div><b>Git</b> — başka bir yere geç</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/geri.webp" alt=""><div><b>Geri</b> — bir önceki yere dön</div></div>
-          <div class="nasil-madde"><img src="assets/arayuz/uyku.webp" alt=""><div><b>Uyku</b> — bir sonraki güne geç</div></div>
-        </div>
-
-        <h3 class="hakkinda-alt-baslik">Sohbet</h3>
-        <div class="hakkinda-metin">
-          <p>Etrafında hafif bir parıltı olan karakterler tıklanabilir. Konuşmak için karaktere tıkla, sonraki cümleye geçmek için tekrar tıkla.</p>
-        </div>
-
-        <h3 class="hakkinda-alt-baslik">Harita ve not defteri</h3>
-        <div class="hakkinda-metin">
-          <p>Sağ alttaki harita, köyde gitmek istediğin yere hemen ulaşmanı sağlar. Not defterine ipuçlarını yazabilir, şüphelilerin yanına not alabilir, çizim yapabilirsin.</p>
-        </div>
-
-        <h3 class="hakkinda-alt-baslik">Günler</h3>
-        <div class="hakkinda-metin">
-          <p>Oyun yedi gün sürer. Ofisteki yatağa tıklayıp uyuduğunda bir sonraki güne geçersin. Bazı yerler belirli günlerde kapalıdır. Uyumadan önce ipuçlarını topladığından emin ol.</p>
-          <p>Yedinci günün sonunda suçlamanı yapacaksın. Bol şans dedektif!</p>
-        </div>
       </div>
     </div>
   </div>
@@ -612,44 +626,51 @@
       <div class="hakkinda-panel">
         <button class="hakkinda-geri" id="btn-hakkinda-geri">‹ Ana Menü</button>
         <h2 class="hakkinda-baslik">Oyun Hakkında</h2>
-        <div class="hakkinda-metin">
-          <p>Merhaba! Ben RENC.</p>
-          <p>Hikaye anlatıcılığına ve içerik üretmeye olan tutkumla RENC YouTube Kanalı üzerinden fikirlerimi, projelerimi ve dünyamı sizlerle paylaşıyorum.</p>
-          <p>Oyun geliştirme serüvenim, fiziksel olarak tasarlayıp hazırladığım zarf içi dedektiflik oyunuyla başladı. Masada dokunarak, zarfları açıp ipuçlarını birleştirerek oynanan o ilk deneyimin ardından, hikayelerimizi ve gizemlerimizi çok daha geniş kitlelere ulaştırabilmek adına ikinci oyunumuzla birlikte dijital dünyaya adım attık.</p>
-          <p>Bu projeyi hayata geçirirken amacımız; sizi sürükleyici bir atmosfere çekmek, detaylarda gizlenmiş sırları çözdürürken unutulmaz bir dedektiflik deneyimi yaşatmaktı. Umarız oyunu oynarken bizlerin hazırlarken duyduğu heyecanı ve keyfi hissedersiniz!</p>
-          <p>İyi seyirler ve bol şans dedektif!</p>
-        </div>
+        
+        <div class="panel-grid">
+          <!-- Sol Kolon: Hikaye ve Sosyal Medya -->
+          <div class="panel-col">
+            <div class="hakkinda-metin">
+              <p>Merhaba! Ben RENC.</p>
+              <p>Hikaye anlatıcılığına ve içerik üretmeye olan tutkumla RENC YouTube Kanalı üzerinden fikirlerimi, projelerimi ve dünyamı sizlerle paylaşıyorum.</p>
+              <p>Oyun geliştirme serüvenim, fiziksel olarak tasarlayıp hazırladığım zarf içi dedektiflik oyunuyla başladı. Masada dokunarak, zarfları açıp ipuçlarını birleştirerek oynanan o ilk deneyimin ardından, hikayelerimizi ve gizemlerimizi çok daha geniş kitlelere ulaştırabilmek adına ikinci oyunumuzla birlikte dijital dünyaya adım attık.</p>
+              <p>Bu projeyi hayata geçirirken amacımız; sizi sürükleyici bir atmosfere çekmek, detaylarda gizlenmiş sırları çözdürürken unutulmaz bir dedektiflik deneyimi yaşatmaktı.</p>
+            </div>
 
-        <h3 class="hakkinda-alt-baslik">🎬 Emeği Geçenler</h3>
+            <h3 class="hakkinda-alt-baslik">🌐 Sosyal Medya &amp; İletişim</h3>
+            <p class="hakkinda-metin"><a href="https://youtube.com/@RENC_official" target="_blank" rel="noopener">YouTube: youtube.com/@RENC_official</a></p>
+          </div>
 
-        <div class="hakkinda-blok">
-          <div class="hakkinda-blok-baslik">✍️ Hikaye &amp; Senaryo</div>
-          <p>RENC</p>
-          <p>Aylin Kılınçarslan</p>
-        </div>
+          <!-- Sağ Kolon: Emeği Geçenler & Kadro -->
+          <div class="panel-col">
+            <h3 class="hakkinda-alt-baslik" style="margin-top:0;">🎬 Emeği Geçenler</h3>
 
-        <div class="hakkinda-blok">
-          <div class="hakkinda-blok-baslik">🎙️ Seslendirme Kadrosu</div>
-          <div class="credits-grid">
-            <div class="credit-item"><img src="assets/karakterler/anselm.webp" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/aylin.webp" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/cabbar.webp" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/cevdet.webp" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/halit.webp" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/kamuran.webp" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/mustafa.webp" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/nadire.webp" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/polis.webp" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
-            <div class="credit-item"><img src="assets/karakterler/riza.webp" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+            <div class="hakkinda-blok">
+              <div class="hakkinda-blok-baslik">✍️ Hikaye &amp; Senaryo</div>
+              <p>RENC &nbsp;|&nbsp; Aylin Kılınçarslan</p>
+            </div>
+
+            <div class="hakkinda-blok">
+              <div class="hakkinda-blok-baslik">🎙️ Seslendirme Kadrosu</div>
+              <div class="credits-grid">
+                <div class="credit-item"><img src="assets/karakterler/anselm.webp" alt="Anselm"><div class="credit-name">Anselm</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/aylin.webp" alt="Aylin"><div class="credit-name">Aylin</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/cabbar.webp" alt="Cabbar"><div class="credit-name">Cabbar</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/cevdet.webp" alt="Cevdet"><div class="credit-name">Cevdet</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/halit.webp" alt="Halit"><div class="credit-name">Halit</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/kamuran.webp" alt="Kamuran"><div class="credit-name">Kamuran</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/mustafa.webp" alt="Mustafa"><div class="credit-name">Mustafa</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/nadire.webp" alt="Nadire"><div class="credit-name">Nadire</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/polis.webp" alt="Polis"><div class="credit-name">Polis</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+                <div class="credit-item"><img src="assets/karakterler/riza.webp" alt="Rıza"><div class="credit-name">Rıza</div><div class="credit-voice">[Seslendirmen Adı]</div></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <h3 class="hakkinda-alt-baslik">🌐 Sosyal Medya &amp; İletişim</h3>
-        <p class="hakkinda-metin"><a href="https://youtube.com/@RENC_official" target="_blank" rel="noopener">YouTube: youtube.com/@RENC_official</a></p>
       </div>
     </div>
   </div>
-
   <div id="popup-overlay">
     <button id="popup-close">×</button>
     <div class="zoom-wrap">
