@@ -521,14 +521,13 @@
 
     <!-- Dinle'ye Basılınca Açılacak Oynat/Durdur ve Baştan Kontrolleri -->
     <div class="nabiz-ikon-wrap" id="btn-mors-playpause" style="left:13.5%;top:59.2%;width:7%;display:none;">
-      <img src="assets/arayuz/kulak.webp" alt="Oynat/Durdur">
+      <img id="img-mors-playpause" src="assets/arayuz/durdur.webp" alt="Oynat/Durdur">
       <div class="nabiz-ikon-etiket" id="lbl-mors-playpause">Durdur</div>
     </div>
     <div class="nabiz-ikon-wrap" id="btn-mors-restart" style="left:22.0%;top:59.2%;width:7%;display:none;">
-      <img src="assets/arayuz/kulak.webp" alt="Baştan Oynat">
+      <img src="assets/arayuz/tekrar.webp" alt="Baştan Oynat">
       <div class="nabiz-ikon-etiket">Baştan</div>
     </div>
-
     <div class="mors-yazi-alani">
       <input type="text" id="mors-input" placeholder="..." maxlength="30" autocomplete="off">
     </div>
@@ -742,11 +741,11 @@ const DOSYA_LISTESI = [
   'assets/arayuz/harita.webp', 'assets/arayuz/defter.webp', 'assets/arayuz/tokmak.webp',
   'assets/arayuz/buyutec.webp', 'assets/arayuz/el.webp', 'assets/arayuz/ayak.webp',
   'assets/arayuz/geri.webp', 'assets/arayuz/kulak.webp', 'assets/arayuz/uyku.webp',
+  'assets/arayuz/durdur.webp', 'assets/arayuz/tekrar.webp', 'assets/arayuz/oynat.webp',
   'assets/odalar/giris.webp', 'assets/odalar/ofis_sehir.webp', 'assets/odalar/mors_kagidi.webp',
   'assets/odalar/raf.webp', 'assets/odalar/sislidere_dosya.webp', 'assets/odalar/at_arabasi.webp',
   'assets/odalar/koy_giris.webp', 'assets/odalar/dedektif_ofis.webp'
 ];
-
 let indirilen = 0;
 function tumunuIndir() {
   if (DOSYA_LISTESI.length === 0) { bitirPreloader(); return; }
@@ -1027,7 +1026,18 @@ const audMors = document.getElementById('aud-mors');
 const btnMorsTekrar = document.getElementById('btn-mors-tekrar');
 const btnMorsPlayPause = document.getElementById('btn-mors-playpause');
 const btnMorsRestart = document.getElementById('btn-mors-restart');
+const imgMorsPlayPause = document.getElementById('img-mors-playpause');
 const lblMorsPlayPause = document.getElementById('lbl-mors-playpause');
+
+function morsDurumAyarla(caliyor) {
+  if (caliyor) {
+    if (imgMorsPlayPause) imgMorsPlayPause.src = 'assets/arayuz/durdur.webp';
+    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+  } else {
+    if (imgMorsPlayPause) imgMorsPlayPause.src = 'assets/arayuz/oynat.webp';
+    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Oynat';
+  }
+}
 
 // İlk 'Dinle' butonuna basıldığında
 btnMorsTekrar.addEventListener('click', () => {
@@ -1037,17 +1047,17 @@ btnMorsTekrar.addEventListener('click', () => {
   
   audMors.currentTime = 0;
   audMors.play().catch(() => {});
-  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+  morsDurumAyarla(true);
 });
 
-// Oynat / Durdur toggle mantığı (Harf harf çözmek için duraklatma)
+// Oynat / Durdur toggle mantığı
 btnMorsPlayPause.addEventListener('click', () => {
   if (audMors.paused) {
     audMors.play().catch(() => {});
-    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+    morsDurumAyarla(true);
   } else {
     audMors.pause();
-    if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Oynat';
+    morsDurumAyarla(false);
   }
 });
 
@@ -1055,12 +1065,12 @@ btnMorsPlayPause.addEventListener('click', () => {
 btnMorsRestart.addEventListener('click', () => {
   audMors.currentTime = 0;
   audMors.play().catch(() => {});
-  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Durdur';
+  morsDurumAyarla(true);
 });
 
-// Ses bittiğinde etiketi otomatik 'Oynat' yap
+// Ses bittiğinde ikonu ve etiketi otomatik 'Oynat' durumuna getir
 audMors.addEventListener('ended', () => {
-  if (lblMorsPlayPause) lblMorsPlayPause.textContent = 'Oynat';
+  morsDurumAyarla(false);
 });
 document.getElementById('btn-mors-ilerle').addEventListener('click', () => {
   const inputEl = document.getElementById('mors-input');
