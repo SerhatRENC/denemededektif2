@@ -83,12 +83,14 @@ function openRegisteredModal(name) {
   const registry = {
     polaroidIslenmis: typeof openPolaroidIslenmisModal === 'function' ? openPolaroidIslenmisModal : null,
     cevdetNot: typeof openCevdetNotModal === 'function' ? openCevdetNotModal : null,
-    anahtar: typeof showAnahtarAcquisitionModal === 'function' ? showAnahtarAcquisitionModal : null
+    anahtar: typeof showAnahtarAcquisitionModal === 'function' ? showAnahtarAcquisitionModal : null,
+    gunlukModal: typeof openGunlukModal === 'function' ? openGunlukModal : null,
+    imzaKiyaslama: typeof openImzaKiyaslamaModal === 'function' ? openImzaKiyaslamaModal : null,
+    elYazisiKiyaslama: typeof openElYazisiModal === 'function' ? openElYazisiModal : null
   };
   if (registry[name]) registry[name]();
   else console.warn('Tanımsız modal:', name);
 }
-
 /* Eylemler: setState, setFlag, giveItem, removeItem, delay, render, subtitle, modal */
 async function runActions(list) {
   for (const a of list) {
