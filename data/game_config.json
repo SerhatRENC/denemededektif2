@@ -247,9 +247,20 @@
       "label": "Cadının Evi", "background": "assets/odalar/cadi.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
-    "muhtar": {
+        "muhtar": {
       "label": "Muhtarlık", "background": "assets/odalar/muhtar.webp",
-      "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" },
+        { "x": "80%", "y": "55%", "type": "navigate", "target": "muhtarlik_dosya_odasi", "icon": "assets/arayuz/ayak.webp", "iconWidth": "5%", "label": "Dosya Odası", "hint": "Dosya odasına geç", "showIf": { "flag": "day4_halit_izin_verdi" } }
+      ]
+    },
+        "muhtarlik_dosya_odasi": {
+      "label": "Muhtarlık Dosya Odası",
+      "background": "assets/odalar/muhtarlik_dosya_odasi.webp",
+      "hotspots": [
+        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "muhtar", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Muhtarlığa dön" },
+        { "x": "30%", "y": "50%", "type": "imzaKiyaslamaModal", "icon": "assets/arayuz/buyutec.webp", "label": "Tapu ve İmzalar", "hint": "Belgeleri İncele ve İmzaları Karşılaştır" }
+      ]
     },
     "demirci": {
       "label": "Demirci", "background": "assets/odalar/demirci.webp",
