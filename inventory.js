@@ -9,7 +9,8 @@ const ITEM_DEFS = {
   polaroid_islenmis:{ img: 'assets/arayuz/poloroid_islenmis.webp',       view: 'assets/arayuz/poloroid_islenmis.webp',    label: 'İşlenmiş Polaroid', title: '(İşlenmiş) Polaroid Fotoğraf' },
   cevdet_not:       { img: 'assets/arayuz/cevdet_not.webp',              view: 'assets/arayuz/cevdet_not.webp',           label: "Cevdet'in Notu",    title: "Cevdet'in Notu" },
   yanik_kagit:      { img: 'assets/tiklanabilir/yanik_kagit_tiklanabilir.webp', view: 'assets/arayuz/yanik_kagit_incele.webp', label: 'Yanık Kağıt',     title: 'Yanık Kağıt' },
-  gazeteci_dosyasi: { img: 'assets/arayuz/gazeteci_dosya.webp',          view: null,                                      label: 'Dosya',             title: 'Gazeteci Dosyası' }
+  gazeteci_dosyasi: { img: 'assets/arayuz/gazeteci_dosya.webp',          view: null,                                      label: 'Dosya',             title: 'Gazeteci Dosyası' },
+  gunluk:           { img: 'assets/arayuz/gunluk.webp', view: 'assets/arayuz/gunluk.webp', label: 'Günlük', title: "Şefika'nın Günlüğü" }
 };
 
 function openEnvanterEsyasi(id) {

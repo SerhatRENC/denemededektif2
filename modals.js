@@ -341,9 +341,8 @@ function imzaNoktaTikla(e) {
   const dot = document.createElement('div');
   dot.className = 'imza-halka';
   dot.style.position = 'absolute';
-  dot.style.left = `calc(${img.offsetLeft}px + ${xPercent}%)`;
-  dot.style.top = `calc(${img.offsetTop}px + ${yPercent}%)`;
-  dot.style.width = '20px';
+  dot.style.left = (img.offsetLeft + (parseFloat(xPercent) / 100) * img.offsetWidth) + 'px';
+  dot.style.top = (img.offsetTop + (parseFloat(yPercent) / 100) * img.offsetHeight) + 'px';  dot.style.width = '20px';
   dot.style.height = '20px';
   dot.style.border = '2px solid #c0392b';
   dot.style.borderRadius = '50%';

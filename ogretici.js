@@ -165,7 +165,7 @@ const Ogretici = (function () {
 /* Düşük gecikmeli ses motoru: kısa arayüz sesleri önceden indirilip çözülür (WebAudio),
    tıklama anında dosya yüklemesi beklenmez. Bulunamazsa eski yönteme (Audio) düşer. */
 const SesMotoru = (function () {
-  const ONYUKLEME = ['al', 'geri', 'harita', 'incele', 'kapi', 'kapi_git', 'kilit', 'kilit_ac', 'kitap', 'sayfa', 'take', 'kimse_yok'];
+  const ONYUKLEME = ['al', 'geri', 'harita', 'incele', 'kapi', 'kapi_git', 'kilit', 'kilit_ac', 'kitap', 'sayfa', 'take', 'kimse_yok', 'kapan', 'hata', 'sabah', 'at_arabasi'];
   const tamponlar = {};   // ad -> AudioBuffer | null (yükleniyor) | false (dosya yok)
   let ctx = null;
 

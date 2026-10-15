@@ -127,9 +127,15 @@ function renderSceneCharacter(ch, stage) {
 }
 
 function getDialogForRoom(roomKey, defaultDialog) {
-  return (CURRENT_DAY_DATA && CURRENT_DAY_DATA.dialogs && CURRENT_DAY_DATA.dialogs[roomKey]) || defaultDialog;
+  const d = CURRENT_DAY_DATA || {};
+  const vs = d.dialogVariants && d.dialogVariants[roomKey];
+  if (vs) {
+    for (const v of vs) {
+      if (checkCond(v.if) && d.dialogs && d.dialogs[v.key]) return d.dialogs[v.key];
+    }
+  }
+  return (d.dialogs && d.dialogs[roomKey]) || defaultDialog;
 }
-
 function toggleCharacterLine(ch) {
   document.getElementById('sceneCharacter')?.remove();
   // O gün için diyalog yazılmamışsa oyuncuya placeholder yerine nötr bir satır gösterilir

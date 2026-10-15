@@ -729,6 +729,7 @@ function menuSesiDurdur() {
 
 // Oyuncunun ilk dokunuşunda/tıklamasında menü müzik atmosferini başlatır
 window.addEventListener('click', function ilkTiklama() {
+  if (davaBasladi) return;
   const aktifEkran = document.querySelector('.screen.active')?.id;
   if (aktifEkran === 'scr-ana' || aktifEkran === 'scr-hakkinda' || aktifEkran === 'scr-nasil') {
     menuSesiBaslat();
@@ -1001,7 +1002,7 @@ document.getElementById('btn-oyna').addEventListener('click', () => {
       aud.play().catch(() => {});
     }, 2000);
     setTimeout(() => katman.classList.remove('show'), 700);
-    setTimeout(() => { davaBasladi = false; }, 2000);
+    setTimeout(() => { davaBasladi = false; }, 2600);
   }, 2400);
 });
 document.getElementById('btn-telgraf').addEventListener('click', () => {
@@ -1132,20 +1133,6 @@ document.getElementById('btn-ofis-harita-geri').addEventListener('click', () => 
   calSes('geri');
   showScreen('scr-ofis');
   ofisDonusIkonlari();
-});
-document.getElementById('btn-ofis-takvim').addEventListener('click', () => {
-  calSes('incele');
-  // Takvim görseli veya pop-up açma mantığını buraya ekleyebilirsin
-});
-
-document.getElementById('btn-ofis-fotograflar').addEventListener('click', () => {
-  calSes('incele');
-  // Fotoğraflar görseli veya pop-up açma mantığını buraya ekleyebilirsin
-});
-
-document.getElementById('btn-ofis-harita').addEventListener('click', () => {
-  calSes('incele');
-  // Harita görseli veya pop-up açma mantığını buraya ekleyebilirsin
 });
 document.getElementById('popup-close').addEventListener('click', () => {
   calSes('geri');
