@@ -372,7 +372,66 @@ function imzaBulmacaKontrol() {
   }, 400);
 }
 
-/* --- EL YAZILARI KARŞILAŞTIRMA VE İSİM SEÇİM MODALI --- */
+/* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
+function openDosyaOdasiBelgelerModal(index = 0) {
+  const pages = [
+    { title: 'Tapu Senetleri', src: 'assets/arayuz/tapu_senetleri.webp' },
+    { title: "Şefika İkametgah Belgesi", src: 'assets/arayuz/sefika_ikametgah.webp' },
+    { title: "Şefika Evlilik Belgesi", src: 'assets/arayuz/sefika_evlilik.webp' }
+  ];
+  const cur = pages[index];
+  const prevDisabled = index === 0 ? 'disabled' : '';
+  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
+
+  if (typeof calSes === 'function') calSes('sayfa');
+
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9);" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index - 1})" ${prevDisabled}>‹</button>
+    
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); text-shadow:0 2px 8px rgba(0,0,0,0.9);">${cur.title} (${index + 1}/3)</h3>
+      <img src="${cur.src}" style="max-width:85cqw; max-height:52vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <div style="display:flex; gap:15px; margin-top:10px;">
+        <button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openImzaKiyaslamaModal(), 300);">✍️ İMZALARI KARŞILAŞTIR</button>
+      </div>
+    </div>
+
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index + 1})" ${nextDisabled}>›</button>
+  `, 'dosyaOdasiBelgeler');
+}
+
+/* --- EL YAZILARI VE CEVDET'İN NOTU YAN YANA KARŞILAŞTIRMA MODALI --- */
+/* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
+function openDosyaOdasiBelgelerModal(index = 0) {
+  const pages = [
+    { title: 'Tapu Senetleri', src: 'assets/arayuz/tapu_senetleri.webp' },
+    { title: "Şefika İkametgah Belgesi", src: 'assets/arayuz/sefika_ikametgah.webp' },
+    { title: "Şefika Evlilik Belgesi", src: 'assets/arayuz/sefika_evlilik.webp' }
+  ];
+  const cur = pages[index];
+  const prevDisabled = index === 0 ? 'disabled' : '';
+  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
+
+  if (typeof calSes === 'function') calSes('sayfa');
+
+  showFramelessModal(`
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9);" onclick="closeModal()">✕</button>
+    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index - 1})" ${prevDisabled}>‹</button>
+    
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); text-shadow:0 2px 8px rgba(0,0,0,0.9);">${cur.title} (${index + 1}/3)</h3>
+      <img src="${cur.src}" style="max-width:85cqw; max-height:52vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      <div style="display:flex; gap:15px; margin-top:10px;">
+        <button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openImzaKiyaslamaModal(), 300);">✍️ İMZALARI KARŞILAŞTIR</button>
+      </div>
+    </div>
+
+    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index + 1})" ${nextDisabled}>›</button>
+  `, 'dosyaOdasiBelgeler');
+}
+
+/* --- EL YAZILARI VE CEVDET'İN NOTU YAN YANA KARŞILAŞTIRMA MODALI --- */
 function openElYazisiModal() {
   if (typeof calSes === 'function') calSes('harita');
 
@@ -380,15 +439,23 @@ function openElYazisiModal() {
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
 
     <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:10px; box-sizing:border-box;">
-      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 24px); margin-bottom:8px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">
         Cevdet'in Notundaki El Yazısı Kimin Yazısına Benziyor?
       </h3>
 
-      <div style="position:relative; display:flex; justify-content:center; align-items:center; max-width:90vw; max-height:65vh;">
-        <img src="assets/arayuz/el_yazilari.webp" style="max-height:60vh; max-width:85vw; object-fit:contain; border:2px solid #8a5a2b; border-radius:6px;">
+      <div style="display:flex; justify-content:center; align-items:center; gap:15px; max-width:95vw; height:58vh;">
+        <div style="text-align:center;">
+          <span style="color:#d1a76c; font-weight:bold; font-size:13px; display:block; margin-bottom:4px;">Cevdet'e Verilen Not</span>
+          <img src="assets/arayuz/cevdet_not.webp" style="max-height:50vh; max-width:38vw; object-fit:contain; border:2px solid #8a5a2b; border-radius:6px; box-shadow:0 0 15px rgba(227,169,74,0.3);">
+        </div>
+
+        <div style="text-align:center;">
+          <span style="color:#a89379; font-size:12px; display:block; margin-bottom:4px;">Köylülerin El Yazısı Örnekleri</span>
+          <img src="assets/arayuz/el_yazilari.webp" style="max-height:50vh; max-width:48vw; object-fit:contain; border:1px solid #3a2c1a; border-radius:4px;">
+        </div>
       </div>
 
-      <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:800px;">
+      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:800px;">
         <button class="btn show" style="padding:6px 16px; font-size:15px; background:#4a2f18;" onclick="elYazisiSecim('halit')">Muhtar Halit</button>
         <button class="btn show" style="padding:6px 16px; font-size:15px; background:#4a2f18;" onclick="elYazisiSecim('cabbar')">Demirci Cabbar</button>
         <button class="btn show" style="padding:6px 16px; font-size:15px; background:#4a2f18;" onclick="elYazisiSecim('mustafa')">Değirmenci Mustafa</button>
@@ -398,7 +465,6 @@ function openElYazisiModal() {
     </div>
   `, 'elYazisiKiyaslama');
 }
-
 function elYazisiSecim(isim) {
   if (isim === 'halit') {
     if (typeof calSes === 'function') calSes('incele');

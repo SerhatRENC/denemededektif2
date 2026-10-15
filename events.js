@@ -86,7 +86,8 @@ function openRegisteredModal(name) {
     anahtar: typeof showAnahtarAcquisitionModal === 'function' ? showAnahtarAcquisitionModal : null,
     gunlukModal: typeof openGunlukModal === 'function' ? openGunlukModal : null,
     imzaKiyaslama: typeof openImzaKiyaslamaModal === 'function' ? openImzaKiyaslamaModal : null,
-    elYazisiKiyaslama: typeof openElYazisiModal === 'function' ? openElYazisiModal : null
+    elYazisiKiyaslama: typeof openElYazisiModal === 'function' ? openElYazisiModal : null,
+    dosyaOdasiBelgeler: typeof openDosyaOdasiBelgelerModal === 'function' ? openDosyaOdasiBelgelerModal : null
   };
   if (registry[name]) registry[name]();
   else console.warn('Tanımsız modal:', name);

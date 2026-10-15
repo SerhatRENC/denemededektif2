@@ -11,7 +11,10 @@ function getRoomCharacter(roomKey) {
   const dayChars = CURRENT_DAY_DATA && CURRENT_DAY_DATA.characters;
   let ch = base ? JSON.parse(JSON.stringify(base)) : null;
   if (dayChars && Object.prototype.hasOwnProperty.call(dayChars, roomKey)) {
-    const ov = dayChars[roomKey];
+    let ov = dayChars[roomKey];
+    if (Array.isArray(ov)) {
+      ov = ov.find(c => checkCond(c.if)) || ov[ov.length - 1];
+    }
     if (ov === null) return null;
     ch = Object.assign(ch || {}, JSON.parse(JSON.stringify(ov)));
   }
@@ -19,7 +22,6 @@ function getRoomCharacter(roomKey) {
   if (ch.showIf && !checkCond(ch.showIf)) return null;
   return ch;
 }
-
 function updateCharacterSprite(charImg, line, defaultPath) {
   if (!charImg || !line) return;
 

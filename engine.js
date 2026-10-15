@@ -327,6 +327,9 @@ function handleHotspot(h) {
   }
   if (h.type === 'otopsi_merkez_kaydi_modal') { openOtopsiMerkezKaydiModal(0); return; }
   if (h.type === 'imzaKiyaslamaModal') { openImzaKiyaslamaModal(); return; }
+  if (h.type === 'dosyaOdasiBelgelerModal') { openDosyaOdasiBelgelerModal(0); return; }
+  if (h.type === 'imzaKiyaslamaModal') { openImzaKiyaslamaModal(); return; }
+if (h.type === 'dosyaOdasiBelgelerModal') { openDosyaOdasiBelgelerModal(0); return; }
   if (h.type === 'canta_evlilik_cuzdan_modal') { openCantaEvlilikCuzdanModal(); return; }
   if (h.type === 'canta_kagitlar_modal') { openCantaKagitlarModal(); return; }
   if (h.type === 'canta_polaroid_modal') { openCantaPolaroidModal(); return; }
