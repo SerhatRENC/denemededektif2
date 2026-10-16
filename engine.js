@@ -108,8 +108,10 @@ function applyDayStart(isNewDay) {
     if (!gameState.getFlag(k)) gameState.setFlag(k, v);
   });
   if (d.initialState && (isNewDay || !gameState.getFlag('day_state'))) setDayState(d.initialState);
+  if (d.startSubtitle && typeof showCustomSubtitle === 'function') {
+    setTimeout(() => showCustomSubtitle(d.startSubtitle, true), 400);
+  }
 }
-
 /* Oda o gün kapalı mı? Kaynaklar: gün JSON'u roomOverrides (+ openIf koşulu) ve config closedOnDays */
 function getRoomClosedInfo(roomId) {
   const room = CASE && CASE.rooms && CASE.rooms[roomId];
