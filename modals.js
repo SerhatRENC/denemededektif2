@@ -77,38 +77,41 @@ function openOtopsiMerkezKaydiModal(index = 0, isPageSwitch = false) {
 function openCantaEvlilikCuzdanModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-width:88cqw; max-height:43.875cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
-      <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan');">ENVANTERE AL</button>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+      <img src="assets/arayuz/evlilik_cuzdan.webp" style="max-height:55vh; max-width:85vw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95)); margin-bottom:10px;">
+      <div style="background:rgba(20,14,8,0.9); border-left:4px solid #8a5a2b; color:#e9dcc0; padding:8px 18px; border-radius:6px; font-size:clamp(13px, 1.6cqw, 18px); max-width:650px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.6); margin-bottom:12px;">
+        Dedektif: "Gazetecinin çantasından çıkan eski bir evlilik cüzdanı..."
+      </div>
+      <button class="btn show" style="padding:8px 22px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:17px;" onclick="if(typeof calSes==='function') calSes('take'); collect('evlilik_cuzdan'); closeModal();">ENVANTERE AL</button>
     </div>
   `);
 }
 
 function openCantaKagitlarModal() {
+  if (typeof gameState !== 'undefined' && gameState.setFlag) {
+    gameState.setFlag('col_canta_kagitlar_incelendi', true);
+  }
   showFramelessModal(`
-    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeCantaKagitlarModal()">✕</button>
-    <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
-      <img src="assets/arayuz/bos_kagit.webp" style="max-width:88cqw; max-height:47.8125cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+      <img src="assets/arayuz/bos_kagit.webp" style="max-height:60vh; max-width:85vw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95)); margin-bottom:12px;">
+      <div style="background:rgba(20,14,8,0.9); border-left:4px solid #8a5a2b; color:#e9dcc0; padding:10px 20px; border-radius:6px; font-size:clamp(14px, 1.8cqw, 19px); max-width:650px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.6);">
+        Dedektif: "Boş kağıtlar... Henüz bunlara bir şey yazamamış."
+      </div>
     </div>
-  `);
-}
-
-async function closeCantaKagitlarModal() {
-  gameState.setFlag('col_canta_kagitlar_incelendi', true);
-  closeModal();
-  await renderRoom();
-  showCustomSubtitle("Dedektif: Henüz bunlara bir şey yazamamış.", true);
+  `, 'cantaKagitlar');
 }
 
 function openCantaPolaroidModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">(İşlenmemiş) Polaroid Fotoğraf</h3>
-      <img src="assets/arayuz/poloroid.webp" style="max-width:88cqw; max-height:39.375cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
-      <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Bu fotoğrafı fotoğraf odasına götürüp netleştirmem lazım.', true), 300);">ENVANTERE AL</button>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); margin-bottom:8px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">(İşlenmemiş) Polaroid Fotoğraf</h3>
+      <img src="assets/arayuz/poloroid.webp" style="max-height:50vh; max-width:85vw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95)); margin-bottom:10px;">
+      <div style="background:rgba(20,14,8,0.9); border-left:4px solid #8a5a2b; color:#e9dcc0; padding:8px 18px; border-radius:6px; font-size:clamp(13px, 1.6cqw, 18px); max-width:650px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.6); margin-bottom:12px;">
+        Dedektif: "Bu fotoğraf tam çıkmamış, karanlık odada işleyip netleştirmem lazım."
+      </div>
+      <button class="btn show" style="padding:8px 22px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:17px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid'); closeModal();">ENVANTERE AL</button>
     </div>
   `);
 }
@@ -116,21 +119,24 @@ function openCantaPolaroidModal() {
 function openYanikKagitModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-      <img src="assets/arayuz/yanik_kagit_incele.webp" style="max-width:88cqw; max-height:43.875cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
-      <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Kağıdın her yeri yanmış neredeyse hiç okunmuyor.', true), 200);">ENVANTERE EKLE</button>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+      <img src="assets/arayuz/yanik_kagit_incele.webp" style="max-height:52vh; max-width:85vw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95)); margin-bottom:10px;">
+      <div style="background:rgba(20,14,8,0.9); border-left:4px solid #8a5a2b; color:#e9dcc0; padding:8px 18px; border-radius:6px; font-size:clamp(13px, 1.6cqw, 18px); max-width:650px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.6); margin-bottom:12px;">
+        Dedektif: "Kağıdın her yeri yanmış, neredeyse hiç okunmuyor..."
+      </div>
+      <button class="btn show" style="padding:8px 22px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:17px;" onclick="if(typeof calSes==='function') calSes('take'); collect('yanik_kagit'); closeModal();">ENVANTERE EKLE</button>
     </div>
   `);
 }
 
-let currentGazeteciPagesList = gazeteciDosyaPagesDefault;
+let currentGazeteciPagesList = typeof gazeteciDosyaPagesDefault !== 'undefined' ? gazeteciDosyaPagesDefault : [];
 
 function openGazeteciDosyaModal(pages = null, index = 0) {
   if (pages && Array.isArray(pages)) {
     currentGazeteciPagesList = pages;
   }
-  const activePages = currentGazeteciPagesList || gazeteciDosyaPagesDefault;
+  const activePages = currentGazeteciPagesList;
+  if (!activePages || activePages.length === 0) return;
   const src = activePages[index];
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === activePages.length - 1 ? 'disabled' : '';
@@ -242,24 +248,24 @@ function closeFonogramModal() {
 
 function openPolaroidIslenmisModal() {
   showFramelessModal(`
-    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="collect('polaroid_islenmis')">✕</button>
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="collect('polaroid_islenmis'); closeModal();">✕</button>
     <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
       <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">(İşlenmiş) Polaroid Fotoğraf</h3>
       <img src="assets/arayuz/poloroid_islenmis.webp" style="max-width:88cqw; max-height:39.375cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid_islenmis');">ENVANTERE AL</button>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('polaroid_islenmis'); closeModal();">ENVANTERE AL</button>
     </div>
   `);
 }
 
 function openCevdetNotModal() {
   showFramelessModal(`
-    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="collect('cevdet_not')">✕</button>
+    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="collect('cevdet_not'); closeModal();">✕</button>
     <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
       <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">Cevdet'in Notu</h3>
       <img src="assets/arayuz/cevdet_not.webp" style="max-width:88cqw; max-height:39.375cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('cevdet_not');">ENVANTERE AL</button>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('cevdet_not'); closeModal();">ENVANTERE AL</button>
     </div>
   `);
 }
@@ -275,7 +281,7 @@ function openGunlukModal() {
       <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(18px, 2.5cqw, 30px); margin-bottom:10px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">Şefika'nın Günlüğü</h3>
       <img src="assets/arayuz/gunluk.webp" style="max-width:88cqw; max-height:39.375cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <br>
-      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('gunluk'); closeModal(); setTimeout(() => showCustomSubtitle('Dedektif: Bunu yarın sabah ofiste incelerim.', true), 300);">ENVANTERE AL</button>
+      <button class="btn show" style="padding:10px 24px; background:#6b4423; color:#e9dcc0; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;" onclick="if(typeof calSes==='function') calSes('take'); collect('gunluk'); closeModal();">ENVANTERE AL</button>
     </div>
   `);
 }
@@ -342,7 +348,8 @@ function imzaNoktaTikla(e) {
   dot.className = 'imza-halka';
   dot.style.position = 'absolute';
   dot.style.left = (img.offsetLeft + (parseFloat(xPercent) / 100) * img.offsetWidth) + 'px';
-  dot.style.top = (img.offsetTop + (parseFloat(yPercent) / 100) * img.offsetHeight) + 'px';  dot.style.width = '20px';
+  dot.style.top = (img.offsetTop + (parseFloat(yPercent) / 100) * img.offsetHeight) + 'px';
+  dot.style.width = '20px';
   dot.style.height = '20px';
   dot.style.border = '2px solid #c0392b';
   dot.style.borderRadius = '50%';
@@ -365,43 +372,12 @@ function imzaBulmacaKontrol() {
     return;
   }
 
-  // 3 nokta seçildikten sonra onaylanır ve El Yazıları ekranına geçilir
   closeModal();
   setTimeout(() => {
     openElYazisiModal();
   }, 400);
 }
 
-/* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
-function openDosyaOdasiBelgelerModal(index = 0) {
-  const pages = [
-    { title: 'Tapu Senetleri', src: 'assets/arayuz/tapu_senetleri.webp' },
-    { title: "Şefika İkametgah Belgesi", src: 'assets/arayuz/sefika_ikametgah.webp' },
-    { title: "Şefika Evlilik Belgesi", src: 'assets/arayuz/sefika_evlilik.webp' }
-  ];
-  const cur = pages[index];
-  const prevDisabled = index === 0 ? 'disabled' : '';
-  const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
-
-  if (typeof calSes === 'function') calSes('sayfa');
-
-  showFramelessModal(`
-    <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9);" onclick="closeModal()">✕</button>
-    <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index - 1})" ${prevDisabled}>‹</button>
-    
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;">
-      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); text-shadow:0 2px 8px rgba(0,0,0,0.9);">${cur.title} (${index + 1}/3)</h3>
-      <img src="${cur.src}" style="max-width:85cqw; max-height:52vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
-      <div style="display:flex; gap:15px; margin-top:10px;">
-        <button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openImzaKiyaslamaModal(), 300);">✍️ İMZALARI KARŞILAŞTIR</button>
-      </div>
-    </div>
-
-    <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index + 1})" ${nextDisabled}>›</button>
-  `, 'dosyaOdasiBelgeler');
-}
-
-/* --- EL YAZILARI VE CEVDET'İN NOTU YAN YANA KARŞILAŞTIRMA MODALI --- */
 /* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
 function openDosyaOdasiBelgelerModal(index = 0) {
   const pages = [
@@ -465,17 +441,20 @@ function openElYazisiModal() {
     </div>
   `, 'elYazisiKiyaslama');
 }
+
 function elYazisiSecim(isim) {
   if (isim === 'halit') {
     if (typeof calSes === 'function') calSes('incele');
-    gameState.setFlag('day4_halit_yazdi_tespit', true);
+    if (typeof gameState !== 'undefined' && gameState.setFlag) {
+      gameState.setFlag('day4_halit_yazdi_tespit', true);
+    }
     closeModal();
     setTimeout(() => {
-      showCustomSubtitle("Dedektif: Demek bu notu Halit yazmış!", true);
+      if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Demek bu notu Halit yazmış!", true);
       if (typeof renderRoom === 'function') renderRoom();
     }, 300);
   } else {
     if (typeof calSes === 'function') calSes('geri');
-    showCustomSubtitle("Dedektif: Bu yazı pek de benzemiyor...", true);
+    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Bu yazı pek de benzemiyor...", true);
   }
 }
