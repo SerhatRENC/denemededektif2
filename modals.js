@@ -296,10 +296,16 @@ function openGunlukModal() {
 }
 
 /* --- 3 İMZA KARŞILAŞTIRMA VE NOKTA TESPİT BULMACASI --- */
-let imzaSecilenNoktalar = [];
+/* --- 3 İMZA KARŞILAŞTIRMA VE NOKTA TESPİT BULMACASI --- */
+const HEDEF_IMZA_NOKTALARI = [
+  { x: 15.5, y: 36.8 },
+  { x: 52.8, y: 68.2 },
+  { x: 60.6, y: 54.9 }
+];
+let imzaBulunanNoktalar = [];
 
 function openImzaKiyaslamaModal() {
-  imzaSecilenNoktalar = [];
+  imzaBulunanNoktalar = [];
   if (typeof calSes === 'function') calSes('harita');
 
   showFramelessModal(`
@@ -307,7 +313,7 @@ function openImzaKiyaslamaModal() {
     
     <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:10px; box-sizing:border-box;">
       <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); margin-bottom:8px; text-shadow:0 2px 8px rgba(0,0,0,0.9);">
-        Ortadaki Tapu İmzası Üzerinde 3 Farklı Nokta Bulun
+        Ortadaki Tapu İmzası Üzerinde 3 Sahte Noktayı Tespit Edin
       </h3>
 
       <div style="display:flex; justify-content:center; align-items:center; gap:15px; max-width:95vw; height:60vh;">
@@ -340,44 +346,71 @@ function imzaNoktaTikla(e) {
   const img = document.getElementById('tapuImzaImg');
   if (!container || !img) return;
 
-  if (imzaSecilenNoktalar.length >= 3) {
-    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("En fazla 3 nokta seçebilirsiniz.", true);
+  if (imzaBulunanNoktalar.length >= 3) {
+    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: 3 şüpheli noktayı da buldum, İlerleyebilirim.", true);
     return;
   }
 
   const rect = img.getBoundingClientRect();
-  const xPercent = (((e.clientX - rect.left) / rect.width) * 100).toFixed(1);
-  const yPercent = (((e.clientY - rect.top) / rect.height) * 100).toFixed(1);
+  const clickX = parseFloat((((e.clientX - rect.left) / rect.width) * 100).toFixed(1));
+  const clickY = parseFloat((((e.clientY - rect.top) / rect.height) * 100).toFixed(1));
 
-  if (xPercent < 0 || xPercent > 100 || yPercent < 0 || yPercent > 100) return;
+  if (clickX < 0 || clickX > 100 || clickY < 0 || clickY > 100) return;
 
-  imzaSecilenNoktalar.push({ x: parseFloat(xPercent), y: parseFloat(yPercent) });
+  const TOLERANS = 10.0; // %10 tolerans yarıçapı
+  let eşleşenHedefIndeks = -1;
 
-  const dot = document.createElement('div');
-  dot.className = 'imza-halka';
-  dot.style.position = 'absolute';
-  dot.style.left = (img.offsetLeft + (parseFloat(xPercent) / 100) * img.offsetWidth) + 'px';
-  dot.style.top = (img.offsetTop + (parseFloat(yPercent) / 100) * img.offsetHeight) + 'px';
-  dot.style.width = '20px';
-  dot.style.height = '20px';
-  dot.style.border = '2px solid #c0392b';
-  dot.style.borderRadius = '50%';
-  dot.style.transform = 'translate(-50%, -50%)';
-  dot.style.pointerEvents = 'none';
-  dot.style.boxShadow = '0 0 8px rgba(192,57,43,0.8)';
+  for (let i = 0; i < HEDEF_IMZA_NOKTALARI.length; i++) {
+    if (imzaBulunanNoktalar.includes(i)) continue; // Zaten bulunmuş nokta
 
-  container.appendChild(dot);
-  if (typeof calSes === 'function') calSes('incele');
+    const target = HEDEF_IMZA_NOKTALARI[i];
+    const mesafe = Math.hypot(clickX - target.x, clickY - target.y);
+
+    if (mesafe <= TOLERANS) {
+      eşleşenHedefIndeks = i;
+      break;
+    }
+  }
+
+  if (eşleşenHedefIndeks !== -1) {
+    // Doğru nokta bulundu
+    imzaBulunanNoktalar.push(eşleşenHedefIndeks);
+    const target = HEDEF_IMZA_NOKTALARI[eşleşenHedefIndeks];
+
+    const dot = document.createElement('div');
+    dot.className = 'imza-halka';
+    dot.style.position = 'absolute';
+    dot.style.left = (img.offsetLeft + (target.x / 100) * img.offsetWidth) + 'px';
+    dot.style.top = (img.offsetTop + (target.y / 100) * img.offsetHeight) + 'px';
+    dot.style.width = '26px';
+    dot.style.height = '26px';
+    dot.style.border = '3px solid #2ecc71'; // Doğru tespiti yeşil halka ile göster
+    dot.style.borderRadius = '50%';
+    dot.style.transform = 'translate(-50%, -50%)';
+    dot.style.pointerEvents = 'none';
+    dot.style.boxShadow = '0 0 12px rgba(46,204,113,0.9)';
+
+    container.appendChild(dot);
+    if (typeof calSes === 'function') calSes('incele');
+
+    if (imzaBulunanNoktalar.length === 3) {
+      if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Bütün sahtecilik izlerini buldum! İlerle'ye basabilirim.", true);
+    }
+  } else {
+    // Yanlış yere tıklandı
+    if (typeof calSes === 'function') calSes('geri');
+    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Burada belirgin bir fark göremiyorum...", true);
+  }
 }
 
 function imzaNoktalariSifirla() {
-  imzaSecilenNoktalar = [];
+  imzaBulunanNoktalar = [];
   document.querySelectorAll('.imza-halka').forEach(el => el.remove());
 }
 
 function imzaBulmacaKontrol() {
-  if (imzaSecilenNoktalar.length < 3) {
-    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Şüpheli 3 noktayı da işaretlemeliyim.", true);
+  if (imzaBulunanNoktalar.length < 3) {
+    if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Şüpheli 3 sahte noktayı da tespit etmeliyim.", true);
     return;
   }
 
@@ -386,6 +419,11 @@ function imzaBulmacaKontrol() {
   }
 
   closeModal();
+
+  if (typeof renderRoom === 'function') {
+    renderRoom();
+  }
+
   setTimeout(() => {
     if (typeof showCustomSubtitle === 'function') {
       showCustomSubtitle("Dedektif: Demek sahte imza atılmış. Halit'le bunu konuşmam lazım.", true);
@@ -394,8 +432,7 @@ function imzaBulmacaKontrol() {
       }, 3500);
     }
   }, 300);
-}
-/* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
+}/* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
 function openDosyaOdasiBelgelerModal(index = 0) {
   const pages = [
     { title: 'Tapu Senetleri', src: 'assets/arayuz/tapu_senetleri.webp' },
