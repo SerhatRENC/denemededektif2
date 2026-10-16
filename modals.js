@@ -381,12 +381,20 @@ function imzaBulmacaKontrol() {
     return;
   }
 
+  if (typeof gameState !== 'undefined' && gameState.setFlag) {
+    gameState.setFlag('day4_imza_incelendi', true);
+  }
+
   closeModal();
   setTimeout(() => {
-    openElYazisiModal();
-  }, 400);
+    if (typeof showCustomSubtitle === 'function') {
+      showCustomSubtitle("Dedektif: Demek sahte imza atılmış. Halit'le bunu konuşmam lazım.", true);
+      setTimeout(() => {
+        showCustomSubtitle("Dedektif: Cevdet'in notu için de el yazılarını karşılaştırsam iyi olur.", true);
+      }, 3500);
+    }
+  }, 300);
 }
-
 /* --- DOSYA ODASI BÜYÜK BELGELER MODALI --- */
 function openDosyaOdasiBelgelerModal(index = 0) {
   const pages = [
@@ -398,6 +406,12 @@ function openDosyaOdasiBelgelerModal(index = 0) {
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
 
+  const imzaIncelendi = typeof gameState !== 'undefined' && gameState.flags && gameState.flags['day4_imza_incelendi'];
+
+  const butonHtml = imzaIncelendi
+    ? `<button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openElYazisiModal(), 300);">✍️ EL YAZILARINI KARŞILAŞTIR</button>`
+    : `<button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openImzaKiyaslamaModal(), 300);">✍️ İMZALARI KARŞILAŞTIR</button>`;
+
   if (typeof calSes === 'function') calSes('sayfa');
 
   showFramelessModal(`
@@ -408,14 +422,13 @@ function openDosyaOdasiBelgelerModal(index = 0) {
       <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 26px); text-shadow:0 2px 8px rgba(0,0,0,0.9);">${cur.title} (${index + 1}/3)</h3>
       <img src="${cur.src}" style="max-width:85cqw; max-height:52vh; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
       <div style="display:flex; gap:15px; margin-top:10px;">
-        <button class="btn show" style="padding:10px 24px; background:#8a5a2b; color:#f3e5ab; border:2px solid #2c1c0e; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeModal(); setTimeout(() => openImzaKiyaslamaModal(), 300);">✍️ İMZALARI KARŞILAŞTIR</button>
+        ${butonHtml}
       </div>
     </div>
 
     <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openDosyaOdasiBelgelerModal(${index + 1})" ${nextDisabled}>›</button>
   `, 'dosyaOdasiBelgeler');
 }
-
 /* --- EL YAZILARI VE CEVDET'İN NOTU YAN YANA KARŞILAŞTIRMA MODALI --- */
 function openElYazisiModal() {
   if (typeof calSes === 'function') calSes('harita');
@@ -459,7 +472,7 @@ function elYazisiSecim(isim) {
     }
     closeModal();
     setTimeout(() => {
-      if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Demek bu notu Halit yazmış!", true);
+      if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Demek Cevdet'e notu sen yazdın Halit, hesaplaşma zamanı!", true);
       if (typeof renderRoom === 'function') renderRoom();
     }, 300);
   } else {
