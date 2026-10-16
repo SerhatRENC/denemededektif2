@@ -19,7 +19,11 @@
   "sleepRequires": [
     {
       "need": { "flag": "col_gunluk" },
-      "msg": "Dedektif: Aylin'in getirdiği günlüğü incelemeden uyuyamam."
+      "msg": "Dedektif: Aylin'in getirdiği günlüğü incelemeden uyuyamam.",
+      "onTrigger": [
+        { "setFlag": "day4_gunluk_tetiklendi" },
+        { "render": true }
+      ]
     }
   ],
 
@@ -63,7 +67,7 @@
       ],
       "ofis": [
         {
-          "if": { "flag": "day4_imza_halit_yuzlesildi" },
+          "if": { "flag": "day4_gunluk_tetiklendi" },
           "do": [
             { "giveItem": "gunluk" },
             { "setFlag": "col_gunluk" },
@@ -89,13 +93,13 @@
       "name": "Muhtar Halit & Aylin",
       "image": "assets/karakterler/halit_aylin.webp",
       "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp",
-      "hideIf": { "flag": "day4_imza_halit_yuzlesildi" }
+      "hideIf": { "flag": "day4_halit_yazdi_tespit" }
     },
     "muhtar_tek": {
       "name": "Muhtar Halit",
       "image": "assets/karakterler/halit.webp",
       "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp",
-      "showIf": { "flag": "day4_imza_halit_yuzlesildi" }
+      "showIf": { "flag": "day4_halit_yazdi_tespit" }
     },
     "cadi": {
       "name": "Cevdet",
@@ -112,9 +116,9 @@
       { "speaker": "Muhtar Halit", "text": "Hangi dosyaları?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Bizde usulsüzlük olmaz dedektif, her şey imzalı.", "emotion": "sinirli" },
-      { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz!", "emotion": "sinirli" },
-      { "speaker": "Muhtar Halit", "text": "Tamam kızım, baksın incelesin dedektif, karışmayalım.", "emotion": "idle2" },
-      { "speaker": "Dedektif", "text": "Belgeler nerede?", "emotion": "idle" },
+      { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz!", "emotion": "idle2" },
+      { "speaker": "Muhtar Halit", "text": "Tamam kızım, baksın incelesin dedektif, karışmayalım.", "emotion": "idle" },
+      { "speaker": "Dedektif", "text": "Belgeler nerede?", "emotion": "idle2" },
       { "speaker": "Muhtar Halit", "text": "İçeri odaya geç dedektif, her şey orada.", "emotion": "idle" }
     ],
     "muhtar_yuzlesme": [
@@ -125,9 +129,9 @@
       { "speaker": "Dedektif", "text": "Ben göreceğimi gördüm Halit. Hatta el yazılarını da karşılaştırdım. Cevdet'e verilen bir not var, bu senin el yazın. Neden yazdın bunu?", "emotion": "idle2" },
       { "speaker": "Muhtar Halit", "text": "Ne notu?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Neyden bahsettiğimi iyi biliyorsun Halit.", "emotion": "sinirli" },
-      { "speaker": "Muhtar Halit", "text": "He o not... Ben Şefika'yla çocuğu gidince yazdım onu. Cevdet kafayı yemesin diye uydurdum bir şeyler ama işe yaramadı belli ki.", "emotion": "idle2" },
+      { "speaker": "Muhtar Halit", "text": "He o not... Ben Şefika'yla çocuğu gidince yazdım onu. Cevdet kafayı yemesin diye uydurdum bir şeyler ama işe yaramadı belli ki.", "emotion": "idle" },
       { "speaker": "Dedektif", "text": "Şefika'yı öldürdün ya da yolladın tamam da çocuktan ne istedin?", "emotion": "sinirli" },
-      { "speaker": "Muhtar Halit", "text": "Benim ikisiyle de alakam yok, zaten Şefika da kendi isteğiyle gitti.", "emotion": "idle" }
+      { "speaker": "Muhtar Halit", "text": "Benim ikisiyle de alakam yok, zaten Şefika da kendi isteğiyle gitti.", "emotion": "idle2" }
     ],
     "peder": [
       { "speaker": "Dedektif", "text": "Şefika ve Cevdet'in bir çocuğu daha olacakmış, neden söylemedin Peder?", "emotion": "idle2" },
@@ -191,13 +195,13 @@
       { "speaker": "Dedektif", "text": "Ne meleği Cevdet, Halit yazmış sana notu.", "emotion": "idle" },
       { "speaker": "Cevdet", "text": "Meleklerle dalga geçilmez! Meleklerle dalga geçilmez... Halit'i de alırlar, yaşatmazlar onu!", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Kim yaşatmaz?", "emotion": "idle2" },
-      { "speaker": "Cevdet", "text": "Onlardan olanlar...", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Bebeğin doğmuş muydu?", "emotion": "idle" },
+      { "speaker": "Cevdet", "text": "Onlardan olanlar...", "emotion": "idle" },
+      { "speaker": "Dedektif", "text": "Bebeğin doğmuş muydu?", "emotion": "idle2" },
       { "speaker": "Cevdet", "text": "Ne Şefika ne bebek... Ne Şefika ne bebek... Ne Şefika ne bebek... Ne Şefika ne bebek...", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Peki Yasin?", "emotion": "idle2" },
       { "speaker": "Cevdet", "text": "Nerede Yasin'im?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Ben de sana soruyorum Cevdet.", "emotion": "idle" },
-      { "speaker": "Cevdet", "text": "Akıllı oğlum kaçmıştır... Kaçmıştır o...", "emotion": "normal" },
+      { "speaker": "Cevdet", "text": "Akıllı oğlum kaçmıştır... Kaçmıştır o...", "emotion": "idle2" },
       { "speaker": "Dedektif", "text": "Yani diyorsun...", "emotion": "idle2" },
       { "speaker": "Cevdet", "text": "Yeter, yeter, yeter, yeter!", "emotion": "sinirli" }
     ],
