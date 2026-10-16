@@ -260,10 +260,26 @@
       "background": "assets/odalar/muhtarlik_dosya_odasi.webp",
       "hotspots": [
         { "x": "9%", "y": "57.5%", "type": "navigate", "target": "muhtar", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Muhtarlığa dön" },
-        { "x": "30%", "y": "50%", "type": "dosyaOdasiBelgelerModal", "icon": "assets/arayuz/buyutec.webp", "label": "Dosyaları İncele", "hint": "Belgeleri İncele ve İmzaları Karşılaştır" }
+        { 
+          "x": "64.3%", "y": "55.5%", 
+          "type": "dosyaOdasiBelgelerModal", 
+          "icon": "assets/arayuz/buyutec.webp", 
+          "label": "İmzaları Karşılaştır", 
+          "hint": "Belgeleri İncele ve İmzaları Karşılaştır",
+          "hideIf": { "flag": "day4_imza_incelendi" }
+        },
+        { 
+          "x": "48.0%", "y": "74.3%", 
+          "type": "elYazisiModal", 
+          "icon": "assets/arayuz/buyutec.webp", 
+          "label": "El Yazılarını Karşılaştır", 
+          "hint": "Cevdet'in Notunu ve El Yazılarını İncele",
+          "showIf": { "flag": "day4_imza_incelendi" },
+          "hideIf": { "flag": "day4_halit_yazdi_tespit" }
+        }
       ]
     },
-            "demirci": {
+                "demirci": {
       "label": "Demirci", "background": "assets/odalar/demirci.webp",
       "hotspots": [ { "x": "9%", "y": "57.5%", "type": "navigate", "target": "merkez", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Köy Merkezine dön" } ]
     },
