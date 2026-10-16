@@ -1,5 +1,33 @@
 {
+  "events": {
+    "dayStart": [
+      {
+        "do": [
+          { "subtitle": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım." }
+        ]
+      }
+    ],
+    "dialogEnd": {
+      "muhtar": [
+        {
+          "if": { "flag": "day4_halit_yazdi_tespit" },
+          "do": [
+            { "setFlag": "day4_imza_halit_yuzlesildi" },
+            { "render": true },
+            { "subtitle": "Dedektif: Halit ile yüzleştim. Şimdi köylülerle konuşup Şefika ve Yasin hakkında daha fazla bilgi toplamalıyım." }
+          ]
+        }
+      ]
+    }
+  },
+
   "gates": [
+    {
+      "if": { "notFlag": "day4_imza_halit_yuzlesildi" },
+      "from": ["merkez"],
+      "toNot": ["ofis", "muhtar"],
+      "msg": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım."
+    },
     {
       "if": { "notFlag": "day4_imza_halit_yuzlesildi" },
       "from": ["muhtar", "muhtarlik_dosya_odasi"],
@@ -7,6 +35,28 @@
       "msg": "Dedektif: Halit ile yüzleşmeden muhtarlıktan ayrılamam."
     }
   ],
+
+  "dialogs": {
+    "muhtar": [
+      {
+        "if": { "flag": "day4_halit_yazdi_tespit" },
+        "dialog": [
+          { "speaker": "Dedektif", "text": "Halit bey, elimdeki sahte tapu imzaları ve Cevdet'e yazılan tehdit notunun el yazısı... Hepsi sana ait!", "emotion": "sinirli" },
+          { "speaker": "Muhtar Halit", "text": "Ne saçmalıyorsun sen dedektif! Benim kimseyi tehdit ettiğim falan yok!", "emotion": "sinirli" },
+          { "speaker": "Dedektif", "text": "Kimi kandırıyorsun? Köyün tapularını sahte imzayla üzerine geçirmişsin. Şefika ve Yasin'e ne yaptın Halit?", "emotion": "idle" },
+          { "speaker": "Muhtar Halit", "text": "Bana iftira atamazsın! Çık git muhtarlıktan, seninle konuşacak bir şeyim yok!", "emotion": "sinirli" }
+        ]
+      },
+      {
+        "dialog": [
+          { "speaker": "Dedektif", "text": "Halit bey, Şefika'nın tapu devri ve dosya odasındaki belgeleri incelemek istiyorum.", "emotion": "idle2" },
+          { "speaker": "Muhtar Halit", "text": "Ne dosyası dedektif? Yıllar önceki kapanmış mevzuları ne karıştırıyorsun?", "emotion": "sinirli" },
+          { "speaker": "Dedektif", "text": "Gazetecinin cinayeti bu belgelerle bağlantılı olabilir. İzin verin bakayım.", "emotion": "idle" },
+          { "speaker": "Muhtar Halit", "text": "İyi, geç bak arkadaki dosya odasına. Ama boşuna zaman kaybediyorsun!", "emotion": "idle2" }
+        ]
+      }
+    ]
+  },
 
   "characters": {
     "mezarlik": null,
@@ -28,7 +78,9 @@
         "image": "assets/karakterler/halit_aylin.webp",
         "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp"
       }
-    ],
+    ]
+  }
+}
     "kilise": {
       "name": "Peder Anselm",
       "image": "assets/karakterler/peder.webp"
@@ -99,7 +151,7 @@
   "sleepRequires": [
     {
       "need": { "flag": "day4_imza_halit_yuzlesildi" },
-      "msg": "Dedektif: Sahte imzaları ve notu Halit'in yüzüne vurmadan uyuyamam."
+      "msg": "Dedektif: Halitin belgelerini kontrol etmeden uyuyamam."
     },
     {
       "need": { "flag": "col_gunluk" },
