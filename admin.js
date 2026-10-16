@@ -1,6 +1,6 @@
 /* SISLIDERE DAVASI — ADMIN PANELİ (Shift + A) */
-(function initAdminPanel() {
-  
+function renderAdminPanel() {
+  if (document.getElementById('adminPanelOverlay')) return;
   const btn = (label, fn) => `<button class="admin-btn" onclick="${fn}">${label}</button>`;
   const html = `
   <div id="adminPanelOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);color:#e9dcc0;font-family:sans-serif;padding:20px;box-sizing:border-box;overflow-y:auto;">
@@ -38,23 +38,20 @@
     .admin-btn{background:#3a2c1a;color:#e9dcc0;border:1px solid #8a5a2b;padding:8px 14px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;}
     .admin-btn:hover{background:#8a5a2b;color:#fff;}
   </style>`;
-  function renderAdminPanel() {
-    if (document.getElementById('adminPanelOverlay')) return;
-    if (document.body) document.body.insertAdjacentHTML('beforeend', html);
-  }
+  if (document.body) document.body.insertAdjacentHTML('beforeend', html);
+}
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderAdminPanel);
-  } else {
-    renderAdminPanel();
-  }
-
+(function initAdminPanel() {
   window.addEventListener('keydown', (e) => {
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-    if (e.shiftKey && (e.code === 'KeyA' || e.key === 'A' || e.key === 'a')) { e.preventDefault(); toggleAdminPanel(); }
+    const isA = e.key === 'A' || e.key === 'a' || e.code === 'KeyA' || e.keyCode === 65;
+    if (e.shiftKey && isA) {
+      e.preventDefault();
+      toggleAdminPanel();
+    }
   });
-  // Işınlanma sonrası intro ekranını atla
+
   if (sessionStorage.getItem('sd_skip_intro')) {
     sessionStorage.removeItem('sd_skip_intro');
     window.addEventListener('load', () => setTimeout(() => {
@@ -64,10 +61,13 @@
 })();
 
 function toggleAdminPanel() {
-  const p = document.getElementById('adminPanelOverlay');
+  let p = document.getElementById('adminPanelOverlay');
+  if (!p) {
+    renderAdminPanel();
+    p = document.getElementById('adminPanelOverlay');
+  }
   if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
-
 /* Bir güne GİRMEK için gereken durum (önceki günlerin tamamlanmış hali).
    Yeni gün yazdıkça buraya ekle. */
 const ADMIN_DAY_DONE = {
