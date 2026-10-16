@@ -38,14 +38,22 @@
     .admin-btn{background:#3a2c1a;color:#e9dcc0;border:1px solid #8a5a2b;padding:8px 14px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;}
     .admin-btn:hover{background:#8a5a2b;color:#fff;}
   </style>`;
-  document.body.insertAdjacentHTML('beforeend', html);
+  function renderAdminPanel() {
+    if (document.getElementById('adminPanelOverlay')) return;
+    if (document.body) document.body.insertAdjacentHTML('beforeend', html);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderAdminPanel);
+  } else {
+    renderAdminPanel();
+  }
 
   window.addEventListener('keydown', (e) => {
     const t = e.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; // defterde "A" yazarken açılmasın
-    if (e.shiftKey && e.code === 'KeyA') { e.preventDefault(); toggleAdminPanel(); }
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.shiftKey && (e.code === 'KeyA' || e.key === 'A' || e.key === 'a')) { e.preventDefault(); toggleAdminPanel(); }
   });
-
   // Işınlanma sonrası intro ekranını atla
   if (sessionStorage.getItem('sd_skip_intro')) {
     sessionStorage.removeItem('sd_skip_intro');
@@ -103,9 +111,10 @@ function jumpToDay(dayNum) {
 }
 
 function setAdminFlag(name) {
-  gameState.setFlag(name, true);
+  if (typeof gameState !== 'undefined' && gameState.setFlag) {
+    gameState.setFlag(name, true);
+  }
   if (typeof showCustomSubtitle === 'function') showCustomSubtitle(`[ADMIN] Bayrak: ${name}`, true);
   if (typeof renderRoom === 'function') renderRoom();
 }
-
 function giveAdminItem(id) { if (typeof collect === 'function') collect(id); }
