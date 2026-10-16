@@ -54,8 +54,12 @@ function closeModal() {
 }
 
 function openOtopsiMerkezKaydiModal(index = 0, isPageSwitch = false) {
-  const pages = ['assets/arayuz/otopsi.webp', 'assets/arayuz/cebindekiler.webp'];
-  const src = pages[index];
+  const pages = [
+    { title: 'Otopsi Raporu', src: 'assets/arayuz/otopsi.webp' },
+    { title: 'Olay Yeri İnceleme', src: 'assets/arayuz/olay_yeri.webp' },
+    { title: 'Kroki ve Çevre Planı', src: 'assets/arayuz/kroki.webp' }
+  ];
+  const cur = pages[index];
   const prevDisabled = index === 0 ? 'disabled' : '';
   const nextDisabled = index === pages.length - 1 ? 'disabled' : '';
 
@@ -66,14 +70,19 @@ function openOtopsiMerkezKaydiModal(index = 0, isPageSwitch = false) {
 
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
+
     <button class="reader-side-arrow left" style="position:fixed; left:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index - 1}, true)" ${prevDisabled}>‹</button>
-    <div class="zoom-wrap" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
-      <img id="photoZoomImg" src="${src}" style="max-width:90cqw; max-height:49.5cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
+      <h3 style="color:#e9dcc0; font-family:'Georgia', serif; font-size:clamp(16px, 2.2cqw, 24px); text-shadow:0 2px 8px rgba(0,0,0,0.9); margin:0;">${cur.title} (${index + 1}/3)</h3>
+      <div class="zoom-wrap" style="width:100%; max-height:80vh; display:flex; justify-content:center; align-items:center;">
+        <img id="photoZoomImg" src="${cur.src}" style="max-width:90cqw; max-height:48cqw; object-fit:contain; filter:drop-shadow(0 0 25px rgba(0,0,0,0.95));">
+      </div>
     </div>
+
     <button class="reader-side-arrow right" style="position:fixed; right:25px; top:50%; transform:translateY(-50%); z-index:10002; font-size:48px; background:none; border:none; color:#e9dcc0; cursor:pointer;" onclick="openOtopsiMerkezKaydiModal(${index + 1}, true)" ${nextDisabled}>›</button>
   `, 'otopsi');
 }
-
 function openCantaEvlilikCuzdanModal() {
   showFramelessModal(`
     <button class="reader-close" style="position:fixed; top:20px; right:25px; z-index:10002; font-size:42px; background:none; border:none; color:#e9dcc0; cursor:pointer; text-shadow:0 2px 10px rgba(0,0,0,0.9); line-height:1;" onclick="closeModal()">✕</button>
