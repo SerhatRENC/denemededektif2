@@ -184,11 +184,10 @@ async function renderRoom() {
 
   renderCharacter();
 
-  if (room.hotspots) {
+if (room.hotspots) {
     room.hotspots.forEach(h => {
       if (h.showIf && !checkCond(h.showIf)) return;
       if (h.hideIf && checkCond(h.hideIf)) return;
-      if (h.type === 'elYazisiModal') { openElYazisiModal(); return; }
       if (isHotspotHidden(h)) return;
       if (h.requires && !inventory.includes(h.requires)) return;
       if (h.activeDays && !h.activeDays.includes(currentDay)) return;
@@ -323,15 +322,14 @@ function handleHotspot(h) {
     else if (h.icon.includes('buyutec')) calSes('incele');
   }
 
-  if (h.type === 'kamera_bos_subtitle') {
+if (h.type === 'kamera_bos_subtitle') {
     showCustomSubtitle("Dedektif: İçi boş, belki kamerayla bir şeyler çekmiştir bir yerlerde fotoğraf kağıdı bulabilirim.", true);
     return;
   }
   if (h.type === 'otopsi_merkez_kaydi_modal') { openOtopsiMerkezKaydiModal(0); return; }
   if (h.type === 'imzaKiyaslamaModal') { openImzaKiyaslamaModal(); return; }
   if (h.type === 'dosyaOdasiBelgelerModal') { openDosyaOdasiBelgelerModal(0); return; }
-  if (h.type === 'imzaKiyaslamaModal') { openImzaKiyaslamaModal(); return; }
-if (h.type === 'dosyaOdasiBelgelerModal') { openDosyaOdasiBelgelerModal(0); return; }
+  if (h.type === 'elYazisiModal') { openElYazisiModal(); return; }
   if (h.type === 'canta_evlilik_cuzdan_modal') { openCantaEvlilikCuzdanModal(); return; }
   if (h.type === 'canta_kagitlar_modal') { openCantaKagitlarModal(); return; }
   if (h.type === 'canta_polaroid_modal') { openCantaPolaroidModal(); return; }
