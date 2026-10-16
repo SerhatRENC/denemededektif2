@@ -83,12 +83,19 @@
       "name": "Aylin",
       "image": "assets/karakterler/aylin.webp",
       "clickableImage": "assets/tiklanabilir/aylin_ofis_tiklanabilir.webp",
-      "showIf": { "flag": "day4_imza_halit_yuzlesildi" }
+      "showIf": { "flag": "day4_gunluk_tetiklendi" }
     },
     "muhtar": {
       "name": "Muhtar Halit & Aylin",
       "image": "assets/karakterler/halit_aylin.webp",
-      "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp"
+      "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp",
+      "hideIf": { "flag": "day4_imza_halit_yuzlesildi" }
+    },
+    "muhtar_tek": {
+      "name": "Muhtar Halit",
+      "image": "assets/karakterler/halit.webp",
+      "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp",
+      "showIf": { "flag": "day4_imza_halit_yuzlesildi" }
     },
     "cadi": {
       "name": "Cevdet",
