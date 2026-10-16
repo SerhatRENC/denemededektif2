@@ -52,11 +52,12 @@
       "muhtar": [
         { "if": { "state": "GO_MUHTAR" }, "do": [ { "setState": "GO_HAN" } ] },
         { "do": [
+          { "setFlag": "day2_muhtar_goruldu" },
           { "render": true },
           { "subtitle": "Dedektif: Muhtar selamını iletti, şimdi Hana gidip gazetecinin odasının anahtarını alabilirim." }
         ] }
       ],
-      "han": [
+            "han": [
         { "if": { "notItem": "anahtar", "notFlag": ["gazeteci_oda_acik", "otopsi_incelendi"] }, "stop": true,
           "do": [ { "modal": "anahtar" } ] },
         { "do": [ { "render": true } ] }
