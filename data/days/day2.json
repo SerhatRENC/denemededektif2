@@ -79,11 +79,28 @@
   },
 
   "sleepRequires": [
-    { "need": { "flag": "otopsi_incelendi" }, "msg": "Dedektif: Önce masadaki otopsi raporunu incelemeliyim." },
-    { "need": { "flag": "col_evlilik_cuzdan" }, "msg": "Dedektif: Gazetecinin çantasındaki evlilik cüzdanını almadan uyumamalıyım." },
-    { "need": { "flag": "col_yanik_kagit" }, "msg": "Dedektif: Gazetecinin çöp kutusunu da kontrol etmeliyim, yanmış bir kağıt görmüştüm." }
+    { 
+      "need": { "flag": "day2_muhtar_goruldu" }, 
+      "msg": "Dedektif: Muhtarla henüz konuşmadım, en iyisi ilk ona gideyim." 
+    },
+    { 
+      "need": { "flag": "day2_polis_goruldu" }, 
+      "msg": "Dedektif: Dosyalar gelmeden uyumasam iyi olacak, biraz köyü gezerek zaman geçireyim." 
+    },
+    { 
+      "need": { "flag": "otopsi_incelendi" }, 
+      "msg": "Dedektif: Önce masadaki otopsi raporunu incelemeliyim." 
+    },
+    { 
+      "need": { "flag": "col_evlilik_cuzdan" }, 
+      "msg": "Dedektif: Gazetecinin çantasındaki evlilik cüzdanını almadan uyumamalıyım." 
+    },
+    { 
+      "need": { "flag": "col_yanik_kagit" }, 
+      "msg": "Dedektif: Gazetecinin çöp kutusunu da kontrol etmeliyim, yanmış bir kağıt görmüştüm." 
+    }
   ],
-  "dialogs": {
+    "dialogs": {
     "ofis": [
       { "speaker": "Polis Memuru", "text": "Kolay gelsin komserim. Muhtar bey otopsi raporunu gönderdi. Masanıza bırakıyorum.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Böyle bir fotoğraf buldum ama işlenmesi gerekiyor bunu merkeze götürüp görünmesi için ne gerekiyorsa yaptırıp bana getir.", "emotion": "idle" },
