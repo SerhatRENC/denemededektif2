@@ -34,7 +34,7 @@
 
   "sleepRequires": [
     { "need": { "flag": "col_polaroid_islenmis" }, "msg": "Dedektif: İşlenmiş fotoğrafı almadan uyumamalıyım." },
-    { "need": { "flag": "col_cevdet_not" }, "msg": "Dedektif: Cevdet'in bahsettiği notu almadan uyumamalıyım." }
+    { "need": { "flag": "col_cevdet_not" }, "msg": "Dedektif: Şimdi uyumasam iyi olur, belki işime yarar bir şeyler bulurum." }
   ],
 
   "roomOverrides": {
