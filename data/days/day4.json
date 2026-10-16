@@ -1,25 +1,5 @@
 {
-  "events": {
-    "dayStart": [
-      {
-        "do": [
-          { "subtitle": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım." }
-        ]
-      }
-    ],
-    "dialogEnd": {
-      "muhtar": [
-        {
-          "if": { "flag": "day4_halit_yazdi_tespit" },
-          "do": [
-            { "setFlag": "day4_imza_halit_yuzlesildi" },
-            { "render": true },
-            { "subtitle": "Dedektif: Halit ile yüzleştim. Şimdi köylülerle konuşup Şefika ve Yasin hakkında daha fazla bilgi toplamalıyım." }
-          ]
-        }
-      ]
-    }
-  },
+  "startSubtitle": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım.",
 
   "gates": [
     {
@@ -36,26 +16,28 @@
     }
   ],
 
-  "dialogs": {
-    "muhtar": [
-      {
-        "if": { "flag": "day4_halit_yazdi_tespit" },
-        "dialog": [
-          { "speaker": "Dedektif", "text": "Halit bey, elimdeki sahte tapu imzaları ve Cevdet'e yazılan tehdit notunun el yazısı... Hepsi sana ait!", "emotion": "sinirli" },
-          { "speaker": "Muhtar Halit", "text": "Ne saçmalıyorsun sen dedektif! Benim kimseyi tehdit ettiğim falan yok!", "emotion": "sinirli" },
-          { "speaker": "Dedektif", "text": "Kimi kandırıyorsun? Köyün tapularını sahte imzayla üzerine geçirmişsin. Şefika ve Yasin'e ne yaptın Halit?", "emotion": "idle" },
-          { "speaker": "Muhtar Halit", "text": "Bana iftira atamazsın! Çık git muhtarlıktan, seninle konuşacak bir şeyim yok!", "emotion": "sinirli" }
-        ]
-      },
-      {
-        "dialog": [
-          { "speaker": "Dedektif", "text": "Halit bey, Şefika'nın tapu devri ve dosya odasındaki belgeleri incelemek istiyorum.", "emotion": "idle2" },
-          { "speaker": "Muhtar Halit", "text": "Ne dosyası dedektif? Yıllar önceki kapanmış mevzuları ne karıştırıyorsun?", "emotion": "sinirli" },
-          { "speaker": "Dedektif", "text": "Gazetecinin cinayeti bu belgelerle bağlantılı olabilir. İzin verin bakayım.", "emotion": "idle" },
-          { "speaker": "Muhtar Halit", "text": "İyi, geç bak arkadaki dosya odasına. Ama boşuna zaman kaybediyorsun!", "emotion": "idle2" }
-        ]
-      }
-    ]
+  "events": {
+    "dialogEnd": {
+      "muhtar": [
+        {
+          "if": { "flag": "day4_halit_yazdi_tespit" },
+          "do": [
+            { "setFlag": "day4_imza_halit_yuzlesildi" },
+            { "render": true },
+            { "subtitle": "Dedektif: Halit ile yüzleştim. Şimdi köylülerle konuşup Şefika ve Yasin hakkında bilgi toplamalıyım." }
+          ]
+        }
+      ],
+      "muhtar_yuzlesme": [
+        {
+          "do": [
+            { "setFlag": "day4_imza_halit_yuzlesildi" },
+            { "render": true },
+            { "subtitle": "Dedektif: Halit ile yüzleştim. Şimdi köylülerle konuşup Şefika ve Yasin hakkında bilgi toplamalıyım." }
+          ]
+        }
+      ]
+    }
   },
 
   "characters": {
@@ -64,194 +46,61 @@
     "ofis": {
       "name": "Aylin",
       "image": "assets/karakterler/aylin.webp",
+      "clickableImage": "assets/tiklanabilir/aylin_tiklanabilir.webp",
       "showIf": { "flag": "day4_imza_halit_yuzlesildi" }
     },
-    "muhtar": [
-      {
-        "if": { "flag": "day4_halit_yazdi_tespit" },
-        "name": "Muhtar Halit",
-        "image": "assets/karakterler/halit.webp",
-        "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp"
-      },
-      {
-        "name": "Muhtar Halit & Aylin",
-        "image": "assets/karakterler/halit_aylin.webp",
-        "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp"
-      }
-    ]
-  }
-}
-    "kilise": {
-      "name": "Peder Anselm",
-      "image": "assets/karakterler/peder.webp"
-    },
-    "han": {
-      "name": "Hancı Rıza",
-      "image": "assets/karakterler/riza.webp"
-    },
-    "demirci": {
-      "name": "Demirci Cabbar",
-      "image": "assets/karakterler/cabbar.webp"
-    },
-    "degirmenci": {
-      "name": "Değirmenci Mustafa",
-      "image": "assets/karakterler/mustafa.webp"
-    },
-    "sifahane": {
-      "name": "Doktor Kamuran",
-      "image": "assets/karakterler/kamuran.webp"
-    },
-    "nadire_ev": {
-      "name": "Nadire",
-      "image": "assets/karakterler/nadire.webp"
+    "muhtar": {
+      "name": "Muhtar Halit",
+      "image": "assets/karakterler/halit.webp",
+      "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp"
     },
     "cadi": {
       "name": "Cevdet",
-      "image": "assets/karakterler/cevdet.webp"
+      "image": "assets/karakterler/cevdet.webp",
+      "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp"
     }
-  },
-
-  "events": {
-    "dialogEnd": {
-      "muhtar": [
-        {
-          "if": { "flag": "day4_halit_yazdi_tespit" },
-          "do": [
-            { "setFlag": "day4_imza_halit_yuzlesildi" },
-            { "render": true }
-          ]
-        },
-        {
-          "if": { "notFlag": "day4_halit_izin_verdi" },
-          "do": [
-            { "setFlag": "day4_halit_izin_verdi" },
-            { "render": true }
-          ]
-        }
-      ],
-      "ofis": [
-        {
-          "if": { "notItem": "gunluk" },
-          "do": [
-            { "modal": "gunlukModal" },
-            { "render": true }
-          ]
-        }
-      ],
-      "kilise": [{ "do": [{ "setFlag": "day4_peder_konusuldu" }, { "render": true }] }],
-      "han": [{ "do": [{ "setFlag": "day4_riza_konusuldu" }, { "render": true }] }],
-      "demirci": [{ "do": [{ "setFlag": "day4_cabbar_konusuldu" }, { "render": true }] }],
-      "degirmenci": [{ "do": [{ "setFlag": "day4_mustafa_konusuldu" }, { "render": true }] }],
-      "sifahane": [{ "do": [{ "setFlag": "day4_kamuran_konusuldu" }, { "render": true }] }],
-      "nadire_ev": [{ "do": [{ "setFlag": "day4_nadire_konusuldu" }, { "render": true }] }],
-      "cadi": [{ "do": [{ "setFlag": "day4_cevdet_konusuldu" }, { "render": true }] }]
-    }
-  },
-
-  "sleepRequires": [
-    {
-      "need": { "flag": "day4_imza_halit_yuzlesildi" },
-      "msg": "Dedektif: Halitin belgelerini kontrol etmeden uyuyamam."
-    },
-    {
-      "need": { "flag": "col_gunluk" },
-      "msg": "Dedektif: Aylin'in kapıda verdiği annesinin günlüğünü incelemeden günü bitirmemeliyim."
-    },
-    {
-      "need": { "flag": "day4_riza_konusuldu" },
-      "msg": "Dedektif: Hancı Rıza ile konuşmadan günü bitirmemeliyim."
-    }
-  ],
-
-  "roomOverrides": {
-    "halit_ev": {
-      "closed": true,
-      "closedImage": "assets/odalar/halit_ev_kapi.webp"
-    },
-    "muhtarlik_dosya_odasi": {
-      "closed": false
-    }
-  },
-
-  "dialogVariants": {
-    "muhtar": [ { "if": { "flag": "day4_halit_yazdi_tespit" }, "key": "muhtar_yuzlesme" } ]
   },
 
   "dialogs": {
     "muhtar": [
-      { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "normal", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Muhtar Halit", "text": "Hayırdır inşallah dedektif.", "emotion": "idle", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Dedektif", "text": "Normalde davam değil ama bağlantısı olabilir diye dosyalarını incelemem lazım.", "emotion": "idle2", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Muhtar Halit", "text": "Hangi dosyaları?", "emotion": "sasirmis", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "normal", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Muhtar Halit", "text": "Bizde usulsüzlük olmaz dedektif, her şey imzalı.", "emotion": "sinirli", "image": "assets/karakterler/halit.webp" },
-      { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz?", "emotion": "sasirmis", "image": "assets/karakterler/aylin.webp" },
-      { "speaker": "Muhtar Halit", "text": "Tamam kızım baksın incelesin dedektif, karışmayalım. İçeri odaya geç dedektif her şey orada.", "emotion": "idle", "image": "assets/karakterler/halit.webp" }
+      { "speaker": "Dedektif", "text": "Halit bey, Şefika'nın tapu devri ve dosya odasındaki belgeleri incelemek istiyorum.", "emotion": "idle2" },
+      { "speaker": "Muhtar Halit", "text": "Ne dosyası dedektif? Yıllar önceki kapanmış mevzuları ne karıştırıyorsun?", "emotion": "sinirli" },
+      { "speaker": "Dedektif", "text": "Gazetecinin cinayeti bu belgelerle bağlantılı olabilir. İzin verin bakayım.", "emotion": "idle" },
+      { "speaker": "Muhtar Halit", "text": "İyi, geç bak arkadaki dosya odasına. Ama boşuna zaman kaybediyorsun!", "emotion": "idle2" }
     ],
     "muhtar_yuzlesme": [
-      { "speaker": "Dedektif", "text": "Halit bey o kadar caka sattın ama imzalar uyuşmuyor.", "emotion": "normal" },
-      { "speaker": "Muhtar Halit", "text": "Ne demek uyuşmuyor?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Bu belgeler asılsız. Sen mi sahte imza attın? Şefika'nın imzasını taklit etmişsin.", "emotion": "idle2" },
-      { "speaker": "Muhtar Halit", "text": "Olur mu öyle şey dedektif bey!", "emotion": "sinirli" },
-      { "speaker": "Dedektif", "text": "Ben göreceğimi gördüm Halit. Hatta el yazılarını da karşılaştırdım. Cevdet'e verilen bir not var, bu senin el yazın. Neden yazdın bunu?", "emotion": "normal" },
-      { "speaker": "Muhtar Halit", "text": "Ne notu?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Neyden bahsettiğimi iyi biliyorsun Halit.", "emotion": "idle2" },
-      { "speaker": "Muhtar Halit", "text": "He o not... Ben Şefika ile çocuğu gidince yazdım onu. Cevdet kafayı yemesin diye uydurdum bir şeyler ama işe yaramadı belli ki.", "emotion": "idle" },
-      { "speaker": "Dedektif", "text": "Şefika'yı öldürdün ya da yolladın tamam da çocuktan ne istedin?", "emotion": "sinirli" },
-      { "speaker": "Muhtar Halit", "text": "Benim ikisiyle de alakam yok, zaten Şefika da kendi isteğiyle gitti!", "emotion": "sinirli" }
-    ],
-    "ofis": [
-      { "speaker": "Aylin", "text": "Dedektif bey, babamla konuştuklarınızı duydum...", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Aylin?", "emotion": "normal" },
-      { "speaker": "Aylin", "text": "Bakın size göstermek istediğim bir şey var. Vefat eden annemin günlüğünü buldum. Ama okuma yazmam yok. Siz isterseniz bakın.", "emotion": "idle2" },
-      { "speaker": "Dedektif", "text": "Tamam Aylin ben bunu yarın inceleyeceğim.", "emotion": "normal" },
-      { "speaker": "Aylin", "text": "Siz yine de bakın, benim babam kötü biri değildir.", "emotion": "idle" }
-    ],
-    "kilise": [
-      { "speaker": "Dedektif", "text": "Şefika ve Cevdet'in bir çocuğu daha olacakmış, neden söylemedin Peder?", "emotion": "normal" },
-      { "speaker": "Peder Anselm", "text": "He evet... ne bileyim, ama bir gün bile yaşamadı ki.", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Nasıl yani doğmuş muydu?", "emotion": "idle2" },
-      { "speaker": "Peder Anselm", "text": "Yok yani hiç doğmadığı için öyle söyledim.", "emotion": "idle" },
-      { "speaker": "Dedektif", "text": "Anladım... Senin muhtarın yardakçısı olduğunu söylüyorlar, neden?", "emotion": "normal" },
-      { "speaker": "Peder Anselm", "text": "Olur mu öyle şey evladım! Köylülere sorsan Halit beni hile hurdayla bu köye getirtmiş ama yok öyle şey, asılsız iddia bunlar.", "emotion": "sinirli" }
+      { "speaker": "Dedektif", "text": "Halit bey, elimdeki sahte tapu imzaları ve Cevdet'e yazılan tehdit notunun el yazısı... Hepsi sana ait!", "emotion": "sinirli" },
+      { "speaker": "Muhtar Halit", "text": "Ne saçmalıyorsun sen dedektif! Benim kimseyi tehdit ettiğim falan yok!", "emotion": "sinirli" },
+      { "speaker": "Dedektif", "text": "Kimi kandırıyorsun? Köyün tapularını sahte imzayla üzerine geçirmişsin. Şefika ve Yasin'e ne yaptın Halit?", "emotion": "idle" },
+      { "speaker": "Muhtar Halit", "text": "Bana iftira atamazsın! Çık git muhtarlıktan, seninle konuşacak bir şeyim yok!", "emotion": "sinirli" }
     ],
     "han": [
-      { "speaker": "Dedektif", "text": "Rıza haklıymışsın, dosyaları inceledim imzalar gerçekten uyuşmuyor.", "emotion": "normal" },
-      { "speaker": "Hancı Rıza", "text": "Demiştim dedektif, ben bir çok şeyi bilirim.", "emotion": "idle" },
-      { "speaker": "Dedektif", "text": "Madem birçok şeyi biliyorsun, Şefika'nın hamile olduğunu neden söylemedin?", "emotion": "idle2" },
-      { "speaker": "Hancı Rıza", "text": "Önemli olduğunu düşünmedim.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Neyin önemli olduğuna ben karar veririm Rıza.", "emotion": "sinirli" },
-      { "speaker": "Hancı Rıza", "text": "Size söyleyebileceğim tek bir şey var: Şefika'nın kaybolduğu gece Peder'i Halit'in evine giderken gördüm.", "emotion": "sasirmis" }
+      { "speaker": "Dedektif", "text": "Rıza, Halit sahte imzayla tapuları almış. Haberin var mıydı?", "emotion": "idle2" },
+      { "speaker": "Hancı Rıza", "text": "Söylemiştim ben sana beyim! O adamdan her şey beklenir.", "emotion": "idle" }
     ],
-    "demirci": [
-      { "speaker": "Dedektif", "text": "Cabbar bu köylü neden seni sevmiyor?", "emotion": "normal" },
-      { "speaker": "Demirci Cabbar", "text": "Ne eskiden kalması dedektif, zaten 3 yıldır buradayım.", "emotion": "sinirli" },
-      { "speaker": "Dedektif", "text": "Halit'e dolandırıcı demiştin, haklı çıktın.", "emotion": "idle2" },
-      { "speaker": "Demirci Cabbar", "text": "Hiç şaşırmadım.", "emotion": "idle" },
-      { "speaker": "Demirci Cabbar", "text": "Sana diyebileceğim tek şey Peder'e dikkat et. Bir de o Mustafa'ya güvenme.", "emotion": "sinirli" }
-    ],
-    "degirmenci": [
-      { "speaker": "Dedektif", "text": "Mustafa senin herkesle aran iyi, demek ki bir şeyler biliyorsundur.", "emotion": "normal" },
-      { "speaker": "Değirmenci Mustafa", "text": "Buyur dedektif, ne soracaksın?", "emotion": "idle" },
-      { "speaker": "Dedektif", "text": "Halit'i sever misin?", "emotion": "idle2" },
-      { "speaker": "Değirmenci Mustafa", "text": "Pek haz etmem kendisinden, sanki hep gizli bir şeyler çeviriyormuş gibi.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Öyleymiş, usulsüzlüğünü yakaladım. Şefika'nın mallarına çökmüş.", "emotion": "normal" },
-      { "speaker": "Değirmenci Mustafa", "text": "Şerefsiz adam işte!", "emotion": "sinirli" }
+    "peder": [
+      { "speaker": "Dedektif", "text": "Peder, Şefika ve Yasin'in kaybolduğu dönem Halit muhtar seçilmişti değil mi?", "emotion": "idle2" },
+      { "speaker": "Peder Anselm", "text": "Evet evladım... O karanlık günlerden sonra köyün başına geçti.", "emotion": "idle" }
     ],
     "sifahane": [
-      { "speaker": "Dedektif", "text": "Kamuran hanım bu konuştuğumuz notu da buldum, yazanı da! Halit yazmış.", "emotion": "normal" },
-      { "speaker": "Doktor Kamuran", "text": "Vay boyu devrilesice. Gerekeni yapacaksınızdır umarım.", "emotion": "sinirli" },
-      { "speaker": "Doktor Kamuran", "text": "Tam da bizim muhtara yakışır bir hareket.", "emotion": "idle" }
+      { "speaker": "Dedektif", "text": "Kamuran hanım, Şefika kaybolmadan önce muhtarlık kayıtlarında bir gariplik buldum.", "emotion": "idle2" },
+      { "speaker": "Doktor Kamuran", "text": "O dönem köyde garip şeyler oluyordu dedektif, dikkatli ol.", "emotion": "idle" }
+    ],
+    "degirmenci": [
+      { "speaker": "Dedektif", "text": "Mustafa, Halit hakkında ne biliyorsun?", "emotion": "idle2" },
+      { "speaker": "Değirmenci Mustafa", "text": "Köyün en güçlü adamıdır beyim, ama herkes ondan çekinir.", "emotion": "idle" }
+    ],
+    "demirci": [
+      { "speaker": "Dedektif", "text": "Cabbar, Halit'in sahtecilik yaptığını öğrendim.", "emotion": "idle2" },
+      { "speaker": "Demirci Cabbar", "text": "Hiç şaşırmadım dedektif! O haramzade tüm köyün ahını aldı!", "emotion": "sinirli" }
     ],
     "nadire_ev": [
-      { "speaker": "Dedektif", "text": "Nadire hanım, Halit bey usulsüzlükle yakalandı. Şefika'nın mallarını çalmış.", "emotion": "normal" },
-      { "speaker": "Nadire", "text": "Saçma sapan konuşma be! Halit beyim çok düzgün bir adamdır.", "emotion": "sinirli" }
+      { "speaker": "Dedektif", "text": "Nadire hanım, Şefika'nın köyden ayrıldığı günü hatırlıyor musun?", "emotion": "idle2" },
+      { "speaker": "Nadire", "text": "Kimse görmedi ki yavrum, bir gece ansızın yok oldular...", "emotion": "idle" }
     ],
     "cadi": [
-      { "speaker": "Dedektif", "text": "Cevdet, bir çocuğun daha olacakmış.", "emotion": "normal" },
-      { "speaker": "Cevdet", "text": "Melek oldu... Melek oldu... Şefikamla kanatlandılar.", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Ne meleği Cevdet, Halit yazmış sana notu!", "emotion": "idle2" },
-      { "speaker": "Cevdet", "text": "Meleklerle dalga geçilmez! Halit'i de alırlar, yaşatmazlar onu!", "emotion": "sinirli" }
+      { "speaker": "Dedektif", "text": "Cevdet, notu Halit'in yazdığı kesinleşti.", "emotion": "idle2" },
+      { "speaker": "Cevdet", "text": "Biliyordum... Biliyordum... Şefikamı da o aldı benden!", "emotion": "sasirmis" }
     ]
   }
 }
