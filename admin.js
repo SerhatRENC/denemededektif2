@@ -97,10 +97,45 @@ function toggleAdminPanel() {
 }
 
 // Güne Işınlanma Fonksiyonu
-function jumpToDay(dayNum) {
-  window.location.href = window.location.pathname + '?day=' + dayNum;
-}
+// Güne Işınlanma Fonksiyonu (Anında Yükleme)
+async function jumpToDay(dayNum) {
+  try {
+    // 1. Yerel hafızadaki günü güncelle
+    localStorage.setItem('sislidere_day', dayNum);
+    localStorage.setItem('currentDay', dayNum);
 
+    if (typeof gameState !== 'undefined') {
+      gameState.day = dayNum;
+    }
+
+    // 2. Oyun motorunda gün yükleme fonksiyonu varsa çağır
+    if (typeof loadDay === 'function') {
+      await loadDay(dayNum);
+    } else if (typeof loadDayData === 'function') {
+      await loadDayData(dayNum);
+    } else if (typeof gameState !== 'undefined' && typeof gameState.loadDay === 'function') {
+      await gameState.loadDay(dayNum);
+    } else {
+      // Bulamazsa adresten yönlendir
+      window.location.search = '?day=' + dayNum;
+      return;
+    }
+
+    // 3. Odayı ve Arayüzü Anında Yenile
+    if (typeof renderRoom === 'function') {
+      renderRoom();
+    }
+    if (typeof showCustomSubtitle === 'function') {
+      showCustomSubtitle(`[ADMIN] Gün ${dayNum} başarıyla yüklendi!`, true);
+    }
+
+    toggleAdminPanel(); // Paneli kapat
+  } catch (err) {
+    console.error("Gün yüklenirken hata oluştu:", err);
+    // Hata durumunda parametreyle zorla yenile
+    window.location.search = '?day=' + dayNum;
+  }
+}
 // Bayrak Set Etme Fonksiyonu
 function setAdminFlag(flagName) {
   if (typeof gameState !== 'undefined' && gameState.setFlag) {
