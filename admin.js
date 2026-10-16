@@ -1,10 +1,6 @@
 /* SISLIDERE DAVASI — ADMIN PANELİ (Shift + A) */
 (function initAdminPanel() {
-  const ADMIN_ON = ['localhost', '127.0.0.1'].includes(location.hostname) ||
-                   location.search.includes('admin=1') ||
-                   localStorage.getItem('sd_admin') === '1';
-  if (!ADMIN_ON) return;
-
+  
   const btn = (label, fn) => `<button class="admin-btn" onclick="${fn}">${label}</button>`;
   const html = `
   <div id="adminPanelOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);color:#e9dcc0;font-family:sans-serif;padding:20px;box-sizing:border-box;overflow-y:auto;">
