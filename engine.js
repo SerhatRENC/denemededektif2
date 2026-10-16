@@ -187,6 +187,8 @@ async function renderRoom() {
   if (room.hotspots) {
     room.hotspots.forEach(h => {
       if (h.showIf && !checkCond(h.showIf)) return;
+      if (h.hideIf && checkCond(h.hideIf)) return;
+      if (h.type === 'elYazisiModal') { openElYazisiModal(); return; }
       if (isHotspotHidden(h)) return;
       if (h.requires && !inventory.includes(h.requires)) return;
       if (h.activeDays && !h.activeDays.includes(currentDay)) return;

@@ -1,163 +1,115 @@
-/* ============================================================
-   SISLIDERE DAVASI — GELİŞTİRİCİ TEST PANELİ (ADMIN PANEL)
-   Kısayol: Shift + A
-   ============================================================ */
-
+/* SISLIDERE DAVASI — ADMIN PANELİ (Shift + A) */
 (function initAdminPanel() {
-  // 1. Panel HTML Tasarımı (Ekran Kaplaması)
-  const panelHtml = `
-    <div id="adminPanelOverlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.88); backdrop-filter:blur(6px); color:#e9dcc0; font-family:sans-serif; padding:20px; box-sizing:border-box; overflow-y:auto;">
-      <div style="max-width:650px; margin:30px auto; background:#1c150c; border:2px solid #8a5a2b; border-radius:10px; padding:24px; box-shadow:0 0 30px rgba(0,0,0,0.9); position:relative;">
-        
-        <!-- Kapat Butonu -->
-        <button onclick="toggleAdminPanel()" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#e9dcc0; font-size:28px; cursor:pointer;">✕</button>
-        
-        <h2 style="color:#d1a76c; font-family:'Georgia', serif; margin-top:0; margin-bottom:15px; border-bottom:1px solid #3a2c1a; padding-bottom:10px;">🛠️ Geliştirici Test Paneli</h2>
+  const ADMIN_ON = ['localhost', '127.0.0.1'].includes(location.hostname) ||
+                   location.search.includes('admin=1') ||
+                   localStorage.getItem('sd_admin') === '1';
+  if (!ADMIN_ON) return;
 
-        <!-- GÜN SEÇİMİ -->
-        <div style="margin-bottom:20px;">
-          <h4 style="color:#a89379; margin-bottom:8px; font-size:14px;">📅 İstediğin Güne Işınlan:</h4>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="admin-btn" onclick="jumpToDay(1)">Gün 1</button>
-            <button class="admin-btn" onclick="jumpToDay(2)">Gün 2</button>
-            <button class="admin-btn" onclick="jumpToDay(3)">Gün 3</button>
-            <button class="admin-btn" onclick="jumpToDay(4)">Gün 4</button>
-            <button class="admin-btn" onclick="jumpToDay(5)">Gün 5</button>
-            <button class="admin-btn" onclick="jumpToDay(6)">Gün 6</button>
-            <button class="admin-btn" onclick="jumpToDay(7)">Gün 7</button>
-          </div>
-        </div>
+  const btn = (label, fn) => `<button class="admin-btn" onclick="${fn}">${label}</button>`;
+  const html = `
+  <div id="adminPanelOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);color:#e9dcc0;font-family:sans-serif;padding:20px;box-sizing:border-box;overflow-y:auto;">
+    <div style="max-width:650px;margin:30px auto;background:#1c150c;border:2px solid #8a5a2b;border-radius:10px;padding:24px;position:relative;">
+      <button onclick="toggleAdminPanel()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#e9dcc0;font-size:28px;cursor:pointer;">✕</button>
+      <h2 style="color:#d1a76c;font-family:Georgia,serif;margin-top:0;">🛠️ Geliştirici Test Paneli</h2>
 
-        <!-- BAYRAK (FLAG) TETİKLEYİCİLERİ -->
-        <div style="margin-bottom:20px;">
-          <h4 style="color:#a89379; margin-bottom:8px; font-size:14px;">⚡ Kilit Bayrakları Aktif Et:</h4>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="admin-btn" onclick="setAdminFlag('day2_muhtar_goruldu')">Muhtar Görüldü (Gün 2)</button>
-            <button class="admin-btn" onclick="setAdminFlag('day2_polis_goruldu')">Polis Görüldü (Gün 2)</button>
-            <button class="admin-btn" onclick="setAdminFlag('otopsi_incelendi')">Otopsi İncelendi</button>
-            <button class="admin-btn" onclick="setAdminFlag('day4_imza_incelendi')">İmzalar İncelendi (Gün 4)</button>
-            <button class="admin-btn" onclick="setAdminFlag('day4_halit_yazdi_tespit')">Halit Yazdı Tespit (Gün 4)</button>
-          </div>
-        </div>
+      <h4 style="color:#a89379;">📅 Güne Işınlan (önceki günler tamamlanmış sayılır):</h4>
+      <div class="admin-row">${[1,2,3,4,5,6,7].map(n => btn('Gün ' + n, `jumpToDay(${n})`)).join('')}</div>
 
-        <!-- HIZLI ENVANTER EŞYASI ALMA -->
-        <div style="margin-bottom:15px;">
-          <h4 style="color:#a89379; margin-bottom:8px; font-size:14px;">🎒 Envantere Eşya Ekle:</h4>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="admin-btn" onclick="giveAdminItem('evlilik_cuzdan')">+ Evlilik Cüzdanı</button>
-            <button class="admin-btn" onclick="giveAdminItem('polaroid')">+ Polaroid Fotoğraf</button>
-            <button class="admin-btn" onclick="giveAdminItem('yanik_kagit')">+ Yanık Kağıt</button>
-            <button class="admin-btn" onclick="giveAdminItem('cevdet_not')">+ Cevdet'in Notu</button>
-            <button class="admin-btn" onclick="giveAdminItem('gunluk')">+ Şefika'nın Günlüğü</button>
-          </div>
-        </div>
-
-        <p style="font-size:12px; color:#8a5a2b; margin-top:20px; text-align:right;">Kapatmak için <kbd style="background:#2c1c0e; padding:2px 6px; border-radius:3px;">Shift + A</kbd> tuşuna basın.</p>
+      <h4 style="color:#a89379;">⚡ Bayrak Aktif Et:</h4>
+      <div class="admin-row">
+        ${btn('Muhtar Görüldü (G2)', "setAdminFlag('day2_muhtar_goruldu')")}
+        ${btn('Polis Görüldü (G2)', "setAdminFlag('day2_polis_goruldu')")}
+        ${btn('Otopsi İncelendi', "setAdminFlag('otopsi_incelendi')")}
+        ${btn('İmzalar İncelendi (G4)', "setAdminFlag('day4_imza_incelendi')")}
+        ${btn('Halit Yazdı Tespit (G4)', "setAdminFlag('day4_halit_yazdi_tespit')")}
       </div>
+
+      <h4 style="color:#a89379;">🎒 Envantere Eşya Ekle:</h4>
+      <div class="admin-row">
+        ${btn('+ Anahtar', "giveAdminItem('anahtar')")}
+        ${btn('+ Evlilik Cüzdanı', "giveAdminItem('evlilik_cuzdan')")}
+        ${btn('+ Polaroid', "giveAdminItem('polaroid')")}
+        ${btn('+ İşlenmiş Polaroid', "giveAdminItem('polaroid_islenmis')")}
+        ${btn('+ Yanık Kağıt', "giveAdminItem('yanik_kagit')")}
+        ${btn("+ Cevdet'in Notu", "giveAdminItem('cevdet_not')")}
+        ${btn("+ Şefika'nın Günlüğü", "giveAdminItem('gunluk')")}
+      </div>
+      <p style="font-size:12px;color:#8a5a2b;text-align:right;">Kapat: Shift + A</p>
     </div>
+  </div>
+  <style>
+    .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+    .admin-btn{background:#3a2c1a;color:#e9dcc0;border:1px solid #8a5a2b;padding:8px 14px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;}
+    .admin-btn:hover{background:#8a5a2b;color:#fff;}
+  </style>`;
+  document.body.insertAdjacentHTML('beforeend', html);
 
-    <style>
-      .admin-btn {
-        background: #3a2c1a;
-        color: #e9dcc0;
-        border: 1px solid #8a5a2b;
-        padding: 8px 14px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: bold;
-        transition: all 0.15s ease;
-      }
-      .admin-btn:hover {
-        background: #8a5a2b;
-        color: #ffffff;
-        transform: translateY(-1px);
-      }
-    </style>
-  `;
-
-  document.body.insertAdjacentHTML('beforeend', panelHtml);
-
-  // 2. Shift + A Kısayol Dinleyicisi
   window.addEventListener('keydown', (e) => {
-    if (e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-      e.preventDefault();
-      toggleAdminPanel();
-    }
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; // defterde "A" yazarken açılmasın
+    if (e.shiftKey && e.code === 'KeyA') { e.preventDefault(); toggleAdminPanel(); }
   });
+
+  // Işınlanma sonrası intro ekranını atla
+  if (sessionStorage.getItem('sd_skip_intro')) {
+    sessionStorage.removeItem('sd_skip_intro');
+    window.addEventListener('load', () => setTimeout(() => {
+      if (typeof kapatIntroOverlay === 'function') kapatIntroOverlay();
+    }, 400));
+  }
 })();
 
-// Paneli Aç / Kapat Fonksiyonu
 function toggleAdminPanel() {
-  const panel = document.getElementById('adminPanelOverlay');
-  if (panel) {
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  }
+  const p = document.getElementById('adminPanelOverlay');
+  if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
-// Güne Işınlanma Fonksiyonu (Tam Bağlantılı)
-async function jumpToDay(dayNum) {
-  try {
-    console.log(`[ADMIN] Gün ${dayNum} yükleniyor...`);
+/* Bir güne GİRMEK için gereken durum (önceki günlerin tamamlanmış hali).
+   Yeni gün yazdıkça buraya ekle. */
+const ADMIN_DAY_DONE = {
+  1: { flags: ['day1_started'], items: [] },
+  2: {
+    flags: ['day2_started', 'day2_muhtar_goruldu', 'day2_polis_goruldu', 'otopsi_incelendi',
+            'gazeteci_oda_acik', 'col_anahtar', 'col_evlilik_cuzdan', 'col_yanik_kagit',
+            'col_polaroid', 'col_canta_kagitlar_incelendi'],
+    items: ['evlilik_cuzdan', 'yanik_kagit']
+  },
+  3: {
+    flags: ['day3_polis_goruldu', 'col_polaroid_islenmis', 'col_cevdet_not'],
+    items: ['polaroid_islenmis', 'cevdet_not']
+  },
+  4: {
+    flags: ['day4_halit_izin_verdi', 'day4_imza_incelendi', 'day4_halit_yazdi_tespit',
+            'day4_imza_halit_yuzlesildi', 'col_gunluk', 'day4_peder_konusuldu',
+            'day4_riza_konusuldu', 'day4_cabbar_konusuldu', 'day4_mustafa_konusuldu',
+            'day4_kamuran_konusuldu', 'day4_nadire_konusuldu', 'day4_cevdet_konusuldu'],
+    items: ['gunluk']
+  },
+  5: { flags: [], items: [] },
+  6: { flags: [], items: [] }
+};
 
-    // 1. LocalStorage üzerindeki tüm olası gün kayıtlarını güncelliyoruz
-    localStorage.setItem('sislidere_day', dayNum);
-    localStorage.setItem('day', dayNum);
-    localStorage.setItem('currentDay', dayNum);
-
-    // Kayıtlı gameState objesi varsa içindeki günü de değiştiriyoruz
-    ['sislidere_save', 'gameState', 'sislidere_state'].forEach(key => {
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        try {
-          let parsed = JSON.parse(saved);
-          parsed.day = dayNum;
-          localStorage.setItem(key, JSON.stringify(parsed));
-        } catch(e) {}
-      }
-    });
-
-    // 2. Hafızadaki aktif gameState objesini güncelliyoruz
-    if (typeof gameState !== 'undefined') {
-      gameState.day = dayNum;
-    }
-
-    // 3. Konsolda bulduğumuz 'loadDayData' fonksiyonunu tetikliyoruz
-    if (typeof loadDayData === 'function') {
-      await loadDayData(dayNum);
-    }
-
-    // 4. Odayı çizdirip sayfayı yeni günle tazeliyoruz
-    if (typeof renderRoom === 'function') {
-      renderRoom();
-    }
-
-    toggleAdminPanel();
-
-    // Sayfayı yeni gün verileriyle sıfırdan yüklüyoruz
-    window.location.reload();
-
-  } catch (err) {
-    console.error("Gün değiştirme hatası:", err);
-    window.location.reload();
+function jumpToDay(dayNum) {
+  const label = (typeof CASE !== 'undefined' && CASE && CASE.caseLabel) || 'KANIT-04';
+  const flags = { _migrated_v2: true };
+  const items = [];
+  for (let d = 1; d < dayNum; d++) {
+    const p = ADMIN_DAY_DONE[d];
+    if (!p) continue;
+    p.flags.forEach(f => { flags[f] = true; });
+    p.items.forEach(i => { if (!items.includes(i)) items.push(i); });
   }
-}// Bayrak Set Etme Fonksiyonu
-function setAdminFlag(flagName) {
-  if (typeof gameState !== 'undefined' && gameState.setFlag) {
-    gameState.setFlag(flagName, true);
-    if (typeof showCustomSubtitle === 'function') {
-      showCustomSubtitle(`[ADMIN] Bayrak Aktif Edildi: ${flagName}`, true);
-    }
-    if (typeof renderRoom === 'function') renderRoom();
-  }
+  localStorage.setItem('sd_day_' + label, String(dayNum));
+  localStorage.setItem('sd_flags_' + label, JSON.stringify(flags));
+  localStorage.setItem('sd_inv_' + label, JSON.stringify(items));
+  sessionStorage.setItem('sd_skip_intro', '1');
+  location.reload();
 }
 
-// Eşya Verme Fonksiyonu
-function giveAdminItem(itemId) {
-  if (typeof collect === 'function') {
-    collect(itemId);
-  } else if (typeof addItem === 'function') {
-    addItem(itemId);
-  }
+function setAdminFlag(name) {
+  gameState.setFlag(name, true);
+  if (typeof showCustomSubtitle === 'function') showCustomSubtitle(`[ADMIN] Bayrak: ${name}`, true);
+  if (typeof renderRoom === 'function') renderRoom();
 }
+
+function giveAdminItem(id) { if (typeof collect === 'function') collect(id); }
