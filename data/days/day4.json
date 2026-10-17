@@ -95,7 +95,7 @@
       },
       {
         "name": "Muhtar Halit & Aylin",
-        "image": "assets/karakterler/aylin_halit.webp",
+        "image": "assets/karakterler/halit_aylin.webp",
         "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp"
       }
     ],
@@ -108,11 +108,11 @@
 
   "dialogs": {
     "muhtar": [
-      { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "idle2" },
+      { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Hayırdır inşallah dedektif.", "emotion": "normal" },
       { "speaker": "Dedektif", "text": "Normalde davam değil ama bağlantısı olabilir diye dosyalarını incelemem lazım.", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Hangi dosyaları?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "idle2" },
+      { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Bizde usulsüzlük olmaz dedektif, her şey imzalı.", "emotion": "sasirmis" },
       { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz!", "emotion": "sinirli" },
       { "speaker": "Muhtar Halit", "text": "Tamam kızım, baksın incelesin dedektif, karışmayalım.", "emotion": "idle" },
@@ -120,11 +120,11 @@
       { "speaker": "Muhtar Halit", "text": "İçeri odaya geç dedektif, her şey orada.", "emotion": "normal" }
     ],       
     "muhtar_yuzlesme": [
-      { "speaker": "Dedektif", "text": "Halit bey, o kadar caka sattın ama imzalar uyuşmuyor.", "emotion": "idle2" },
+      { "speaker": "Dedektif", "text": "Halit bey, o kadar caka sattın ama imzalar uyuşmuyor.", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Ne demek uyuşmuyor?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Bu belgeler asılsız, sen mi sahte imza attın? Şefika'nın imzasını taklit ettin.", "emotion": "sinirli" },
-      { "speaker": "Muhtar Halit", "text": "Olur mu öyle şey dedektif bey!", "emotion": "sinirli" },
-      { "speaker": "Dedektif", "text": "Ben göreceğimi gördüm Halit. Hatta el yazılarını da karşılaştırdım. Cevdet'e verilen bir not var, bu senin el yazın. Neden yazdın bunu?", "emotion": "idle2" },
+      { "speaker": "Dedektif", "text": "Bu belgeler asılsız, sen mi sahte imza attın? Şefika'nın imzasını taklit ettin.", "emotion": "sasirmis" },
+      { "speaker": "Muhtar Halit", "text": "Olur mu öyle şey dedektif bey!", "emotion": "normal" },
+      { "speaker": "Dedektif", "text": "Ben göreceğimi gördüm Halit. Hatta el yazılarını da karşılaştırdım. Cevdet'e verilen bir not var, bu senin el yazın. Neden yazdın bunu?", "emotion": "idle" },
       { "speaker": "Muhtar Halit", "text": "Ne notu?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Neyden bahsettiğimi iyi biliyorsun Halit.", "emotion": "sinirli" },
       { "speaker": "Muhtar Halit", "text": "He o not... Ben Şefika'yla çocuğu gidince yazdım onu. Cevdet kafayı yemesin diye uydurdum bir şeyler ama işe yaramadı belli ki.", "emotion": "idle" },
