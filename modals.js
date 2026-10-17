@@ -390,12 +390,12 @@ function imzaKiyaslaIlerle() {
       gameState.setFlag('day4_imza_incelendi', true);
     }
     closeModal();
+    if (typeof renderRoom === 'function') renderRoom();
     setTimeout(() => {
       if (typeof showCustomSubtitle === 'function') {
         showCustomSubtitle("Dedektif: Şefika'nın imzaları kesinlikle uyuşmuyor, taklit edilmiş! Şimdi el yazılarını incelemeliyim.", true);
       }
-      if (typeof renderRoom === 'function') renderRoom();
-    }, 300);
+    }, 200);
   } else {
     if (typeof calSes === 'function') calSes('hata');
     document.querySelectorAll('.imza-marker').forEach(m => m.remove());
@@ -405,7 +405,6 @@ function imzaKiyaslaIlerle() {
     }
   }
 }
-
 function imzaNoktalariSifirla() {
   secilenImzaNoktalari = [];
   document.querySelectorAll('.imza-marker').forEach(el => el.remove());
@@ -486,10 +485,10 @@ function elYazisiSecim(isim) {
       gameState.setFlag('day4_halit_yazdi_tespit', true);
     }
     closeModal();
+    if (typeof renderRoom === 'function') renderRoom();
     setTimeout(() => {
       if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Demek Cevdet'e notu sen yazdın Halit, hesaplaşma zamanı!", true);
-      if (typeof renderRoom === 'function') renderRoom();
-    }, 300);
+    }, 200);
   } else {
     if (typeof calSes === 'function') calSes('geri');
     if (typeof showCustomSubtitle === 'function') showCustomSubtitle("Dedektif: Bu yazı pek de benzemiyor...", true);
