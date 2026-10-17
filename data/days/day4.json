@@ -4,29 +4,17 @@
   "gates": [
     {
       "if": { "notFlag": "day4_imza_halit_yuzlesildi" },
-      "from": ["merkez", "ofis", "han", "kilise", "sifahane", "degirmenci", "demirci", "nadire_ev", "cadi", "mezarlik", "halit_ev"],
-      "toNot": ["ofis", "muhtar", "muhtarlik_dosya_odasi"],
+      "toNot": ["merkez", "ofis", "muhtar", "muhtarlik_dosya_odasi"],
       "msg": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım."
-    },
-    {
-      "if": { "notFlag": "day4_imza_halit_yuzlesildi" },
-      "from": ["muhtar", "muhtarlik_dosya_odasi"],
-      "toNot": ["muhtar", "muhtarlik_dosya_odasi"],
-      "msg": "Dedektif: Halit ile yüzleşmeden muhtarlıktan ayrılamam."
     }
   ],
 
   "sleepRequires": [
     {
       "need": { "flag": "col_gunluk" },
-      "msg": "Dedektif: Tam uyuyacakken kapı çalıyor...",
-      "onTrigger": [
-        { "setFlag": "day4_gunluk_tetiklendi" },
-        { "render": true }
-      ]
+      "msg": "Dedektif: Aylin'in getirdiği günlüğü almadan uyuyamam."
     }
   ],
-
   "roomOverrides": {
     "muhtar": {
       "hotspots": [
@@ -76,16 +64,14 @@
       ],
       "ofis": [
         {
-          "if": { "flag": "day4_gunluk_tetiklendi" },
           "do": [
             { "giveItem": "gunluk" },
             { "setFlag": "col_gunluk" },
-            { "setFlag": "day4_gunluk_alindi" },
             { "render": true },
             { "subtitle": "Dedektif: Bunu yarın sabah incelerim." }
           ]
         }
-      ]
+      ]    
     }
   },
 
@@ -109,7 +95,7 @@
       },
       {
         "name": "Muhtar Halit & Aylin",
-        "image": "assets/karakterler/halit_aylin.webp",
+        "image": "assets/karakterler/aylin_halit.webp",
         "clickableImage": "assets/tiklanabilir/halit_aylin_tiklanabilir.webp"
       }
     ],
@@ -122,18 +108,18 @@
 
   "dialogs": {
     "muhtar": [
-      { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "idle2" },
-      { "speaker": "Muhtar Halit", "text": "Hayırdır inşallah dedektif.", "emotion": "normal" },
-      { "speaker": "Dedektif", "text": "Normalde davam değil ama bağlantısı olabilir diye dosyalarını incelemem lazım.", "emotion": "idle" },
-      { "speaker": "Muhtar Halit", "text": "Hangi dosyaları?", "emotion": "sasirmis" },
-      { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "idle2" },
-      { "speaker": "Muhtar Halit", "text": "Bizde usulsüzlük olmaz dedektif, her şey imzalı.", "emotion": "sinirli" },
-      { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz!", "emotion": "normal" },
-      { "speaker": "Muhtar Halit", "text": "Tamam kızım, baksın incelesin dedektif, karışmayalım.", "emotion": "idle" },
-      { "speaker": "Dedektif", "text": "Belgeler nerede?", "emotion": "idle" },
-      { "speaker": "Muhtar Halit", "text": "İçeri odaya geç dedektif, her şey orada.", "emotion": "idle" }
+      { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "idle2", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Muhtar Halit", "text": "Hayırdır inşallah dedektif.", "emotion": "normal", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Dedektif", "text": "Normalde davam değil ama bağlantısı olabilir diye dosyalarını incelemem lazım.", "emotion": "idle", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Muhtar Halit", "text": "Hangi dosyaları?", "emotion": "sasirmis", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Dedektif", "text": "Şefika'nın bulunduğu her dosya, özellikle de sana devrettiği arsaların dosyaları.", "emotion": "idle2", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Muhtar Halit", "text": "Bizde usulsüzlük olmaz dedektif, her şey imzalı.", "emotion": "sasirmis", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Aylin", "text": "Babam yapmaz öyle şeyler dedektif, ne anlatıyorsunuz siz!", "emotion": "normal", "image": "assets/karakterler/aylin_halit.webp" },
+      { "speaker": "Muhtar Halit", "text": "Tamam kızım, baksın incelesin dedektif, karışmayalım.", "emotion": "idle", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Dedektif", "text": "Belgeler nerede?", "emotion": "idle", "image": "assets/karakterler/halit_aylin.webp" },
+      { "speaker": "Muhtar Halit", "text": "İçeri odaya geç dedektif, her şey orada.", "emotion": "normal", "image": "assets/karakterler/halit_aylin.webp" }
     ],
-    "muhtar_yuzlesme": [
+        "muhtar_yuzlesme": [
       { "speaker": "Dedektif", "text": "Halit bey, o kadar caka sattın ama imzalar uyuşmuyor.", "emotion": "idle2" },
       { "speaker": "Muhtar Halit", "text": "Ne demek uyuşmuyor?", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Bu belgeler asılsız, sen mi sahte imza attın? Şefika'nın imzasını taklit ettin.", "emotion": "sinirli" },
