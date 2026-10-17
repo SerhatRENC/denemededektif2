@@ -85,7 +85,7 @@ const ADMIN_DAY_DONE = {
   4: {
     flags: ['day4_halit_izin_verdi', 'day4_imza_incelendi', 'day4_halit_yazdi_tespit',
             'day4_imza_halit_yuzlesildi', 'col_gunluk', 'day4_peder_konusuldu',
-            'day4_riza_konusuldu', 'day4_cabbar_konusuldu', 'day4_mustafa_konusuldu',
+            'day4_gunluk_tetiklendi', 'day4_riza_konusuldu', 'day4_cabbar_konusuldu', 'day4_mustafa_konusuldu',
             'day4_kamuran_konusuldu', 'day4_nadire_konusuldu', 'day4_cevdet_konusuldu'],
     items: ['gunluk']
   },

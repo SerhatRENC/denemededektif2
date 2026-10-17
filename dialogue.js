@@ -20,6 +20,7 @@ function getRoomCharacter(roomKey) {
   }
   if (!ch) return null;
   if (ch.showIf && !checkCond(ch.showIf)) return null;
+  if (ch.hideIf && checkCond(ch.hideIf)) return null;
   return ch;
 }
 function updateCharacterSprite(charImg, line, defaultPath) {
@@ -141,7 +142,8 @@ function getDialogForRoom(roomKey, defaultDialog) {
 function toggleCharacterLine(ch) {
   document.getElementById('sceneCharacter')?.remove();
   // O gün için diyalog yazılmamışsa oyuncuya placeholder yerine nötr bir satır gösterilir
-  const dialog = getDialogForRoom(currentRoom, null) ||
+  const dialog = (ch.dialogKey && getDialogForRoom(ch.dialogKey, null)) ||
+    getDialogForRoom(currentRoom, null) ||
     [{ speaker: ch.name || '', text: ch.text || '…', emotion: 'normal' }];
   startOzelDialog(dialog, ch.image, () => finishDialog(currentRoom));
 }

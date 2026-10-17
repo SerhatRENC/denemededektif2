@@ -504,7 +504,11 @@ function confirmSleep() {
   `);
 }
 
-function sleep() {
+async function sleep() {
+  if (currentDay >= 7) return;
+  // Gün JSON'unda events.beforeSleep.main kuralı çalışırsa uyku iptal edilir
+  if (await runEvents('beforeSleep', 'main')) return;
+  currentDay++;
   if (currentDay >= 7) return;
   currentDay++;
   localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
