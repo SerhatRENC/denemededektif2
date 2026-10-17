@@ -508,9 +508,9 @@ async function sleep() {
   if (currentDay >= 7) return;
   // Gün JSON'unda events.beforeSleep.main kuralı çalışırsa uyku iptal edilir
   if (await runEvents('beforeSleep', 'main')) return;
-  currentDay++;
-  if (currentDay >= 7) return;
-  currentDay++;
+  
+  currentDay++; // Gün sadece 1 artırılıyor
+  
   localStorage.setItem('sd_day_' + CASE.caseLabel, currentDay);
   updateDayBadge();
 
@@ -533,7 +533,6 @@ async function sleep() {
   }
   document.getElementById('sleepOverlay')?.classList.add('active');
 }
-
 function wakeUp() {
   if (currentSleepAudio) {
     currentSleepAudio.pause();
