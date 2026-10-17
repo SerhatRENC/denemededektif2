@@ -259,7 +259,7 @@
       "label": "Muhtarlık Dosya Odası",
       "background": "assets/odalar/muhtarlik_dosya_odasi.webp",
       "hotspots": [
-        { "x": "9%", "y": "57.5%", "type": "navigate", "target": "muhtar", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Muhtarlığa dön" },
+                { "x": "9%", "y": "57.5%", "type": "navigate", "target": "muhtar", "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Muhtarlığa dön", "showIf": { "flag": "day4_halit_yazdi_tespit" } },
         { 
           "x": "64.3%", "y": "55.5%", 
           "type": "dosyaOdasiBelgelerModal", 
