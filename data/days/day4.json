@@ -4,18 +4,12 @@
   "gates": [
     {
       "if": { "notFlag": "day4_imza_halit_yuzlesildi" },
-      "toNot": ["merkez", "ofis", "muhtar", "muhtarlik_dosya_odasi"],
+      "toNot": ["merkez","masa", "ofis", "muhtar", "muhtarlik_dosya_odasi"],
       "msg": "Dedektif: İlk iş Muhtar Halit'le konuşup dosyaları incelemem lazım."
     }
   ],
 
-  "sleepRequires": [
-    {
-      "need": { "flag": "col_gunluk" },
-      "msg": "Dedektif: Aylin'in getirdiği günlüğü almadan uyuyamam."
-    }
-  ],
-  "roomOverrides": {
+    "roomOverrides": {
     "muhtar": {
       "hotspots": [
         {
@@ -45,13 +39,34 @@
   },
 
   "events": {
+  "beforeSleep": {
+  "main": [
+    {
+      "if": { "notFlag": "day4_gunluk_tetiklendi" },
+      "stop": true,
+      "do": [
+        { "setFlag": "day4_gunluk_tetiklendi" },
+        { "render": true },
+        { "subtitle": "Dedektif: Kapı çalıyor... Bu saatte kim olabilir?" }
+      ]
+    },
+    {
+      "if": { "flag": "day4_gunluk_tetiklendi", "notFlag": "col_gunluk" },
+      "stop": true,
+      "do": [
+        { "subtitle": "Dedektif: Aylin kapıda bekliyor, önce onunla konuşmalıyım." }
+      ]
+    }
+  ]
+},
     "dialogEnd": {
       "muhtar": [
         {
-          "if": { "flag": "day4_halit_yazdi_tespit" },
+                    "if": { "flag": "day4_halit_yazdi_tespit" },
+          "stop": true,
           "do": [
             { "setFlag": "day4_imza_halit_yuzlesildi" },
-            { "render": true },
+                        { "render": true },
             { "subtitle": "Dedektif: Halit ile yüzleştim. Şimdi köylülerle konuşup Şefika ve Yasin hakkında bilgi toplamalıyım." }
           ]
         },
@@ -68,7 +83,7 @@
             { "giveItem": "gunluk" },
             { "setFlag": "col_gunluk" },
             { "render": true },
-            { "subtitle": "Dedektif: Bunu yarın sabah incelerim." }
+            { "subtitle": "Dedektif: Bu günlüğü yarın sabah incelerim." }
           ]
         }
       ]    
@@ -131,7 +146,7 @@
       { "speaker": "Dedektif", "text": "Şefika'yı öldürdün ya da yolladın tamam da çocuktan ne istedin?", "emotion": "sinirli" },
       { "speaker": "Muhtar Halit", "text": "Benim ikisiyle de alakam yok, zaten Şefika da kendi isteğiyle gitti.", "emotion": "idle" }
     ],
-    "peder": [
+    "kilise": [
       { "speaker": "Dedektif", "text": "Şefika ve Cevdet'in bir çocuğu daha olacakmış, neden söylemedin Peder?", "emotion": "idle2" },
       { "speaker": "Peder Anselm", "text": "He evet, ne bileyim ama bir gün bile yaşamadı ki.", "emotion": "sasirmis" },
       { "speaker": "Dedektif", "text": "Nasıl yani, doğmuş muydun?", "emotion": "idle" },
