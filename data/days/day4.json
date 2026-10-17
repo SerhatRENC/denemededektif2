@@ -41,12 +41,20 @@
         }
       ]
     },
+    "muhtarlik_dosya_odasi": {
+      "hotspots": [
+        {
+          "x": "9%", "y": "57.5%", "type": "navigate", "target": "muhtar",
+          "icon": "assets/arayuz/geri.webp", "iconWidth": "7.5%", "label": "Geri", "hint": "Muhtarlığa dön",
+          "showIf": { "flag": "day4_halit_yazdi_tespit" }
+        }
+      ]
+    },
     "halit_ev": {
       "closed": true,
       "closedImage": "assets/odalar/halit_ev_kapi.webp"
     }
   },
-
   "events": {
     "dialogEnd": {
       "muhtar": [
@@ -99,7 +107,8 @@
       "name": "Muhtar Halit",
       "image": "assets/karakterler/halit.webp",
       "clickableImage": "assets/tiklanabilir/muhtar_tiklanabilir.webp",
-      "showIf": { "flag": "day4_halit_yazdi_tespit" }
+      "showIf": { "flag": "day4_halit_yazdi_tespit" },
+      "dialogKey": "muhtar_yuzlesme"
     },
     "cadi": {
       "name": "Cevdet",
@@ -107,7 +116,6 @@
       "clickableImage": "assets/tiklanabilir/cevdet_tiklanabilir.webp"
     }
   },
-
   "dialogs": {
     "muhtar": [
       { "speaker": "Dedektif", "text": "Merhaba Halit, iyi haberlerle gelmedim.", "emotion": "idle2" },
